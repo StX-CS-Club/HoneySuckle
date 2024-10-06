@@ -5,9 +5,9 @@ public class Biome {
 
     public static String[] biomes = new String[]{
         "wetlands",
-        "peninsula",
+        "field",
         "islands",
-        "field"
+        "peninsula"
     };
 
     public static Map<String, Map<String, String>> biomeColorMap = Map.of(

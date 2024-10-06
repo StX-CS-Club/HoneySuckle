@@ -11,8 +11,8 @@ public class World {
 
     public World() {
         biome = Biome.biomes[(int) Math.floor(Math.random() * Biome.biomes.length)];
-        if(World.worlds.isEmpty()){
-            biome = "wetlands";
+        if (level < Biome.biomes.length) {
+            biome = Biome.biomes[(int) Math.floor(Math.random() * level)];
         }
         this.grid = Biome.biomeGeneration(this);
         camera = new double[]{(start + 0.5) * HoneySuckle.tileSize, (size[1] * HoneySuckle.tileSize) - HoneySuckle.size[1] / 2};
@@ -56,17 +56,18 @@ public class World {
         return newPos;
     }
 
-    public void posEvent(Player player){
-        int[] posIndex = new int[]{(int) Math.floor(player.pos[0]/HoneySuckle.tileSize), (int) Math.floor(player.pos[1]/HoneySuckle.tileSize)};
-        if(grid[posIndex[0]][posIndex[1]] == 0 && !player.tags.contains("god")){
-            player.health -= 0.01*30/HoneySuckle.fps;
-        }
-        if(player.tags.contains("leader")){
-            if(player.pos[1] <= player.size/2){
-                World world = new World();
-                player.pos = new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1]-0.5)};
+    public void posEvent(Player player) {
+        if (player.tags.contains("leader")) {
+            if (player.pos[1] <= player.size / 2) {
                 level++;
+                World world = new World();
+                player.pos = new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1] - 0.5)};
+                return;
             }
+        }
+        int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / HoneySuckle.tileSize), (int) Math.floor(player.pos[1] / HoneySuckle.tileSize)};
+        if (grid[posIndex[0]][posIndex[1]] == 0 && !player.tags.contains("god")) {
+            player.health -= 0.01 * 30 / HoneySuckle.fps;
         }
     }
 

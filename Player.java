@@ -42,7 +42,7 @@ public class Player {
         }
 
         if(tags.contains("god")){
-            incriment *= 2;
+            incriment *= 4;
         }
 
         if (keyDown[16]) {
@@ -55,6 +55,9 @@ public class Player {
                 stamina = 0;
             }
             stamina += 0.2 * 30 / HoneySuckle.fps;
+            if(stamina > 1){
+                stamina = 1;
+            }
         }
 
         if (keyDown[83]) {
