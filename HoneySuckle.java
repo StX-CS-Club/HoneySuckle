@@ -1,42 +1,81 @@
-public class HoneySuckle {
-    static void main(String[] args){
-        int width = 51;
-        int height = 100;
-        int start = (width-1)/2;
 
-        int[][] grid = new int[width][height];
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Arrays;
 
-        grid[start-1][height-1]=1;
-        grid[start][height-1]=1;
-        grid[start+1][height-1]=1;
+import javax.swing.*;
 
-        grid[start-1][0]=1;
-        grid[start][0]=1;
-        grid[start+1][0]=1;
+public class HoneySuckle extends JPanel implements Runnable, KeyListener {
 
-        for(int x = 0; x < start; x++){
-            for(int y = height-2; y > 0; y--){
-                int leftProb = 10+55*grid[start-x+1][y]+30*grid[start-x][y+1];
-                int rightProb = 10+55*grid[start+x-1][y]+30*grid[start-x][y+1];
-                if(Math.random() * 100 <= leftProb){
-                    grid[start-x][y] = 1;
-                }
-                if(Math.random() * 100 <= rightProb){
-                    grid[start+x][y] = 1;
-                }
+    public static int tileSize = 40;
+    public static int fps = 40;
+    public static int[] size = new int[]{800, 600};
+
+    private Player player;
+    private World world;
+
+    public static boolean[] keyDown = new boolean[100];
+
+    public HoneySuckle() {
+        setPreferredSize(new Dimension(size[0], size[1]));
+        setFocusable(true);
+        requestFocusInWindow();
+        addKeyListener(this);
+        world = new World();
+        player = new Player(tileSize, Arrays.asList("leader"));
+    }
+
+    //Render
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        world.render(g);
+        player.render(g);
+    }
+
+    public void update() {
+        player.update(keyDown);
+
+        repaint();
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            update();
+            try {
+                Thread.sleep((int)(1000/fps));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+    }
 
-        for(int y = 0; y < height; y++){
-            String result = "";
-            for(int x = 0; x < width; x++){
-                if(grid[x][y] == 1){
-                    result = result+" ";
-                } else {
-                    result = result+"■";
-                }
-            }
-            System.out.println(result);
-        }
+    @Override
+    public void keyPressed(KeyEvent e) {
+        keyDown[e.getKeyCode()] = true;
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        keyDown[e.getKeyCode()] = false;
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("HoneySuckle");
+        HoneySuckle panel = new HoneySuckle();
+
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Thread gameThread = new Thread(panel);
+        gameThread.start();
     }
 }
