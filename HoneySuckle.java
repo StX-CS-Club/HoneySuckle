@@ -12,7 +12,6 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
     public static int[] size = new int[]{800, 600};
 
     private Player player;
-    private World world;
 
     public static boolean[] keyDown = new boolean[100];
 
@@ -21,8 +20,9 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
         setFocusable(true);
         requestFocusInWindow();
         addKeyListener(this);
-        world = new World();
-        player = new Player(tileSize, Arrays.asList("leader"));
+        World world = new World();
+        player = new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1]-0.5)},
+        tileSize*2/3, Arrays.asList("leader"));
     }
 
     //Render
@@ -30,7 +30,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        world.render(g);
+        World.worlds.get(World.level).render(g);
         player.render(g);
     }
 
