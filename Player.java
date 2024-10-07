@@ -35,29 +35,28 @@ public class Player {
                 vel[i] = 0;
             }
         }
-        double incriment = (double) size / 10 * 30 / HoneySuckle.fps;
-
-        if ((keyDown[83] || keyDown[87]) && (keyDown[65] || keyDown[68])) {
-            incriment /= 2;
-        }
+        double incriment = (double) size / 5 * 30 / HoneySuckle.fps * HoneySuckle.tileSize/40;
 
         if(tags.contains("god")){
             incriment *= 4;
         }
 
         if (keyDown[16]) {
-            stamina -= 0.3 * 30 / HoneySuckle.fps;
-            if (stamina > 0) {
-                incriment *= 2;
-            }
-        } else {
-            if (stamina < 0) {
+            if (stamina == 1) {
+                vel[0] = 0;
+                vel[1] = 0;
+                incriment = HoneySuckle.tileSize*1.25;
                 stamina = 0;
             }
-            stamina += 0.2 * 30 / HoneySuckle.fps;
+        } else {
+            stamina += 0.1 * 30 / HoneySuckle.fps;
             if(stamina > 1){
                 stamina = 1;
             }
+        }
+
+        if ((keyDown[83] || keyDown[87]) && (keyDown[65] || keyDown[68])) {
+            incriment /= 2;
         }
 
         if (keyDown[83]) {
