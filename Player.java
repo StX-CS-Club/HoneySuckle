@@ -2,14 +2,18 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
+
+    public static List<Player> players = new ArrayList<>();
 
     public Player(double[] pos, int size, List<String> tags) {
         this.pos = pos;
         this.size = size;
         this.tags = tags;
+        players.add(this);
     }
 
     public double[] pos;
@@ -35,9 +39,9 @@ public class Player {
                 vel[i] = 0;
             }
         }
-        double incriment = (double) size / 5 * 30 / HoneySuckle.fps * HoneySuckle.tileSize/40;
+        double incriment = (double) size / 5 * 30 / HoneySuckle.fps * HoneySuckle.tileSize / 40;
 
-        if(tags.contains("god")){
+        if (tags.contains("god")) {
             incriment *= 4;
         }
 
@@ -45,36 +49,59 @@ public class Player {
             if (stamina == 1) {
                 vel[0] = 0;
                 vel[1] = 0;
-                incriment = HoneySuckle.tileSize*1.25;
+                incriment = HoneySuckle.tileSize * 1.25;
                 stamina = 0;
             }
         } else {
             stamina += 0.1 * 30 / HoneySuckle.fps;
-            if(stamina > 1){
+            if (stamina > 1) {
                 stamina = 1;
             }
         }
 
-        if ((keyDown[83] || keyDown[87]) && (keyDown[65] || keyDown[68])) {
-            incriment /= 2;
+        if (tags.contains("wasd")) {
+            if ((keyDown[83] || keyDown[87]) && (keyDown[65] || keyDown[68])) {
+                incriment /= 2;
+            }
+
+            if (keyDown[83]) {
+                vel[1] += incriment;
+            }
+
+            if (keyDown[87]) {
+                vel[1] -= incriment;
+            }
+
+            if (keyDown[65]) {
+                vel[0] -= incriment;
+            }
+
+            if (keyDown[68]) {
+                vel[0] += incriment;
+            }
+        }
+        if (tags.contains("arrows")) {
+            if ((keyDown[38] || keyDown[40]) && (keyDown[37] || keyDown[39])) {
+                incriment /= 2;
+            }
+
+            if (keyDown[40]) {
+                vel[1] += incriment;
+            }
+
+            if (keyDown[38]) {
+                vel[1] -= incriment;
+            }
+
+            if (keyDown[37]) {
+                vel[0] -= incriment;
+            }
+
+            if (keyDown[39]) {
+                vel[0] += incriment;
+            }
         }
 
-        if (keyDown[83]) {
-            vel[1] += incriment;
-        }
-
-        if (keyDown[87]) {
-            vel[1] -= incriment;
-        }
-
-        if (keyDown[65]) {
-            vel[0] -= incriment;
-        }
-
-        if (keyDown[68]) {
-            vel[0] += incriment;
-        }
-        
         if (tags.contains("god")) {
             pos[0] += vel[0];
             pos[1] += vel[1];

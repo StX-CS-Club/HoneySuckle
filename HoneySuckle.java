@@ -1,6 +1,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.*;
@@ -11,8 +12,6 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
     public static int fps = 40;
     public static int[] size = new int[]{800, 600};
 
-    private Player player;
-
     public static boolean[] keyDown = new boolean[100];
 
     public HoneySuckle() {
@@ -21,8 +20,10 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
         requestFocusInWindow();
         addKeyListener(this);
         World world = new World();
-        player = new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1]-0.5)},
-        tileSize*2/3, Arrays.asList("leader"));
+        new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1]-0.5)},
+        tileSize*2/3, Arrays.asList("leader", "wasd"));
+        new Player(new double[]{HoneySuckle.tileSize * (world.start - 0.5), HoneySuckle.tileSize * (world.size[1]-0.5)},
+        tileSize*2/3, Arrays.asList("arrows"));
     }
 
     //Render
@@ -31,11 +32,15 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
         super.paintComponent(g);
 
         World.worlds.get(World.level).render(g);
-        player.render(g);
+        for(int i = 0; i < Player.players.size(); i++){
+            Player.players.get(i).render(g);
+        }
     }
 
     public void update() {
-        player.update(keyDown);
+        for(int i = 0; i < Player.players.size(); i++){
+            Player.players.get(i).update(keyDown);
+        }
 
         repaint();
     }
