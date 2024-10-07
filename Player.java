@@ -1,7 +1,6 @@
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.GraphicsDevice;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,12 +22,15 @@ public class Player {
     public int size;
     public List<String> tags;
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         if (health > 0) {
             g.setColor(Color.GRAY);
 
             double[] camera = World.worlds.get(World.level).camera;
-            g.fillRect((int) (HoneySuckle.size[0] / 2 - size / 2 + pos[0] - camera[0]), (int) (HoneySuckle.size[1] / 2 - size / 2 + pos[1] - camera[1]), size, size);
+            HoneySuckle.borderRect(g, 2, 
+            (int) (HoneySuckle.size[0] / 2 - size / 2 + pos[0] - camera[0]),
+            (int) (HoneySuckle.size[1] / 2 - size / 2 + pos[1] - camera[1]),
+             size, size);
         }
     }
 

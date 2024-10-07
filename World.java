@@ -1,6 +1,6 @@
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +14,15 @@ public class World {
         if (level < Biome.biomes.length) {
             biome = Biome.biomes[(int) Math.floor(Math.random() * level)];
         }
-        this.grid = Biome.biomeGeneration(this);
+        Biome.biomeGeneration(this);
         camera = new double[]{(start + 0.5) * HoneySuckle.tileSize, (size[1] * HoneySuckle.tileSize) - HoneySuckle.size[1] / 2};
         worlds.add(this);
     }
 
     public double[] camera = new double[2];
 
-    private int[][] grid;
+    public int[][] grid;
+    public int[][] objGrid;
     public int[] size = new int[2];
     public int start;
     public String biome;
@@ -42,12 +43,12 @@ public class World {
         int[] posIndex = new int[]{(int) (Math.floor(pos[0] / HoneySuckle.tileSize)), (int) (Math.floor(pos[1] / HoneySuckle.tileSize))};
         int[] newPosIndex = new int[]{(int) (Math.floor(newPos[0] / HoneySuckle.tileSize)), (int) (Math.floor(newPos[1] / HoneySuckle.tileSize))};
         if (grid[posIndex[0]][posIndex[1]] == 1) {
-            if (newPosIndex[0] > 0 && newPosIndex[0] < size[0]) {
+            if (newPosIndex[0] >= 0 && newPosIndex[0] < size[0]) {
                 if (grid[newPosIndex[0]][posIndex[1]] != 1) {
                     newPos[0] = pos[0];
                 }
             }
-            if (newPosIndex[1] > 0 && newPosIndex[1] < size[1]) {
+            if (newPosIndex[1] >= 0 && newPosIndex[1] < size[1]) {
                 if (grid[posIndex[0]][newPosIndex[1]] != 1) {
                     newPos[1] = pos[1];
                 }
@@ -71,11 +72,10 @@ public class World {
         }
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("voidColor")));
         g.fillRect(0, 0, HoneySuckle.size[0], HoneySuckle.size[1]);
 
-        g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("landColor")));
         int tileSize = HoneySuckle.tileSize;
 
         int[] cameraTile = new int[]{(int) Math.floor(camera[0] / tileSize), (int) Math.floor(camera[1] / tileSize)};
@@ -85,7 +85,14 @@ public class World {
             for (int x = cameraTile[0] - cameraOffset[0]; x < cameraTile[0] + cameraOffset[0]; x++) {
                 if (y >= 0 && y < grid[0].length && x >= 0 && x < grid.length) {
                     if (grid[x][y] == 1) {
-                        g.fillRect((int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
+                        g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("landColor")));
+                        HoneySuckle.borderRect(g, 2, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
+                    }
+                    if(objGrid[x][y] != 0){
+                        if(objGrid[x][y] == 1){
+                            g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("treeColor")));
+                        }
+                        HoneySuckle.borderRect(g, 1, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
                     }
                 }
             }

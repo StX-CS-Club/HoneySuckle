@@ -1,7 +1,6 @@
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.*;
@@ -22,8 +21,6 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
         World world = new World();
         new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1]-0.5)},
         tileSize*2/3, Arrays.asList("leader", "wasd"));
-        new Player(new double[]{HoneySuckle.tileSize * (world.start - 0.5), HoneySuckle.tileSize * (world.size[1]-0.5)},
-        tileSize*2/3, Arrays.asList("arrows"));
     }
 
     //Render
@@ -31,10 +28,20 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        World.worlds.get(World.level).render(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        World.worlds.get(World.level).render(g2d);
         for(int i = 0; i < Player.players.size(); i++){
-            Player.players.get(i).render(g);
+            Player.players.get(i).render(g2d);
         }
+    }
+
+    public static void borderRect(Graphics2D g, int border, int x, int y, int width, int height){
+        g.fillRect(x, y, width, height);
+
+        g.setStroke(new BasicStroke(border));
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, width, height);
     }
 
     public void update() {
