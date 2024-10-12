@@ -8,6 +8,7 @@ public class World {
 
     public static List<World> worlds = new ArrayList<>();
     public static int level = 0;
+    private final int tileSize = HoneySuckle.tileSize;
 
     public World() {
         biome = Biome.biomes[(int) Math.floor(Math.random() * Biome.biomes.length)];
@@ -15,7 +16,7 @@ public class World {
             biome = Biome.biomes[(int) Math.floor(Math.random() * level)];
         }
         Biome.biomeGeneration(this);
-        camera = new double[]{(start + 0.5) * HoneySuckle.tileSize, (size[1] * HoneySuckle.tileSize) - HoneySuckle.size[1] / 2};
+        camera = new double[]{(start + 0.5) * tileSize, (size[1] * tileSize) - HoneySuckle.size[1] / 2};
         worlds.add(this);
     }
 
@@ -36,12 +37,12 @@ public class World {
             if (newPos[i] < margin) {
                 newPos[i] = margin;
             }
-            if (newPos[i] > size[i] * HoneySuckle.tileSize - margin) {
-                newPos[i] = size[i] * HoneySuckle.tileSize - margin;
+            if (newPos[i] > size[i] * tileSize - margin) {
+                newPos[i] = size[i] * tileSize - margin;
             }
         }
-        int[] posIndex = new int[]{(int) (Math.floor(pos[0] / HoneySuckle.tileSize)), (int) (Math.floor(pos[1] / HoneySuckle.tileSize))};
-        int[] newPosIndex = new int[]{(int) (Math.floor(newPos[0] / HoneySuckle.tileSize)), (int) (Math.floor(newPos[1] / HoneySuckle.tileSize))};
+        int[] posIndex = new int[]{(int) (Math.floor(pos[0] / tileSize)), (int) (Math.floor(pos[1] / tileSize))};
+        int[] newPosIndex = new int[]{(int) (Math.floor(newPos[0] / tileSize)), (int) (Math.floor(newPos[1] / tileSize))};
         if (grid[posIndex[0]][posIndex[1]] == 1) {
             if (newPosIndex[0] >= 0 && newPosIndex[0] < size[0]) {
                 if (grid[newPosIndex[0]][posIndex[1]] != 1) {
@@ -54,6 +55,21 @@ public class World {
                 }
             }
         }
+        int[][] marginIndex = new int[][]{
+            {(int) (Math.floor((newPos[0] - margin) / tileSize)), (int) (Math.floor((newPos[0] + margin) / tileSize))},
+            {(int) (Math.floor((newPos[1] - margin) / tileSize)), (int) (Math.floor((newPos[1] + margin) / tileSize))},};
+        for (int i = 0; i < 2; i++) {
+            if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0] && delta[0] != 0) {
+                if (objGrid[marginIndex[0][i]][posIndex[1]] != 0) {
+                    newPos[0] = (marginIndex[0][i] + 0.5) * tileSize + (0.5 * tileSize + margin) * Math.pow(-1, i);
+                }
+            }
+            if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1] && delta[1] != 0) {
+                if (objGrid[posIndex[0]][marginIndex[1][i]] != 0) {
+                    newPos[1] = (marginIndex[1][i] + 0.5) * tileSize + (0.5 * tileSize + margin) * Math.pow(-1, i);
+                }
+            }
+        }
         return newPos;
     }
 
@@ -62,11 +78,11 @@ public class World {
             if (player.pos[1] <= player.size / 2) {
                 level++;
                 World world = new World();
-                player.pos = new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1] - 0.5)};
+                player.pos = new double[]{tileSize * (world.start + 0.5), tileSize * (world.size[1] - 0.5)};
                 return;
             }
         }
-        int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / HoneySuckle.tileSize), (int) Math.floor(player.pos[1] / HoneySuckle.tileSize)};
+        int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / tileSize), (int) Math.floor(player.pos[1] / tileSize)};
         if (grid[posIndex[0]][posIndex[1]] == 0 && !player.tags.contains("god")) {
             player.health -= 0.01 * 30 / HoneySuckle.fps;
         }
@@ -76,8 +92,6 @@ public class World {
         g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("voidColor")));
         g.fillRect(0, 0, HoneySuckle.size[0], HoneySuckle.size[1]);
 
-        int tileSize = HoneySuckle.tileSize;
-
         int[] cameraTile = new int[]{(int) Math.floor(camera[0] / tileSize), (int) Math.floor(camera[1] / tileSize)};
         int[] cameraOffset = new int[]{(HoneySuckle.size[0] / 2 / tileSize + 1), (HoneySuckle.size[1] / 2 / tileSize + 2)};
 
@@ -86,13 +100,16 @@ public class World {
                 if (y >= 0 && y < grid[0].length && x >= 0 && x < grid.length) {
                     if (grid[x][y] == 1) {
                         g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("landColor")));
-                        HoneySuckle.borderRect(g, 2, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
+                        HoneySuckle.borderRect(g, 2, Color.black, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
                     }
-                    if(objGrid[x][y] != 0){
-                        if(objGrid[x][y] == 1){
+                    if (objGrid[x][y] != 0) {
+                        if (objGrid[x][y] == 1) {
                             g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("treeColor")));
                         }
-                        HoneySuckle.borderRect(g, 1, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
+                        if (objGrid[x][y] < 0) {
+                            g.setColor(Color.decode(Structure.objColor.get(objGrid[x][y])));
+                        }
+                        HoneySuckle.borderRect(g, 1, Color.black, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
                     }
                 }
             }
@@ -102,8 +119,8 @@ public class World {
     public void printLevel() {
         for (int y = 0; y < grid[0].length; y++) {
             String response = "";
-            for (int x = 0; x < grid.length; x++) {
-                if (grid[x][y] == 1) {
+            for (int[] grid1 : grid) {
+                if (grid1[y] == 1) {
                     response = response + " ";
                 } else {
                     response = response + "■";
