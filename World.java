@@ -43,14 +43,14 @@ public class World {
         }
         int[] posIndex = new int[]{(int) (Math.floor(pos[0] / tileSize)), (int) (Math.floor(pos[1] / tileSize))};
         int[] newPosIndex = new int[]{(int) (Math.floor(newPos[0] / tileSize)), (int) (Math.floor(newPos[1] / tileSize))};
-        if (grid[posIndex[0]][posIndex[1]] == 1) {
+        if (checkTile(posIndex[0], posIndex[1], "walkable")) {
             if (newPosIndex[0] >= 0 && newPosIndex[0] < size[0]) {
-                if (grid[newPosIndex[0]][posIndex[1]] != 1) {
+                if (!checkTile(newPosIndex[0], posIndex[1], "walkable")) {
                     newPos[0] = pos[0];
                 }
             }
             if (newPosIndex[1] >= 0 && newPosIndex[1] < size[1]) {
-                if (grid[posIndex[0]][newPosIndex[1]] != 1) {
+                if (!checkTile(posIndex[0], newPosIndex[1], "walkable")) {
                     newPos[1] = pos[1];
                 }
             }
@@ -60,12 +60,12 @@ public class World {
             {(int) (Math.floor((newPos[1] - margin) / tileSize)), (int) (Math.floor((newPos[1] + margin) / tileSize))},};
         for (int i = 0; i < 2; i++) {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0] && delta[0] != 0) {
-                if (objGrid[marginIndex[0][i]][posIndex[1]] != 0) {
+                if (checkTile(marginIndex[0][i], posIndex[1], "obstruction")) {
                     newPos[0] = (marginIndex[0][i] + 0.5) * tileSize + (0.5 * tileSize + margin) * Math.pow(-1, i);
                 }
             }
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1] && delta[1] != 0) {
-                if (objGrid[posIndex[0]][marginIndex[1][i]] != 0) {
+                if (checkTile(posIndex[0], marginIndex[1][i], "obstruction")) {
                     newPos[1] = (marginIndex[1][i] + 0.5) * tileSize + (0.5 * tileSize + margin) * Math.pow(-1, i);
                 }
             }
@@ -83,9 +83,38 @@ public class World {
             }
         }
         int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / tileSize), (int) Math.floor(player.pos[1] / tileSize)};
-        if (grid[posIndex[0]][posIndex[1]] == 0 && !player.tags.contains("god")) {
-            player.health -= 0.01 * 30 / HoneySuckle.fps;
+
+        double margin = player.size / 2 + 1;
+        int[][] marginIndex = new int[][]{
+            {(int) (Math.floor((player.pos[0] - margin) / tileSize)), (int) (Math.floor((player.pos[0] + margin) / tileSize))},
+            {(int) (Math.floor((player.pos[1] - margin) / tileSize)), (int) (Math.floor((player.pos[1] + margin) / tileSize))}
+        };
+
+        if (!player.tags.contains("god")) {
+            if (checkTile(posIndex[0], posIndex[1], "damage") && !checkTile(posIndex[0], posIndex[1], "safe")) {
+                player.health -= 0.01 * 30 / HoneySuckle.fps;
+            }
+            if (checkTile(posIndex[0], posIndex[1], "slow") && !checkTile(posIndex[0], posIndex[1], "safe")) {
+                player.vel[0] /= 3;
+                player.vel[1] /= 3;
+            }
+            for (int i = 0; i < 2; i++) {
+                if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
+                    if (checkTile(marginIndex[0][i], posIndex[1], "hurts")) {
+                        player.health -= 0.02 * 30 / HoneySuckle.fps;
+                    }
+                }
+                if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
+                    if (checkTile(posIndex[0], marginIndex[1][i], "hurts")) {
+                        player.health -= 0.02 * 30 / HoneySuckle.fps;
+                    }
+                }
+            }    
         }
+    }
+
+    private boolean checkTile(int x, int y, String tag) {
+        return Tile.tileProperties.get(grid[x][y]).contains(tag) || Tile.objProperties.get(objGrid[x][y]).contains(tag);
     }
 
     public void render(Graphics2D g) {
@@ -98,18 +127,18 @@ public class World {
         for (int y = cameraTile[1] - cameraOffset[1]; y < cameraTile[1] + cameraOffset[1]; y++) {
             for (int x = cameraTile[0] - cameraOffset[0]; x < cameraTile[0] + cameraOffset[0]; x++) {
                 if (y >= 0 && y < grid[0].length && x >= 0 && x < grid.length) {
-                    if (grid[x][y] == 1) {
-                        g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("landColor")));
+                    if (grid[x][y] > 0) {
+                        g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y]))));
                         HoneySuckle.borderRect(g, 2, Color.black, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
                     }
                     if (objGrid[x][y] != 0) {
-                        if (objGrid[x][y] == 1) {
-                            g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("treeColor")));
+                        if (objGrid[x][y] > 0) {
+                            g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y]))));
                         }
                         if (objGrid[x][y] < 0) {
-                            g.setColor(Color.decode(Structure.objColor.get(objGrid[x][y])));
+                            g.setColor(Color.decode(Tile.objColor.get(objGrid[x][y])));
                         }
-                        HoneySuckle.borderRect(g, 1, Color.black, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
+                        HoneySuckle.borderRect(g, 2, Color.black, (int) (x * tileSize - camera[0] + HoneySuckle.size[0] / 2), (int) (y * tileSize - camera[1] + HoneySuckle.size[1] / 2), tileSize, tileSize);
                     }
                 }
             }

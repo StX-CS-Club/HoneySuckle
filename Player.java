@@ -1,7 +1,13 @@
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RadialGradientPaint;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +20,10 @@ public class Player {
         this.size = size;
         this.tags = tags;
         crafting = new Craft(
-            Map.of(
-                "wood", 3
-            )
+                Map.of(
+                        "wood", 4
+                ),
+                new LinkedHashSet<>(Arrays.asList(-2, -1))
         );
         players.add(this);
     }
@@ -33,24 +40,52 @@ public class Player {
 
     public List<String> tags;
 
-    public void render(Graphics2D g) {
-        if (health > 0) {
+    public void render(Graphics2D g, double[] mousePos) {
+        AffineTransform originalTransform = g.getTransform();
+
             double[] camera = World.worlds.get(World.level).camera;
 
+            double[] screenPos = new double[]{
+                HoneySuckle.size[0] / 2 + pos[0] - camera[0],
+                HoneySuckle.size[1] / 2 + pos[1] - camera[1]
+            };
+
+        if (health > 0) {
             if (tags.contains("leader")) {
-                crafting.render(g, pos);
+                crafting.renderTile(g, World.worlds.get(World.level), this);
             }
 
-            g.setColor(Color.GRAY);
+            double rotation = Math.toDegrees(Math.atan(-1
+                    * (mousePos[0] - screenPos[0])
+                    / (mousePos[1] - screenPos[1])));
+
+            g.rotate(Math.toRadians(rotation), screenPos[0], screenPos[1]);
+
+            g.setColor(Color.gray);
 
             HoneySuckle.borderRect(g, 2, Color.black,
-                    (int) (HoneySuckle.size[0] / 2 - size / 2 + pos[0] - camera[0]),
-                    (int) (HoneySuckle.size[1] / 2 - size / 2 + pos[1] - camera[1]),
+                    (int) (screenPos[0] - size / 2),
+                    (int) (screenPos[1] - size / 2),
                     size, size);
+
+            g.setTransform(originalTransform);
+        }
+
+        String biome = World.worlds.get(World.level).biome;
+        
+        if(Biome.biomeTags.get(biome).contains("fog")){
+            g.setPaint(new RadialGradientPaint(
+            new Point2D.Float((float) screenPos[0], (float) screenPos[1]),
+            HoneySuckle.size[0] / 2f,
+            new float[]{0f, 1f},
+            new Color[]{ new Color(0,0,0,0), Color.decode(Biome.biomeColorMap.get(biome).get("fogColor"))}
+        ));
+
+        g.fillRect(0, 0, HoneySuckle.size[0], HoneySuckle.size[1]);
         }
     }
 
-    public void update(boolean[] keyDown, double[] mousePos, int click) {
+    public void update(boolean[] keyDown, double[] mousePos, int click, double scroll) {
         for (int i = 0; i < 2; i++) {
             vel[i] /= 2;
             if (Math.abs(vel[i]) <= 0.2) {
@@ -61,11 +96,35 @@ public class Player {
 
         double[] camera = World.worlds.get(World.level).camera;
 
+        crafting.scrollBar(scroll);
+
+        for (int i = 0; i < 2; i++) {
+            double mouseDiff = mousePos[i]
+                    - (HoneySuckle.size[i] / 2
+                    + Math.floor(pos[i] / HoneySuckle.tileSize) * HoneySuckle.tileSize
+                    - camera[i]);
+            if (mouseDiff < 0) {
+                crafting.cursor[i] = -1;
+            } else if (mouseDiff > HoneySuckle.tileSize) {
+                crafting.cursor[i] = 1;
+            } else {
+                crafting.cursor[i] = 0;
+            }
+        }
+
+        if (click == 1) {
+            crafting.destroy(World.worlds.get(World.level), this);
+        }
+
+        if (click == 3) {
+            crafting.build(World.worlds.get(World.level), this);
+        }
+
         if (tags.contains("god")) {
             incriment *= 4;
         }
 
-        if (keyDown[16]) {
+        if (keyDown[32]) {
             if (stamina == 1) {
                 vel[0] = 0;
                 vel[1] = 0;
@@ -79,47 +138,24 @@ public class Player {
             }
         }
 
-        if (tags.contains("wasd")) {
-            if ((keyDown[83] || keyDown[87]) && (keyDown[65] || keyDown[68])) {
-                incriment /= 2;
-            }
-
-            if (keyDown[83]) {
-                vel[1] += incriment;
-            }
-
-            if (keyDown[87]) {
-                vel[1] -= incriment;
-            }
-
-            if (keyDown[65]) {
-                vel[0] -= incriment;
-            }
-
-            if (keyDown[68]) {
-                vel[0] += incriment;
-            }
+        if ((keyDown[83] || keyDown[87]) && (keyDown[65] || keyDown[68])) {
+            incriment *= 0.625;
         }
-        if (tags.contains("arrows")) {
-            if ((keyDown[38] || keyDown[40]) && (keyDown[37] || keyDown[39])) {
-                incriment /= 2;
-            }
 
-            if (keyDown[40]) {
-                vel[1] += incriment;
-            }
+        if (keyDown[83]) {
+            vel[1] += incriment;
+        }
 
-            if (keyDown[38]) {
-                vel[1] -= incriment;
-            }
+        if (keyDown[87]) {
+            vel[1] -= incriment;
+        }
 
-            if (keyDown[37]) {
-                vel[0] -= incriment;
-            }
+        if (keyDown[65]) {
+            vel[0] -= incriment;
+        }
 
-            if (keyDown[39]) {
-                vel[0] += incriment;
-            }
+        if (keyDown[68]) {
+            vel[0] += incriment;
         }
 
         if (tags.contains("god")) {
@@ -127,30 +163,6 @@ public class Player {
             pos[1] += vel[1];
         } else {
             pos = World.worlds.get(World.level).bound(pos, vel, size / 2);
-        }
-
-        if (tags.contains("mouse")) {
-            for (int i = 0; i < 2; i++) {
-                double mouseDiff = mousePos[i]
-                        - (HoneySuckle.size[i] / 2
-                        + Math.floor(pos[i] / HoneySuckle.tileSize) * HoneySuckle.tileSize
-                        - camera[i]);
-                if (mouseDiff < 0) {
-                    crafting.cursor[i] = -1;
-                } else if (mouseDiff > HoneySuckle.tileSize) {
-                    crafting.cursor[i] = 1;
-                } else {
-                    crafting.cursor[i] = 0;
-                }
-            }
-
-            if(click == 1){
-                crafting.destroy(World.worlds.get(World.level), this);
-            }
-
-            if(click == 3){
-                crafting.build(World.worlds.get(World.level), this);
-            }
         }
 
         if (tags.contains("leader")) {
@@ -175,5 +187,11 @@ public class Player {
             }
         }
         World.worlds.get(World.level).posEvent(this);
+        if (health > 0){
+        health += 0.001 * 30/HoneySuckle.fps;
+        }
+        if(health > 1){
+            health = 1;
+        }
     }
 }
