@@ -37,7 +37,7 @@ public class Craft {
         double[] camera = World.worlds.get(World.level).camera;
 
         g.setColor(new Color(0, 0, 0, 0));
-        HoneySuckle.borderRect(g, 1, color,
+        Rendering.borderRect(g, 1, color,
                 (int) (HoneySuckle.size[0] / 2 + index[0] * HoneySuckle.tileSize - camera[0]),
                 (int) (HoneySuckle.size[1] / 2 + index[1] * HoneySuckle.tileSize - camera[1]),
                 HoneySuckle.tileSize, HoneySuckle.tileSize);
@@ -61,8 +61,8 @@ public class Craft {
             (int) (Math.floor(player.pos[1] / HoneySuckle.tileSize) + cursor[1])
         };
         if (index[0] >= 0 && index[0] < world.size[0] && index[1] >= 0 && index[1] < world.size[1]) {
-            List<String> properties = Tile.objProperties.get(world.objGrid[index[0]][index[1]]);
-            if (properties.contains("destructable") && !(properties.contains("breakAway") && cursor[0] == 0 && cursor[1] == 0)) {
+            List<String> Tags = Tile.objTags.get(world.objGrid[index[0]][index[1]]);
+            if (Tags.contains("destructable") && !(Tags.contains("breakAway") && cursor[0] == 0 && cursor[1] == 0)) {
                 Map<String, Integer> loot = Tile.objLoot.get(world.objGrid[index[0]][index[1]]);
                 world.objGrid[index[0]][index[1]] = 0;
                 for (String material : loot.keySet()) {
@@ -91,7 +91,7 @@ public class Craft {
     }
 
     private boolean checkCanPlace(World world, Player player, int recipeKey) {
-        List<String> properties = Tile.objProperties.get(recipeKey);
+        List<String> Tags = Tile.objTags.get(recipeKey);
         int[] index = new int[]{
             (int) (Math.floor(player.pos[0] / HoneySuckle.tileSize) + cursor[0]),
             (int) (Math.floor(player.pos[1] / HoneySuckle.tileSize) + cursor[1])
@@ -105,7 +105,7 @@ public class Craft {
             }
         }
 
-        if (properties.contains("placeAway") && cursor[0] == 0 && cursor[1] == 0) {
+        if (Tags.contains("placeAway") && cursor[0] == 0 && cursor[1] == 0) {
             return false;
         }
 

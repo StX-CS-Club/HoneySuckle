@@ -1,10 +1,7 @@
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.RadialGradientPaint;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -23,7 +20,7 @@ public class Player {
                 Map.of(
                         "wood", 4
                 ),
-                new LinkedHashSet<>(Arrays.asList(-2, -1))
+                new LinkedHashSet<>(Arrays.asList(-4, -3, -2, -1))
         );
         players.add(this);
     }
@@ -43,12 +40,12 @@ public class Player {
     public void render(Graphics2D g, double[] mousePos) {
         AffineTransform originalTransform = g.getTransform();
 
-            double[] camera = World.worlds.get(World.level).camera;
+        double[] camera = World.worlds.get(World.level).camera;
 
-            double[] screenPos = new double[]{
-                HoneySuckle.size[0] / 2 + pos[0] - camera[0],
-                HoneySuckle.size[1] / 2 + pos[1] - camera[1]
-            };
+        double[] screenPos = new double[]{
+            HoneySuckle.size[0] / 2 + pos[0] - camera[0],
+            HoneySuckle.size[1] / 2 + pos[1] - camera[1]
+        };
 
         if (health > 0) {
             if (tags.contains("leader")) {
@@ -63,7 +60,7 @@ public class Player {
 
             g.setColor(Color.gray);
 
-            HoneySuckle.borderRect(g, 2, Color.black,
+            Rendering.borderRect(g, 2, Color.black,
                     (int) (screenPos[0] - size / 2),
                     (int) (screenPos[1] - size / 2),
                     size, size);
@@ -72,16 +69,13 @@ public class Player {
         }
 
         String biome = World.worlds.get(World.level).biome;
-        
-        if(Biome.biomeTags.get(biome).contains("fog")){
-            g.setPaint(new RadialGradientPaint(
-            new Point2D.Float((float) screenPos[0], (float) screenPos[1]),
-            HoneySuckle.size[0] / 2f,
-            new float[]{0f, 1f},
-            new Color[]{ new Color(0,0,0,0), Color.decode(Biome.biomeColorMap.get(biome).get("fogColor"))}
-        ));
 
-        g.fillRect(0, 0, HoneySuckle.size[0], HoneySuckle.size[1]);
+        if (Biome.biomeTags.get(biome).contains("fog")) {
+            HoneySuckle.lights.add(Map.of(
+                    "posX", (int) screenPos[0],
+                    "posY", (int) screenPos[1],
+                    "radius", HoneySuckle.tileSize * 6
+            ));
         }
     }
 
@@ -187,10 +181,13 @@ public class Player {
             }
         }
         World.worlds.get(World.level).posEvent(this);
-        if (health > 0){
-        health += 0.001 * 30/HoneySuckle.fps;
+        if (health > 0) {
+            health += 0.001 * 30 / HoneySuckle.fps;
+            if (vel[0] == 0 && vel[1] == 0) {
+                health += 0.001 * 30 / HoneySuckle.fps;
+            }
         }
-        if(health > 1){
+        if (health > 1) {
             health = 1;
         }
     }

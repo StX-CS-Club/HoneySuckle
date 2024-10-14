@@ -26,7 +26,8 @@ public class Biome {
             "peninsula", Map.of(
                     "landColor", "#94ca53",
                     "voidColor", "#4382ff",
-                    "treeColor", "#7eab47"
+                    "treeColor", "#7eab47",
+                    "coalColor", "#665555"
             ),
             "islands", Map.of(
                     "landColor", "#0fc854",
@@ -36,7 +37,8 @@ public class Biome {
             "field", Map.of(
                     "landColor", "#00a800",
                     "voidColor", "#004aff",
-                    "treeColor", "#006b00"
+                    "treeColor", "#006b00",
+                    "coalColor", "#5d4646"
             ),
             "swamp", Map.of(
                     "landColor", "#58860b",
@@ -49,7 +51,8 @@ public class Biome {
                     "voidColor", "#001139",
                     "treeColor", "#042e00",
                     "pumpkinColor", "#ab6b00",
-                    "fogColor", "#000000"
+                    "fogColor", "#000000",
+                    "coalColor", "#271b1b"
             ),
             "desert", Map.of(
                     "landColor", "#ecba40",
@@ -63,7 +66,8 @@ public class Biome {
                     "landColor", "#f0faff",
                     "voidColor", "#92c4ff",
                     "treeColor", "#009000",
-                    "iceColor", "#cbeeff"
+                    "iceColor", "#cbeeff",
+                    "coalColor", "#784d4d"
             )
     );
 
@@ -149,6 +153,8 @@ public class Biome {
                                 result[world.start - x][y] = 1;
                                 if (Math.random() * 100 <= 5) {
                                     objResult[world.start - x][y] = 1;
+                                } else if (Math.random() * 100 <= 1) {
+                                    objResult[world.start - x][y] = 4;
                                 }
                             }
                         }
@@ -158,6 +164,8 @@ public class Biome {
                                 result[world.start + x][y] = 1;
                                 if (Math.random() * 100 <= 5) {
                                     objResult[world.start - x][y] = 1;
+                                } else if (Math.random() * 100 <= 1) {
+                                    objResult[world.start - x][y] = 4;
                                 }
                             }
                         }
@@ -237,6 +245,8 @@ public class Biome {
                                 result[world.start - x][y] = 1;
                                 if (Math.random() * 100 <= 1) {
                                     objResult[world.start - x][y] = 1;
+                                } else if (Math.random() * 100 <= 0.1) {
+                                    objResult[world.start - x][y] = 4;
                                 }
                             }
                         }
@@ -252,6 +262,8 @@ public class Biome {
                                 result[world.start + x][y] = 1;
                                 if (Math.random() * 100 <= 1) {
                                     objResult[world.start + x][y] = 1;
+                                } else if (Math.random() * 100 <= 0.1) {
+                                    objResult[world.start + x][y] = 4;
                                 }
                             }
                         }
@@ -345,6 +357,8 @@ public class Biome {
                                     objResult[world.start - x][y] = 1;
                                 } else if (Math.random() * 100 <= 0.2) {
                                     objResult[world.start - x][y] = 2;
+                                } else if (Math.random() * 100 <= 0.5) {
+                                    objResult[world.start - x][y] = 4;
                                 }
                             }
                         }
@@ -362,6 +376,8 @@ public class Biome {
                                     objResult[world.start + x][y] = 1;
                                 } else if (Math.random() * 100 <= 0.2) {
                                     objResult[world.start + x][y] = 1;
+                                } else if (Math.random() * 100 <= 0.5) {
+                                    objResult[world.start + x][y] = 4;
                                 }
                             }
                         }
@@ -456,6 +472,8 @@ public class Biome {
                                 result[world.start - x][y] = 1;
                                     if (Math.random() * 100 <= 5) {
                                         objResult[world.start - x][y] = 1;
+                                    } else if (Math.random() * 100 <= 0.2) {
+                                        objResult[world.start - x][y] = 4;
                                     }
                             } else {
                                 prob = 2.5
@@ -473,6 +491,8 @@ public class Biome {
                                 result[world.start + x][y] = 1;
                                     if (Math.random() * 100 <= 5) {
                                         objResult[world.start + x][y] = 1;
+                                    } else if (Math.random() * 100 <= 0.2) {
+                                        objResult[world.start + x][y] = 4;
                                     }
                             } else {
                                 prob = 2.5
