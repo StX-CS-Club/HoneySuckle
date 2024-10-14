@@ -43,7 +43,7 @@ public class World {
         }
         int[] posIndex = new int[]{(int) (Math.floor(pos[0] / tileSize)), (int) (Math.floor(pos[1] / tileSize))};
         int[] newPosIndex = new int[]{(int) (Math.floor(newPos[0] / tileSize)), (int) (Math.floor(newPos[1] / tileSize))};
-        if (checkTile(posIndex[0], posIndex[1], "walkable")) {
+        if (checkTile(posIndex[0], posIndex[1], "walkable") && !checkTile(posIndex[0], posIndex[1], "slippery")) {
             if (newPosIndex[0] >= 0 && newPosIndex[0] < size[0]) {
                 if (!checkTile(newPosIndex[0], posIndex[1], "walkable")) {
                     newPos[0] = pos[0];
@@ -93,10 +93,17 @@ public class World {
         if (!player.tags.contains("god")) {
             if (checkTile(posIndex[0], posIndex[1], "damage") && !checkTile(posIndex[0], posIndex[1], "safe")) {
                 player.health -= 0.01 * 30 / HoneySuckle.fps;
+                if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
+                    player.health -= 0.01 * 30 / HoneySuckle.fps;
+                }
             }
             if (checkTile(posIndex[0], posIndex[1], "slow") && !checkTile(posIndex[0], posIndex[1], "safe")) {
                 player.vel[0] /= 3;
                 player.vel[1] /= 3;
+            }
+            if (checkTile(posIndex[0], posIndex[1], "slippery") && !checkTile(posIndex[0], posIndex[1], "safe")) {
+                player.vel[0] *= 1.625;
+                player.vel[1] *= 1.625;
             }
             for (int i = 0; i < 2; i++) {
                 if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
@@ -109,7 +116,7 @@ public class World {
                         player.health -= 0.02 * 30 / HoneySuckle.fps;
                     }
                 }
-            }    
+            }
         }
     }
 

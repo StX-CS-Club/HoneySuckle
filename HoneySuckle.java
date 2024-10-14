@@ -2,7 +2,9 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.util.Arrays;
+import javax.imageio.ImageIO;
 
 import javax.swing.*;
 
@@ -146,6 +148,15 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
     public static void main(String[] args) {
         JFrame frame = new JFrame("HoneySuckle");
         HoneySuckle panel = new HoneySuckle();
+
+        try {
+            // Load the image for the icon
+            Image iconImage = ImageIO.read(HoneySuckle.class.getResource("/assets/HoneySuckleIcon.png"));
+            // Set the icon
+            frame.setIconImage(iconImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         frame.add(panel);
         frame.pack();

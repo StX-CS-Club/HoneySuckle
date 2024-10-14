@@ -20,7 +20,8 @@ public class Tile {
     public static Map<Integer, String> natTileColor = Map.of(
         1, "landColor",
         2, "mudColor",
-        3, "sandColor"
+        3, "sandColor",
+        4, "iceColor"
     );
 
     public static Map<Integer, Map<String, Integer>> recipes = Map.of(
@@ -56,7 +57,7 @@ public class Tile {
 
     public static Map<Integer, Map<String, List<Integer>>> objParams = Map.of(
         -1, Map.of(
-            "grid", new ArrayList<>(Arrays.asList(1,2,3)),
+            "grid", new ArrayList<>(Arrays.asList(1,2,3,4)),
             "objGrid", new ArrayList<>(Arrays.asList(0))
         ),
         -2, Map.of(
@@ -69,7 +70,8 @@ public class Tile {
         0, new ArrayList<>(Arrays.asList("damage")),
         1, new ArrayList<>(Arrays.asList("walkable")),
         2, new ArrayList<>(Arrays.asList("walkable", "slow")),
-        3, new ArrayList<>(Arrays.asList("walkable", "slow"))
+        3, new ArrayList<>(Arrays.asList("walkable", "slow")),
+        4, new ArrayList<>(Arrays.asList("walkable", "slippery"))
     );
 
     public static Map<Integer, List<String>> objProperties = Map.of(

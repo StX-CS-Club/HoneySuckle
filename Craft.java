@@ -100,7 +100,7 @@ public class Craft {
         Map<String, Integer> recipe = Tile.recipes.get(recipeKey);
         Set<String> requiredMat = recipe.keySet();
         for (String material : requiredMat) {
-            if (getOrDefault(material) < recipe.get(material)) {
+            if (getOrDefault(material) < recipe.get(material) && !player.tags.contains("god")) {
                 return false;
             }
         }
