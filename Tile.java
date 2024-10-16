@@ -6,6 +6,14 @@ import java.util.Map;
 
 public class Tile {
 
+    public static Map<Integer, String> objTexture = Map.of(
+            1, "tree"
+    );
+
+    public static Map<Integer, String> tileTexture = Map.of(
+        2, "mud"
+    );
+
     public static Map<Integer, String> objColor = Map.of(
             -1, "#893f00",
             -2, "#aa6608",
@@ -106,19 +114,19 @@ public class Tile {
     );
 
     public static Map<Integer, Map<String, Integer>> tileValues = Map.of(
-        0, Map.of(
-            "damageness", 1
-        ),
-        1, Map.of(),
-        2, Map.of(
-            "slowness", 2
-        ),
-        3, Map.of(
-                "slowness", 3
-        ),
-        4, Map.of(
-                "slippieness", 5
-        )
+            0, Map.of(
+                    "damageness", 1
+            ),
+            1, Map.of(),
+            2, Map.of(
+                    "slowness", 2
+            ),
+            3, Map.of(
+                    "slowness", 3
+            ),
+            4, Map.of(
+                    "slippieness", 5
+            )
     );
 
     public static Map<Integer, List<String>> objTags = Map.of(
@@ -138,16 +146,16 @@ public class Tile {
             1, Map.of(),
             2, Map.of(),
             3, Map.of(
-                "hurtness", 2
+                    "hurtness", 2
             ),
             4, Map.of(),
             -1, Map.of(),
             -2, Map.of(),
             -3, Map.of(
-                "light", 8
+                    "light", 8
             ),
             -4, Map.of(
-                "light", 15
+                    "light", 15
             )
     );
 }

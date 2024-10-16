@@ -36,7 +36,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
         addMouseWheelListener(this);
         World world = new World();
         player = new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1] - 0.5)},
-                tileSize * 2 / 3, Arrays.asList("leader"));
+                tileSize * 2 / 3, Arrays.asList("leader", "god"));
     }
 
     //Render

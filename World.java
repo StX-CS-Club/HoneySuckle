@@ -24,7 +24,7 @@ public class World {
                 }
             }
         }
-        biome = "darkForest";
+        biome = "swamp";
 
         Biome.biomeGeneration(this);
         camera = new double[]{(start + 0.5) * tileSize, (size[1] * tileSize) - HoneySuckle.size[1] / 2};
@@ -137,10 +137,10 @@ public class World {
 
     private int checkValue(int x, int y, String value) {
         int result = 0;
-        if(Tile.tileValues.get(grid[x][y]).get(value) != null){
+        if (Tile.tileValues.get(grid[x][y]).get(value) != null) {
             result += Tile.tileValues.get(grid[x][y]).get(value);
         }
-        if(Tile.objValues.get(objGrid[x][y]).get(value) != null){
+        if (Tile.objValues.get(objGrid[x][y]).get(value) != null) {
             result += Tile.objValues.get(objGrid[x][y]).get(value);
         }
         return result;
@@ -161,17 +161,35 @@ public class World {
                         (y * tileSize - camera[1] + HoneySuckle.size[1] / 2)
                     };
                     if (grid[x][y] > 0) {
-                        g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y]))));
-                        Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
+                        if (Tile.tileTexture.get(grid[x][y]) != null) {
+                            String texture = Tile.tileTexture.get(grid[x][y]);
+                            String color = "#000000";
+                            if (Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y])) != null) {
+                                color = Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y]));
+                            }
+                            g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], tileSize, tileSize, null);
+                        } else {
+                            g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y]))));
+                            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
+                        }
                     }
                     if (objGrid[x][y] != 0) {
-                        if (objGrid[x][y] > 0) {
-                            g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y]))));
+                        if (Tile.objTexture.get(objGrid[x][y]) != null) {
+                            String texture = Tile.objTexture.get(objGrid[x][y]);
+                            String color = "#000000";
+                            if (Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y])) != null) {
+                                color = Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y]));
+                            }
+                            g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], tileSize, tileSize, null);
+                        } else {
+                            if (objGrid[x][y] > 0) {
+                                g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y]))));
+                            }
+                            if (objGrid[x][y] < 0) {
+                                g.setColor(Color.decode(Tile.objColor.get(objGrid[x][y])));
+                            }
+                            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
                         }
-                        if (objGrid[x][y] < 0) {
-                            g.setColor(Color.decode(Tile.objColor.get(objGrid[x][y])));
-                        }
-                        Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
                     }
                     if (checkTag(x, y, "light")) {
                         HoneySuckle.lights.add(Map.of(

@@ -163,9 +163,9 @@ public class Biome {
                             if (Math.random() * 100 <= prob) {
                                 result[world.start + x][y] = 1;
                                 if (Math.random() * 100 <= 5) {
-                                    objResult[world.start - x][y] = 1;
+                                    objResult[world.start + x][y] = 1;
                                 } else if (Math.random() * 100 <= 1) {
-                                    objResult[world.start - x][y] = 4;
+                                    objResult[world.start + x][y] = 4;
                                 }
                             }
                         }
