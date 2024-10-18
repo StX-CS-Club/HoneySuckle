@@ -47,23 +47,23 @@ public class Biome {
                     "mudColor", "#6b4700"
             ),
             "darkForest", Map.of(
-                    "landColor", "#1c341c",
+                    "landColor", "#306730",
                     "voidColor", "#001139",
                     "treeColor", "#042e00",
-                    "pumpkinColor", "#ab6b00",
+                    "pumpkinColor", "#d88700",
                     "fogColor", "#000000",
                     "coalColor", "#271b1b"
             ),
             "desert", Map.of(
-                    "landColor", "#ecba40",
-                    "sandColor", "#efc356",
+                    "landColor", "#ffc436",
+                    "sandColor", "#ffd264",
                     "voidColor", "#6fbbe9",
                     "treeColor", "#8cc043",
                     "cactusColor", "#47ab00",
                     "fogColor", "#ecba40"
             ),
             "tundra", Map.of(
-                    "landColor", "#f0faff",
+                    "landColor", "#dffffb",
                     "voidColor", "#92c4ff",
                     "treeColor", "#009000",
                     "iceColor", "#cbeeff",

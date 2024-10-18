@@ -7,11 +7,18 @@ import java.util.Map;
 public class Tile {
 
     public static Map<Integer, String> objTexture = Map.of(
-            1, "tree"
+            1, "tree",
+            2, "pumpkin",
+            3, "cactus",
+            4, "ore"
     );
 
     public static Map<Integer, String> tileTexture = Map.of(
-        2, "mud"
+            0, "water",
+            1, "land",
+            2, "mud",
+            3, "sand",
+            4, "ice"
     );
 
     public static Map<Integer, String> objColor = Map.of(
@@ -29,6 +36,7 @@ public class Tile {
     );
 
     public static Map<Integer, String> natTileColor = Map.of(
+            0, "voidColor",
             1, "landColor",
             2, "mudColor",
             3, "sandColor",

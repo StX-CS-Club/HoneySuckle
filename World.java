@@ -24,7 +24,7 @@ public class World {
                 }
             }
         }
-        biome = "swamp";
+        biome = "darkForest";
 
         Biome.biomeGeneration(this);
         camera = new double[]{(start + 0.5) * tileSize, (size[1] * tileSize) - HoneySuckle.size[1] / 2};
@@ -160,7 +160,6 @@ public class World {
                         (x * tileSize - camera[0] + HoneySuckle.size[0] / 2),
                         (y * tileSize - camera[1] + HoneySuckle.size[1] / 2)
                     };
-                    if (grid[x][y] > 0) {
                         if (Tile.tileTexture.get(grid[x][y]) != null) {
                             String texture = Tile.tileTexture.get(grid[x][y]);
                             String color = "#000000";
@@ -172,7 +171,6 @@ public class World {
                             g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y]))));
                             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
                         }
-                    }
                     if (objGrid[x][y] != 0) {
                         if (Tile.objTexture.get(objGrid[x][y]) != null) {
                             String texture = Tile.objTexture.get(objGrid[x][y]);

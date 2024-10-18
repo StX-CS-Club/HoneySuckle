@@ -34,8 +34,6 @@ public class Rendering {
                         Color px = new Color(result.getRGB(x, y), true);
                         if(px.getRed() == px.getGreen() && px.getRed() == px.getBlue() && px.getRed() != 0){
                             double ratio = ((double)px.getRed())/255;
-
-                            System.out.println(ratio);
                             result.setRGB(x, y, new Color(
                                 (int) (shade.getRed() * ratio),
                                 (int) (shade.getGreen() * ratio),
