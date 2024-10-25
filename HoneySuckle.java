@@ -35,6 +35,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         World world = new World();
+        world.entities.add(new Entity("slime", new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1] - 0.5)}));;
         player = new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1] - 0.5)},
                 tileSize / 2, Arrays.asList("leader"));
     }
@@ -49,8 +50,8 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
         Graphics2D g2d = (Graphics2D) g;
 
         World.worlds.get(World.level).render(g2d);
-        for (int i = 0; i < Player.players.size(); i++) {
-            Player.players.get(i).render(g2d, mousePos);
+        for (Player renderPlayer : Player.players) {
+            renderPlayer.render(g2d, mousePos);
         }
 
         String biome = World.worlds.get(World.level).biome;
@@ -65,9 +66,10 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
     }
 
     public void update() {
-        for (int i = 0; i < Player.players.size(); i++) {
-            Player.players.get(i).update(keyDown, mousePos, click, scroll);
+        for (Player updatePlayer : Player.players) {
+            updatePlayer.update(keyDown, mousePos, click, scroll);
         }
+        World.worlds.get(World.level).update();
 
         click = 0;
         if (Math.abs(scroll) > 2) {

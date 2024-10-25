@@ -37,6 +37,7 @@ public class World {
     public int[] size = new int[2];
     public int start;
     public String biome;
+    public List<Entity> entities = new ArrayList<>();
 
     public double[] bound(double[] pos, double[] delta, double margin) {
         double[] newPos = new double[]{pos[0] + delta[0], pos[1] + delta[1]};
@@ -206,6 +207,15 @@ public class World {
                     }
                 }
             }
+        }
+        for(Entity entity : entities) {
+            entity.render(g, camera);
+        }
+    }
+
+    public void update() {
+        for (Entity entity : entities) {
+            entity.update();
         }
     }
 
