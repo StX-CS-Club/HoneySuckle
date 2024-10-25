@@ -6,41 +6,63 @@ import java.util.Map;
 
 public class Tile {
 
-    public static Map<Integer, String> objTexture = Map.of(
-            1, "tree",
-            2, "pumpkin",
-            3, "cactus",
-            4, "ore"
+    public static Map<Integer, Map<String, String>> objTexture = Map.of(
+            -4, Map.of(
+                    "baseColor", "#ffb31c",
+                    "natColor", "pumpkinColor",
+                    "texture", "pumpkin"
+            ),
+            -3, Map.of(
+                    "baseColor", "#ffc654",
+                    "texture", "torch"
+            ),
+            -2, Map.of(
+                    "baseColor", "#aa6608",
+                    "texture", "raft"
+            ),
+            -1, Map.of(
+                    "baseColor", "#893f00",
+                    "texture", "wall"
+            ),
+            1, Map.of(
+                    "natColor", "treeColor",
+                    "texture", "tree"
+            ),
+            2, Map.of(
+                    "natColor", "pumpkinColor",
+                    "texture", "pumpkin"
+            ),
+            3, Map.of(
+                    "natColor", "cactusColor",
+                    "texture", "cactus"
+            ),
+            4, Map.of(
+                    "natColor", "coalColor",
+                    "texture", "ore"
+            )
     );
 
-    public static Map<Integer, String> tileTexture = Map.of(
-            0, "water",
-            1, "land",
-            2, "mud",
-            3, "sand",
-            4, "ice"
-    );
-
-    public static Map<Integer, String> objColor = Map.of(
-            -1, "#893f00",
-            -2, "#aa6608",
-            -3, "#ffc654",
-            -4, "#ffb31c"
-    );
-
-    public static Map<Integer, String> natObjColor = Map.of(
-            1, "treeColor",
-            2, "pumpkinColor",
-            3, "cactusColor",
-            4, "coalColor"
-    );
-
-    public static Map<Integer, String> natTileColor = Map.of(
-            0, "voidColor",
-            1, "landColor",
-            2, "mudColor",
-            3, "sandColor",
-            4, "iceColor"
+    public static Map<Integer, Map<String, String>> tileTexture = Map.of(
+            0, Map.of(
+                    "natColor", "voidColor",
+                    "texture", "water"
+            ),
+            1, Map.of(
+                    "natColor", "landColor",
+                    "texture", "land"
+            ),
+            2, Map.of(
+                    "natColor", "mudColor",
+                    "texture", "mud"
+            ),
+            3, Map.of(
+                    "natColor", "sandColor",
+                    "texture", "sand"
+            ),
+            4, Map.of(
+                    "natColor", "iceColor",
+                    "texture", "ice"
+            )
     );
 
     public static Map<Integer, Map<String, Integer>> recipes = Map.of(

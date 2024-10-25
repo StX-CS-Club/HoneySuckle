@@ -24,7 +24,6 @@ public class World {
                 }
             }
         }
-        biome = "darkForest";
 
         Biome.biomeGeneration(this);
         camera = new double[]{(start + 0.5) * tileSize, (size[1] * tileSize) - HoneySuckle.size[1] / 2};
@@ -160,32 +159,40 @@ public class World {
                         (x * tileSize - camera[0] + HoneySuckle.size[0] / 2),
                         (y * tileSize - camera[1] + HoneySuckle.size[1] / 2)
                     };
-                        if (Tile.tileTexture.get(grid[x][y]) != null) {
-                            String texture = Tile.tileTexture.get(grid[x][y]);
-                            String color = "#000000";
-                            if (Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y])) != null) {
-                                color = Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y]));
-                            }
-                            g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], tileSize, tileSize, null);
-                        } else {
-                            g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natTileColor.get(grid[x][y]))));
-                            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
+                    Map<String, String> textureMap = Tile.tileTexture.get(grid[x][y]);
+                    String color = "#000000";
+                    if (textureMap.get("natColor") != null) {
+                        if (Biome.biomeColorMap.get(biome).get(textureMap.get("natColor")) != null) {
+                            color = Biome.biomeColorMap.get(biome).get(textureMap.get("natColor"));
                         }
+                    } else {
+                        if (textureMap.get("baseColor") != null) {
+                            color = textureMap.get("baseColor");
+                        }
+                    }
+                    if (textureMap.get("texture") != null) {
+                        String texture = textureMap.get("texture");
+                        g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], tileSize, tileSize, null);
+                    } else {
+                        g.setColor(Color.decode(color));
+                        Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
+                    }
+                    textureMap = Tile.objTexture.get(objGrid[x][y]);
                     if (objGrid[x][y] != 0) {
-                        if (Tile.objTexture.get(objGrid[x][y]) != null) {
-                            String texture = Tile.objTexture.get(objGrid[x][y]);
-                            String color = "#000000";
-                            if (Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y])) != null) {
-                                color = Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y]));
+                        color = "#000000";
+                        if (textureMap.get("natColor") != null) {
+                            if (Biome.biomeColorMap.get(biome).get(textureMap.get("natColor")) != null) {
+                                color = Biome.biomeColorMap.get(biome).get(textureMap.get("natColor"));
                             }
+                        } else {
+                            if (textureMap.get("baseColor") != null) {
+                                color = textureMap.get("baseColor");
+                            }
+                        }
+                        if (textureMap.get("texture") != null) {
+                            String texture = textureMap.get("texture");
                             g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], tileSize, tileSize, null);
                         } else {
-                            if (objGrid[x][y] > 0) {
-                                g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get(Tile.natObjColor.get(objGrid[x][y]))));
-                            }
-                            if (objGrid[x][y] < 0) {
-                                g.setColor(Color.decode(Tile.objColor.get(objGrid[x][y])));
-                            }
                             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
                         }
                     }

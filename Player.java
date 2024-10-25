@@ -20,7 +20,7 @@ public class Player {
                 Map.of(
                         "wood", 4
                 ),
-                new LinkedHashSet<>(Arrays.asList(-3))
+                new LinkedHashSet<>(Arrays.asList(-1, -2, -3))
         );
         players.add(this);
     }
