@@ -38,6 +38,7 @@ public class World {
     public int start;
     public String biome;
     public List<Entity> entities = new ArrayList<>();
+    public List<Entity> renderEntities = new ArrayList<>();
 
     public double[] bound(double[] pos, double[] delta, double margin) {
         double[] newPos = new double[]{pos[0] + delta[0], pos[1] + delta[1]};
@@ -128,6 +129,9 @@ public class World {
                     }
                 }
             }
+            for(Entity entity : renderEntities){
+                Brain.event(entity, player);
+            }
         }
     }
 
@@ -194,6 +198,7 @@ public class World {
                             String texture = textureMap.get("texture");
                             g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], tileSize, tileSize, null);
                         } else {
+                            g.setColor(Color.decode(color));
                             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
                         }
                     }
@@ -208,13 +213,19 @@ public class World {
                 }
             }
         }
-        for(Entity entity : entities) {
+        for(Entity entity : renderEntities) {
             entity.render(g, camera);
         }
     }
 
     public void update() {
+        renderEntities = new ArrayList<>();
         for (Entity entity : entities) {
+            if(Math.abs(entity.pos[0]-camera[0]) <= HoneySuckle.size[0] || Math.abs(entity.pos[1] - camera[1]) <= HoneySuckle.size[1]){
+                renderEntities.add(entity);
+            }
+        }
+        for(Entity entity : renderEntities){
             entity.update();
         }
     }

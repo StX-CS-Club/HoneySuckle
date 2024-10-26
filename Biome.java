@@ -92,6 +92,8 @@ public class Biome {
 
                 int[][] objResult = new int[world.size[0]][world.size[1]];
 
+                List<Entity> entityResult = new ArrayList<>();
+
                 result[world.start - 1][world.size[1] - 1] = 1;
                 result[world.start][world.size[1] - 1] = 1;
                 result[world.start + 1][world.size[1] - 1] = 1;
@@ -103,22 +105,32 @@ public class Biome {
                 for (int x = 0; x < xmargin; x++) {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
-                            int prob = 10 + 55 * result[world.start - x + 1][y] + 30 * result[world.start - x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.1 + 0.55 * result[world.start - x + 1][y] + 0.3 * result[world.start - x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start - x][y] = 1;
-                                if (Math.random() * 100 <= 10) {
+                                if (Math.random() <= 0.1) {
                                     objResult[world.start - x][y] = 1;
+                                } else if (Math.random() <= 0.02) {
+                                    entityResult.add(new Entity("slime",
+                                            new double[]{(world.start - x + 0.5) * HoneySuckle.tileSize,
+                                                (y + 0.5) * HoneySuckle.tileSize
+                                            }));
                                 }
                             }
                         }
                         if (world.start + x < world.size[0]) {
-                            int prob = 10 + 55
-                                    * result[world.start + x - 1][y] + 30
+                            double prob = 0.1 + 0.55
+                                    * result[world.start + x - 1][y] + 0.3
                                     * result[world.start + x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 1;
-                                if (Math.random() * 100 <= 10) {
+                                if (Math.random() <= 0.1) {
                                     objResult[world.start + x][y] = 1;
+                                } else if (Math.random() <= 0.02) {
+                                    entityResult.add(new Entity("slime",
+                                            new double[]{(world.start + x + 0.5) * HoneySuckle.tileSize,
+                                                (y + 0.5) * HoneySuckle.tileSize
+                                            }));
                                 }
                             }
                         }
@@ -126,6 +138,7 @@ public class Biome {
                 }
                 world.grid = result;
                 world.objGrid = objResult;
+                world.entities = entityResult;
             }
             case "peninsula" -> {
                 world.size = new int[]{25, 75};
@@ -134,6 +147,8 @@ public class Biome {
                 int[][] result = new int[world.size[0]][world.size[1]];
 
                 int[][] objResult = new int[world.size[0]][world.size[1]];
+
+                List<Entity> entityResult = new ArrayList<>();
 
                 result[world.start - 2][world.size[1] - 1] = 1;
                 result[world.start - 1][world.size[1] - 1] = 1;
@@ -148,24 +163,34 @@ public class Biome {
                 for (int x = 0; x < xmargin; x++) {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
-                            double prob = 9.5 * result[world.start - x + 1][y] + 90.25 * result[world.start - x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.095 * result[world.start - x + 1][y] + 0.9025 * result[world.start - x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start - x][y] = 1;
-                                if (Math.random() * 100 <= 5) {
+                                if (Math.random() <= 0.05) {
                                     objResult[world.start - x][y] = 1;
-                                } else if (Math.random() * 100 <= 1) {
+                                } else if (Math.random() <= 0.01) {
                                     objResult[world.start - x][y] = 4;
+                                } else if (Math.random() <= 0.05){
+                                    entityResult.add(new Entity("slime",
+                                            new double[]{(world.start - x + 0.5) * HoneySuckle.tileSize,
+                                                (y + 0.5) * HoneySuckle.tileSize
+                                            }));
                                 }
                             }
                         }
                         if (world.start + x < world.size[0]) {
-                            double prob = 9.5 * result[world.start + x - 1][y] + 90.25 * result[world.start + x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.095 * result[world.start + x - 1][y] + 0.9025 * result[world.start + x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 1;
-                                if (Math.random() * 100 <= 5) {
+                                if (Math.random() <= 0.05) {
                                     objResult[world.start + x][y] = 1;
-                                } else if (Math.random() * 100 <= 1) {
+                                } else if (Math.random() <= 0.01) {
                                     objResult[world.start + x][y] = 4;
+                                } else if (Math.random() <= 0.05){
+                                    entityResult.add(new Entity("slime",
+                                            new double[]{(world.start + x + 0.5) * HoneySuckle.tileSize,
+                                                (y + 0.5) * HoneySuckle.tileSize
+                                            }));
                                 }
                             }
                         }
@@ -173,6 +198,7 @@ public class Biome {
                 }
                 world.grid = result;
                 world.objGrid = objResult;
+                world.entities = entityResult;
             }
             case "islands" -> {
                 world.size = new int[]{75, 50};
@@ -191,23 +217,23 @@ public class Biome {
                 for (int x = 0; x < xmargin; x++) {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
-                            double prob = 10
-                                    + 45 * result[world.start - x + 1][y]
-                                    + 25 * result[world.start - x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.1
+                                    + 0.45 * result[world.start - x + 1][y]
+                                    + 0.25 * result[world.start - x][y + 1];
+                            if (Math.random()<= prob) {
                                 result[world.start - x][y] = 1;
-                                if (Math.random() * 100 <= 25) {
+                                if (Math.random() <= 0.25) {
                                     objResult[world.start - x][y] = 1;
                                 }
                             }
                         }
                         if (world.start + x < world.size[0]) {
-                            double prob = 10
-                                    + 45 * result[world.start + x - 1][y]
-                                    + 25 * result[world.start + x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.1
+                                    + 0.45 * result[world.start + x - 1][y]
+                                    + 0.25 * result[world.start + x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 1;
-                                if (Math.random() * 100 <= 25) {
+                                if (Math.random() <= 0.25) {
                                     objResult[world.start + x][y] = 1;
                                 }
                             }
@@ -238,31 +264,31 @@ public class Biome {
                 for (int x = 0; x < xmargin; x++) {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
-                            double prob = 10
-                                    + 44.5 * result[world.start - x + 1][y]
-                                    + 44.5 * result[world.start - x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.1
+                                    + 0.445 * result[world.start - x + 1][y]
+                                    + 0.445 * result[world.start - x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start - x][y] = 1;
-                                if (Math.random() * 100 <= 1) {
+                                if (Math.random() <= 0.01) {
                                     objResult[world.start - x][y] = 1;
-                                } else if (Math.random() * 100 <= 0.1) {
+                                } else if (Math.random() <= 0.001) {
                                     objResult[world.start - x][y] = 4;
                                 }
                             }
                         }
                         if (world.start + x < world.size[0]) {
-                            double prob = 10
-                                    + 44.5 * result[world.start + x - 1][y]
-                                    + 44.5 * result[world.start + x][y + 1];
+                            double prob = 0.1
+                                    + 0.445 * result[world.start + x - 1][y]
+                                    + 0.445 * result[world.start + x][y + 1];
                             if (x == 0) {
                                 prob = 10
                                         + 90 * result[world.start + x][y + 1];
                             }
-                            if (Math.random() * 100 <= prob) {
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 1;
-                                if (Math.random() * 100 <= 1) {
+                                if (Math.random() <= 0.01) {
                                     objResult[world.start + x][y] = 1;
-                                } else if (Math.random() * 100 <= 0.1) {
+                                } else if (Math.random() <= 0.001) {
                                     objResult[world.start + x][y] = 4;
                                 }
                             }
@@ -289,34 +315,34 @@ public class Biome {
                 for (int x = 0; x < xmargin; x++) {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
-                            double prob = 19 * result[world.start - x + 1][y]
-                                    + 19 * result[world.start - x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.19 * result[world.start - x + 1][y]
+                                    + 0.19 * result[world.start - x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start - x][y] = 2;
                             } else {
-                                prob = 10
-                                        + conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(1, 2)), 42.5)
-                                        + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(1, 2)), 43.5);
-                                if (Math.random() * 100 <= prob) {
+                                prob = 0.1
+                                        + conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(1, 2)), 0.425)
+                                        + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(1, 2)), 0.435);
+                                if (Math.random() <= prob) {
                                     result[world.start - x][y] = 1;
-                                    if (Math.random() * 100 <= 35) {
+                                    if (Math.random() <= 0.35) {
                                         objResult[world.start - x][y] = 1;
                                     }
                                 }
                             }
                         }
                         if (world.start + x < world.size[0]) {
-                            double prob = 20 * result[world.start + x - 1][y]
-                                    + 20 * result[world.start + x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.2 * result[world.start + x - 1][y]
+                                    + 0.2 * result[world.start + x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 2;
                             } else {
-                                prob = 10
-                                        + 45 * result[world.start + x - 1][y]
-                                        + 25 * result[world.start + x][y + 1];
-                                if (Math.random() * 100 <= prob) {
+                                prob = 0.1
+                                        + 0.45 * result[world.start + x - 1][y]
+                                        + 0.25 * result[world.start + x][y + 1];
+                                if (Math.random() <= prob) {
                                     result[world.start + x][y] = 1;
-                                    if (Math.random() * 100 <= 35) {
+                                    if (Math.random() <= 0.35) {
                                         objResult[world.start + x][y] = 1;
                                     }
                                 }
@@ -348,35 +374,35 @@ public class Biome {
                 for (int x = 0; x < xmargin; x++) {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
-                            double prob = 10
-                                    + 43.5 * result[world.start - x + 1][y]
-                                    + 43.5 * result[world.start - x][y + 1];
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.1
+                                    + 0.435 * result[world.start - x + 1][y]
+                                    + 0.435 * result[world.start - x][y + 1];
+                            if (Math.random() <= prob) {
                                 result[world.start - x][y] = 1;
-                                if (Math.random() * 100 <= 10) {
+                                if (Math.random() <= 0.1) {
                                     objResult[world.start - x][y] = 1;
-                                } else if (Math.random() * 100 <= 0.2) {
+                                } else if (Math.random() <= 0.002) {
                                     objResult[world.start - x][y] = 2;
-                                } else if (Math.random() * 100 <= 0.5) {
+                                } else if (Math.random() <= 0.005) {
                                     objResult[world.start - x][y] = 4;
                                 }
                             }
                         }
                         if (world.start + x < world.size[0]) {
-                            double prob = 10
-                                    + 43.5 * result[world.start + x - 1][y]
-                                    + 43.5 * result[world.start + x][y + 1];
+                            double prob = 0.1
+                                    + 0.435 * result[world.start + x - 1][y]
+                                    + 0.435 * result[world.start + x][y + 1];
                             if (x == 0) {
-                                prob = 10
-                                        + 90 * result[world.start + x][y + 1];
+                                prob = 0.1
+                                        + 0.9 * result[world.start + x][y + 1];
                             }
-                            if (Math.random() * 100 <= prob) {
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 1;
-                                if (Math.random() * 100 <= 10) {
+                                if (Math.random() <= 0.1) {
                                     objResult[world.start + x][y] = 1;
-                                } else if (Math.random() * 100 <= 0.2) {
+                                } else if (Math.random() <= 0.002) {
                                     objResult[world.start + x][y] = 1;
-                                } else if (Math.random() * 100 <= 0.5) {
+                                } else if (Math.random() <= 0.005) {
                                     objResult[world.start + x][y] = 4;
                                 }
                             }
@@ -408,36 +434,36 @@ public class Biome {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
                             result[world.start - x][y] = 1;
-                            double prob = 0.5
-                                    + conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(0)), 45)
-                                    + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(0)), 35);
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.005
+                                    + conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(0)), 0.45)
+                                    + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(0)), 0.35);
+                            if (Math.random() <= prob) {
                                 result[world.start - x][y] = 0;
                             } else {
-                                if (Math.random() * 100 <= 20) {
+                                if (Math.random() <= 0.2) {
                                     result[world.start - x][y] = 3;
                                 }
-                                if (Math.random() * 100 <= 0.5) {
+                                if (Math.random() <= 0.005) {
                                     objResult[world.start - x][y] = 1;
-                                } else if (Math.random() * 100 <= 2) {
+                                } else if (Math.random() <= 0.02) {
                                     objResult[world.start - x][y] = 3;
                                 }
                             }
                         }
                         if (world.start + x < world.size[0]) {
                             result[world.start + x][y] = 1;
-                            double prob = 0.5
-                                    + conditionalProb(result[world.start + x - 1][y], new ArrayList<>(Arrays.asList(0)), 45)
-                                    + conditionalProb(result[world.start + x][y + 1], new ArrayList<>(Arrays.asList(0)), 35);
-                            if (Math.random() * 100 <= prob) {
+                            double prob = 0.005
+                                    + conditionalProb(result[world.start + x - 1][y], new ArrayList<>(Arrays.asList(0)), 0.45)
+                                    + conditionalProb(result[world.start + x][y + 1], new ArrayList<>(Arrays.asList(0)), 0.35);
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 0;
                             } else {
-                                if (Math.random() * 100 <= 20) {
+                                if (Math.random() <= 0.2) {
                                     result[world.start + x][y] = 3;
                                 }
-                                if (Math.random() * 100 <= 0.5) {
+                                if (Math.random() <= 0.005) {
                                     objResult[world.start + x][y] = 1;
-                                } else if (Math.random() * 100 <= 2) {
+                                } else if (Math.random() <= 0.02) {
                                     objResult[world.start + x][y] = 3;
                                 }
                             }
@@ -455,9 +481,9 @@ public class Biome {
 
                 int[][] objResult = new int[world.size[0]][world.size[1]];
 
-                result[world.start-1][world.size[1] - 1] = 1;
+                result[world.start - 1][world.size[1] - 1] = 1;
                 result[world.start][world.size[1] - 1] = 1;
-                result[world.start+1][world.size[1] - 1] = 1;
+                result[world.start + 1][world.size[1] - 1] = 1;
 
                 int xmargin = world.start;
                 if (world.size[0] - world.start > world.start) {
@@ -466,44 +492,44 @@ public class Biome {
                 for (int x = 0; x < xmargin; x++) {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (world.start - x >= 0) {
-                            double prob = conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(1,4)), 35) 
-                                    + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(1,4)), 35);
-                            if (Math.random() * 100 <= prob) {
+                            double prob = conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(1, 4)), 0.35)
+                                    + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(1, 4)), 0.35);
+                            if (Math.random() <= prob) {
                                 result[world.start - x][y] = 1;
-                                    if (Math.random() * 100 <= 5) {
-                                        objResult[world.start - x][y] = 1;
-                                    } else if (Math.random() * 100 <= 0.2) {
-                                        objResult[world.start - x][y] = 4;
-                                    }
+                                if (Math.random() <= 0.05) {
+                                    objResult[world.start - x][y] = 1;
+                                } else if (Math.random() <= 0.002) {
+                                    objResult[world.start - x][y] = 4;
+                                }
                             } else {
-                                prob = 2.5
-                                        + conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(1, 4)), 40)
-                                        + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(1, 4)), 40);
-                                if (Math.random() * 100 <= prob) {
+                                prob = 0.025
+                                        + conditionalProb(result[world.start - x + 1][y], new ArrayList<>(Arrays.asList(1, 4)), 0.4)
+                                        + conditionalProb(result[world.start - x][y + 1], new ArrayList<>(Arrays.asList(1, 4)), 0.4);
+                                if (Math.random() <= prob) {
                                     result[world.start - x][y] = 4;
                                 }
                             }
                         }
                         if (world.start - x < world.size[0]) {
-                            double prob = conditionalProb(result[world.start + x - 1][y], new ArrayList<>(Arrays.asList(1,4)), 35) 
-                                    + conditionalProb(result[world.start + x][y + 1], new ArrayList<>(Arrays.asList(1,4)), 35);
-                            if (Math.random() * 100 <= prob) {
+                            double prob = conditionalProb(result[world.start + x - 1][y], new ArrayList<>(Arrays.asList(1, 4)), 0.35)
+                                    + conditionalProb(result[world.start + x][y + 1], new ArrayList<>(Arrays.asList(1, 4)), 0.35);
+                            if (Math.random() <= prob) {
                                 result[world.start + x][y] = 1;
-                                    if (Math.random() * 100 <= 5) {
-                                        objResult[world.start + x][y] = 1;
-                                    } else if (Math.random() * 100 <= 0.2) {
-                                        objResult[world.start + x][y] = 4;
-                                    }
+                                if (Math.random() <= 0.05) {
+                                    objResult[world.start + x][y] = 1;
+                                } else if (Math.random() <= 0.002) {
+                                    objResult[world.start + x][y] = 4;
+                                }
                             } else {
-                                prob = 2.5
-                                        + conditionalProb(result[world.start + x - 1][y], new ArrayList<>(Arrays.asList(1, 4)), 40)
-                                        + conditionalProb(result[world.start + x][y + 1], new ArrayList<>(Arrays.asList(1, 4)), 40);
-                                if (Math.random() * 100 <= prob) {
+                                prob = 0.025
+                                        + conditionalProb(result[world.start + x - 1][y], new ArrayList<>(Arrays.asList(1, 4)), 0.4)
+                                        + conditionalProb(result[world.start + x][y + 1], new ArrayList<>(Arrays.asList(1, 4)), 0.4);
+                                if (Math.random() <= prob) {
                                     result[world.start + x][y] = 4;
                                 }
                             }
                         }
-                        }
+                    }
                 }
                 world.grid = result;
                 world.objGrid = objResult;
