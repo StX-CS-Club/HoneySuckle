@@ -1,0 +1,45 @@
+{
+    "-1": {
+        "name": "wall",
+        "params": {
+            "tile": [1, 2, 3, 4],
+            "obj": [0]
+        },
+        "mats": {
+            "wood": 1
+        }
+    },
+    "-2": {
+        "name": "raft",
+        "params": {
+            "tile": [0, 2],
+            "obj": [0]
+        },
+        "mats" : {
+            "wood": 2
+        }
+    },
+    "-3": {
+        "name": "torch",
+        "params": {
+            "tile": [1, 2, 3],
+            "obj": [0]
+        },
+        "mats": {
+            "wood": 1,
+            "coal": 1
+        }
+    },
+    "-4": {
+        "name": "jackolantern",
+        "params": {
+            "tile": [1, 2, 3],
+            "obj": [0]
+        },
+        "mats": {
+            "pumpkin": 1,
+            "coal": 1,
+            "wood": 1
+        }
+    }
+}

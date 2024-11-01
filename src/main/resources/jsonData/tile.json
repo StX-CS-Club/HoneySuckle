@@ -1,0 +1,50 @@
+{
+  "0": {
+    "texture": {
+      "natColor": "voidColor",
+      "texture": "water"
+    },
+    "values": {
+      "damageness": 1
+    },
+    "tags": ["damage"]
+  },
+  "1": {
+    "texture": {
+      "natColor": "landColor",
+      "texture": "land"
+    },
+    "values": {},
+    "tags": ["walkable"]
+  },
+  "2": {
+    "texture": {
+      "natColor": "mudColor",
+      "texture": "mud"
+    },
+    "values": {
+      "slowness": 2
+    },
+    "tags": ["walkable", "slow"]
+  },
+  "3": {
+    "texture": {
+      "natColor": "sandColor",
+      "texture": "sand"
+    },
+    "values": {
+      "slowness": 3
+    },
+    "tags": ["walkable", "slow"]
+  },
+  "4": {
+    "texture": {
+      "natColor": "iceColor",
+      "texture": "ice"
+    },
+    "values": {
+      "slippieness": 5
+    },
+    "tags": ["walkable", "slippery"]
+  }
+}

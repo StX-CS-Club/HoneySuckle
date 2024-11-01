@@ -1,0 +1,85 @@
+{
+    "wetlands": {
+      "name": "wetlands",
+      "tags": [],
+      "colorMap": {
+        "landColor": "#0fc80f",
+        "voidColor": "#0080ff",
+        "treeColor": "#019501"
+      }
+    },
+    "peninsula": {
+      "name": "peninsula",
+      "tags": [],
+      "colorMap": {
+        "landColor": "#94ca53",
+        "voidColor": "#4382ff",
+        "treeColor": "#7eab47",
+        "coalColor": "#665555"
+      }
+    },
+    "islands": {
+      "name": "islands",
+      "tags": [],
+      "colorMap": {
+        "landColor": "#0fc854",
+        "voidColor": "#0080ff",
+        "treeColor": "#0a953e"
+      }
+    },
+    "field": {
+      "name": "field",
+      "tags": [],
+      "colorMap": {
+        "landColor": "#00a800",
+        "voidColor": "#004aff",
+        "treeColor": "#006b00",
+        "coalColor": "#5d4646"
+      }
+    },
+    "swamp": {
+      "name": "swamp",
+      "tags": [],
+      "colorMap": {
+        "landColor": "#58860b",
+        "voidColor": "#118fa1",
+        "treeColor": "#5e6b00",
+        "mudColor": "#6b4700"
+      }
+    },
+    "darkForest": {
+      "name": "darkForest",
+      "tags": ["fog"],
+      "colorMap": {
+        "landColor": "#306730",
+        "voidColor": "#001139",
+        "treeColor": "#042e00",
+        "pumpkinColor": "#d88700",
+        "fogColor": "#000000",
+        "coalColor": "#271b1b"
+      }
+    },
+    "desert": {
+      "name": "desert",
+      "tags": ["fog"],
+      "colorMap": {
+        "landColor": "#ffc436",
+        "sandColor": "#ffd264",
+        "voidColor": "#6fbbe9",
+        "treeColor": "#8cc043",
+        "cactusColor": "#47ab00",
+        "fogColor": "#ecba40"
+      }
+    },
+    "tundra": {
+      "name": "tundra",
+      "tags": ["dangerousVoid"],
+      "colorMap": {
+        "landColor": "#dffffb",
+        "voidColor": "#92c4ff",
+        "treeColor": "#009000",
+        "iceColor": "#cbeeff",
+        "coalColor": "#784d4d"
+      }
+    }
+  }  

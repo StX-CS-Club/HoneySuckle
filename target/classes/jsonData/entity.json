@@ -1,0 +1,13 @@
+{
+    "slime": {
+        "name": "slime",
+        "texture": {
+            "baseColor": "#71cf01"
+        },
+        "attributes": {
+            "size": 0.33,
+            "health": 0.5,
+            "view": 7.5
+        }
+    }
+}
