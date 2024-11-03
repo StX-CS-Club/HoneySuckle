@@ -65,7 +65,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
                 Map<String, Object> obj = (Map<String, Object>) objData.get(key);
                 WorldObject.objLoot.put(intKey, (Map<String, Integer>) obj.get("loot"));
                 WorldObject.objTextures.put(intKey, (Map<String, String>) obj.get("texture"));
-                WorldObject.objValues.put(intKey, (Map<String, Integer>) obj.get("values"));
+                WorldObject.objValues.put(intKey, (Map<String, Double>) obj.get("values"));
                 WorldObject.objTags.put(intKey, (List<String>) obj.get("tags"));
             }
 
@@ -74,7 +74,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
                 int intKey = Integer.parseInt(key);
                 Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
                 Tile.tileTextures.put(intKey, (Map<String, String>) tile.get("texture"));
-                Tile.tileValues.put(intKey, (Map<String, Integer>) tile.get("values"));
+                Tile.tileValues.put(intKey, (Map<String, Double>) tile.get("values"));
                 Tile.tileTags.put(intKey, (List<String>) tile.get("tags"));
             }
 
@@ -98,6 +98,15 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
                 Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
                 Entity.entityAttributes.put(key, (Map<String, Double>) entity.get("attributes"));
                 Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
+                Entity.entityLoot.put(key, (Map<String, Integer>) entity.get("loot"));
+            }
+
+            Map<String, Object> weaponData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/weapon.json").toURI()), mapType);
+            for(String key : weaponData.keySet()){
+                Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
+                Weapon.weaponAttributes.put(key, (Map<String, Double>) weapon.get("attributes"));
+                Weapon.weaponTypes.put(key, (String) weapon.get("type"));
+                Weapon.weaponTextures.put(key, (Map<String, String>) weapon.get("texture"));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -173,7 +182,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
             @Override
             public void componentResized(ComponentEvent e) {
                 Dimension d = frame.getSize();
-                size = new int[]{d.width, d.height - tileSize};
+                size = new int[]{d.width - 14, d.height - 37};
                 panel.setSize(d);
             }
         });

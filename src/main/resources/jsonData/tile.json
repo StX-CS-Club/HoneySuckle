@@ -5,7 +5,7 @@
       "texture": "water"
     },
     "values": {
-      "damageness": 1
+      "damageness": 0.01
     },
     "tags": ["damage"]
   },
@@ -23,9 +23,9 @@
       "texture": "mud"
     },
     "values": {
-      "slowness": 2
+      "acel": 0.33
     },
-    "tags": ["walkable", "slow"]
+    "tags": ["walkable"]
   },
   "3": {
     "texture": {
@@ -33,9 +33,9 @@
       "texture": "sand"
     },
     "values": {
-      "slowness": 3
+      "acel": 0.25
     },
-    "tags": ["walkable", "slow"]
+    "tags": ["walkable"]
   },
   "4": {
     "texture": {
@@ -43,7 +43,7 @@
       "texture": "ice"
     },
     "values": {
-      "slippieness": 5
+      "acel": 1.625
     },
     "tags": ["walkable", "slippery"]
   }

@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Craft {
+
     public static Map<Integer, Map<String, Integer>> recipeMats = new HashMap<>();
     public static Map<Integer, Map<String, List<Integer>>> recipeParams = new HashMap<>();
 
@@ -16,7 +18,7 @@ public class Craft {
         this.recipes.addAll(recipes);
     }
 
-    private final Map<String, Integer> materials = new HashMap<>();
+    public final Map<String, Integer> materials = new HashMap<>();
 
     private final Set<Integer> recipes = new LinkedHashSet<>(Arrays.asList(-1));
     private int recipeIndex = 0;
@@ -31,7 +33,7 @@ public class Craft {
 
         Color color = Color.red;
 
-        if(checkCanPlace(world, player, (int) recipes.toArray()[recipeIndex])){
+        if (checkCanPlace(world, player, (int) recipes.toArray()[recipeIndex])) {
             color = Color.cyan;
         }
 
@@ -56,23 +58,6 @@ public class Craft {
         }
     }
 
-    public void destroy(World world, Player player) {
-        int[] index = new int[]{
-            (int) (Math.floor(player.pos[0] / HoneySuckle.tileSize) + cursor[0]),
-            (int) (Math.floor(player.pos[1] / HoneySuckle.tileSize) + cursor[1])
-        };
-        if (index[0] >= 0 && index[0] < world.size[0] && index[1] >= 0 && index[1] < world.size[1]) {
-            List<String> Tags = WorldObject.objTags.get(world.objGrid[index[0]][index[1]]);
-            if (Tags.contains("destructable") && !(Tags.contains("breakAway") && cursor[0] == 0 && cursor[1] == 0)) {
-                Map<String, Integer> loot = WorldObject.objLoot.get(world.objGrid[index[0]][index[1]]);
-                world.objGrid[index[0]][index[1]] = 0;
-                for (String material : loot.keySet()) {
-                    materials.put(material, getOrDefault(material) + loot.get(material));
-                }
-            }
-        }
-    }
-
     public void build(World world, Player player) {
         int recipeKey = (int) recipes.toArray()[recipeIndex];
         Map<String, Integer> recipe = recipeMats.get(recipeKey);
@@ -83,12 +68,12 @@ public class Craft {
             (int) (Math.floor(player.pos[1] / HoneySuckle.tileSize) + cursor[1])
         };
 
-            if (checkCanPlace(world, player, recipeKey)) {
-                world.objGrid[index[0]][index[1]] = recipeKey;
-                for (String material : requiredMat) {
-                    materials.put(material, getOrDefault(material) - recipe.get(material));
-                }
+        if (checkCanPlace(world, player, recipeKey)) {
+            world.objGrid[index[0]][index[1]] = new WorldObject(recipeKey, index);
+            for (String material : requiredMat) {
+                materials.put(material, getOrDefault(material) - recipe.get(material));
             }
+        }
     }
 
     private boolean checkCanPlace(World world, Player player, int recipeKey) {
@@ -113,11 +98,14 @@ public class Craft {
         if (index[0] < 0 || index[0] >= world.size[0] || index[1] < 0 || index[1] >= world.size[1]) {
             return false;
         }
+        if (world.objGrid[index[0]][index[1]] == null) {
+            return recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]]);
+        }
         return (recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]])
-                && recipeParams.get(recipeKey).get("obj").contains(world.objGrid[index[0]][index[1]]));
+                && recipeParams.get(recipeKey).get("obj").contains(world.objGrid[index[0]][index[1]].id));
     }
 
-    private int getOrDefault(String key) {
+    public int getOrDefault(String key) {
         if (materials.containsKey(key)) {
             return materials.get(key);
         } else {

@@ -22,13 +22,17 @@ public class Player {
                 ),
                 new LinkedHashSet<>(Arrays.asList(-1, -2, -3))
         );
+        armory = new Armory(3);
         players.add(this);
     }
 
     public double[] pos;
     public double[] vel = new double[2];
 
-    private Craft crafting;
+    public double rotation;
+
+    public final Craft crafting;
+    private final Armory armory;
 
     public double health = 1;
     private double stamina = 1;
@@ -52,9 +56,15 @@ public class Player {
                 crafting.renderTile(g, World.worlds.get(World.level), this);
             }
 
-            double rotation = Math.toDegrees(Math.atan(-1
-                    * (mousePos[0] - screenPos[0])
-                    / (mousePos[1] - screenPos[1])));
+            double x = mousePos[0] - screenPos[0];
+            double y = mousePos[1] - screenPos[1];
+
+            rotation = Math.toDegrees(Math.atan(-1 * x / y));
+            if(y >= 0){
+                rotation += 180;
+            } else if (x <= 0){
+                rotation += 360;
+            }
 
             g.rotate(Math.toRadians(rotation), screenPos[0], screenPos[1]);
 
@@ -64,6 +74,8 @@ public class Player {
                     (int) (screenPos[0] - size / 2),
                     (int) (screenPos[1] - size / 2),
                     size, size);
+
+                    armory.render(g, this);
 
             g.setTransform(originalTransform);
         }
@@ -106,10 +118,7 @@ public class Player {
             }
         }
 
-        if (click == 1) {
-            crafting.destroy(World.worlds.get(World.level), this);
-        }
-
+        armory.update(click, this);
         if (click == 3) {
             crafting.build(World.worlds.get(World.level), this);
         }
@@ -180,7 +189,7 @@ public class Player {
                 World.worlds.get(World.level).camera[1] = worldSize[1] * HoneySuckle.tileSize - screenSize[1] / 2;
             }
         }
-        World.worlds.get(World.level).posEvent(this);
+        World.worlds.get(World.level).playerEvent(this);
         if (health > 0) {
             health += 0.001 * 30 / HoneySuckle.fps;
             if (vel[0] == 0 && vel[1] == 0) {

@@ -1,0 +1,15 @@
+{
+    "sword": {
+        "name": "sword",
+        "type": "blade",
+        "attributes": {
+            "damage": 0.075,
+            "frames": 10.0,
+            "size": 1.5,
+            "cooldown": 20.0
+        },
+        "texture": {
+            "bladeColor": "#ffffff"
+        }
+    }
+}

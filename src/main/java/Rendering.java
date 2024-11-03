@@ -6,16 +6,25 @@ import java.awt.RadialGradientPaint;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 public class Rendering {
 
     public static Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
+
+    public static Map<String, List<BufferedImage>> gifFrames = new HashMap<>();
 
     public static BufferedImage texture(String texture, String color) {
         if (textures.get(texture) != null) {
@@ -27,29 +36,31 @@ public class Rendering {
         }
         BufferedImage result;
         try {
-            result = ImageIO.read(HoneySuckle.class.getResource("/images/sprites/" + texture + ".png"));
-            if (result != null) {
-                Color shade = Color.decode(color);
-                for(int x = 0; x < result.getWidth(); x++){
-                    for(int y = 0; y < result.getHeight(); y++){
-                        Color px = new Color(result.getRGB(x, y), true);
-                        if(px.getRed() == px.getGreen() && px.getRed() == px.getBlue() && px.getRed() != 0){
-                            double ratio = ((double)px.getRed())/255;
-                            result.setRGB(x, y, new Color(
-                                (int) (shade.getRed() * ratio),
-                                (int) (shade.getGreen() * ratio),
-                                (int) (shade.getBlue() * ratio)
-                            ).getRGB());
-                        }
-                    }
-                }
+            result = replaceGradient(ImageIO.read(HoneySuckle.class.getResource("/images/sprites/" + texture + ".png")), color);
                 textures.get(texture).put(color, result);
                 return result;
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static BufferedImage replaceGradient(BufferedImage image, String color) {
+        Color shade = Color.decode(color);
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                Color px = new Color(image.getRGB(x, y), true);
+                if (px.getRed() == px.getGreen() && px.getRed() == px.getBlue() && px.getRed() != 0) {
+                    double ratio = ((double) px.getRed()) / 255;
+                    image.setRGB(x, y, new Color(
+                            (int) (shade.getRed() * ratio),
+                            (int) (shade.getGreen() * ratio),
+                            (int) (shade.getBlue() * ratio)
+                    ).getRGB());
+                }
+            }
+        }
+        return image;
     }
 
     public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Integer>> lights) {
@@ -115,6 +126,34 @@ public class Rendering {
         g.fillRect(0, 0, HoneySuckle.size[0], HoneySuckle.size[1]);
     }
 
+    public static BufferedImage renderGIF(String path, double frame) {
+        List<BufferedImage> frames = gifFrames.get(path);
+        if (frames == null) {
+            frames = new ArrayList<>();
+            File gifFile;
+            try {
+                gifFile = new File(Rendering.class.getResource(path).toURI());
+                ImageInputStream input = ImageIO.createImageInputStream(gifFile);
+                Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
+                if (readers.hasNext()) {
+                    ImageReader reader = readers.next();
+                    reader.setInput(input);
+
+                    int numFrames = reader.getNumImages(true);
+                    for (int i = 0; i < numFrames; i++) {
+                        BufferedImage gifFrame = reader.read(i);
+                        frames.add(gifFrame);
+                    }
+                    reader.dispose();
+                }
+                gifFrames.put(path, frames);
+            } catch (URISyntaxException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return frames.get((int) Math.floor(frame * frames.size()));
+    }
+
     public static void borderRect(Graphics2D g, int border, Color color, int x, int y, int width, int height) {
         g.fillRect(x, y, width, height);
 
@@ -122,5 +161,4 @@ public class Rendering {
         g.setColor(color);
         g.drawRect(x, y, width, height);
     }
-
 }

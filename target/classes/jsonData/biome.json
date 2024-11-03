@@ -51,7 +51,7 @@
       "name": "darkForest",
       "tags": ["fog"],
       "colorMap": {
-        "landColor": "#306730",
+        "landColor": "#2a562a",
         "voidColor": "#001139",
         "treeColor": "#042e00",
         "pumpkinColor": "#d88700",

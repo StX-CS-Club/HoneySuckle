@@ -1,101 +1,112 @@
 {
-    "-4": {
-        "texture": {
-            "baseColor": "#ffb31c",
-            "natColor": "pumpkinColor",
-            "texture": "pumpkin"
-        },
-        "tags": ["obstruction", "destructable", "light"],
-        "values": {
-            "light": 15
-        },
-        "loot": {
-            "pumpkin": 1
-        }
+  "-4": {
+    "texture": {
+      "baseColor": "#ffb31c",
+      "natColor": "pumpkinColor",
+      "texture": "pumpkin"
     },
-    "-3": {
-        "texture": {
-            "baseColor": "#ffc654",
-            "texture": "torch"
-        },
-        "tags": ["destructable", "light"],
-        "values": {
-            "light": 8
-        },
-        "loot": {
-            "wood": 1
-        }
+    "tags": ["obstruction", "destructable", "light"],
+    "values": {
+      "light": 15.0,
+      "durability": 0.5
     },
-    "-2": {
-        "texture": {
-            "baseColor": "#aa6608",
-            "texture": "raft"
-        },
-        "tags": ["walkable", "safe", "destructable", "breakAway"],
-        "values": {},
-        "loot": {}
-    },
-    "-1": {
-        "texture": {
-            "baseColor": "#893f00",
-            "texture": "wall"
-        },
-        "tags": ["obstruction", "destructable", "placeAway"],
-        "values": {},
-        "loot": {
-            "wood": 1
-        }
-    },
-    "0": {
-        "texture": {},
-        "tags": [],
-        "values": {},
-        "loot": {}
-    },
-    "1": {
-        "texture": {
-            "natColor": "treeColor",
-            "texture": "tree"
-        },
-        "tags": ["obstruction", "destructable"],
-        "values": {},
-        "loot": {
-            "wood": 1
-        }
-    },
-    "2": {
-        "texture": {
-            "natColor": "pumpkinColor",
-            "texture": "pumpkin"
-        },
-        "tags": ["obstruction", "destructable"],
-        "values": {},
-        "loot": {
-            "pumpkin": 1
-        }
-    },
-    "3": {
-        "texture": {
-            "natColor": "cactusColor",
-            "texture": "cactus"
-        },
-        "tags": ["obstruction", "hurts", "destructable"],
-        "values": {
-            "hurtness": 2
-        },
-        "loot": {
-            "cactus": 1
-        }
-    },
-    "4": {
-        "texture": {
-            "natColor": "coalColor",
-            "texture": "ore"
-        },
-        "tags": ["obstruction", "destructable"],
-        "values": {},
-        "loot": {
-            "coal": 2
-        }
+    "loot": {
+      "pumpkin": 1
     }
+  },
+  "-3": {
+    "texture": {
+      "baseColor": "#ffc654",
+      "texture": "torch"
+    },
+    "tags": ["destructable", "light"],
+    "values": {
+      "light": 8.0,
+      "durability": 0.25
+    },
+    "loot": {
+      "wood": 1
+    }
+  },
+  "-2": {
+    "texture": {
+      "baseColor": "#aa6608",
+      "texture": "raft"
+    },
+    "tags": ["walkable", "safe"],
+    "values": {},
+    "loot": {}
+  },
+  "-1": {
+    "texture": {
+      "baseColor": "#893f00",
+      "texture": "wall"
+    },
+    "tags": ["obstruction", "destructable", "placeAway"],
+    "values": {
+      "durability": 2.0
+    },
+    "loot": {
+      "wood": 1
+    }
+  },
+  "0": {
+    "texture": {},
+    "tags": [],
+    "values": {},
+    "loot": {}
+  },
+  "1": {
+    "texture": {
+      "natColor": "treeColor",
+      "texture": "tree"
+    },
+    "tags": ["obstruction", "destructable"],
+    "values": {
+      "durability": 1.0
+    },
+    "loot": {
+      "wood": 1
+    }
+  },
+  "2": {
+    "texture": {
+      "natColor": "pumpkinColor",
+      "texture": "pumpkin"
+    },
+    "tags": ["obstruction", "destructable"],
+    "values": {
+      "durability": 0.75
+    },
+    "loot": {
+      "pumpkin": 1
+    }
+  },
+  "3": {
+    "texture": {
+      "natColor": "cactusColor",
+      "texture": "cactus"
+    },
+    "tags": ["obstruction", "hurts", "destructable"],
+    "values": {
+      "hurtness": 2.0,
+      "durability": 0.75
+    },
+    "loot": {
+      "cactus": 1
+    }
+  },
+  "4": {
+    "texture": {
+      "natColor": "coalColor",
+      "texture": "ore"
+    },
+    "tags": ["obstruction", "destructable"],
+    "values": {
+      "durability": 2.0
+    },
+    "loot": {
+      "coal": 2
+    }
+  }
 }

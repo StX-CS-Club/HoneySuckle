@@ -8,6 +8,9 @@
             "size": 0.33,
             "health": 0.5,
             "view": 7.5
+        },
+        "loot": {
+            "slime": 1
         }
     }
 }

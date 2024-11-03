@@ -1,10 +1,7 @@
 public class Brain {
     public static void update(Entity entity) {
         switch (entity.type) {
-            case "slime" : {
-                if (entity.health <= 0) {
-                    World.worlds.get(World.level).entities.remove(entity);
-                }
+            case "slime" -> {
                 for (int i = 0; i < 2; i++) {
                     entity.vel[i] /= 2;
                     if (Math.abs(entity.vel[i]) <= 0.2) {
@@ -28,6 +25,7 @@ public class Brain {
                     }
                 }
                 entity.pos = World.worlds.get(World.level).bound(entity.pos, entity.vel, entity.size / 2);
+                World.worlds.get(World.level).entityEvent(entity);
             }
         }
     }

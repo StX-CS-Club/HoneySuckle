@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class World {
     public double[] camera = new double[2];
 
     public int[][] grid;
-    public int[][] objGrid;
+    public WorldObject[][] objGrid;
     public int[] size = new int[2];
     public int start;
     public String biome;
@@ -84,7 +85,7 @@ public class World {
         return newPos;
     }
 
-    public void posEvent(Player player) {
+    public void playerEvent(Player player) {
         if (player.tags.contains("leader")) {
             if (player.pos[1] <= player.size / 2) {
                 level++;
@@ -103,18 +104,14 @@ public class World {
 
         if (!player.tags.contains("god")) {
             if (checkTag(posIndex[0], posIndex[1], "damage") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-                player.health -= 0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps;
+                player.health -= checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps;
                 if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
                     player.health -= 0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps;
                 }
             }
-            if (checkTag(posIndex[0], posIndex[1], "slow") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-                player.vel[0] /= checkValue(posIndex[0], posIndex[1], "slowness") + 1;
-                player.vel[1] /= checkValue(posIndex[0], posIndex[1], "slowness") + 1;
-            }
-            if (checkTag(posIndex[0], posIndex[1], "slippery") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-                player.vel[0] *= 1 + 0.125 * checkValue(posIndex[0], posIndex[1], "slippieness");
-                player.vel[1] *= 1 + 0.125 * checkValue(posIndex[0], posIndex[1], "slippieness");
+            if(!checkTag(posIndex[0], posIndex[1], "safe") && checkValue(posIndex[0], posIndex[1], "acel") != 0){
+                player.vel[0] *= checkValue(posIndex[0], posIndex[1], "acel");
+                player.vel[1] *= checkValue(posIndex[0], posIndex[1], "acel");
             }
             for (int i = 0; i < 2; i++) {
                 if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
@@ -128,23 +125,61 @@ public class World {
                     }
                 }
             }
-            for(Entity entity : renderEntities){
+            for (Entity entity : renderEntities) {
                 Brain.event(entity, player);
             }
         }
     }
 
-    private boolean checkTag(int x, int y, String tag) {
-        return Tile.tileTags.get(grid[x][y]).contains(tag) || WorldObject.objTags.get(objGrid[x][y]).contains(tag);
+    public void entityEvent(Entity entity) {
+        int[] posIndex = new int[]{(int) Math.floor(entity.pos[0] / tileSize), (int) Math.floor(entity.pos[1] / tileSize)};
+
+        double margin = entity.size / 2 + 1;
+        int[][] marginIndex = new int[][]{
+            {(int) (Math.floor((entity.pos[0] - margin) / tileSize)), (int) (Math.floor((entity.pos[0] + margin) / tileSize))},
+            {(int) (Math.floor((entity.pos[1] - margin) / tileSize)), (int) (Math.floor((entity.pos[1] + margin) / tileSize))}
+        };
+
+            if (checkTag(posIndex[0], posIndex[1], "damage") && !checkTag(posIndex[0], posIndex[1], "safe")) {
+                entity.health -= checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps;
+                if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
+                    entity.health -= 0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps;
+                }
+            }
+            if(!checkTag(posIndex[0], posIndex[1], "safe") && checkValue(posIndex[0], posIndex[1], "acel") != 0){
+                entity.vel[0] *= checkValue(posIndex[0], posIndex[1], "acel");
+                entity.vel[1] *= checkValue(posIndex[0], posIndex[1], "acel");
+            }
+            for (int i = 0; i < 2; i++) {
+                if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
+                    if (checkTag(marginIndex[0][i], posIndex[1], "hurts")) {
+                        entity.health -= 0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30 / HoneySuckle.fps;
+                    }
+                }
+                if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
+                    if (checkTag(posIndex[0], marginIndex[1][i], "hurts")) {
+                        entity.health -= 0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30 / HoneySuckle.fps;
+                    }
+                }
+            }
     }
 
-    private int checkValue(int x, int y, String value) {
-        int result = 0;
+    private boolean checkTag(int x, int y, String tag) {
+        if (objGrid[x][y] == null) {
+            return Tile.tileTags.get(grid[x][y]).contains(tag);
+        }
+        return Tile.tileTags.get(grid[x][y]).contains(tag) || objGrid[x][y].tags.contains(tag);
+    }
+
+    private double checkValue(int x, int y, String value) {
+        double result = 0;
         if (Tile.tileValues.get(grid[x][y]).get(value) != null) {
             result += Tile.tileValues.get(grid[x][y]).get(value);
         }
-        if (WorldObject.objValues.get(objGrid[x][y]).get(value) != null) {
-            result += WorldObject.objValues.get(objGrid[x][y]).get(value);
+        if (objGrid[x][y] != null) {
+            if (objGrid[x][y].values.get(value) != null) {
+                result += objGrid[x][y].values.get(value);
+            }
         }
         return result;
     }
@@ -181,8 +216,8 @@ public class World {
                         g.setColor(Color.decode(color));
                         Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
                     }
-                    textureMap = WorldObject.objTextures.get(objGrid[x][y]);
-                    if (objGrid[x][y] != 0) {
+                    if (objGrid[x][y] != null) {
+                    textureMap = objGrid[x][y].texture;
                         color = "#000000";
                         if (textureMap.get("natColor") != null) {
                             if (Biome.biomeColorMap.get(biome).get(textureMap.get("natColor")) != null) {
@@ -205,14 +240,14 @@ public class World {
                         HoneySuckle.lights.add(Map.of(
                                 "posX", (int) screenPos[0] + tileSize / 2,
                                 "posY", (int) screenPos[1] + tileSize / 2,
-                                "radius", HoneySuckle.tileSize * checkValue(x, y, "light"),
-                                "color", (255 << 16) | (140 << 8) | 0
+                                "radius", HoneySuckle.tileSize * (int) checkValue(x, y, "light"),
+                                "color", (255 << 16) | (140 << 8)
                         ));
                     }
                 }
             }
         }
-        for(Entity entity : renderEntities) {
+        for (Entity entity : renderEntities) {
             entity.render(g, camera);
         }
     }
@@ -220,26 +255,12 @@ public class World {
     public void update() {
         renderEntities = new ArrayList<>();
         for (Entity entity : entities) {
-            if(Math.abs(entity.pos[0]-camera[0]) <= HoneySuckle.size[0] || Math.abs(entity.pos[1] - camera[1]) <= HoneySuckle.size[1]){
+            if (Math.abs(entity.pos[0] - camera[0]) <= HoneySuckle.size[0] * 3 / 4 || Math.abs(entity.pos[1] - camera[1]) <= HoneySuckle.size[1] * 3 / 4) {
                 renderEntities.add(entity);
             }
         }
-        for(Entity entity : renderEntities){
+        for (Entity entity : renderEntities) {
             entity.update();
-        }
-    }
-
-    public void printLevel() {
-        for (int y = 0; y < grid[0].length; y++) {
-            String response = "";
-            for (int[] grid1 : grid) {
-                if (grid1[y] == 1) {
-                    response = response + " ";
-                } else {
-                    response = response + "■";
-                }
-            }
-            System.out.println(response);
         }
     }
 }

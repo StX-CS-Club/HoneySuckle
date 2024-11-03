@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class Entity {
     public static Map<String, Map<String, Double>> entityAttributes = new HashMap<>();
-
     public static Map<String, Map<String, String>> entityTextures = new HashMap<>();
+    public static Map<String, Map<String, Integer>> entityLoot = new HashMap<>();
 
     public String type;
     public double health;
@@ -54,5 +54,14 @@ public class Entity {
     public void update() {
         ticks++;
         Brain.update(this);
+    }
+
+    public boolean damage(double damage){
+        health -= damage;
+        if(health > 0){
+            return false;
+        }
+        World.worlds.get(World.level).entities.remove(this);
+        return true;
     }
 }
