@@ -10,9 +10,11 @@ public class Entity {
     public static final Map<String, Map<String, String>> entityTextures = new HashMap<>();
     public static final Map<String, Map<String, Integer>> entityLoot = new HashMap<>();
 
-    public String type;
+    public final String type;
     public double health;
-    public double size;
+    public final double size;
+    public final double weight;
+
     public double[] pos = new double[2];
     public double[] vel = new double[2];
     public int[] direction = new int[2];
@@ -21,9 +23,10 @@ public class Entity {
 
     public Entity(String type, double[] pos) {
         this.type = type;
-        this.health = entityAttributes.get(type).get("health");
-        this.size = entityAttributes.get(type).get("size") * HoneySuckle.tileSize;
+        health = entityAttributes.get(type).get("health");
+        size = entityAttributes.get(type).get("size") * HoneySuckle.tileSize;
         this.pos = pos;
+        weight = entityAttributes.get(type).get("weight");
     }
 
     public void render(Graphics2D g, double[] camera) {

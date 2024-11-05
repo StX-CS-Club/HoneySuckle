@@ -20,33 +20,18 @@ public class Projectile {
     private final List<String> tags;
 
     public Projectile(String type, double[] pos, double angle) {
-        int quarter = (int) Math.floor(angle / 90);
-        if (quarter > 3) {
-            quarter = 0;
-        }
-        double sin = Math.sin(Math.toRadians(angle - quarter * 90)) * 10;
-        double cos = Math.cos(Math.toRadians(angle - quarter * 90)) * 10;
-        switch (quarter) {
-            case 0 -> {
-                vel = new double[]{sin, -cos};
-            }
-            case 1 -> {
-                vel = new double[]{cos, sin};
-            }
-            case 2 -> {
-                vel = new double[]{-sin, cos};
-            }
-            case 3 -> {
-                vel = new double[]{-cos, -sin};
-            }
-        }
+        texture = projTextures.get(type);
+        attributes = projAttributes.get(type);
+        tags = projTags.get(type);
+
+        double sin = Math.sin(Math.toRadians(-angle)) * -attributes.get("vel");
+        double cos = Math.cos(Math.toRadians(-angle)) * -attributes.get("vel");
+        
+        vel = new double[]{sin, cos};
 
         this.pos = pos;
         this.type = type;
         this.angle = angle;
-        texture = projTextures.get(type);
-        attributes = projAttributes.get(type);
-        tags = projTags.get(type);
     }
 
     public void update() {

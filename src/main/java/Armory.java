@@ -12,6 +12,7 @@ public class Armory {
         weapons = new Weapon[size];
         weapons[0] = new Weapon("sword");
         weapons[1] = new Weapon("bow");
+        weapons[2] = new Weapon("shield");
     }
 
     public void update(int click, boolean[] keyDown, Player player) {
@@ -43,7 +44,11 @@ public class Armory {
         }
     }
 
-    public void render(Graphics2D g, AffineTransform originalTransform, Player player) {
+    public void render(Graphics2D g, Player player) {
+        AffineTransform originalTransform = g.getTransform();
+
+        g.rotate(Math.toRadians(player.rotation), player.screenPos[0], player.screenPos[1]);
+
         if (weapons[weaponIndex] != null) {
             weapons[weaponIndex].render(g, player);
         }

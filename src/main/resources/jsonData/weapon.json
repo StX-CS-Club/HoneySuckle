@@ -17,12 +17,27 @@
         "name": "bow",
         "type": "gun",
         "attributes": {
-            "frames": 10.0,
+            "frames": 1.0,
             "cooldown": 20.0
         },
         "projectile": "arrow",
         "texture": {
             "itemTexture": "items/bow"
+        }
+    },
+    "shield": {
+        "name": "shield",
+        "type": "shield",
+        "attributes":{
+            "size": 1.0,
+            "frames": 5.0,
+            "cooldown": 10.0,
+            "parry": 1.1,
+            "bounce": 1.0
+        },
+        "texture": {
+            "itemTexture": "items/shield",
+            "shieldTexture": "projectiles/shield"
         }
     }
 }

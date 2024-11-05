@@ -33,7 +33,7 @@ public class Player {
     public double rotation;
 
     public final Craft crafting;
-    private final Armory armory;
+    public final Armory armory;
 
     private boolean weaponScroll = false;
 
@@ -61,7 +61,7 @@ public class Player {
                     (int) (screenPos[1] - size / 2),
                     size, size);
 
-            armory.render(g, originalTransform, this);
+            g.setTransform(originalTransform);
         }
 
         String biome = World.worlds.get(World.level).biome;

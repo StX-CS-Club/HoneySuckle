@@ -13,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -147,6 +148,10 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
         
         Rendering.colorFade(g2d, Color.red, 1-player.health);
 
+        player.crafting.render(g2d, World.worlds.get(World.level), player);
+        player.armory.render(g2d, player);
+
+        g.dispose();
         g2d.dispose();
     }
 
