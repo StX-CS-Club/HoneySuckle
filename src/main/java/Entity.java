@@ -1,18 +1,21 @@
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Entity {
-    public static Map<String, Map<String, Double>> entityAttributes = new HashMap<>();
-    public static Map<String, Map<String, String>> entityTextures = new HashMap<>();
-    public static Map<String, Map<String, Integer>> entityLoot = new HashMap<>();
+
+    public static final Map<String, Map<String, Double>> entityAttributes = new HashMap<>();
+    public static final Map<String, Map<String, String>> entityTextures = new HashMap<>();
+    public static final Map<String, Map<String, Integer>> entityLoot = new HashMap<>();
 
     public String type;
     public double health;
     public double size;
     public double[] pos = new double[2];
     public double[] vel = new double[2];
+    public int[] direction = new int[2];
 
     public int ticks = 0;
 
@@ -42,8 +45,18 @@ public class Entity {
                 color = textureMap.get("baseColor");
             }
         }
+
         if (textureMap.get("texture") != null) {
             String texture = textureMap.get("texture");
+            switch(textureMap.get("mirror")){
+                case "horizontal" -> {
+                    if(direction[0] < 0){
+                        texture = texture+"Left";
+                    } else {
+                        texture = texture+"Right";
+                    }
+                }
+            }
             g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], (int) size, (int) size, null);
         } else {
             g.setColor(Color.decode(color));
@@ -56,9 +69,9 @@ public class Entity {
         Brain.update(this);
     }
 
-    public boolean damage(double damage){
+    public boolean damage(double damage) {
         health -= damage;
-        if(health > 0){
+        if (health > 0) {
             return false;
         }
         World.worlds.get(World.level).entities.remove(this);

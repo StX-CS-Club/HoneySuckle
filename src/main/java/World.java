@@ -39,6 +39,8 @@ public class World {
     public String biome;
     public List<Entity> entities = new ArrayList<>();
     public List<Entity> renderEntities = new ArrayList<>();
+    public List<Projectile> projectiles = new ArrayList<>();
+    public List<Projectile> renderProjectiles = new ArrayList<>();
 
     public double[] bound(double[] pos, double[] delta, double margin) {
         double[] newPos = new double[]{pos[0] + delta[0], pos[1] + delta[1]};
@@ -218,7 +220,7 @@ public class World {
                     }
                     if (objGrid[x][y] != null) {
                     textureMap = objGrid[x][y].texture;
-                        color = "#000000";
+                        color = "#ffffff";
                         if (textureMap.get("natColor") != null) {
                             if (Biome.biomeColorMap.get(biome).get(textureMap.get("natColor")) != null) {
                                 color = Biome.biomeColorMap.get(biome).get(textureMap.get("natColor"));
@@ -250,6 +252,9 @@ public class World {
         for (Entity entity : renderEntities) {
             entity.render(g, camera);
         }
+        for (Projectile projectile : renderProjectiles) {
+            projectile.render(g, camera);
+        }
     }
 
     public void update() {
@@ -261,6 +266,15 @@ public class World {
         }
         for (Entity entity : renderEntities) {
             entity.update();
+        }
+        renderProjectiles = new ArrayList<>();
+        for (Projectile projectile : projectiles) {
+            if (Math.abs(projectile.pos[0] - camera[0]) <= HoneySuckle.size[0] * 3 / 4 || Math.abs(projectile.pos[1] - camera[1]) <= HoneySuckle.size[1] * 3 / 4) {
+                renderProjectiles.add(projectile);
+            }
+        }
+        for (Projectile projectile : renderProjectiles) {
+            projectile.update();
         }
     }
 }

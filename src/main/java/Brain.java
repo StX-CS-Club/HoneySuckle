@@ -22,6 +22,7 @@ public class Brain {
                         double coefficient = 15 / magnitude;
                         entity.vel[0] += distance[0] * coefficient;
                         entity.vel[1] += distance[1] * coefficient;
+                        entity.direction[0] = (int) Math.signum(entity.vel[0]);
                     }
                 }
                 entity.pos = World.worlds.get(World.level).bound(entity.pos, entity.vel, entity.size / 2);

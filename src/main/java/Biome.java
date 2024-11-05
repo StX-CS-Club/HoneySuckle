@@ -18,9 +18,9 @@ public class Biome {
         "desert"
     };
 
-    public static Map<String, Map<String, String>> biomeColorMap = new HashMap<>();
+    public static final Map<String, Map<String, String>> biomeColorMap = new HashMap<>();
 
-    public static Map<String, List<String>> biomeTags = new HashMap<>();
+    public static final Map<String, List<String>> biomeTags = new HashMap<>();
 
     public static void biomeGeneration(World world) {
         switch (world.biome) {
@@ -106,14 +106,14 @@ public class Biome {
                     for (int y = world.size[1] - 2; y > -1; y--) {
                         if (x != 0) {
                             if (world.start - x >= 0) {
-                                double prob = 0.095 * result[world.start - x + 1][y] + 0.9025 * result[world.start - x][y + 1];
+                                double prob = 0.095 * result[world.start - x + 1][y] + 0.90375 * result[world.start - x][y + 1];
                                 if (Math.random() <= prob) {
                                     result[world.start - x][y] = 1;
                                     if (Math.random() <= 0.05) {
                                         objResult[world.start - x][y] = new WorldObject(1, new int[]{world.start - x, y});
                                     } else if (Math.random() <= 0.01) {
                                         objResult[world.start - x][y] = new WorldObject(4, new int[]{world.start - x, y});
-                                    } else if (Math.random() <= 0.05) {
+                                    } else if (Math.random() <= 0.01*World.level) {
                                         entityResult.add(new Entity("slime",
                                                 new double[]{(world.start - x + 0.5) * HoneySuckle.tileSize,
                                                     (y + 0.5) * HoneySuckle.tileSize
@@ -123,14 +123,14 @@ public class Biome {
                             }
                         }
                         if (world.start + x < world.size[0]) {
-                            double prob = 0.095 * result[world.start + x - 1][y] + 0.9025 * result[world.start + x][y + 1];
+                            double prob = 0.095 * result[world.start + x - 1][y] + 0.90375 * result[world.start + x][y + 1];
                             if (Math.random() <= prob) {
                                 result[world.start + x][y] = 1;
                                 if (Math.random() <= 0.05) {
                                     objResult[world.start + x][y] = new WorldObject(1, new int[]{world.start + x, y});
                                 } else if (Math.random() <= 0.01) {
                                     objResult[world.start + x][y] = new WorldObject(4, new int[]{world.start + x, y});
-                                } else if (Math.random() <= 0.05) {
+                                } else if (Math.random() <= 0.01*World.level) {
                                     entityResult.add(new Entity("slime",
                                             new double[]{(world.start + x + 0.5) * HoneySuckle.tileSize,
                                                 (y + 0.5) * HoneySuckle.tileSize

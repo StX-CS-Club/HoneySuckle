@@ -5,28 +5,34 @@ import java.util.Map;
 
 public class Weapon {
 
-    public static Map<String, Map<String, Double>> weaponAttributes = new HashMap<>();
-    public static Map<String, String> weaponTypes = new HashMap<>();
-    public static Map<String, Map<String, String>> weaponTextures = new HashMap<>();
+    public static final Map<String, Map<String, Double>> weaponAttributes = new HashMap<>();
+    public static final Map<String, String> weaponTypes = new HashMap<>();
+    public static final Map<String, Map<String, String>> weaponTextures = new HashMap<>();
+    public static final Map<String, String> weaponProj = new HashMap<>();
 
     private int attackFrame;
     private int coolDown;
 
     private final String type;
     private final Map<String, Double> attributes;
-    private final Map<String, String> texture;
+    public final Map<String, String> texture;
+    public final String weapon;
 
     public Weapon(String weapon) {
         type = weaponTypes.get(weapon);
         attributes = weaponAttributes.get(weapon);
         attackFrame = attributes.get("frames").intValue() + 1;
         texture = weaponTextures.get(weapon);
+        this.weapon = weapon;
     }
 
-    public void attack() {
+    public void attack(Player player) {
         if (coolDown <= 0) {
             attackFrame = 0;
             coolDown = attributes.get("cooldown").intValue();
+            if(type.equals("gun")){
+                World.worlds.get(World.level).projectiles.add(new Projectile(weaponProj.get(weapon), player.pos, player.rotation));
+            }
         }
     }
 
@@ -42,9 +48,9 @@ public class Weapon {
                     for (Entity entity : world.renderEntities) {
                         if (Math.abs(entity.pos[0] - player.pos[0]) <= size && Math.abs(entity.pos[1] - player.pos[1]) <= size) {
                             if (hitBox(player.pos, entity.pos, player.rotation, player.size, size)) {
-                                if(entity.damage(attributes.get("damage"))){
+                                if (entity.damage(attributes.get("damage"))) {
                                     Map<String, Integer> loot = Entity.entityLoot.get(entity.type);
-                                    for(String material : loot.keySet()){
+                                    for (String material : loot.keySet()) {
                                         player.crafting.materials.put(material, player.crafting.getOrDefault(material) + loot.get(material));
                                     }
                                 }
@@ -79,14 +85,16 @@ public class Weapon {
     }
 
     public void render(Graphics2D g, Player player) {
-        double[] screenPos = new double[]{
-            HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size")*HoneySuckle.tileSize/2+player.size/2,
-            HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size")*HoneySuckle.tileSize+player.size/2
-        };
         if (attackFrame < attributes.get("frames")) {
-            g.drawImage(
-                Rendering.replaceGradient(Rendering.renderGIF("images/gifs/slash.gif", ((double) attackFrame) / attributes.get("frames")), texture.get("bladeColor")),
-                (int) screenPos[0], (int) screenPos[1], HoneySuckle.tileSize * attributes.get("size").intValue(), HoneySuckle.tileSize * attributes.get("size").intValue(), null);
+            if (type.equals("blade")) {
+                double[] screenPos = new double[]{
+                    HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") * HoneySuckle.tileSize / 2 + player.size / 2,
+                    HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize + player.size / 2
+                };
+                g.drawImage(
+                        Rendering.replaceGradient(Rendering.renderGIF("images/gifs/slash.gif", ((double) attackFrame) / attributes.get("frames")), texture.get("bladeColor")),
+                        (int) screenPos[0], (int) screenPos[1], HoneySuckle.tileSize * attributes.get("size").intValue(), HoneySuckle.tileSize * attributes.get("size").intValue(), null);
+            }
         }
     }
 

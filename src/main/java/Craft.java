@@ -10,8 +10,9 @@ import java.util.Set;
 
 public class Craft {
 
-    public static Map<Integer, Map<String, Integer>> recipeMats = new HashMap<>();
-    public static Map<Integer, Map<String, List<Integer>>> recipeParams = new HashMap<>();
+    public static final Map<Integer, Map<String, Integer>> recipeMats = new HashMap<>();
+    public static final Map<Integer, Map<String, List<Integer>>> recipeParams = new HashMap<>();
+    public static final Map<Integer, Map<String, String>> recipeTextures = new HashMap<>();
 
     public Craft(Map<String, Integer> materials, Set<Integer> recipes) {
         this.materials.putAll(materials);
@@ -25,7 +26,7 @@ public class Craft {
 
     public double[] cursor = new double[2];
 
-    public void renderTile(Graphics2D g, World world, Player player) {
+    public void render(Graphics2D g, World world, Player player) {
         int[] index = new int[]{
             (int) Math.floor(player.pos[0] / HoneySuckle.tileSize + cursor[0]),
             (int) Math.floor(player.pos[1] / HoneySuckle.tileSize + cursor[1])
@@ -44,6 +45,24 @@ public class Craft {
                 (int) (HoneySuckle.size[0] / 2 + index[0] * HoneySuckle.tileSize - camera[0]),
                 (int) (HoneySuckle.size[1] / 2 + index[1] * HoneySuckle.tileSize - camera[1]),
                 HoneySuckle.tileSize, HoneySuckle.tileSize);
+
+        double size = HoneySuckle.size[0] / 12;
+        double xMargin = 0;
+        if (player.screenPos[0] < size * 3 + HoneySuckle.tileSize && player.screenPos[1] > HoneySuckle.size[1] - size*25/12 - HoneySuckle.tileSize) {
+            xMargin = HoneySuckle.size[0] - size * 13 / 12;
+        }
+
+        String textureColor = "#ff0000";
+        if(hasMaterials(player, (int) recipes.toArray()[recipeIndex])){
+            textureColor = "#00ff00";
+        }
+        g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + size / 12), (int) (HoneySuckle.size[1] - size * 25 / 12), (int) size, (int) size, null);
+        Map<String, String> texture = recipeTextures.get((int) recipes.toArray()[recipeIndex]);
+        if (texture != null) {
+            if (texture.get("texture") != null) {
+                g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + size*5/24), (int) (HoneySuckle.size[1] - size * 47 / 24), (int) size*3/4, (int) size*3/4, null);
+            }
+        }
     }
 
     public void scrollBar(double scroll) {
@@ -83,12 +102,8 @@ public class Craft {
             (int) (Math.floor(player.pos[1] / HoneySuckle.tileSize) + cursor[1])
         };
 
-        Map<String, Integer> recipe = recipeMats.get(recipeKey);
-        Set<String> requiredMat = recipe.keySet();
-        for (String material : requiredMat) {
-            if (getOrDefault(material) < recipe.get(material) && !player.tags.contains("god")) {
-                return false;
-            }
+        if(!hasMaterials(player, recipeKey)){
+            return false;
         }
 
         if (Tags.contains("placeAway") && cursor[0] == 0 && cursor[1] == 0) {
@@ -103,6 +118,17 @@ public class Craft {
         }
         return (recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]])
                 && recipeParams.get(recipeKey).get("obj").contains(world.objGrid[index[0]][index[1]].id));
+    }
+
+    private boolean hasMaterials(Player player, int recipeKey){ 
+        Map<String, Integer> recipe = recipeMats.get(recipeKey);
+        Set<String> requiredMat = recipe.keySet();
+        for (String material : requiredMat) {
+            if (getOrDefault(material) < recipe.get(material) && !player.tags.contains("god")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public int getOrDefault(String key) {

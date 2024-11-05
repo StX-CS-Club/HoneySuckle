@@ -3,7 +3,7 @@
     "texture": {
       "baseColor": "#ffb31c",
       "natColor": "pumpkinColor",
-      "texture": "pumpkin"
+      "texture": "tiles/pumpkin"
     },
     "tags": ["obstruction", "destructable", "light"],
     "values": {
@@ -17,7 +17,7 @@
   "-3": {
     "texture": {
       "baseColor": "#ffc654",
-      "texture": "torch"
+      "texture": "tiles/torch"
     },
     "tags": ["destructable", "light"],
     "values": {
@@ -31,7 +31,7 @@
   "-2": {
     "texture": {
       "baseColor": "#aa6608",
-      "texture": "raft"
+      "texture": "tiles/raft"
     },
     "tags": ["walkable", "safe"],
     "values": {},
@@ -40,9 +40,9 @@
   "-1": {
     "texture": {
       "baseColor": "#893f00",
-      "texture": "wall"
+      "texture": "tiles/wall"
     },
-    "tags": ["obstruction", "destructable", "placeAway"],
+    "tags": ["obstruction", "destructable", "placeAway", "projObstruction"],
     "values": {
       "durability": 2.0
     },
@@ -59,9 +59,9 @@
   "1": {
     "texture": {
       "natColor": "treeColor",
-      "texture": "tree"
+      "texture": "tiles/tree"
     },
-    "tags": ["obstruction", "destructable"],
+    "tags": ["obstruction", "destructable", "projObstruction"],
     "values": {
       "durability": 1.0
     },
@@ -72,7 +72,7 @@
   "2": {
     "texture": {
       "natColor": "pumpkinColor",
-      "texture": "pumpkin"
+      "texture": "tiles/pumpkin"
     },
     "tags": ["obstruction", "destructable"],
     "values": {
@@ -85,9 +85,9 @@
   "3": {
     "texture": {
       "natColor": "cactusColor",
-      "texture": "cactus"
+      "texture": "tiles/cactus"
     },
-    "tags": ["obstruction", "hurts", "destructable"],
+    "tags": ["obstruction", "hurts", "destructable", "projObstruction"],
     "values": {
       "hurtness": 2.0,
       "durability": 0.75
@@ -99,9 +99,9 @@
   "4": {
     "texture": {
       "natColor": "coalColor",
-      "texture": "ore"
+      "texture": "tiles/ore"
     },
-    "tags": ["obstruction", "destructable"],
+    "tags": ["obstruction", "destructable", "projObstruction"],
     "values": {
       "durability": 2.0
     },

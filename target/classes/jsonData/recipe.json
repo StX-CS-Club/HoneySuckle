@@ -7,6 +7,9 @@
         },
         "mats": {
             "wood": 1
+        },
+        "texture": {
+            "texture": "recipes/wall"
         }
     },
     "-2": {
@@ -17,6 +20,9 @@
         },
         "mats" : {
             "wood": 2
+        },
+        "texture": {
+            "texture": "recipes/raft"
         }
     },
     "-3": {
@@ -28,6 +34,9 @@
         "mats": {
             "wood": 1,
             "coal": 1
+        },
+        "texture": {
+            "texture": "recipes/torch"
         }
     },
     "-4": {
@@ -40,6 +49,9 @@
             "pumpkin": 1,
             "coal": 1,
             "wood": 1
+        },
+        "texture": {
+            "texture": "recipes/jackolantern"
         }
     }
 }

@@ -3,10 +3,10 @@ import java.util.List;
 import java.util.Map;
 
 public class WorldObject {
-    public static Map<Integer, List<String>> objTags = new HashMap<>();
-    public static Map<Integer, Map<String, Double>> objValues = new HashMap<>();
-    public static Map<Integer, Map<String, Integer>> objLoot = new HashMap<>();
-    public static Map<Integer, Map<String, String>> objTextures = new HashMap<>();
+    public static final Map<Integer, List<String>> objTags = new HashMap<>();
+    public static final Map<Integer, Map<String, Double>> objValues = new HashMap<>();
+    public static final Map<Integer, Map<String, Integer>> objLoot = new HashMap<>();
+    public static final Map<Integer, Map<String, String>> objTextures = new HashMap<>();
 
     public int id;
     public int[] posIndex;

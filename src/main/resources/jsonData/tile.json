@@ -2,7 +2,7 @@
   "0": {
     "texture": {
       "natColor": "voidColor",
-      "texture": "water"
+      "texture": "tiles/water"
     },
     "values": {
       "damageness": 0.01
@@ -12,7 +12,7 @@
   "1": {
     "texture": {
       "natColor": "landColor",
-      "texture": "land"
+      "texture": "tiles/land"
     },
     "values": {},
     "tags": ["walkable"]
@@ -20,7 +20,7 @@
   "2": {
     "texture": {
       "natColor": "mudColor",
-      "texture": "mud"
+      "texture": "tiles/mud"
     },
     "values": {
       "acel": 0.33
@@ -30,7 +30,7 @@
   "3": {
     "texture": {
       "natColor": "sandColor",
-      "texture": "sand"
+      "texture": "tiles/sand"
     },
     "values": {
       "acel": 0.25
@@ -40,7 +40,7 @@
   "4": {
     "texture": {
       "natColor": "iceColor",
-      "texture": "ice"
+      "texture": "tiles/ice"
     },
     "values": {
       "acel": 1.625

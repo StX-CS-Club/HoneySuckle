@@ -29,10 +29,13 @@ public class Player {
     public double[] pos;
     public double[] vel = new double[2];
 
+    public double[] screenPos = new double[2];
     public double rotation;
 
     public final Craft crafting;
     private final Armory armory;
+
+    private boolean weaponScroll = false;
 
     public double health = 1;
     private double stamina = 1;
@@ -44,26 +47,9 @@ public class Player {
     public void render(Graphics2D g, double[] mousePos) {
         AffineTransform originalTransform = g.getTransform();
 
-        double[] camera = World.worlds.get(World.level).camera;
-
-        double[] screenPos = new double[]{
-            HoneySuckle.size[0] / 2 + pos[0] - camera[0],
-            HoneySuckle.size[1] / 2 + pos[1] - camera[1]
-        };
-
         if (health > 0) {
             if (tags.contains("leader")) {
-                crafting.renderTile(g, World.worlds.get(World.level), this);
-            }
-
-            double x = mousePos[0] - screenPos[0];
-            double y = mousePos[1] - screenPos[1];
-
-            rotation = Math.toDegrees(Math.atan(-1 * x / y));
-            if(y >= 0){
-                rotation += 180;
-            } else if (x <= 0){
-                rotation += 360;
+                crafting.render(g, World.worlds.get(World.level), this);
             }
 
             g.rotate(Math.toRadians(rotation), screenPos[0], screenPos[1]);
@@ -75,9 +61,7 @@ public class Player {
                     (int) (screenPos[1] - size / 2),
                     size, size);
 
-                    armory.render(g, this);
-
-            g.setTransform(originalTransform);
+            armory.render(g, originalTransform, this);
         }
 
         String biome = World.worlds.get(World.level).biome;
@@ -102,7 +86,16 @@ public class Player {
 
         double[] camera = World.worlds.get(World.level).camera;
 
-        crafting.scrollBar(scroll);
+
+        if(click == 2){
+            weaponScroll = !weaponScroll;
+        }
+
+        if(weaponScroll){
+            armory.scrollBar(scroll);
+        } else {
+            crafting.scrollBar(scroll);
+        }
 
         for (int i = 0; i < 2; i++) {
             double mouseDiff = mousePos[i]
@@ -118,7 +111,7 @@ public class Player {
             }
         }
 
-        armory.update(click, this);
+        armory.update(click, keyDown, this);
         if (click == 3) {
             crafting.build(World.worlds.get(World.level), this);
         }
@@ -198,6 +191,20 @@ public class Player {
         }
         if (health > 1) {
             health = 1;
+        }
+        screenPos = new double[]{
+            HoneySuckle.size[0] / 2 + pos[0] - camera[0],
+            HoneySuckle.size[1] / 2 + pos[1] - camera[1]
+        };
+
+        double x = mousePos[0] - screenPos[0];
+        double y = mousePos[1] - screenPos[1];
+
+        rotation = Math.toDegrees(Math.atan(-1 * x / y));
+        if (y >= 0) {
+            rotation += 180;
+        } else if (x <= 0) {
+            rotation += 360;
         }
     }
 }

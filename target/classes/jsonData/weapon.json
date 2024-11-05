@@ -9,7 +9,20 @@
             "cooldown": 20.0
         },
         "texture": {
-            "bladeColor": "#ffffff"
+            "bladeColor": "#ffffff",
+            "itemTexture": "items/sword"
+        }
+    },
+    "bow": {
+        "name": "bow",
+        "type": "gun",
+        "attributes": {
+            "frames": 10.0,
+            "cooldown": 20.0
+        },
+        "projectile": "arrow",
+        "texture": {
+            "itemTexture": "items/bow"
         }
     }
 }

@@ -84,6 +84,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
                 Map<String, Object> recipe = (Map<String, Object>) recipeData.get(key);
                 Craft.recipeMats.put(intKey, (Map<String, Integer>) recipe.get("mats"));
                 Craft.recipeParams.put(intKey, (Map<String, List<Integer>>) recipe.get("params"));
+                Craft.recipeTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
             }
 
             Map<String, Object> biomeData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/biome.json").toURI()), mapType);
@@ -106,7 +107,16 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
                 Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
                 Weapon.weaponAttributes.put(key, (Map<String, Double>) weapon.get("attributes"));
                 Weapon.weaponTypes.put(key, (String) weapon.get("type"));
+                Weapon.weaponProj.put(key, (String) weapon.get("projectile"));
                 Weapon.weaponTextures.put(key, (Map<String, String>) weapon.get("texture"));
+            }
+            
+            Map<String, Object> projData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/projectile.json").toURI()), mapType);
+            for(String key : projData.keySet()){
+                Map<String, Object> proj = (Map<String, Object>) projData.get(key);
+                Projectile.projAttributes.put(key, (Map<String, Double>) proj.get("attributes"));
+                Projectile.projTextures.put(key, (Map<String, String>) proj.get("texture"));
+                Projectile.projTags.put(key, (List<String>) proj.get("tags"));
             }
         } catch (IOException e) {
             e.printStackTrace();
