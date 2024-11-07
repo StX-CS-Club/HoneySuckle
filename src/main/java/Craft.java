@@ -26,7 +26,7 @@ public class Craft {
 
     public double[] cursor = new double[2];
 
-    public void render(Graphics2D g, World world, Player player) {
+    public void renderTile(Graphics2D g, World world, Player player){
         int[] index = new int[]{
             (int) Math.floor(player.pos[0] / HoneySuckle.tileSize + cursor[0]),
             (int) Math.floor(player.pos[1] / HoneySuckle.tileSize + cursor[1])
@@ -45,7 +45,9 @@ public class Craft {
                 (int) (HoneySuckle.size[0] / 2 + index[0] * HoneySuckle.tileSize - camera[0]),
                 (int) (HoneySuckle.size[1] / 2 + index[1] * HoneySuckle.tileSize - camera[1]),
                 HoneySuckle.tileSize, HoneySuckle.tileSize);
+    }
 
+    public void render(Graphics2D g, World world, Player player) {
         double size = HoneySuckle.size[0] / 12;
         double xMargin = 0;
         if (player.screenPos[0] < size * 3 + HoneySuckle.tileSize && player.screenPos[1] > HoneySuckle.size[1] - size*25/12 - HoneySuckle.tileSize) {

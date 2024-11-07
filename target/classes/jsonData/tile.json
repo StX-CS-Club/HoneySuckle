@@ -46,5 +46,13 @@
       "acel": 1.625
     },
     "tags": ["walkable", "slippery"]
+  },
+  "5": {
+    "texture": {
+      "natColor": "brickColor",
+      "texture": "tiles/brick"
+    },
+    "values": {},
+    "tags": ["walkable"]
   }
 }

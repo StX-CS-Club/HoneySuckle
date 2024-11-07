@@ -1,4 +1,5 @@
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -152,6 +153,24 @@ public class Rendering {
             }
         }
         return frames.get((int) Math.floor(frame * frames.size()));
+    }
+
+    public static BufferedImage applyOverlay(BufferedImage image, String color) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        BufferedImage overlayedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = overlayedImage.createGraphics();
+        
+        g.drawImage(image, 0, 0, null);
+
+        g.setComposite(AlphaComposite.SrcAtop);
+        Color c = Color.decode(color);
+        g.setColor(new Color(c.getRed(), c.getBlue(), c.getGreen(), 128));
+        g.fillRect(0, 0, width, height);
+
+        g.dispose();
+        return overlayedImage;
     }
 
     public static void borderRect(Graphics2D g, int border, Color color, int x, int y, int width, int height) {

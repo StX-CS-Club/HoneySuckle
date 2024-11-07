@@ -5,12 +5,13 @@
         "attributes": {
             "damage": 0.075,
             "frames": 10.0,
-            "size": 1.5,
+            "size": 1.0,
             "cooldown": 20.0
         },
         "texture": {
             "bladeColor": "#ffffff",
-            "itemTexture": "items/sword"
+            "itemTexture": "items/sword",
+            "texture": "projectiles/sword"
         }
     },
     "bow": {
@@ -18,11 +19,13 @@
         "type": "gun",
         "attributes": {
             "frames": 1.0,
-            "cooldown": 20.0
+            "cooldown": 20.0,
+            "size": 1.0
         },
         "projectile": "arrow",
         "texture": {
-            "itemTexture": "items/bow"
+            "itemTexture": "items/bow",
+            "texture" : "projectiles/bow"
         }
     },
     "shield": {
@@ -37,7 +40,7 @@
         },
         "texture": {
             "itemTexture": "items/shield",
-            "shieldTexture": "projectiles/shield"
+            "texture": "projectiles/shield"
         }
     }
 }

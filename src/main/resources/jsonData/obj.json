@@ -108,5 +108,13 @@
     "loot": {
       "coal": 2
     }
+  },
+  "5": {
+    "texture": {
+      "texture": "tiles/gate"
+    },
+    "tags": ["enemyGate", "obstruction"],
+    "values": {},
+    "loot": {}
   }
 }

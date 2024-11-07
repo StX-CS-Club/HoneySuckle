@@ -48,8 +48,9 @@ public class Player {
         AffineTransform originalTransform = g.getTransform();
 
         if (health > 0) {
+
             if (tags.contains("leader")) {
-                crafting.render(g, World.worlds.get(World.level), this);
+                crafting.renderTile(g, World.worlds.get(World.level), this);
             }
 
             g.rotate(Math.toRadians(rotation), screenPos[0], screenPos[1]);
@@ -200,7 +201,7 @@ public class Player {
         double x = mousePos[0] - screenPos[0];
         double y = mousePos[1] - screenPos[1];
 
-        rotation = Math.toDegrees(Math.atan(-1 * x / y));
+        rotation = Math.toDegrees(Math.atan(x / -y));
         if (y >= 0) {
             rotation += 180;
         } else if (x <= 0) {

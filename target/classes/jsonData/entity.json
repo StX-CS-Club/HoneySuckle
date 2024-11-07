@@ -4,7 +4,7 @@
         "texture": {
             "baseColor": "#71cf01",
             "texture": "entities/slime/slime",
-            "mirror": "horizontal"
+            "anim": "horizontal"
         },
         "attributes": {
             "size": 0.5,
@@ -14,6 +14,29 @@
         },
         "loot": {
             "slime": 1
-        }
+        },
+        "tags": []
+    },
+    "dragon": {
+        "name": "dragon",
+        "texture": {
+            "baseColor": "#b4008e",
+            "texture": "entities/dragon/dragon",
+            "anim": "fire"
+        },
+        "attributes": {
+            "size": 5.0,
+            "health": 20.0,
+            "view": 12.5,
+            "weight": 5.0,
+            "frames": 15.0,
+            "cooldown": 90.0
+        },
+        "loot": {
+            "scale": 1
+        },
+        "tags": [
+            "alwaysRender"
+        ]
     }
 }

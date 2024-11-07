@@ -7,7 +7,7 @@ public class Tile {
     public static final Map<Integer, Map<String, Double>> tileValues = new HashMap<>();
     public static final Map<Integer, Map<String, String>> tileTextures = new HashMap<>();
 
-    public Tile(){
+    public Tile(int id, int[] posIndex){
         
     }
 }

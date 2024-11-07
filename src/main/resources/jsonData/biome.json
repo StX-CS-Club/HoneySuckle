@@ -81,5 +81,14 @@
         "iceColor": "#cbeeff",
         "coalColor": "#784d4d"
       }
+    },
+    "bridge": {
+      "name": "bridge",
+      "tags": ["dangerousVoid", "enemyLock"],
+      "colorMap": {
+        "brickColor": "#847878",
+        "landColor": "#cdc5b3",
+        "voidColor": "#242475"
+      }
     }
   }  

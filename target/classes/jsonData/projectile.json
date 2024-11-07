@@ -1,15 +1,29 @@
 {
     "arrow": {
         "name": "arrow",
-        "tags": ["hurtEnemy"],
+        "tags": ["hurtEntity"],
         "attributes": {
             "damage": 0.25,
             "speed": 10.0,
             "size": 0.5,
-            "vel": 10.0
+            "weight": 0.5
         },
         "texture": {
             "texture": "projectiles/arrow"
+        }
+
+    },
+    "fireball": {
+        "name": "fireball",
+        "tags": ["hurtPlayer", "hurtEntity", "alwaysRender", "damageTile"],
+        "attributes": {
+            "damage": 0.75,
+            "speed": 7.5,
+            "size": 2.0,
+            "weight": 3.0
+        },
+        "texture": {
+            "texture": "projectiles/fireball"
         }
 
     }

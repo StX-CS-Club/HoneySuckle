@@ -1,6 +1,7 @@
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,26 +13,44 @@ public class Projectile {
     public static final Map<String, Map<String, String>> projTextures = new HashMap<>();
 
     public double[] pos;
-    private double[] vel;
-    private final double angle;
-    private final String type;
+    public double[] vel;
+    public final double size;
+    public double angle;
+    public final double weight;
+    public final String type;
+
+    public Object source;
+
     private final Map<String, String> texture;
     private final Map<String, Double> attributes;
     private final List<String> tags;
 
-    public Projectile(String type, double[] pos, double angle) {
+    public Projectile(String type, double[] pos, double angle, Object source) {
         texture = projTextures.get(type);
         attributes = projAttributes.get(type);
         tags = projTags.get(type);
 
-        double sin = Math.sin(Math.toRadians(-angle)) * -attributes.get("vel");
-        double cos = Math.cos(Math.toRadians(-angle)) * -attributes.get("vel");
-        
+        double sin = Math.sin(Math.toRadians(-angle)) * -attributes.get("speed");
+        double cos = Math.cos(Math.toRadians(-angle)) * -attributes.get("speed");
+
         vel = new double[]{sin, cos};
 
         this.pos = pos;
         this.type = type;
         this.angle = angle;
+        this.source = source;
+        weight = attributes.get("weight");
+        size = attributes.get("size");
+    }
+
+    public void alterVel(double[] pos, double angle, double velCoef, Object source) {
+        double sin = Math.sin(Math.toRadians(-angle)) * velCoef * -attributes.get("speed");
+        double cos = Math.cos(Math.toRadians(-angle)) * velCoef * -attributes.get("speed");
+
+        vel = new double[]{sin, cos};
+
+        this.angle = angle;
+        this.source = source;
     }
 
     public void update() {
@@ -47,26 +66,43 @@ public class Projectile {
         } else {
             WorldObject object = world.objGrid[posIndex[0]][posIndex[1]];
             if (object != null) {
-                if (object.tags.contains("projObstruction")) {
-                    world.projectiles.remove(this);
+                if (tags.contains("damageTile")) {
+                    if (!object.damage(attributes.get("damage"))) {
+                        if (object.tags.contains("projObstruction")) {
+                            world.projectiles.remove(this);
+                        }
+                    }
+                } else {
+                    if (object.tags.contains("projObstruction")) {
+                        world.projectiles.remove(this);
+                    }
                 }
             }
         }
-        if (tags.contains("hurtEnemy")) {
+        if (tags.contains("hurtEntity")) {
             for (Entity entity : world.renderEntities) {
-                if (Math.abs(entity.pos[0] - pos[0]) <= HoneySuckle.tileSize * attributes.get("size") / 2 && Math.abs(entity.pos[1] - pos[1]) <= HoneySuckle.tileSize * attributes.get("size") / 2) {
-                    entity.damage(attributes.get("damage"));
-                    world.projectiles.remove(this);
-                    break;
+                if (source != entity || tags.contains("hurtSelf")) {
+                    if (Collision.isBoxOverlap(
+                            new Point2D.Double(pos[0], pos[1]),
+                            new Point2D.Double(size, size),
+                            angle,
+                            new Point2D.Double(entity.pos[0], entity.pos[1]),
+                            new Point2D.Double(entity.size, entity.size))) {
+                        entity.damage(attributes.get("damage"));
+                        world.projectiles.remove(this);
+                        break;
+                    }
                 }
             }
         }
         if (tags.contains("hurtPlayer")) {
             for (Player player : Player.players) {
-                if (Math.abs(player.pos[0] - pos[0]) <= HoneySuckle.tileSize * attributes.get("size") / 2 && Math.abs(player.pos[1] - pos[1]) <= HoneySuckle.tileSize * attributes.get("size") / 2) {
-                    player.health -= attributes.get("damage");
-                    world.projectiles.remove(this);
-                    break;
+                if (source != player || tags.contains("hurtSelf")) {
+                    if (Math.abs(player.pos[0] - pos[0]) <= HoneySuckle.tileSize * size / 2 && Math.abs(player.pos[1] - pos[1]) <= HoneySuckle.tileSize * size / 2) {
+                        player.health -= attributes.get("damage");
+                        world.projectiles.remove(this);
+                        break;
+                    }
                 }
             }
         }

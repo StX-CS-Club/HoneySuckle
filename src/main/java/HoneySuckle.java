@@ -13,7 +13,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -101,6 +100,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
                 Entity.entityAttributes.put(key, (Map<String, Double>) entity.get("attributes"));
                 Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
                 Entity.entityLoot.put(key, (Map<String, Integer>) entity.get("loot"));
+                Entity.entityTags.put(key, (List<String>) entity.get("tags"));
             }
 
             Map<String, Object> weaponData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/weapon.json").toURI()), mapType);

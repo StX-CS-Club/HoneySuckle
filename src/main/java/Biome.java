@@ -15,7 +15,8 @@ public class Biome {
         "peninsula",
         "darkForest",
         "tundra",
-        "desert"
+        "desert",
+        "bridge"
     };
 
     public static final Map<String, Map<String, String>> biomeColorMap = new HashMap<>();
@@ -487,6 +488,47 @@ public class Biome {
                         }
                     }
                 }
+                world.grid = result;
+                world.objGrid = objResult;
+            }
+            case "bridge" -> {
+                world.size = new int[]{51, 150};
+                world.start = (world.size[0] - 1) / 2;
+
+                int[][] result = new int[world.size[0]][world.size[1]];
+                WorldObject[][] objResult = new WorldObject[world.size[0]][world.size[1]];
+
+                for(int y = world.size[1]-1; y > -1; y--){
+                    for(int x = 23; x < 28; x++){
+                        result[x][y] = 5;
+                    }
+                }
+                for (int y = 82; y > 68; y--) {
+                    int xSize = 86-y;
+                    if(y < 73){
+                        xSize = y-65;
+                    } else if(y < 78){
+                        xSize = 8;
+                    }
+                    for(int x = 0; x < xSize; x++){
+                        if(x == xSize-1){
+                            result[world.start - x][y] = 5;
+                            result[world.start + x][y] = 5;
+                        } else {
+                        result[world.start - x][y] = 1;
+                        result[world.start + x][y] = 1;
+                        }
+                    }
+                }
+                for(int x = 23; x < 28; x++){
+                    objResult[x][67] = new WorldObject(5, new int[]{x, 67});
+                }
+                world.entities.add(new Entity(
+                    "dragon", new double[]{
+                        25.5*HoneySuckle.tileSize, 76*HoneySuckle.tileSize
+                    }
+                ));
+                
                 world.grid = result;
                 world.objGrid = objResult;
             }
