@@ -1,6 +1,6 @@
 {
     "arrow": {
-        "name": "arrow",
+        "name": "Arrow",
         "tags": ["hurtEntity"],
         "attributes": {
             "damage": 0.25,
@@ -14,7 +14,7 @@
 
     },
     "fireball": {
-        "name": "fireball",
+        "name": "Fireball",
         "tags": ["hurtPlayer", "hurtEntity", "alwaysRender", "damageTile"],
         "attributes": {
             "damage": 0.75,

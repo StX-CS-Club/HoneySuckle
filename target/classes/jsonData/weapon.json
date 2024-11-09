@@ -1,9 +1,10 @@
 {
     "sword": {
-        "name": "sword",
+        "name": "Sword",
         "type": "blade",
+        "constClick": true,
         "attributes": {
-            "damage": 0.075,
+            "damage": 0.05,
             "frames": 10.0,
             "size": 1.0,
             "cooldown": 20.0
@@ -11,12 +12,13 @@
         "texture": {
             "bladeColor": "#ffffff",
             "itemTexture": "items/sword",
-            "texture": "projectiles/sword"
+            "texture": "weapons/sword"
         }
     },
     "bow": {
-        "name": "bow",
+        "name": "Bow",
         "type": "gun",
+        "constClick": true,
         "attributes": {
             "frames": 1.0,
             "cooldown": 20.0,
@@ -25,12 +27,13 @@
         "projectile": "arrow",
         "texture": {
             "itemTexture": "items/bow",
-            "texture" : "projectiles/bow"
+            "texture" : "weapons/bow"
         }
     },
     "shield": {
-        "name": "shield",
+        "name": "Shield",
         "type": "shield",
+        "constClick": false,
         "attributes":{
             "size": 1.0,
             "frames": 5.0,
@@ -40,7 +43,7 @@
         },
         "texture": {
             "itemTexture": "items/shield",
-            "texture": "projectiles/shield"
+            "texture": "weapons/shield"
         }
     }
 }

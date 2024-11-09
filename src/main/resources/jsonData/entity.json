@@ -1,6 +1,6 @@
 {
     "slime": {
-        "name": "slime",
+        "name": "Slime",
         "texture": {
             "baseColor": "#71cf01",
             "texture": "entities/slime/slime",
@@ -18,7 +18,7 @@
         "tags": []
     },
     "dragon": {
-        "name": "dragon",
+        "name": "Dragon",
         "texture": {
             "baseColor": "#b4008e",
             "texture": "entities/dragon/dragon",
@@ -26,7 +26,7 @@
         },
         "attributes": {
             "size": 5.0,
-            "health": 20.0,
+            "health": 15.0,
             "view": 12.5,
             "weight": 5.0,
             "frames": 15.0,

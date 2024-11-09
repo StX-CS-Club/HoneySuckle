@@ -5,8 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * Biome.java *
+ - Handles biome generation
+ - Static attributes from json
+ */
+
 public class Biome {
 
+    //Progression of biomes
     public static String[] biomes = new String[]{
         "wetlands",
         "field",
@@ -19,12 +26,18 @@ public class Biome {
         "bridge"
     };
 
+    //Static data from json
     public static final Map<String, Map<String, String>> biomeColorMap = new HashMap<>();
 
     public static final Map<String, List<String>> biomeTags = new HashMap<>();
 
+    //Generates biome based on given type
     public static void biomeGeneration(World world) {
         switch (world.biome) {
+            /* 
+             * Generates land based on tile below and towards the center of the world
+             * If land, chance to spawn tree or slime
+             */
             case "wetlands" -> {
                 world.size = new int[]{51, 90};
                 world.start = (world.size[0] - 1) / 2;
@@ -83,6 +96,10 @@ public class Biome {
                 world.objGrid = objResult;
                 world.entities = entityResult;
             }
+            /*
+             * Generates land based mostly on tile below, very small impact of tile towards center of the world
+             * If land, chance to spawn coal, tree, or slime
+             */
             case "peninsula" -> {
                 world.size = new int[]{25, 75};
                 world.start = (world.size[0] - 1) / 2;
@@ -145,6 +162,10 @@ public class Biome {
                 world.objGrid = objResult;
                 world.entities = entityResult;
             }
+            /*
+             * Generates land based on tile below and towards the center of the worlds, but far less common
+             * If land, chance to spawn tree
+             */
             case "islands" -> {
                 world.size = new int[]{75, 50};
                 world.start = (world.size[0] - 1) / 2;
@@ -190,6 +211,10 @@ public class Biome {
                 world.grid = result;
                 world.objGrid = objResult;
             }
+            /*
+             * Generates land based on tile below and towards center, but very common
+             * If land, chance to spawn tree or coal
+             */
             case "field" -> {
                 world.size = new int[]{101, 100};
                 world.start = (world.size[0] - 1) / 2;
@@ -247,6 +272,11 @@ public class Biome {
                 world.grid = result;
                 world.objGrid = objResult;
             }
+            /*
+             * Generates mud based on tile below and towards center
+             * If not mud, chance to generate land based on tile below and towards center
+             * If land, chance to spawn tree
+             */
             case "swamp" -> {
                 world.size = new int[]{75, 100};
                 world.start = (world.size[0] - 1) / 2;
@@ -304,6 +334,10 @@ public class Biome {
                 world.grid = result;
                 world.objGrid = objResult;
             }
+            /*
+             * Generates land based on tiel below and towards center
+             * If land, chance to spawn tree, coal, or very rarely a pumpkin
+             */
             case "darkForest" -> {
                 world.size = new int[]{101, 150};
                 world.start = (world.size[0] - 1) / 2;
@@ -365,6 +399,11 @@ public class Biome {
                 world.grid = result;
                 world.objGrid = objResult;
             }
+            /*
+             * Generates land based on tile below or towards center
+             * If land, chance to become sand
+             * If land, chance to spawn tree or cactus
+             */
             case "desert" -> {
                 world.size = new int[]{150, 125};
                 world.start = (world.size[0] - 1) / 2;
@@ -428,6 +467,11 @@ public class Biome {
                 world.grid = result;
                 world.objGrid = objResult;
             }
+            /*
+             * Generates land based on tile below and towards center
+             * If not land, chance to spawn ice based on tile below and towards center
+             * If land, chance to spawn tree or coal
+             */
             case "tundra" -> {
                 world.size = new int[]{75, 100};
                 world.start = (world.size[0] - 1) / 2;
@@ -491,6 +535,10 @@ public class Biome {
                 world.grid = result;
                 world.objGrid = objResult;
             }
+            /*
+             * Generates straight line of bricks, with circle of land in the center
+             * Spawns dragon in center, with entityGates blocking progression
+             */
             case "bridge" -> {
                 world.size = new int[]{51, 150};
                 world.start = (world.size[0] - 1) / 2;
@@ -535,6 +583,7 @@ public class Biome {
         }
     }
 
+    //Returns given probability if tile id is in provides list, else 0
     private static double conditionalProb(int pos, List<Integer> condition, double prob) {
         return condition.contains(pos) ? prob : 0;
     }

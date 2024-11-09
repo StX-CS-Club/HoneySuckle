@@ -1,6 +1,6 @@
 {
     "wetlands": {
-      "name": "wetlands",
+      "name": "Wetlands",
       "tags": [],
       "colorMap": {
         "landColor": "#0fc80f",
@@ -9,7 +9,7 @@
       }
     },
     "peninsula": {
-      "name": "peninsula",
+      "name": "Peninsula",
       "tags": [],
       "colorMap": {
         "landColor": "#94ca53",
@@ -19,7 +19,7 @@
       }
     },
     "islands": {
-      "name": "islands",
+      "name": "Islands",
       "tags": [],
       "colorMap": {
         "landColor": "#0fc854",
@@ -28,7 +28,7 @@
       }
     },
     "field": {
-      "name": "field",
+      "name": "Field",
       "tags": [],
       "colorMap": {
         "landColor": "#00a800",
@@ -38,7 +38,7 @@
       }
     },
     "swamp": {
-      "name": "swamp",
+      "name": "Swamp",
       "tags": [],
       "colorMap": {
         "landColor": "#58860b",
@@ -48,7 +48,7 @@
       }
     },
     "darkForest": {
-      "name": "darkForest",
+      "name": "Dark Forest",
       "tags": ["fog"],
       "colorMap": {
         "landColor": "#2a562a",
@@ -60,7 +60,7 @@
       }
     },
     "desert": {
-      "name": "desert",
+      "name": "Desert",
       "tags": ["fog"],
       "colorMap": {
         "landColor": "#ffc436",
@@ -72,7 +72,7 @@
       }
     },
     "tundra": {
-      "name": "tundra",
+      "name": "Tundra",
       "tags": ["dangerousVoid"],
       "colorMap": {
         "landColor": "#dffffb",
@@ -83,7 +83,7 @@
       }
     },
     "bridge": {
-      "name": "bridge",
+      "name": "Bridge",
       "tags": ["dangerousVoid", "enemyLock"],
       "colorMap": {
         "brickColor": "#847878",

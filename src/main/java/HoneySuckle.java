@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -16,6 +17,7 @@ import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,170 +31,54 @@ import javax.swing.JPanel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseMotionListener, MouseListener, MouseWheelListener {
+/* 
+ * HoneySuckle.java *
+ - Main Class
+ -Static variables and constants
+ - Creates window and canvas, centerlizes rendering and updating
+ */
+//Main class, extends JPanel for graphics, implements runnable and listeners
+public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
-    public static final int tileSize = 40;
-    public static final int fps = 40;
+    //Static variables referenced throughout code
+    public static int tileSize = 40;
+    public static final int fps = 30;
     public static int[] size = new int[]{800, 600};
 
+    //Static variables referencing inputs
     public static boolean[] keyDown = new boolean[100];
-
     public static double[] mousePos = new double[2];
-    public static int click = 0;
-
+    public static boolean[] click = new boolean[6];
     public static double scroll = 0;
 
+    //Main player
     public static Player player;
 
+    //Public set of light data used in lighting system
     public static Set<Map<String, Integer>> lights = new LinkedHashSet<>();
 
-    @SuppressWarnings({ "unchecked" })
-    public HoneySuckle() throws URISyntaxException {
-        setPreferredSize(new Dimension(size[0], size[1]));
-        setFocusable(true);
-        requestFocusInWindow();
-        addKeyListener(this);
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        addMouseWheelListener(this);
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
-            };
-            Map<String, Object> objData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/obj.json").toURI()), mapType);
-            for(String key : objData.keySet()){
-                int intKey = Integer.parseInt(key);
-                Map<String, Object> obj = (Map<String, Object>) objData.get(key);
-                WorldObject.objLoot.put(intKey, (Map<String, Integer>) obj.get("loot"));
-                WorldObject.objTextures.put(intKey, (Map<String, String>) obj.get("texture"));
-                WorldObject.objValues.put(intKey, (Map<String, Double>) obj.get("values"));
-                WorldObject.objTags.put(intKey, (List<String>) obj.get("tags"));
-            }
-
-            Map<String, Object> tileData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/tile.json").toURI()), mapType);
-            for(String key : tileData.keySet()){
-                int intKey = Integer.parseInt(key);
-                Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
-                Tile.tileTextures.put(intKey, (Map<String, String>) tile.get("texture"));
-                Tile.tileValues.put(intKey, (Map<String, Double>) tile.get("values"));
-                Tile.tileTags.put(intKey, (List<String>) tile.get("tags"));
-            }
-
-            Map<String, Object> recipeData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/recipe.json").toURI()), mapType);
-            for(String key : recipeData.keySet()){
-                int intKey = Integer.parseInt(key);
-                Map<String, Object> recipe = (Map<String, Object>) recipeData.get(key);
-                Craft.recipeMats.put(intKey, (Map<String, Integer>) recipe.get("mats"));
-                Craft.recipeParams.put(intKey, (Map<String, List<Integer>>) recipe.get("params"));
-                Craft.recipeTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
-            }
-
-            Map<String, Object> biomeData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/biome.json").toURI()), mapType);
-            for(String key : biomeData.keySet()){
-                Map<String, Object> biome = (Map<String, Object>) biomeData.get(key);
-                Biome.biomeColorMap.put(key, (Map<String, String>) biome.get("colorMap"));
-                Biome.biomeTags.put(key, (List<String>) biome.get("tags"));
-            }
-
-            Map<String, Object> entityData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/entity.json").toURI()), mapType);
-            for(String key : entityData.keySet()){
-                Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
-                Entity.entityAttributes.put(key, (Map<String, Double>) entity.get("attributes"));
-                Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
-                Entity.entityLoot.put(key, (Map<String, Integer>) entity.get("loot"));
-                Entity.entityTags.put(key, (List<String>) entity.get("tags"));
-            }
-
-            Map<String, Object> weaponData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/weapon.json").toURI()), mapType);
-            for(String key : weaponData.keySet()){
-                Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
-                Weapon.weaponAttributes.put(key, (Map<String, Double>) weapon.get("attributes"));
-                Weapon.weaponTypes.put(key, (String) weapon.get("type"));
-                Weapon.weaponProj.put(key, (String) weapon.get("projectile"));
-                Weapon.weaponTextures.put(key, (Map<String, String>) weapon.get("texture"));
-            }
-            
-            Map<String, Object> projData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/projectile.json").toURI()), mapType);
-            for(String key : projData.keySet()){
-                Map<String, Object> proj = (Map<String, Object>) projData.get(key);
-                Projectile.projAttributes.put(key, (Map<String, Double>) proj.get("attributes"));
-                Projectile.projTextures.put(key, (Map<String, String>) proj.get("texture"));
-                Projectile.projTags.put(key, (List<String>) proj.get("tags"));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        World world = new World();
-        player = new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1] - 0.5)},
-                tileSize / 2, Arrays.asList("leader"));
-    }
-
-    //Render
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        lights = new LinkedHashSet<>();
-
-        Graphics2D g2d = (Graphics2D) g;
-
-        World.worlds.get(World.level).render(g2d);
-        for (Player renderPlayer : Player.players) {
-            renderPlayer.render(g2d, mousePos);
-        }
-
-        String biome = World.worlds.get(World.level).biome;
-        if (Biome.biomeTags.get(biome).contains("fog")) {
-            Color fogColor = Color.decode(Biome.biomeColorMap.get(biome).get("fogColor"));
-            Rendering.renderLight(g2d, fogColor, lights);
-        }
-        
-        Rendering.colorFade(g2d, Color.red, 1-player.health);
-
-        player.crafting.render(g2d, World.worlds.get(World.level), player);
-        player.armory.render(g2d, player);
-
-        g.dispose();
-        g2d.dispose();
-    }
-
-    public void update() {
-        for (Player updatePlayer : Player.players) {
-            updatePlayer.update(keyDown, mousePos, click, scroll);
-        }
-        World.worlds.get(World.level).update();
-
-        click = 0;
-        if (Math.abs(scroll) > 2) {
-            scroll = Math.signum(scroll) * 2;
-        }
-        scroll += -Math.signum(scroll) * 0.8;
-
-        repaint();
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            update();
-            try {
-                Thread.sleep((int) (1000 / fps));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void main(String[] args) throws URISyntaxException {
+    //Main Method
+    public static void main(String[] args) {
+        //Creates the windo
         JFrame frame = new JFrame("HoneySuckle");
         HoneySuckle panel = new HoneySuckle();
 
+        //Trys to set window icon as logo
+        URL iconUrl = HoneySuckle.class.getResource("images/HoneySuckleIcon.png");
         try {
-            Image iconImage = ImageIO.read(HoneySuckle.class.getResource("images/HoneySuckleIcon.png"));
+            Image iconImage = ImageIO.read(iconUrl);
             frame.setIconImage(iconImage);
         } catch (IOException e) {
+            if (iconUrl == null) {
+                System.out.println("HoneySuckle ERROR: Could not find icon.");
+            } else {
+                System.out.println("HoneySuckle ERROR: Failed to import icon.");
+            }
         }
 
+        //Appends rendering to window
         frame.add(panel);
+        //Adds resize listener to allow resizing rendering canvas
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -205,10 +91,104 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        //Starts game loop
         Thread gameThread = new Thread(panel);
         gameThread.start();
     }
 
+    //Game Constructor
+    public HoneySuckle() {
+        //Creates window
+        setPreferredSize(new Dimension(size[0], size[1]));
+        setFocusable(true);
+        requestFocusInWindow();
+        //Adds event listeners to window
+        addKeyListener(this);
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        addMouseWheelListener(this);
+        //Fetches all data from json files into appropriate hashmaps
+        getJson();
+
+        //Creates world 1
+        World world = new World();
+        //Creates main player in reference to world 1
+        player = new Player(new double[]{HoneySuckle.tileSize * (world.start + 0.5), HoneySuckle.tileSize * (world.size[1] - 0.5)},
+                (int) (tileSize * 0.75), Arrays.asList("leader"));
+    }
+
+    //Render
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        //Resets lights every frame
+        lights = new LinkedHashSet<>();
+
+        //Converts Graphics to Graphics2D for more methods
+        Graphics2D g2d = (Graphics2D) g;
+
+        //Renders World
+        World.worlds.get(World.level).render(g2d);
+        //Renders Players
+        for (Player renderPlayer : Player.players) {
+            renderPlayer.render(g2d, mousePos);
+        }
+
+        String biome = World.worlds.get(World.level).biome;
+        //Renders fog, is present
+        if (Biome.biomeTags.get(biome).contains("fog")) {
+            Color fogColor = Color.decode(Biome.biomeColorMap.get(biome).get("fogColor"));
+            Rendering.renderLight(g2d, fogColor, lights);
+        }
+
+        //Creates red overlay when at low health
+        Rendering.colorFade(g2d, Color.red, 1 - player.health);
+
+        //Renders crafting and weapon ui
+        player.build.renderUi(g2d, World.worlds.get(World.level), player);
+        player.armory.renderUi(g2d, player);
+
+        //Disposes of Graphics and Graphics2D
+        g.dispose();
+        g2d.dispose();
+    }
+
+    //Update
+    public void update() {
+        //Updates all players
+        for (Player updatePlayer : Player.players) {
+            updatePlayer.update(keyDown, mousePos, click, scroll);
+        }
+        //Updates current world
+        World.worlds.get(World.level).update();
+
+        //Refreshed click and scroll trackers
+        if (Math.abs(scroll) > 2) {
+            scroll = Math.signum(scroll) * 2;
+        }
+        scroll += -Math.signum(scroll) * 0.8;
+
+        //Renders
+        repaint();
+    }
+
+    //Run Loop
+    @Override
+    public void run() {
+        //Infinite loop
+        while (true) {
+            //Update
+            update();
+            try {
+                //Sleep for appropriate time to mantain FPS and allow CPU to chill
+                Thread.sleep((int) (1000 / fps));
+            } catch (InterruptedException e) {
+                System.out.println("HoneySuckle ERROR: Failed to delay loop.");
+            }
+        }
+    }
+
+    //Adds/removes keys down to keyDown variable
     @Override
     public void keyPressed(KeyEvent e) {
         keyDown[e.getKeyCode()] = true;
@@ -219,15 +199,27 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
         keyDown[e.getKeyCode()] = false;
     }
 
+    //Tracks mouse movements and events
     @Override
     public void mouseMoved(MouseEvent e) {
         Point pos = e.getPoint();
         mousePos = new double[]{pos.x, pos.y};
     }
+    
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        Point pos = e.getPoint();
+        mousePos = new double[]{pos.x, pos.y};
+    }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-        click = e.getButton();
+    public void mousePressed(MouseEvent e) {
+        click[e.getButton()] = true;
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        click[e.getButton()] = false;
     }
 
     @Override
@@ -235,21 +227,105 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseM
         scroll += e.getPreciseWheelRotation() * 1;
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
+    //Fetches data from json files and maps as hashmaps
+    @SuppressWarnings("unchecked")
+    private void getJson() {
+        try {
+            //Object used for referencing json files
+            ObjectMapper objectMapper = new ObjectMapper();
+            //Type reference of json files
+            TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
+            };
+
+            //Maps object data
+            Map<String, Object> objData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/obj.json").toURI()), mapType);
+            for (String key : objData.keySet()) {
+                int intKey = Integer.parseInt(key);
+                Map<String, Object> obj = (Map<String, Object>) objData.get(key);
+                WorldObject.objLoot.put(intKey, (Map<String, Integer>) obj.get("loot"));
+                WorldObject.objTextures.put(intKey, (Map<String, String>) obj.get("texture"));
+                WorldObject.objValues.put(intKey, (Map<String, Double>) obj.get("values"));
+                WorldObject.objTags.put(intKey, (List<String>) obj.get("tags"));
+            }
+
+            //Maps tile data
+            Map<String, Object> tileData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/tile.json").toURI()), mapType);
+            for (String key : tileData.keySet()) {
+                int intKey = Integer.parseInt(key);
+                Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
+                Tile.tileTextures.put(intKey, (Map<String, String>) tile.get("texture"));
+                Tile.tileValues.put(intKey, (Map<String, Double>) tile.get("values"));
+                Tile.tileTags.put(intKey, (List<String>) tile.get("tags"));
+            }
+
+            //Maps recipe data
+            Map<String, Object> blueprintData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/blueprint.json").toURI()), mapType);
+            for (String key : blueprintData.keySet()) {
+                int intKey = Integer.parseInt(key);
+                Map<String, Object> recipe = (Map<String, Object>) blueprintData.get(key);
+                Build.recipeMats.put(intKey, (Map<String, Integer>) recipe.get("mats"));
+                Build.recipeParams.put(intKey, (Map<String, List<Integer>>) recipe.get("params"));
+                Build.recipeTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
+            }
+
+            //Maps biome data
+            Map<String, Object> biomeData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/biome.json").toURI()), mapType);
+            for (String key : biomeData.keySet()) {
+                Map<String, Object> biome = (Map<String, Object>) biomeData.get(key);
+                Biome.biomeColorMap.put(key, (Map<String, String>) biome.get("colorMap"));
+                Biome.biomeTags.put(key, (List<String>) biome.get("tags"));
+            }
+
+            //Maps entity data
+            Map<String, Object> entityData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/entity.json").toURI()), mapType);
+            for (String key : entityData.keySet()) {
+                Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
+                Entity.entityAttributes.put(key, (Map<String, Double>) entity.get("attributes"));
+                Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
+                Entity.entityLoot.put(key, (Map<String, Integer>) entity.get("loot"));
+                Entity.entityTags.put(key, (List<String>) entity.get("tags"));
+            }
+
+            //Maps weapon data
+            Map<String, Object> weaponData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/weapon.json").toURI()), mapType);
+            for (String key : weaponData.keySet()) {
+                Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
+                Weapon.weaponAttributes.put(key, (Map<String, Double>) weapon.get("attributes"));
+                Weapon.weaponTypes.put(key, (String) weapon.get("type"));
+                Weapon.weaponProj.put(key, (String) weapon.get("projectile"));
+                Weapon.weaponClick.put(key, (boolean) weapon.get("constClick"));
+                Weapon.weaponTextures.put(key, (Map<String, String>) weapon.get("texture"));
+            }
+
+            //Maps armor data
+            Map<String, Object> armorData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/armor.json").toURI()), mapType);
+            for (String key : armorData.keySet()) {
+                Map<String, Object> armor = (Map<String, Object>) armorData.get(key);
+                Armor.armorTextures.put(key, (Map<String, String>) armor.get("texture"));
+                Armor.armorAttributes.put(key, (Map<String, Double>) armor.get("attributes"));
+            }
+
+            //Maps Projectile data
+            Map<String, Object> projData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/projectile.json").toURI()), mapType);
+            for (String key : projData.keySet()) {
+                Map<String, Object> proj = (Map<String, Object>) projData.get(key);
+                Projectile.projAttributes.put(key, (Map<String, Double>) proj.get("attributes"));
+                Projectile.projTextures.put(key, (Map<String, String>) proj.get("texture"));
+                Projectile.projTags.put(key, (List<String>) proj.get("tags"));
+            }
+        } catch (IOException e) {
+            System.out.println("HoneySuckle ERROR: Failed to import json files.");
+        } catch (URISyntaxException e) {
+            System.out.println("HoneySuckle ERROR: Could not find json files.");
+        }
     }
 
+    //Unused methods implemented
     @Override
-    public void mouseDragged(MouseEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
-    public void mousePressed(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
+    public void mouseClicked(MouseEvent e) {}
 
     @Override
     public void mouseEntered(MouseEvent e) {

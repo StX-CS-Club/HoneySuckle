@@ -1,6 +1,6 @@
 {
     "-1": {
-        "name": "wall",
+        "name": "Wall",
         "params": {
             "tile": [1, 2, 3, 4, 5],
             "obj": [0]
@@ -13,7 +13,7 @@
         }
     },
     "-2": {
-        "name": "raft",
+        "name": "Raft",
         "params": {
             "tile": [0, 2],
             "obj": [0]
@@ -26,7 +26,7 @@
         }
     },
     "-3": {
-        "name": "torch",
+        "name": "Torch",
         "params": {
             "tile": [1, 2, 3, 5],
             "obj": [0]
@@ -40,7 +40,7 @@
         }
     },
     "-4": {
-        "name": "jackolantern",
+        "name": "Jack-O-Lantern",
         "params": {
             "tile": [1, 2, 3],
             "obj": [0]

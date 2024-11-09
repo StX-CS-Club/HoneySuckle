@@ -1,10 +1,17 @@
 import java.awt.geom.Point2D;
 
 public class Collision {
+    //Converts Point2D to Array
     public static double[] pointToArray(Point2D.Double point){
         return new double[]{point.x, point.y};
     }
 
+    //COnverts Array to Point2D
+    public static Point2D.Double arrayToPoint(double[] array){
+        return new Point2D.Double(array[0], array[1]);
+    }
+
+    //Moves in the direction of angle based on given point and distance
     public static Point2D.Double addAtAngle(Point2D.Double pos, double distance, double angle){
         return new Point2D.Double(
             pos.x - distance * Math.sin(Math.toRadians(-angle)),
@@ -12,6 +19,7 @@ public class Collision {
         );
     }
 
+    //Uses SAT theorum to detect if two boxes overlap
     public static boolean isBoxOverlap(Point2D.Double origin, Point2D.Double size, double angle, Point2D.Double point, Point2D.Double pointSize) {
         // Convert sizes to half-widths for easier calculations
         Point2D.Double halfSize = new Point2D.Double(size.x / 2, size.y / 2);
@@ -27,6 +35,7 @@ public class Collision {
         return checkSAT(originBoxCorners, pointBoxCorners);
     }
 
+    //Translates box corners via rotation
     private static Point2D.Double[] getRotatedBoxCorners(Point2D.Double center, Point2D.Double halfSize, double angle) {
         double rad = Math.toRadians(angle);
         double cos = Math.cos(rad);
@@ -40,6 +49,7 @@ public class Collision {
         };
     }
 
+    //Get corners of box
     private static Point2D.Double[] getBoxCorners(Point2D.Double center, Point2D.Double halfSize) {
         return new Point2D.Double[]{
             new Point2D.Double(center.x + halfSize.x, center.y + halfSize.y),
@@ -49,6 +59,7 @@ public class Collision {
         };
     }
 
+    //SAT Theorum
     private static boolean checkSAT(Point2D.Double[] box1, Point2D.Double[] box2) {
         for (int i = 0; i < box1.length; i++) {
             // Get the current edge of box1
@@ -90,6 +101,7 @@ public class Collision {
         return true; // Overlap detected
     }
 
+    //AKA Component vectors
     private static double[] projectOntoAxis(Point2D.Double[] box, Point2D.Double axis) {
         double min = dotProduct(box[0], axis);
         double max = min;
@@ -103,6 +115,7 @@ public class Collision {
         return new double[]{min, max};
     }
 
+    //Dot product (x1x2 + y1y2)
     private static double dotProduct(Point2D.Double point1, Point2D.Double point2) {
         return point1.x * point2.x + point1.y * point2.y;
     }

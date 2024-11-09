@@ -4,38 +4,55 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * Weapon.java *
+ - Class for managing weapons
+ - Contains static json data
+ */
 public class Weapon {
 
+    //Static json data
     public static final Map<String, Map<String, Double>> weaponAttributes = new HashMap<>();
     public static final Map<String, String> weaponTypes = new HashMap<>();
     public static final Map<String, Map<String, String>> weaponTextures = new HashMap<>();
     public static final Map<String, String> weaponProj = new HashMap<>();
+    public static final Map<String, Boolean> weaponClick = new HashMap<>();
 
+    //Timing
     private int attackFrame;
     private int coolDown;
 
+    //Weapon properties
     private final String type;
     private final Map<String, Double> attributes;
     public final Map<String, String> texture;
     public final String weapon;
+    public final boolean constClick;
 
+    //Weapon constructor
     public Weapon(String weapon) {
+        //Interprets weapon id
         type = weaponTypes.get(weapon);
         attributes = weaponAttributes.get(weapon);
         attackFrame = attributes.get("frames").intValue();
         texture = weaponTextures.get(weapon);
+        constClick = weaponClick.get(weapon);
         this.weapon = weapon;
     }
 
+    //Attack with weapon
     public void attack(Player player) {
+        //Dependant on weapon type
         switch (type) {
             case "blade" -> {
+                //If cooldown over, set attack frame to 0 and reset cooldown
                 if (coolDown <= 0) {
                     attackFrame = 0;
                     coolDown = attributes.get("cooldown").intValue();
                 }
             }
             case "gun" -> {
+                //If cooldown over, shoot projectile and reset cooldown
                 if (coolDown <= 0) {
                     attackFrame = 0;
                     coolDown = attributes.get("cooldown").intValue();
@@ -43,6 +60,7 @@ public class Weapon {
                 }
             }
             case "shield" -> {
+                //If cooldown over, set attack frame to 0 and reset cooldown
                 if (coolDown <= 0) {
                     attackFrame = 0;
                     coolDown = attributes.get("cooldown").intValue();
@@ -51,38 +69,50 @@ public class Weapon {
         }
     }
 
+    //Update Weapon
     public void update(Player player) {
+        //Current world
         World world = World.worlds.get(World.level);
+
+        //Dependant on weapon type
         switch (type) {
             case "blade" -> {
+                //Progress cooldown
                 coolDown -= 1;
+                //If in attack frames
                 if (attackFrame < attributes.get("frames")) {
                     attackFrame++;
                     double size = HoneySuckle.tileSize * attributes.get("size");
+                    //Check all entities
                     for (Entity entity : world.renderEntities) {
+                        //If collision overlap of entity and blade
                         if (Collision.isBoxOverlap(
                                 Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
                                 new Point2D.Double(size / 2, size / 2),
                                 player.rotation,
                                 new Point2D.Double(entity.pos[0], entity.pos[1]),
                                 new Point2D.Double(entity.size, entity.size))) {
+                            //Damage entity, if dead, add materials
                             if (entity.damage(attributes.get("damage"))) {
                                 Map<String, Integer> loot = Entity.entityLoot.get(entity.type);
                                 for (String material : loot.keySet()) {
-                                    player.crafting.materials.put(material, player.crafting.getOrDefault(material) + loot.get(material));
+                                    player.inventory.items.put(material, player.build.getOrDefault(player.inventory.items, material) + loot.get(material));
                                 }
                             }
                         }
                     }
+                    //Player tile
                     int sizeTiles = (int) Math.floor(size / HoneySuckle.tileSize) + 1;
                     int[] posIndex = new int[]{
                         (int) Math.floor(player.pos[0] / HoneySuckle.tileSize),
                         (int) Math.floor(player.pos[1] / HoneySuckle.tileSize)
                     };
+                    //Check tiles
                     for (int x = posIndex[0] - sizeTiles; x < posIndex[0] + sizeTiles; x++) {
                         for (int y = posIndex[1] - sizeTiles; y < posIndex[1] + sizeTiles; y++) {
                             if (x >= 0 && x < world.size[0] && y >= 0 && y < world.size[1]) {
                                 if (world.objGrid[x][y] != null) {
+                                    //If collision overlap of tile and blade
                                     if (Collision.isBoxOverlap(
                                             Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
                                             new Point2D.Double(size, size),
@@ -90,10 +120,11 @@ public class Weapon {
                                             new Point2D.Double((x + 0.5) * HoneySuckle.tileSize, (y + 0.5) * HoneySuckle.tileSize),
                                             new Point2D.Double(HoneySuckle.tileSize, HoneySuckle.tileSize))) {
                                         WorldObject obj = world.objGrid[x][y];
+                                        //Damage object, and if broken add materials
                                         if (world.objGrid[x][y].damage(attributes.get("damage"))) {
                                             Map<String, Integer> loot = obj.loot;
                                             for (String material : loot.keySet()) {
-                                                player.crafting.materials.put(material, player.crafting.getOrDefault(material) + loot.get(material));
+                                                player.inventory.items.put(material, player.build.getOrDefault(player.inventory.items, material) + loot.get(material));
                                             }
                                         }
                                     }
@@ -104,18 +135,22 @@ public class Weapon {
                 }
             }
             case "gun" -> {
+                //Progress cooldown
                 coolDown -= 1;
                 if (attackFrame < attributes.get("frames")) {
                     attackFrame++;
                 }
             }
             case "shield" -> {
+                //Progress cooldown
                 coolDown -= 1;
                 if (attackFrame < attributes.get("frames")) {
                     attackFrame++;
                 }
                 double size = HoneySuckle.tileSize * attributes.get("size");
+                //Check all entities
                 for (Entity entity : world.renderEntities) {
+                    //If collision overlap of shield and entity
                     if (Collision.isBoxOverlap(
                             Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
                             new Point2D.Double(size, size),
@@ -123,35 +158,46 @@ public class Weapon {
                             new Point2D.Double(entity.pos[0], entity.pos[1]),
                             new Point2D.Double(entity.size, entity.size))) {
                         if (attackFrame < attributes.get("frames") || coolDown <= 0) {
+                            //Block tuah! Shield that thang!
+
+                            //Direction shield is facing
                             double[] direction = new double[]{
                                 Math.signum(Math.sin(Math.toRadians(player.rotation))),
                                 -Math.signum(Math.cos(Math.toRadians(player.rotation)))
                             };
+                            //Stength of parry
                             double parryCoef = attributes.get("parry") * attributes.get("frames") / attackFrame;
                             if (attackFrame == attributes.get("frames")) {
                                 parryCoef = 1;
                             }
+                            //Bonus of parry
                             double[] parryBonus = new double[]{
                                 attributes.get("parry") / attributes.get("frames") * HoneySuckle.tileSize * (attributes.get("frames") - attackFrame) * Math.abs(Math.sin(Math.toRadians(player.rotation))),
                                 attributes.get("parry") / attributes.get("frames") * HoneySuckle.tileSize * (attributes.get("frames") - attackFrame) * Math.abs(Math.cos(Math.toRadians(player.rotation)))
                             };
+                            //Yeet
                             entity.vel[0] = (Math.abs(entity.vel[0]) * attributes.get("bounce") * parryCoef + parryBonus[0]) * direction[0] / entity.weight;
                             entity.vel[1] = (Math.abs(entity.vel[1]) * attributes.get("bounce") * parryCoef + parryBonus[1]) * direction[1] / entity.weight;
                         }
                     }
                 }
+                //Check projectiles
                 for (Projectile projectile : world.renderProjectiles) {
+                    //If collision overlap between shield and proj
                     if (Collision.isBoxOverlap(
                             Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size * 2, player.rotation),
                             new Point2D.Double(size, size),
                             player.rotation,
                             new Point2D.Double(projectile.pos[0], projectile.pos[1]),
                             new Point2D.Double(projectile.size, projectile.size))) {
+                        //If in parry time
                         if (attackFrame < attributes.get("frames")) {
+                            //Send projectile towards shield direction at double velocity
                             projectile.alterVel(Collision.pointToArray(
                                     Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size * 2 + projectile.size, player.rotation)
                             ), player.rotation, 2, player);
                         } else if (coolDown <= 0) {
+                            //Delete projectile, knock back player
                             player.vel[0] += projectile.vel[0] / 2 * projectile.weight / attributes.get("bounce");
                             player.vel[1] += projectile.vel[1] / 2 * projectile.weight / attributes.get("bounce");
                             world.projectiles.remove(projectile);
@@ -162,25 +208,33 @@ public class Weapon {
         }
     }
 
+    //Render Weapon
     public void render(Graphics2D g, Player player) {
+        //Dependant on weapon type
         switch (type) {
             case "blade" -> {
+                //If slashing...
                 if (attackFrame < attributes.get("frames")) {
+                    //Position of slash on screen
                     double[] screenPos = new double[]{
                         HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") * HoneySuckle.tileSize / 2,
                         HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize - player.size / 2
                     };
+                    //Render slash
                     g.drawImage(
                             Rendering.replaceGradient(Rendering.renderGIF("images/gifs/slash.gif", ((double) attackFrame) / attributes.get("frames")), texture.get("bladeColor")),
                             (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * attributes.get("size")), (int) (HoneySuckle.tileSize * attributes.get("size")), null);
                 } else {
+                    //Size of blase
                     double size = attributes.get("size");
 
+                    //Position of blade on screen
                     double[] screenPos = new double[]{
-                        HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") * HoneySuckle.tileSize/2 + player.size,
-                        HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize / 2 - HoneySuckle.tileSize/4
+                        HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] + player.size / 2,
+                        HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize / 2 - HoneySuckle.tileSize / 4
                     };
 
+                    //Render blase
                     g.drawImage(
                             Rendering.texture(texture.get("texture"), "#ffffff"),
                             (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * size), (int) (HoneySuckle.tileSize * size), null);
@@ -189,21 +243,28 @@ public class Weapon {
             case "gun" -> {
                 double size = attributes.get("size");
 
+                //Position of gun on screen
                 double[] screenPos = new double[]{
                     HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2,
                     HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2
                 };
+
+                //Render gun
                 g.drawImage(
                         Rendering.texture(texture.get("texture"), "#ffffff"),
                         (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * size), (int) (HoneySuckle.tileSize * size), null);
             }
             case "shield" -> {
+                //Size dependant on parry animation
                 double size = attributes.get("size") * attributes.get("parry") / (attackFrame / attributes.get("frames"));
 
+                //Position of shield on screen
                 double[] screenPos = new double[]{
                     HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2,
                     HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2
                 };
+
+                //Render Shield
                 g.drawImage(
                         Rendering.texture(texture.get("texture"), "#ffffff"),
                         (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * size), (int) (HoneySuckle.tileSize * size), null);

@@ -1,0 +1,24 @@
+{
+    "default": {
+        "name": "Naked",
+        "texture": {},
+        "attributes": {
+            "defense": 1.0,
+            "regen": 0.001,
+            "speed": 0.1,
+            "maxHealth": 1.0
+        }
+    },
+    "leather": {
+        "name": "Leather Hood",
+        "texture": {
+            "texture": "armor/leather"
+        },
+        "attributes": {
+            "defense": 1.0,
+            "regen": 0.001,
+            "speed": 0.1,
+            "maxHealth": 1.0
+        }
+    }
+}

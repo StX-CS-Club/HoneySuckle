@@ -1,5 +1,6 @@
 {
   "-4": {
+    "name": "Jack-O-Lantern",
     "texture": {
       "baseColor": "#ffb31c",
       "natColor": "pumpkinColor",
@@ -15,6 +16,7 @@
     }
   },
   "-3": {
+    "name": "Torch",
     "texture": {
       "baseColor": "#ffc654",
       "texture": "tiles/torch"
@@ -29,6 +31,7 @@
     }
   },
   "-2": {
+    "name": "Raft",
     "texture": {
       "baseColor": "#aa6608",
       "texture": "tiles/raft"
@@ -38,6 +41,7 @@
     "loot": {}
   },
   "-1": {
+    "name": "Wall",
     "texture": {
       "baseColor": "#893f00",
       "texture": "tiles/wall"
@@ -50,13 +54,8 @@
       "wood": 1
     }
   },
-  "0": {
-    "texture": {},
-    "tags": [],
-    "values": {},
-    "loot": {}
-  },
   "1": {
+    "name": "Tree",
     "texture": {
       "natColor": "treeColor",
       "texture": "tiles/tree"
@@ -70,6 +69,7 @@
     }
   },
   "2": {
+    "name": "Pumpkin",
     "texture": {
       "natColor": "pumpkinColor",
       "texture": "tiles/pumpkin"
@@ -83,6 +83,7 @@
     }
   },
   "3": {
+    "name": "Cactus",
     "texture": {
       "natColor": "cactusColor",
       "texture": "tiles/cactus"
@@ -97,6 +98,7 @@
     }
   },
   "4": {
+    "name": "Coal Ore",
     "texture": {
       "natColor": "coalColor",
       "texture": "tiles/ore"
@@ -110,6 +112,7 @@
     }
   },
   "5": {
+    "name": "Death Gate",
     "texture": {
       "texture": "tiles/gate"
     },
