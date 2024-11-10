@@ -37,7 +37,7 @@
         "attributes":{
             "size": 1.0,
             "frames": 5.0,
-            "cooldown": 10.0,
+            "cooldown": 15.0,
             "parry": 1.1,
             "bounce": 1.0
         },

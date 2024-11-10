@@ -1,11 +1,12 @@
+
 import java.awt.geom.Point2D;
 
 /* 
  * Brain.java *
  -Handles methods specific to entity types
  */
-
 public class Brain {
+
     //Update Entity based on type
     public static void update(Entity entity) {
         //Current world
@@ -18,9 +19,9 @@ public class Brain {
         Point2D.Double playerPoint = Collision.arrayToPoint(player.pos);
 
         //Goes through all players, and determines the closest player
-        for(Player testPlayer : Player.players){
+        for (Player testPlayer : Player.players) {
             Point2D.Double testPoint = Collision.arrayToPoint(testPlayer.pos);
-            if(entityPoint.distance(testPoint) < entityPoint.distance(playerPoint)){
+            if (entityPoint.distance(testPoint) < entityPoint.distance(playerPoint)) {
                 player = testPlayer;
                 playerPoint = Collision.arrayToPoint(player.pos);
             }
@@ -49,32 +50,35 @@ public class Brain {
                         if (magnitude == 0) {
                             magnitude = 1;
                         }
-                        double coefficient = 15 / magnitude;
+                        double coefficient = 15.0 / magnitude;
                         entity.vel[0] += distance[0] * coefficient;
                         entity.vel[1] += distance[1] * coefficient;
                         entity.direction[0] = (int) Math.signum(entity.vel[0]);
                     }
                 }
                 //Update velocity and events based on pos
-                entity.pos = World.worlds.get(World.level).bound(entity.pos, entity.vel, entity.size / 2);
+                entity.pos = World.worlds.get(World.level).bound(entity.pos, entity.vel, entity.size / 2.0);
                 World.worlds.get(World.level).entityEvent(entity);
             }
             case "dragon" -> {
                 //Dragon is basically a gun; operated similar to the code for one
-                if (entity.ticks > entity.attributes.get("cooldown") * HoneySuckle.fps/40) {
+                double speed = 1.0 + 1.125 / 19 * (15 - entity.health);
+                if (entity.ticks * speed > entity.attributes.get("cooldown") * HoneySuckle.fps / 40.0 / speed) {
                     entity.ticks = 0;
                 }
-                if (entity.ticks == entity.attributes.get("frames")) {
+                if (entity.ticks == Math.floor(entity.attributes.get("frames")/speed)) {
                     //Launches projectile at player is time to do so
                     double[] distance = new double[]{
                         entity.pos[0] - player.pos[0],
                         entity.pos[1] - player.pos[1]
                     };
                     double angle = Math.toDegrees(Math.atan(distance[0] / -distance[1]));
-                    if(distance[1] < 0){
+                    if (distance[1] < 0) {
                         angle += 180;
                     }
-                    world.projectiles.add(new Projectile("fireball", entity.pos, angle, entity));
+                    Projectile fireball = new Projectile("fireball", entity.pos, entity.vel, angle, entity);
+                    fireball.alterVel(entity.pos, entity.vel, angle, speed, entity);
+                    world.projectiles.add(fireball);
                 }
                 //Friction
                 for (int i = 0; i < 2; i++) {
@@ -84,15 +88,15 @@ public class Brain {
                     }
                 }
                 //Update vel and events based on pos
-                entity.pos = world.bound(entity.pos, entity.vel, entity.size / 2);
+                entity.pos = world.bound(entity.pos, entity.vel, entity.size / 2.0);
                 World.worlds.get(World.level).entityEvent(entity);
             }
         }
     }
 
     //Kill Entity events
-    public static void die(Entity entity, World world){
-        switch(entity.type){
+    public static void die(Entity entity, World world) {
+        switch (entity.type) {
             case "slime" -> {
                 //Just dies
                 world.entities.remove(entity);
@@ -100,7 +104,7 @@ public class Brain {
             case "dragon" -> {
                 //Dies, and removes all gates if last one
                 world.entities.remove(entity);
-                if(world.entities.isEmpty()){
+                if (world.entities.isEmpty()) {
                     for (WorldObject[] objColumn : world.objGrid) {
                         for (int y = 0; y < objColumn.length; y++) {
                             if (objColumn[y] != null) {
@@ -112,7 +116,7 @@ public class Brain {
                     }
                 }
             }
-        }   
+        }
     }
 
     //Entity interacts with player

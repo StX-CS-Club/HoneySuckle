@@ -181,7 +181,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             update();
             try {
                 //Sleep for appropriate time to mantain FPS and allow CPU to chill
-                Thread.sleep((int) (1000 / fps));
+                Thread.sleep((int) (1000.0 / fps));
             } catch (InterruptedException e) {
                 System.out.println("HoneySuckle ERROR: Failed to delay loop.");
             }
@@ -238,7 +238,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             };
 
             //Maps object data
-            Map<String, Object> objData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/obj.json").toURI()), mapType);
+            Map<String, Object> objData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/object.json").toURI()), mapType);
             for (String key : objData.keySet()) {
                 int intKey = Integer.parseInt(key);
                 Map<String, Object> obj = (Map<String, Object>) objData.get(key);

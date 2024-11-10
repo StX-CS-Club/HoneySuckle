@@ -71,8 +71,8 @@ public class Player {
             //Render Player
             g.drawImage(
                     Rendering.texture("player", "#ffffff"),
-                    (int) (screenPos[0] - size / 2),
-                    (int) (screenPos[1] - size / 2),
+                    (int) (screenPos[0] - size / 2.0),
+                    (int) (screenPos[1] - size / 2.0),
                     size, size, null
             );
             //Render armor over player
@@ -109,7 +109,7 @@ public class Player {
         }
 
         //AKA magnitude of acceleration
-        double incriment = (double) 30 / HoneySuckle.fps * HoneySuckle.tileSize * attributes.get("speed");
+        double incriment = 30.0 / HoneySuckle.fps * HoneySuckle.tileSize * attributes.get("speed");
 
         //Get current world camera
         World world = World.worlds.get(World.level);
@@ -147,7 +147,7 @@ public class Player {
             }
         } else {
             //Recover stamina
-            stamina += 0.1 * 30 / HoneySuckle.fps;
+            stamina += 0.1 * 30.0 / HoneySuckle.fps;
             if (stamina > 1) {
                 stamina = 1;
             }
@@ -173,7 +173,7 @@ public class Player {
         }
 
         //Bound player to world
-        pos = world.bound(pos, vel, size / 2);
+        pos = world.bound(pos, vel, size / 2.0);
 
         //Reset camera
         World.worlds.get(World.level).camera[0] = pos[0];
@@ -183,17 +183,17 @@ public class Player {
         int[] screenSize = HoneySuckle.size;
         int[] worldSize = World.worlds.get(World.level).size;
 
-        if (newCamera[0] - screenSize[0] / 2 < 0) {
-            World.worlds.get(World.level).camera[0] = screenSize[0] / 2;
+        if (newCamera[0] - screenSize[0] / 2.0 < 0) {
+            World.worlds.get(World.level).camera[0] = screenSize[0] / 2.0;
         }
-        if (newCamera[0] + screenSize[0] / 2 > worldSize[0] * HoneySuckle.tileSize) {
-            World.worlds.get(World.level).camera[0] = worldSize[0] * HoneySuckle.tileSize - screenSize[0] / 2;
+        if (newCamera[0] + screenSize[0] / 2.0 > worldSize[0] * HoneySuckle.tileSize) {
+            World.worlds.get(World.level).camera[0] = worldSize[0] * HoneySuckle.tileSize - screenSize[0] / 2.0;
         }
-        if (newCamera[1] - screenSize[1] / 2 < 0) {
-            World.worlds.get(World.level).camera[1] = screenSize[1] / 2;
+        if (newCamera[1] - screenSize[1] / 2 < 0.0) {
+            World.worlds.get(World.level).camera[1] = screenSize[1] / 2.0;
         }
-        if (newCamera[1] + screenSize[1] / 2 > worldSize[1] * HoneySuckle.tileSize) {
-            World.worlds.get(World.level).camera[1] = worldSize[1] * HoneySuckle.tileSize - screenSize[1] / 2;
+        if (newCamera[1] + screenSize[1] / 2.0 > worldSize[1] * HoneySuckle.tileSize) {
+            World.worlds.get(World.level).camera[1] = worldSize[1] * HoneySuckle.tileSize - screenSize[1] / 2.0;
         }
 
         //World interact with player
@@ -203,9 +203,9 @@ public class Player {
 
         //Regenerate health
         if (health > 0) {
-            health += attributes.get("regen") * 30 / HoneySuckle.fps;
+            health += attributes.get("regen") * 30.0 / HoneySuckle.fps;
             if (vel[0] == 0 && vel[1] == 0) {
-                health += attributes.get("regen") * 30 / HoneySuckle.fps;
+                health += attributes.get("regen") * 30.0 / HoneySuckle.fps;
             }
         }
         //Cap health
@@ -215,8 +215,8 @@ public class Player {
 
         //Reset position of player on screen
         screenPos = new double[]{
-            HoneySuckle.size[0] / 2 + pos[0] - camera[0],
-            HoneySuckle.size[1] / 2 + pos[1] - camera[1]
+            HoneySuckle.size[0] / 2.0 + pos[0] - camera[0],
+            HoneySuckle.size[1] / 2.0 + pos[1] - camera[1]
         };
 
         //Difference between mouse and player pos on screen

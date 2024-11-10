@@ -56,7 +56,7 @@ public class Weapon {
                 if (coolDown <= 0) {
                     attackFrame = 0;
                     coolDown = attributes.get("cooldown").intValue();
-                    World.worlds.get(World.level).projectiles.add(new Projectile(weaponProj.get(weapon), player.pos, player.rotation, player));
+                    World.worlds.get(World.level).projectiles.add(new Projectile(weaponProj.get(weapon), player.pos, player.vel, player.rotation, player));
                 }
             }
             case "shield" -> {
@@ -185,7 +185,7 @@ public class Weapon {
                 for (Projectile projectile : world.renderProjectiles) {
                     //If collision overlap between shield and proj
                     if (Collision.isBoxOverlap(
-                            Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size * 2, player.rotation),
+                            Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
                             new Point2D.Double(size, size),
                             player.rotation,
                             new Point2D.Double(projectile.pos[0], projectile.pos[1]),
@@ -195,7 +195,7 @@ public class Weapon {
                             //Send projectile towards shield direction at double velocity
                             projectile.alterVel(Collision.pointToArray(
                                     Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size * 2 + projectile.size, player.rotation)
-                            ), player.rotation, 2, player);
+                            ), player.vel, player.rotation, 1.5, player);
                         } else if (coolDown <= 0) {
                             //Delete projectile, knock back player
                             player.vel[0] += projectile.vel[0] / 2 * projectile.weight / attributes.get("bounce");
@@ -217,8 +217,8 @@ public class Weapon {
                 if (attackFrame < attributes.get("frames")) {
                     //Position of slash on screen
                     double[] screenPos = new double[]{
-                        HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") * HoneySuckle.tileSize / 2,
-                        HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize - player.size / 2
+                        HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") * HoneySuckle.tileSize / 2.0,
+                        HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize - player.size / 2.0
                     };
                     //Render slash
                     g.drawImage(
@@ -230,8 +230,8 @@ public class Weapon {
 
                     //Position of blade on screen
                     double[] screenPos = new double[]{
-                        HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] + player.size / 2,
-                        HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize / 2 - HoneySuckle.tileSize / 4
+                        HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] + player.size / 2.0,
+                        HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize / 2.0 - HoneySuckle.tileSize / 4.0
                     };
 
                     //Render blase
@@ -245,8 +245,8 @@ public class Weapon {
 
                 //Position of gun on screen
                 double[] screenPos = new double[]{
-                    HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2,
-                    HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2
+                    HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2.0,
+                    HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2.0
                 };
 
                 //Render gun
@@ -260,8 +260,8 @@ public class Weapon {
 
                 //Position of shield on screen
                 double[] screenPos = new double[]{
-                    HoneySuckle.size[0] / 2 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2,
-                    HoneySuckle.size[1] / 2 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2
+                    HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2.0,
+                    HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2.0
                 };
 
                 //Render Shield

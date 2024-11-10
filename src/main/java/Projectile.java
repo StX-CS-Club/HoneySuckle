@@ -35,7 +35,7 @@ public class Projectile {
     private final List<String> tags;
 
     //Projectile Constructor
-    public Projectile(String type, double[] pos, double angle, Object source) {
+    public Projectile(String type, double[] pos, double[] currentVel, double angle, Object source) {
         //Interprets projectile type
         texture = projTextures.get(type);
         attributes = projAttributes.get(type);
@@ -48,6 +48,9 @@ public class Projectile {
         //Calculate velocity based on angle and magnitude
         vel = new double[]{sin, cos};
 
+        vel[0] += currentVel[0];
+        vel[1] += currentVel[1];
+
         //Assign values to properties
         this.pos = pos;
         this.type = type;
@@ -58,13 +61,15 @@ public class Projectile {
     }
 
     //Change velocity of projectile
-    public void alterVel(double[] pos, double angle, double velCoef, Object source) {
+    public void alterVel(double[] pos, double[] currentVel, double angle, double velCoef, Object source) {
         //Trig variables
         double sin = Math.sin(Math.toRadians(-angle)) * velCoef * -attributes.get("speed");
         double cos = Math.cos(Math.toRadians(-angle)) * velCoef * -attributes.get("speed");
 
         //Reset shit
         vel = new double[]{sin, cos};
+        vel[0] += currentVel[0];
+        vel[1] += currentVel[1];
         this.angle = angle;
         this.source = source;
     }
@@ -152,15 +157,15 @@ public class Projectile {
 
         //Position of proj on screen
         double[] screenPos = new double[]{
-            HoneySuckle.size[0] / 2 + pos[0] - camera[0],
-            HoneySuckle.size[1] / 2 + pos[1] - camera[1]
+            HoneySuckle.size[0] / 2.0 + pos[0] - camera[0],
+            HoneySuckle.size[1] / 2.0 + pos[1] - camera[1]
         };
 
         //Rotate based off angle
         g.rotate(Math.toRadians(angle), screenPos[0], screenPos[1]);
 
         //Render projectiles
-        g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (screenPos[0] - size / 2), (int) (screenPos[1] - size / 2), (int) size, (int) size, null);
+        g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (screenPos[0] - size / 2.0), (int) (screenPos[1] - size / 2.0), (int) size, (int) size, null);
         
         //Reset rotation
         g.setTransform(originalTransform);

@@ -69,7 +69,7 @@ public class Rendering {
                 //If shade of grey...
                 if (px.getRed() == px.getGreen() && px.getRed() == px.getBlue() && px.getRed() != 0) {
                     //Set grey as percentage of shade
-                    double ratio = ((double) px.getRed()) / 255;
+                    double ratio = (px.getRed()) / 255.0;
                     image.setRGB(x, y, new Color(
                             (int) (shade.getRed() * ratio),
                             (int) (shade.getGreen() * ratio),

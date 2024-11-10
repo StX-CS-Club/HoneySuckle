@@ -32,8 +32,8 @@ public class Armor {
         if (texture.get("texture") != null) {
             g.drawImage(
                     Rendering.texture(texture.get("texture"), "#ffffff"),
-                    (int) (player.screenPos[0] - player.size / 2),
-                    (int) (player.screenPos[1] - player.size / 2),
+                    (int) (player.screenPos[0] - player.size / 2.0),
+                    (int) (player.screenPos[1] - player.size / 2.0),
                     player.size, player.size, null
             );
         }

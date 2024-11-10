@@ -32,7 +32,7 @@ public class World {
         //Generates the world based on teh biome
         Biome.biomeGeneration(this);
         //Sets camera position
-        camera = new double[]{(start + 0.5) * tileSize, (size[1] * tileSize) - HoneySuckle.size[1] / 2};
+        camera = new double[]{(start + 0.5) * tileSize, (size[1] * tileSize) - HoneySuckle.size[1] / 2.0};
         //Adds world to static list of worlds
         worlds.add(this);
     }
@@ -50,7 +50,7 @@ public class World {
     public double[] camera = new double[2];
 
     //World Make-up
-    public int[][] grid;
+    public Tile[][] grid;
     public WorldObject[][] objGrid;
     public List<Entity> entities = new ArrayList<>();
     public List<Projectile> projectiles = new ArrayList<>();
@@ -121,7 +121,7 @@ public class World {
     //Events based on player pos
     public void playerEvent(Player player) {
         //Checks if player is at end of world, then progresses
-        if (player.pos[1] <= player.size / 2) {
+        if (player.pos[1] <= player.size / 2.0) {
             if (!Biome.biomeTags.get(biome).contains("enemyLock") || entities.isEmpty()) {
                 level++;
                 World world = new World();
@@ -133,7 +133,7 @@ public class World {
         int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / tileSize), (int) Math.floor(player.pos[1] / tileSize)};
 
         //Player margin from center
-        double margin = player.size / 2 + 1;
+        double margin = player.size / 2.0 + 1;
         //Player touching tiles
         int[][] marginIndex = new int[][]{
             {(int) (Math.floor((player.pos[0] - margin) / tileSize)), (int) (Math.floor((player.pos[0] + margin) / tileSize))},
@@ -142,9 +142,9 @@ public class World {
 
         //Checks if on damage tile
         if (checkTag(posIndex[0], posIndex[1], "damage") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            player.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps);
+            player.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / HoneySuckle.fps);
             if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
-                player.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps);
+                player.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / HoneySuckle.fps);
             }
         }
         //Checks if on acel tile
@@ -156,12 +156,12 @@ public class World {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
                 //Checks if touching hurty tile
                 if (checkTag(marginIndex[0][i], posIndex[1], "hurts")) {
-                    player.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30 / HoneySuckle.fps);
+                    player.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / HoneySuckle.fps);
                 }
             }
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
                 if (checkTag(posIndex[0], marginIndex[1][i], "hurts")) {
-                    player.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30 / HoneySuckle.fps);
+                    player.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / HoneySuckle.fps);
                 }
             }
         }
@@ -178,7 +178,7 @@ public class World {
         int[] posIndex = new int[]{(int) Math.floor(entity.pos[0] / tileSize), (int) Math.floor(entity.pos[1] / tileSize)};
 
         //Entity margin from center
-        double margin = entity.size / 2 + 1;
+        double margin = entity.size / 2.0 + 1;
         //Entity touching tiles
         int[][] marginIndex = new int[][]{
             {(int) (Math.floor((entity.pos[0] - margin) / tileSize)), (int) (Math.floor((entity.pos[0] + margin) / tileSize))},
@@ -187,9 +187,9 @@ public class World {
 
         //Checks if on damage tile
         if (checkTag(posIndex[0], posIndex[1], "damage") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            entity.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps);
+            entity.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / HoneySuckle.fps);
             if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
-                entity.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30 / HoneySuckle.fps);
+                entity.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / HoneySuckle.fps);
             }
         }
         //Checks if on acel tile
@@ -201,13 +201,13 @@ public class World {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
                 //Checks if touching hurty tile
                 if (checkTag(marginIndex[0][i], posIndex[1], "hurts")) {
-                    entity.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30 / HoneySuckle.fps);
+                    entity.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / HoneySuckle.fps);
                 }
             }
             //Again...
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
                 if (checkTag(posIndex[0], marginIndex[1][i], "hurts")) {
-                    entity.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30 / HoneySuckle.fps);
+                    entity.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / HoneySuckle.fps);
                 }
             }
         }
@@ -216,16 +216,16 @@ public class World {
     //Checks if tile or obj has given tag
     private boolean checkTag(int x, int y, String tag) {
         if (objGrid[x][y] == null) {
-            return Tile.tileTags.get(grid[x][y]).contains(tag);
+            return grid[x][y].tags.contains(tag);
         }
-        return Tile.tileTags.get(grid[x][y]).contains(tag) || objGrid[x][y].tags.contains(tag);
+        return grid[x][y].tags.contains(tag) || objGrid[x][y].tags.contains(tag);
     }
 
     //Gives sum of tile and obj value
     private double checkValue(int x, int y, String value) {
         double result = 0;
-        if (Tile.tileValues.get(grid[x][y]).get(value) != null) {
-            result += Tile.tileValues.get(grid[x][y]).get(value);
+        if (grid[x][y].values.get(value) != null) {
+            result += grid[x][y].values.get(value);
         }
         if (objGrid[x][y] != null) {
             if (objGrid[x][y].values.get(value) != null) {
@@ -252,43 +252,25 @@ public class World {
                 if (y >= 0 && y < grid[0].length && x >= 0 && x < grid.length) {
                     //Position of tile on screen
                     double[] screenPos = new double[]{
-                        (x * tileSize - camera[0] + HoneySuckle.size[0] / 2),
-                        (y * tileSize - camera[1] + HoneySuckle.size[1] / 2)
+                        (x * tileSize - camera[0] + HoneySuckle.size[0] / 2.0),
+                        (y * tileSize - camera[1] + HoneySuckle.size[1] / 2.0)
                     };
-                    //Texture data for tile
-                    Map<String, String> textureMap = Tile.tileTextures.get(grid[x][y]);
-                    //Default color of pure white
-                    String color = "#ffffff";
-                    //If tile has biome specific color, find color from biome
-                    if (textureMap.get("natColor") != null) {
-                        if (Biome.biomeColorMap.get(biome).get(textureMap.get("natColor")) != null) {
-                            color = Biome.biomeColorMap.get(biome).get(textureMap.get("natColor"));
-                        }
-                        //If tile has listed base color, set as color
-                    } else if (textureMap.get("baseColor") != null) {
-                        color = textureMap.get("baseColor");
-                    }
-                    //If tile has texture, load texture with grey-scaling
-                    if (textureMap.get("texture") != null) {
-                        String texture = textureMap.get("texture");
-                        g.drawImage(Rendering.texture(texture, color), (int) screenPos[0], (int) screenPos[1], tileSize, tileSize, null);
-                    } else {
-                        //Else, render basic rectangle
-                        g.setColor(Color.decode(color));
-                        Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], tileSize, tileSize);
-                    }
+                    //Render tile
+                    grid[x][y].render(g, this, screenPos, tileSize);
                     //If object on grid, render object
                     if (objGrid[x][y] != null) {
                         objGrid[x][y].render(g, this, screenPos, tileSize);
                     }
                     //If tile/object provides light, add light to HoneySuckle.lights
-                    if (checkTag(x, y, "light")) {
-                        HoneySuckle.lights.add(Map.of(
-                                "posX", (int) screenPos[0] + tileSize / 2,
-                                "posY", (int) screenPos[1] + tileSize / 2,
-                                "radius", HoneySuckle.tileSize * (int) checkValue(x, y, "light"),
-                                "color", (255 << 16) | (140 << 8)
-                        ));
+                    if (Biome.biomeTags.get(biome).contains("fog")) {
+                        if (checkTag(x, y, "light")) {
+                            HoneySuckle.lights.add(Map.of(
+                                    "posX", (int) screenPos[0] + tileSize / 2,
+                                    "posY", (int) screenPos[1] + tileSize / 2,
+                                    "radius", HoneySuckle.tileSize * (int) checkValue(x, y, "light"),
+                                    "color", (255 << 16) | (140 << 8)
+                            ));
+                        }
                     }
                 }
             }
@@ -308,7 +290,7 @@ public class World {
         //Empties renderEntities, then adds nearby entities into renderEntities, and updates them
         renderEntities = new ArrayList<>();
         for (Entity entity : entities) {
-            if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= HoneySuckle.size[0] * 3 / 4 && Math.abs(entity.pos[1] - camera[1]) <= HoneySuckle.size[1] * 3 / 4) {
+            if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= HoneySuckle.size[0] * 3.0 / 4 && Math.abs(entity.pos[1] - camera[1]) <= HoneySuckle.size[1] * 3.0 / 4) {
                 renderEntities.add(entity);
             }
         }
@@ -318,7 +300,7 @@ public class World {
         //Empties renderProjectiles, then adds nearby projectiles into renderProjectiles, and updates them
         renderProjectiles = new ArrayList<>();
         for (Projectile projectile : projectiles) {
-            if (Projectile.projTags.get(projectile.type).contains("alwaysRender") || Math.abs(projectile.pos[0] - camera[0]) <= HoneySuckle.size[0] * 3 / 4 && Math.abs(projectile.pos[1] - camera[1]) <= HoneySuckle.size[1] * 3 / 4) {
+            if (Projectile.projTags.get(projectile.type).contains("alwaysRender") || Math.abs(projectile.pos[0] - camera[0]) <= HoneySuckle.size[0] * 3.0 / 4 && Math.abs(projectile.pos[1] - camera[1]) <= HoneySuckle.size[1] * 3.0 / 4) {
                 renderProjectiles.add(projectile);
             }
         }

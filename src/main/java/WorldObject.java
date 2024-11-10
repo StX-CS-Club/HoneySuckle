@@ -52,15 +52,15 @@ public class WorldObject {
             if (Biome.biomeColorMap.get(world.biome).get(texture.get("natColor")) != null) {
                 color = Biome.biomeColorMap.get(world.biome).get(texture.get("natColor"));
             }
-            //If object has listed baseColor, set as color
-        } else if (texture.get("baseColor") != null) {
-            color = texture.get("baseColor");
         }
         //If object has texture, render it
         if (texture.get("texture") != null) {
             String objTexture = texture.get("texture");
             g.drawImage(Rendering.texture(objTexture, color), (int) screenPos[0], (int) screenPos[1], size, size, null);
-        } else {
+        } else {//If object has listed baseColor, set as color
+            if (texture.get("baseColor") != null && color.equals("#ffffff")) {
+                color = texture.get("baseColor");
+            }
             //Else render basic rectangle
             g.setColor(Color.decode(color));
             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], size, size);

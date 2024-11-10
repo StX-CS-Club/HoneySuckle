@@ -59,8 +59,8 @@ public class Entity {
     public void render(Graphics2D g, double[] camera) {
         //Position of entity on screen
         double[] screenPos = new double[]{
-            HoneySuckle.size[0] / 2 + pos[0] - camera[0] - size / 2,
-            HoneySuckle.size[1] / 2 + pos[1] - camera[1] - size / 2
+            HoneySuckle.size[0] / 2.0 + pos[0] - camera[0] - size / 2.0,
+            HoneySuckle.size[1] / 2.0 + pos[1] - camera[1] - size / 2.0
         };
 
         //Texture data for entity
@@ -75,8 +75,6 @@ public class Entity {
                 color = Biome.biomeColorMap.get(biome).get(textureMap.get("natColor"));
             }
             //If entity has specified baseColor, set as color
-        } else if (textureMap.get("baseColor") != null) {
-            color = textureMap.get("baseColor");
         }
 
         //If entity has texture, display
@@ -107,7 +105,10 @@ public class Entity {
 
             //Draw Texture
             g.drawImage(image, (int) screenPos[0], (int) screenPos[1], (int) size, (int) size, null);
-        } else {
+        } else {//If entity has specified baseColor, set as color
+            if (textureMap.get("baseColor") != null && color.equals("#ffffff")) {
+                color = textureMap.get("baseColor");
+            }
             //Else render simple rectangle
             g.setColor(Color.decode(color));
             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) size, (int) size);

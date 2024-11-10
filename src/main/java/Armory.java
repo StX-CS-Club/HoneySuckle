@@ -110,7 +110,7 @@ public class Armory {
     //Render Armory UI
     public void renderUi(Graphics2D g, Player player) {
         //Size of slot
-        double size = HoneySuckle.size[0] / 12;
+        double size = HoneySuckle.size[0] / 12.0;
         double xMargin = 0;
 
         //If player in bottom left corner, display in right corner

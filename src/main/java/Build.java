@@ -37,7 +37,7 @@ public class Build {
     public void update(Player player, World world, double[] mousePos){
         for (int i = 0; i < 2; i++) {
             double mouseDiff = mousePos[i]
-                    - (HoneySuckle.size[i] / 2
+                    - (HoneySuckle.size[i] / 2.0
                     + Math.floor(player.pos[i] / HoneySuckle.tileSize) * HoneySuckle.tileSize
                     - world.camera[i]);
             if (mouseDiff < 0) {
@@ -72,20 +72,20 @@ public class Build {
         //Render Build Tile
         g.setColor(new Color(0, 0, 0, 0));
         Rendering.borderRect(g, 1, color,
-                (int) (HoneySuckle.size[0] / 2 + index[0] * HoneySuckle.tileSize - camera[0]),
-                (int) (HoneySuckle.size[1] / 2 + index[1] * HoneySuckle.tileSize - camera[1]),
+                (int) (HoneySuckle.size[0] / 2.0 + index[0] * HoneySuckle.tileSize - camera[0]),
+                (int) (HoneySuckle.size[1] / 2.0 + index[1] * HoneySuckle.tileSize - camera[1]),
                 HoneySuckle.tileSize, HoneySuckle.tileSize);
     }
 
     //Render Build UI
     public void renderUi(Graphics2D g, World world, Player player) {
         //Slot size
-        double size = HoneySuckle.size[0] / 12;
+        double size = HoneySuckle.size[0] / 12.0;
         double xMargin = 0;
 
         //If player is in bottom left corner, render in bottom right
-        if (player.screenPos[0] < size * 3 + HoneySuckle.tileSize && player.screenPos[1] > HoneySuckle.size[1] - size * 25 / 12 - HoneySuckle.tileSize) {
-            xMargin = HoneySuckle.size[0] - size * 13 / 12;
+        if (player.screenPos[0] < size * 3 + HoneySuckle.tileSize && player.screenPos[1] > HoneySuckle.size[1] - size * 25.0 / 12 - HoneySuckle.tileSize) {
+            xMargin = HoneySuckle.size[0] - size * 13.0 / 12;
         }
 
         //Verification color
@@ -95,13 +95,13 @@ public class Build {
             textureColor = "#00ff00";
         }
         //Render Recipe Scroll
-        g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + size / 12), (int) (HoneySuckle.size[1] - size * 25 / 12), (int) size, (int) size, null);
+        g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + size / 12.0), (int) (HoneySuckle.size[1] - size * 25.0 / 12), (int) size, (int) size, null);
         
         //Render Recipe Item
         Map<String, String> texture = recipeTextures.get((int) recipes.toArray()[recipeIndex]);
         if (texture != null) {
             if (texture.get("texture") != null) {            
-                g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + size*5/24), (int) (HoneySuckle.size[1] - size * 47 / 24), (int) size*3/4, (int) size*3/4, null);
+                g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + size*5/24), (int) (HoneySuckle.size[1] - size * 47.0 / 24), (int) size*3/4, (int) size*3/4, null);
             }
         }
     }
@@ -146,7 +146,7 @@ public class Build {
     //Checks if recipe can be built
     private boolean checkCanPlace(World world, Player player, int recipeKey) {
         //Unique tags of recipe
-        List<String> Tags = WorldObject.objTags.get(recipeKey);
+        List<String> tags = WorldObject.objTags.get(recipeKey);
 
         //Position trying to build on
         int[] index = new int[]{
@@ -160,7 +160,7 @@ public class Build {
         }
 
         //Checks to ensure player can always place on selected tile
-        if (Tags.contains("placeAway") && cursor[0] == 0 && cursor[1] == 0) {
+        if (tags.contains("placeAway") && cursor[0] == 0 && cursor[1] == 0) {
             return false;
         }
 
@@ -170,10 +170,10 @@ public class Build {
 
         //If object doesnt exist, only check tile
         if (world.objGrid[index[0]][index[1]] == null) {
-            return recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]]);
+            return recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]].id);
         }
         //Check object and tile
-        return (recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]])
+        return (recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]].id)
                 && recipeParams.get(recipeKey).get("obj").contains(world.objGrid[index[0]][index[1]].id));
     }
  

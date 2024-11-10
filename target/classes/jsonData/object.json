@@ -116,7 +116,7 @@
     "texture": {
       "texture": "tiles/gate"
     },
-    "tags": ["enemyGate", "obstruction"],
+    "tags": ["enemyGate", "obstruction", "projObstruction"],
     "values": {},
     "loot": {}
   }
