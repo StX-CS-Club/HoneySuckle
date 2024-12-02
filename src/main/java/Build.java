@@ -16,19 +16,19 @@ import java.util.Set;
 public class Build {
 
     //Static json data
-    public static final Map<Integer, Map<String, Integer>> recipeMats = new HashMap<>();
-    public static final Map<Integer, Map<String, List<Integer>>> recipeParams = new HashMap<>();
-    public static final Map<Integer, Map<String, String>> recipeTextures = new HashMap<>();
+    public static final Map<Integer, Map<String, Integer>> blueprintMats = new HashMap<>();
+    public static final Map<Integer, Map<String, List<Integer>>> blueprintParams = new HashMap<>();
+    public static final Map<Integer, Map<String, String>> blueprintTextures = new HashMap<>();
 
     //Build Constructor
-    public Build(Set<Integer> recipes) {
+    public Build(Set<Integer> blueprints) {
         //Assigns values to properties
-        this.recipes.addAll(recipes);
+        this.blueprints.addAll(blueprints);
     }
 
     //Build properties
-    private final Set<Integer> recipes = new LinkedHashSet<>(Arrays.asList(-1));
-    private int recipeIndex = 0;
+    private final Set<Integer> blueprints = new LinkedHashSet<>(Arrays.asList(-1));
+    private int blueprintIndex = 0;
 
     //Index of cursor tile compared to player
     public double[] cursor = new double[2];
@@ -62,7 +62,7 @@ public class Build {
         Color color = Color.red;
 
         //If can place on tile, be cyan
-        if (checkCanPlace(world, player, (int) recipes.toArray()[recipeIndex])) {
+        if (checkCanPlace(world, player, (int) blueprints.toArray()[blueprintIndex])) {
             color = Color.cyan;
         }
 
@@ -91,14 +91,14 @@ public class Build {
         //Verification color
         String textureColor = "#ff0000";
         //If have materials, display green verification
-        if (hasMaterials(player, (int) recipes.toArray()[recipeIndex])) {
+        if (hasMaterials(player, (int) blueprints.toArray()[blueprintIndex])) {
             textureColor = "#00ff00";
         }
-        //Render Recipe Scroll
+        //Render blueprint Scroll
         g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + size / 12.0), (int) (HoneySuckle.size[1] - size * 25.0 / 12), (int) size, (int) size, null);
         
-        //Render Recipe Item
-        Map<String, String> texture = recipeTextures.get((int) recipes.toArray()[recipeIndex]);
+        //Render blueprint Item
+        Map<String, String> texture = blueprintTextures.get((int) blueprints.toArray()[blueprintIndex]);
         if (texture != null) {
             if (texture.get("texture") != null) {            
                 g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + size*5/24), (int) (HoneySuckle.size[1] - size * 47.0 / 24), (int) size*3/4, (int) size*3/4, null);
@@ -106,25 +106,25 @@ public class Build {
         }
     }
 
-    //Change selected recipe based on scroll wheel
+    //Change selected blueprint based on scroll wheel
     public void scrollBar(double scroll) {
         if (Math.abs(scroll) >= 1) {
-            recipeIndex += Math.signum(scroll);
-            if (recipeIndex < 0) {
-                recipeIndex = recipes.size() - 1;
+            blueprintIndex += Math.signum(scroll);
+            if (blueprintIndex < 0) {
+                blueprintIndex = blueprints.size() - 1;
             }
-            if (recipeIndex >= recipes.size()) {
-                recipeIndex = 0;
+            if (blueprintIndex >= blueprints.size()) {
+                blueprintIndex = 0;
             }
         }
     }
 
     //Build something in the world
     public void build(World world, Player player) {
-        //Current selected recipe
-        int recipeKey = (int) recipes.toArray()[recipeIndex];
-        Map<String, Integer> recipe = recipeMats.get(recipeKey);
-        Set<String> requiredMat = recipe.keySet();
+        //Current selected blueprint
+        int blueprintKey = (int) blueprints.toArray()[blueprintIndex];
+        Map<String, Integer> blueprint = blueprintMats.get(blueprintKey);
+        Set<String> requiredMat = blueprint.keySet();
 
         //Position to build on
         int[] index = new int[]{
@@ -133,20 +133,20 @@ public class Build {
         };
 
         //Checks if can place on tile
-        if (checkCanPlace(world, player, recipeKey)) {
+        if (checkCanPlace(world, player, blueprintKey)) {
             //Places tile
-            world.objGrid[index[0]][index[1]] = new WorldObject(recipeKey, index);
+            world.objGrid[index[0]][index[1]] = new WorldObject(blueprintKey, index);
             //Removes materials
             for (String material : requiredMat) {
-                player.inventory.items.put(material, getOrDefault(player.inventory.items, material) - recipe.get(material));
+                player.inventory.items.put(material, player.inventory.getMaterial(material) - blueprint.get(material));
             }
         }
     }
 
-    //Checks if recipe can be built
-    private boolean checkCanPlace(World world, Player player, int recipeKey) {
-        //Unique tags of recipe
-        List<String> tags = WorldObject.objTags.get(recipeKey);
+    //Checks if blueprint can be built
+    private boolean checkCanPlace(World world, Player player, int blueprintKey) {
+        //Unique tags of blueprint
+        List<String> tags = WorldObject.objTags.get(blueprintKey);
 
         //Position trying to build on
         int[] index = new int[]{
@@ -155,7 +155,7 @@ public class Build {
         };
   
         //Checks if player has materials
-        if(!hasMaterials(player, recipeKey)){
+        if(!hasMaterials(player, blueprintKey)){
             return false;
         }
 
@@ -170,36 +170,27 @@ public class Build {
 
         //If object doesnt exist, only check tile
         if (world.objGrid[index[0]][index[1]] == null) {
-            return recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]].id);
+            return blueprintParams.get(blueprintKey).get("tile").contains(world.grid[index[0]][index[1]].id);
         }
         //Check object and tile
-        return (recipeParams.get(recipeKey).get("tile").contains(world.grid[index[0]][index[1]].id)
-                && recipeParams.get(recipeKey).get("obj").contains(world.objGrid[index[0]][index[1]].id));
+        return (blueprintParams.get(blueprintKey).get("tile").contains(world.grid[index[0]][index[1]].id)
+                && blueprintParams.get(blueprintKey).get("obj").contains(world.objGrid[index[0]][index[1]].id));
     }
  
     //Check to see if player has materials
-    private boolean hasMaterials(Player player, int recipeKey){ 
+    private boolean hasMaterials(Player player, int blueprintKey){ 
         //Material data
-        Map<String, Integer> recipe = recipeMats.get(recipeKey);
-        Set<String> requiredMat = recipe.keySet();
+        Map<String, Integer> blueprint = blueprintMats.get(blueprintKey);
+        Set<String> requiredMat = blueprint.keySet();
 
         //Go through all materials needed
         for (String material : requiredMat) {
             //If don't have, return false
-            if (getOrDefault(player.inventory.items, material) < recipe.get(material)) {
+            if (player.inventory.getMaterial(material) < blueprint.get(material)) {
                 return false;
             }
         }
         //If makes it past check, return true
         return true;
-    }
-
-    //Null safe way of reading materials map
-    public int getOrDefault(Map<String, Integer> map, String key) {
-        if (map.containsKey(key)) {
-            return map.get(key);
-        } else {
-            return 0;
-        }
     }
 }

@@ -2,6 +2,7 @@
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Ellipse2D;
@@ -26,12 +27,14 @@ import javax.imageio.stream.ImageInputStream;
  - Class for running static methods involving more complex rendering
  - Static lists of already rendered shit
  */
-
 public class Rendering {
 
     //Save data -> Save CPU
-    public static Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
-    public static Map<String, List<BufferedImage>> gifFrames = new HashMap<>();
+    public static final Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
+    public static final Map<String, List<BufferedImage>> gifFrames = new HashMap<>();
+
+    //Fonts
+    public static final Map<String, Font> fonts = new HashMap<>();
 
     //Render sprite
     public static BufferedImage texture(String texture, String color) {
@@ -48,10 +51,10 @@ public class Rendering {
         try {
             //Gray scale texture
             result = replaceGradient(ImageIO.read(HoneySuckle.class.getResource("/images/sprites/" + texture + ".png")), color);
-                textures.get(texture).put(color, result);
-                return result;
+            textures.get(texture).put(color, result);
+            return result;
         } catch (IOException e) {
-            System.out.println("HoneySuckle ERROR: Could not find sprite: "+texture);
+            System.out.println("HoneySuckle ERROR: Could not find sprite: " + texture);
         }
         //If error, return null
         return null;
@@ -183,9 +186,9 @@ public class Rendering {
                 }
                 gifFrames.put(path, frames);
             } catch (URISyntaxException e) {
-                System.out.println("HoneySuckle ERROR: Could not find gif: "+path);
+                System.out.println("HoneySuckle ERROR: Could not find gif: " + path);
             } catch (IOException e) {
-                System.out.println("HoneySuckle ERROR: Failed to interpret GIF at: "+path);
+                System.out.println("HoneySuckle ERROR: Failed to interpret GIF at: " + path);
             }
         }
         //Return appropriate frame
@@ -201,7 +204,7 @@ public class Rendering {
         //Create overlay image
         BufferedImage overlayedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = overlayedImage.createGraphics();
-        
+
         //Draw base image
         g.drawImage(image, 0, 0, null);
 
@@ -225,5 +228,15 @@ public class Rendering {
         g.setStroke(new BasicStroke(border));
         g.setColor(color);
         g.drawRect(x, y, width, height);
+    }
+
+    //Render Fancy Text
+    public static void fancyText(Graphics2D g, String text, TextAlign textAlign) {
+
+    }
+
+    //Options for text alignment
+    public static enum TextAlign {
+        LEFT, CENTER, RIGHT
     }
 }

@@ -36,4 +36,11 @@ public class Inventory {
                     this.ammo.putAll(ammo);
                 }
     }
+
+    public int getMaterial(String material){
+        if(items.get(material) == null){
+            return 0;
+        }
+        return items.get(material);
+    }
 }

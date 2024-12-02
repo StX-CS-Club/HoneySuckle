@@ -96,7 +96,7 @@ public class Weapon {
                             if (entity.damage(attributes.get("damage"))) {
                                 Map<String, Integer> loot = Entity.entityLoot.get(entity.type);
                                 for (String material : loot.keySet()) {
-                                    player.inventory.items.put(material, player.build.getOrDefault(player.inventory.items, material) + loot.get(material));
+                                    player.inventory.items.put(material, player.inventory.getMaterial(material) + loot.get(material));
                                 }
                             }
                         }
@@ -124,7 +124,7 @@ public class Weapon {
                                         if (world.objGrid[x][y].damage(attributes.get("damage"))) {
                                             Map<String, Integer> loot = obj.loot;
                                             for (String material : loot.keySet()) {
-                                                player.inventory.items.put(material, player.build.getOrDefault(player.inventory.items, material) + loot.get(material));
+                                                player.inventory.items.put(material, player.inventory.getMaterial(material) + loot.get(material));
                                             }
                                         }
                                     }

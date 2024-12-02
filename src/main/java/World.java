@@ -29,6 +29,7 @@ public class World {
                 randomizeBiome();
             }
         }
+        biome = "bridge";
         //Generates the world based on teh biome
         Biome.biomeGeneration(this);
         //Sets camera position

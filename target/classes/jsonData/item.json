@@ -1,0 +1,43 @@
+{
+    "wood": {
+        "name": "Wood",
+        "texture": {
+            "texture": "items/wood"
+        }
+    },
+    "slime": {
+        "name": "Slime",
+        "texture": {
+            "texture": "items/slime"
+        }
+
+    },
+    "coal": {
+        "name": "Coal Nugget",
+        "texture": {
+            "texture": "items/coal"
+        }
+
+    },
+    "pumpkin": {
+        "name": "Pumpkin",
+        "texture": {
+            "texture": "items/pumpkin"
+        }
+
+    },
+    "cactus": {
+        "name": "Cactus",
+        "texture": {
+            "texture": "items/cactus"
+        }
+        
+    }, 
+    "scale": {
+        "name": "Dragon Scale",
+        "texture": {
+            "texture": "items/scale"
+        }
+
+    }
+}

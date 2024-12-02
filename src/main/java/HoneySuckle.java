@@ -1,8 +1,11 @@
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
@@ -74,6 +77,26 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             } else {
                 System.out.println("HoneySuckle ERROR: Failed to import icon.");
             }
+        }
+
+        // Load the font from a file
+        URL fontUrl = HoneySuckle.class.getResource("fonts/VT323/VT323-Regular.ttf");
+        try {
+            File fontFile = new File(fontUrl.toURI());
+            Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(Font.PLAIN, 24);
+
+            // Register the font with the graphics environment
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(font);
+
+            //Register font variable to be referenced later
+            Rendering.fonts.put("VT323", font);
+        } catch (IOException e) {
+            System.out.println("HoneySuckle ERROR: Failed to import text font.");
+        } catch (URISyntaxException e1) {
+            System.out.println("HoneySuckle ERROR: Could not find text font.");
+        } catch (FontFormatException e1) {
+            System.out.println("HoneySuckle ERROR: Failed to load text font.");
         }
 
         //Appends rendering to window
@@ -205,7 +228,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         Point pos = e.getPoint();
         mousePos = new double[]{pos.x, pos.y};
     }
-    
+
     @Override
     public void mouseDragged(MouseEvent e) {
         Point pos = e.getPoint();
@@ -263,9 +286,9 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             for (String key : blueprintData.keySet()) {
                 int intKey = Integer.parseInt(key);
                 Map<String, Object> recipe = (Map<String, Object>) blueprintData.get(key);
-                Build.recipeMats.put(intKey, (Map<String, Integer>) recipe.get("mats"));
-                Build.recipeParams.put(intKey, (Map<String, List<Integer>>) recipe.get("params"));
-                Build.recipeTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
+                Build.blueprintMats.put(intKey, (Map<String, Integer>) recipe.get("mats"));
+                Build.blueprintParams.put(intKey, (Map<String, List<Integer>>) recipe.get("params"));
+                Build.blueprintTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
             }
 
             //Maps biome data
@@ -322,10 +345,12 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     //Unused methods implemented
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+    }
 
     @Override
     public void mouseEntered(MouseEvent e) {
