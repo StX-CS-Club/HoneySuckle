@@ -261,7 +261,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             for (String key : objData.keySet()) {
                 int intKey = Integer.parseInt(key);
                 Map<String, Object> obj = (Map<String, Object>) objData.get(key);
-                WorldObject.objLoot.put(intKey, (Map<String, Integer>) obj.get("loot"));
+                WorldObject.objLoot.put(intKey, (List<Map<String, Number>>) obj.get("loot"));
                 WorldObject.objTextures.put(intKey, (Map<String, String>) obj.get("texture"));
                 WorldObject.objValues.put(intKey, (Map<String, Double>) obj.get("values"));
                 WorldObject.objTags.put(intKey, (List<String>) obj.get("tags"));
@@ -282,7 +282,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             for (String key : blueprintData.keySet()) {
                 int intKey = Integer.parseInt(key);
                 Map<String, Object> recipe = (Map<String, Object>) blueprintData.get(key);
-                Build.blueprintMats.put(intKey, (Map<String, Integer>) recipe.get("mats"));
+                Build.blueprintMats.put(intKey, (List<Map<String, Integer>>) recipe.get("mats"));
                 Build.blueprintParams.put(intKey, (Map<String, List<Integer>>) recipe.get("params"));
                 Build.blueprintTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
             }
@@ -301,7 +301,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
                 Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
                 Entity.entityAttributes.put(key, (Map<String, Double>) entity.get("attributes"));
                 Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
-                Entity.entityLoot.put(key, (Map<String, Integer>) entity.get("loot"));
+                Entity.entityLoot.put(key, (List<Map<String, Integer>>) entity.get("loot"));
                 Entity.entityTags.put(key, (List<String>) entity.get("tags"));
             }
 

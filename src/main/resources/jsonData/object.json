@@ -11,9 +11,11 @@
       "light": 15.0,
       "durability": 0.5
     },
-    "loot": {
-      "pumpkin": 1
-    }
+    "loot": [
+      {
+        "item": 4
+      }
+    ]
   },
   "-3": {
     "name": "Torch",
@@ -26,9 +28,11 @@
       "light": 8.0,
       "durability": 0.25
     },
-    "loot": {
-      "wood": 1
-    }
+    "loot": [
+      {
+        "item": 1
+      }
+    ]
   },
   "-2": {
     "name": "Raft",
@@ -38,7 +42,7 @@
     },
     "tags": ["walkable", "safe"],
     "values": {},
-    "loot": {}
+    "loot": []
   },
   "-1": {
     "name": "Wall",
@@ -50,9 +54,11 @@
     "values": {
       "durability": 2.0
     },
-    "loot": {
-      "wood": 1
-    }
+    "loot": [
+      {
+        "item": 1
+      }
+    ]
   },
   "1": {
     "name": "Tree",
@@ -64,9 +70,15 @@
     "values": {
       "durability": 1.0
     },
-    "loot": {
-      "wood": 1
-    }
+    "loot": [
+      {
+        "item": 1
+      },
+      {
+        "item": 1,
+        "prob": 0.5
+      }
+    ]
   },
   "2": {
     "name": "Pumpkin",
@@ -78,9 +90,11 @@
     "values": {
       "durability": 0.75
     },
-    "loot": {
-      "pumpkin": 1
-    }
+    "loot": [
+      {
+        "item": 4
+      }
+    ]
   },
   "3": {
     "name": "Cactus",
@@ -93,9 +107,11 @@
       "hurtness": 2.0,
       "durability": 0.75
     },
-    "loot": {
-      "cactus": 1
-    }
+    "loot": [
+      {
+        "item": 5
+      }
+    ]
   },
   "4": {
     "name": "Coal Ore",
@@ -107,9 +123,12 @@
     "values": {
       "durability": 2.0
     },
-    "loot": {
-      "coal": 2
-    }
+    "loot": [
+      {
+        "item": 3,
+        "count": 2
+      }
+    ]
   },
   "5": {
     "name": "Death Gate",
@@ -118,6 +137,6 @@
     },
     "tags": ["enemyGate", "obstruction", "projObstruction"],
     "values": {},
-    "loot": {}
+    "loot": []
   }
 }

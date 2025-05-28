@@ -94,9 +94,12 @@ public class Weapon {
                                 new Point2D.Double(entity.size, entity.size))) {
                             //Damage entity, if dead, add materials
                             if (entity.damage(attributes.get("damage"))) {
-                                Map<String, Integer> loot = Entity.entityLoot.get(entity.type);
-                                for (String material : loot.keySet()) {
-                                    player.inventory.items.put(material, player.inventory.getMaterial(material) + loot.get(material));
+                                for (int i = 0; i < entity.loot.size(); i++) {
+                                    if (Math.random() < entity.readLoot(i, "prob", 1).doubleValue()) {
+                                        final int item = entity.readLoot(i, "item", 0).intValue();
+                                        player.inventory.items.put(item, player.inventory.getMaterial(item) + entity.readLoot(i, "count", 1).intValue());
+                                        System.out.println(player.inventory.items.toString());
+                                    }
                                 }
                             }
                         }
@@ -122,9 +125,12 @@ public class Weapon {
                                         WorldObject obj = world.objGrid[x][y];
                                         //Damage object, and if broken add materials
                                         if (world.objGrid[x][y].damage(attributes.get("damage"))) {
-                                            Map<String, Integer> loot = obj.loot;
-                                            for (String material : loot.keySet()) {
-                                                player.inventory.items.put(material, player.inventory.getMaterial(material) + loot.get(material));
+                                            for (int i = 0; i < obj.loot.size(); i++) {
+                                                if (Math.random() < obj.readLoot(i, "prob", 1).doubleValue()) {
+                                                    final int item = obj.loot.get(i).get("item").intValue();
+                                                    player.inventory.items.put(item, player.inventory.getMaterial(item) + obj.readLoot(item, "count", 1).intValue());
+                                                    System.out.println(player.inventory.items.toString());
+                                                }
                                             }
                                         }
                                     }

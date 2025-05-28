@@ -1,57 +1,72 @@
 {
-    "-1": {
-        "name": "Wall",
-        "params": {
-            "tile": [1, 2, 3, 4, 5],
-            "obj": [0]
-        },
-        "mats": {
-            "wood": 1
-        },
-        "texture": {
-            "texture": "recipes/wall"
-        }
+  "-1": {
+    "name": "Wall",
+    "params": {
+      "tile": [1, 2, 3, 4, 5],
+      "obj": [0]
     },
-    "-2": {
-        "name": "Raft",
-        "params": {
-            "tile": [0, 2],
-            "obj": [0]
-        },
-        "mats" : {
-            "wood": 2
-        },
-        "texture": {
-            "texture": "recipes/raft"
-        }
-    },
-    "-3": {
-        "name": "Torch",
-        "params": {
-            "tile": [1, 2, 3, 5],
-            "obj": [0]
-        },
-        "mats": {
-            "wood": 1,
-            "coal": 1
-        },
-        "texture": {
-            "texture": "recipes/torch"
-        }
-    },
-    "-4": {
-        "name": "Jack-O-Lantern",
-        "params": {
-            "tile": [1, 2, 3],
-            "obj": [0]
-        },
-        "mats": {
-            "pumpkin": 1,
-            "coal": 1,
-            "wood": 1
-        },
-        "texture": {
-            "texture": "recipes/jackolantern"
-        }
+    "mats": [
+      {
+        "item": 1
+      }
+    ],
+    "texture": {
+      "texture": "recipes/wall"
     }
+  },
+  "-2": {
+    "name": "Raft",
+    "params": {
+      "tile": [0, 2],
+      "obj": [0]
+    },
+    "mats": [
+      {
+        "item": 1,
+        "count": 2
+      }
+    ],
+    "texture": {
+      "texture": "recipes/raft"
+    }
+  },
+  "-3": {
+    "name": "Torch",
+    "params": {
+      "tile": [1, 2, 3, 5],
+      "obj": [0]
+    },
+    "mats": [
+      {
+        "item": 1
+      },
+      {
+        "item": 3
+      }
+    ],
+    "texture": {
+      "texture": "recipes/torch"
+    }
+  },
+  "-4": {
+    "name": "Jack-O-Lantern",
+    "params": {
+      "tile": [1, 2, 3],
+      "obj": [0]
+    },
+    "mats": [
+      {
+        "item": 4
+      },
+      {
+        "item": 3
+      },
+      {
+        "item": 1
+      }
+    ],
+    "texture": {
+      "texture": "recipes/jackolantern"
+    }
+  }
 }

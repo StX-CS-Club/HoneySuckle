@@ -17,7 +17,7 @@ public class Entity {
     //Satic data imported from json files
     public static final Map<String, Map<String, Double>> entityAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> entityTextures = new HashMap<>();
-    public static final Map<String, Map<String, Integer>> entityLoot = new HashMap<>();
+    public static final Map<String, List<Map<String, Integer>>> entityLoot = new HashMap<>();
     public static final Map<String, List<String>> entityTags = new HashMap<>();
 
     //Basic attributes
@@ -29,6 +29,7 @@ public class Entity {
     //All attributes
     public final Map<String, Double> attributes;
     public final List<String> tags;
+    public final List<Map<String, Integer>> loot;
 
     //Number of frames to render as red
     private int damageFrames = 0;
@@ -47,6 +48,7 @@ public class Entity {
         this.type = type;
         attributes = entityAttributes.get(type);
         tags = entityTags.get(type);
+        loot = entityLoot.get(type);
 
         //Interprets basic attributes
         health = attributes.get("health");
@@ -138,5 +140,13 @@ public class Entity {
         //If dead, die, and return true
         Brain.die(this, World.worlds.get(World.level));
         return true;
+    }
+
+    public Number readLoot(int index, String value, Number defaultValue) {
+        Number result = loot.get(index).get(value);
+        if(result == null){
+            return defaultValue;
+        }
+        return result;
     }
 }

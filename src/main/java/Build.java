@@ -16,7 +16,7 @@ import java.util.Set;
 public class Build {
 
     //Static json data
-    public static final Map<Integer, Map<String, Integer>> blueprintMats = new HashMap<>();
+    public static final Map<Integer, List<Map<String, Integer>>> blueprintMats = new HashMap<>();
     public static final Map<Integer, Map<String, List<Integer>>> blueprintParams = new HashMap<>();
     public static final Map<Integer, Map<String, String>> blueprintTextures = new HashMap<>();
 
@@ -123,8 +123,9 @@ public class Build {
     public void build(World world, Player player) {
         //Current selected blueprint
         int blueprintKey = (int) blueprints.toArray()[blueprintIndex];
-        Map<String, Integer> blueprint = blueprintMats.get(blueprintKey);
-        Set<String> requiredMat = blueprint.keySet();
+        //Material data
+        List<Map<String, Integer>> blueprint = blueprintMats.get(blueprintKey);
+
 
         //Position to build on
         int[] index = new int[]{
@@ -137,9 +138,11 @@ public class Build {
             //Places tile
             world.objGrid[index[0]][index[1]] = new WorldObject(blueprintKey, index);
             //Removes materials
-            for (String material : requiredMat) {
-                player.inventory.items.put(material, player.inventory.getMaterial(material) - blueprint.get(material));
-            }
+        for (Map<String, Integer> material : blueprint) {
+            int item = readMat(material, "item", 0).intValue();
+            player.inventory.items.put(item, player.inventory.getMaterial(item) - readMat(material, "count", 1).intValue());
+            System.out.println(player.inventory.items.toString());
+        }
         }
     }
 
@@ -180,17 +183,24 @@ public class Build {
     //Check to see if player has materials
     private boolean hasMaterials(Player player, int blueprintKey){ 
         //Material data
-        Map<String, Integer> blueprint = blueprintMats.get(blueprintKey);
-        Set<String> requiredMat = blueprint.keySet();
+        List<Map<String, Integer>> blueprint = blueprintMats.get(blueprintKey);
 
         //Go through all materials needed
-        for (String material : requiredMat) {
+        for (Map<String, Integer> material : blueprint) {
             //If don't have, return false
-            if (player.inventory.getMaterial(material) < blueprint.get(material)) {
+            if (player.inventory.getMaterial(readMat(material, "item", 0).intValue()) < readMat(material, "count", 1).intValue()) {
                 return false;
             }
         }
         //If makes it past check, return true
         return true;
+    }
+
+    private Number readMat(Map<String, Integer> mats, String value, Number defaultValue) {
+        Number result = mats.get(value);
+        if(result == null){
+            return defaultValue;
+        }
+        return result;
     }
 }

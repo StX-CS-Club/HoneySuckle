@@ -29,7 +29,7 @@ public class Player {
         inventory = new Inventory(
                 Arrays.asList(armory.weapons),
                 Arrays.asList(new Armor[]{armory.armor}),
-                Map.of("wood", 4),
+                Map.of(1, 4),
                 null);
 
         //Adds player to list of players

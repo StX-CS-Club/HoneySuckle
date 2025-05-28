@@ -14,16 +14,14 @@ public class Inventory {
     //Inventory data
     public final List<Weapon> weapons = new ArrayList<>();
     public final List<Armor> armors = new ArrayList<>();
-    public final Map<String, Integer> items = new HashMap<>();
+    public final Map<Integer, Integer> items = new HashMap<>();
     public final Map<String, Integer> ammo = new HashMap<>();
-
-    private boolean open = false;
 
     //Inventory Constructor
     public Inventory(
             List<Weapon> weapons,
             List<Armor> armors,
-            Map<String, Integer> items,
+            Map<Integer, Integer> items,
             Map<String, Integer> ammo) {
                 //If specified, adds shit to inventory
                 if(weapons != null){
@@ -40,7 +38,7 @@ public class Inventory {
                 }
     }
 
-    public int getMaterial(String material){
+    public int getMaterial(int material){
         if(items.get(material) == null){
             return 0;
         }
@@ -52,8 +50,6 @@ public class Inventory {
     }
 
     public void renderUi(Graphics2D g){
-        if(open){
-
-        }
+        
     }
 }

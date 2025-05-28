@@ -1,42 +1,45 @@
 {
-    "slime": {
-        "name": "Slime",
-        "texture": {
-            "baseColor": "#71cf01",
-            "texture": "entities/slime/slime",
-            "anim": "horizontal"
-        },
-        "attributes": {
-            "size": 0.5,
-            "health": 0.5,
-            "view": 7.5,
-            "weight": 1.0
-        },
-        "loot": {
-            "slime": 1
-        },
-        "tags": []
+  "slime": {
+    "name": "Slime",
+    "texture": {
+      "baseColor": "#71cf01",
+      "texture": "entities/slime/slime",
+      "anim": "horizontal"
     },
-    "dragon": {
-        "name": "Dragon",
-        "texture": {
-            "baseColor": "#b4008e",
-            "texture": "entities/dragon/dragon",
-            "anim": "fire"
-        },
-        "attributes": {
-            "size": 5.0,
-            "health": 20.0,
-            "view": 12.5,
-            "weight": 5.0,
-            "frames": 15.0,
-            "cooldown": 90.0
-        },
-        "loot": {
-            "scale": 1
-        },
-        "tags": [
-            "alwaysRender"
-        ]
-    }
+    "attributes": {
+      "size": 0.5,
+      "health": 0.5,
+      "view": 7.5,
+      "weight": 1.0
+    },
+    "loot": [
+      {
+        "item": 2,
+        "prob": 0.5
+      }
+    ],
+    "tags": []
+  },
+  "dragon": {
+    "name": "Dragon",
+    "texture": {
+      "baseColor": "#b4008e",
+      "texture": "entities/dragon/dragon",
+      "anim": "fire"
+    },
+    "attributes": {
+      "size": 5.0,
+      "health": 20.0,
+      "view": 12.5,
+      "weight": 5.0,
+      "frames": 15.0,
+      "cooldown": 90.0
+    },
+    "loot": [
+      {
+        "item": 6
+      }
+    ],
+    "tags": ["alwaysRender"]
+  }
 }

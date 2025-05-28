@@ -15,7 +15,7 @@ public class WorldObject {
     //Static json dats
     public static final Map<Integer, List<String>> objTags = new HashMap<>();
     public static final Map<Integer, Map<String, Double>> objValues = new HashMap<>();
-    public static final Map<Integer, Map<String, Integer>> objLoot = new HashMap<>();
+    public static final Map<Integer, List<Map<String, Number>>> objLoot = new HashMap<>();
     public static final Map<Integer, Map<String, String>> objTextures = new HashMap<>();
 
     //Basic object attributes
@@ -27,7 +27,7 @@ public class WorldObject {
     public List<String> tags;
     public Map<String, Double> values;
     public Map<String, String> texture;
-    public Map<String, Integer> loot;
+    public List<Map<String, Number>> loot;
 
     //WorldObject Contructor
     public WorldObject(int id, int[] posIndex) {
@@ -82,5 +82,13 @@ public class WorldObject {
         //If broken, remove object and return true
         World.worlds.get(World.level).objGrid[posIndex[0]][posIndex[1]] = null;
         return true;
+    }
+
+    public Number readLoot(int index, String value, Number defaultValue) {
+        Number result = loot.get(index).get(value);
+        if(result == null){
+            return defaultValue;
+        }
+        return result;
     }
 }
