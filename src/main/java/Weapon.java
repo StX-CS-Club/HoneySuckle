@@ -128,7 +128,7 @@ public class Weapon {
                                             for (int i = 0; i < obj.loot.size(); i++) {
                                                 if (Math.random() < obj.readLoot(i, "prob", 1).doubleValue()) {
                                                     final int item = obj.loot.get(i).get("item").intValue();
-                                                    player.inventory.items.put(item, player.inventory.getMaterial(item) + obj.readLoot(item, "count", 1).intValue());
+                                                    player.inventory.items.put(item, player.inventory.getMaterial(item) + obj.readLoot(i, "count", 1).intValue());
                                                     System.out.println(player.inventory.items.toString());
                                                 }
                                             }

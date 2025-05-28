@@ -122,7 +122,18 @@ public class Projectile {
                             new Point2D.Double(entity.pos[0], entity.pos[1]),
                             new Point2D.Double(entity.size, entity.size))) {
                         //damage entity, and remove self
-                        entity.damage(attributes.get("damage"));
+                        if (entity.damage(attributes.get("damage"))) {
+                            if(source instanceof Player){
+                                final Player player = (Player) source;
+                                for (int i = 0; i < entity.loot.size(); i++) {
+                                    if (Math.random() < entity.readLoot(i, "prob", 1).doubleValue()) {
+                                        final int item = entity.readLoot(i, "item", 0).intValue();
+                                        player.inventory.items.put(item, player.inventory.getMaterial(item) + entity.readLoot(i, "count", 1).intValue());
+                                        System.out.println(player.inventory.items.toString());
+                                    }
+                                }
+                            }
+                        }
                         world.projectiles.remove(this);
                         break;
                     }

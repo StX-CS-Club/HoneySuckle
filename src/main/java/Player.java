@@ -23,8 +23,8 @@ public class Player {
         this.size = size;
         build = new Build(new LinkedHashSet<>(Arrays.asList(-1, -2, -3)));
         armory = new Armory(
-            new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
-            new Armor("leather")
+                new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
+                new Armor("leather")
         );
         inventory = new Inventory(
                 Arrays.asList(armory.weapons),
@@ -121,16 +121,18 @@ public class Player {
         }
 
         //Decide where scroll wheel affects
-        if (weaponScroll) {
-            armory.scrollBar(input.mouseScroll);
-        } else {
-            build.scrollBar(input.mouseScroll);
+        if (!inventory.isOpen) {
+            if (weaponScroll) {
+                armory.scrollBar(input.mouseScroll);
+            } else {
+                build.scrollBar(input.mouseScroll);
+            }
         }
 
         //Update player build and armory
         build.update(this, world, input);
         armory.update(input, this);
-        inventory.update();
+        inventory.update(input);
 
         //Build on right click
         if (input.clickDown(3)) {

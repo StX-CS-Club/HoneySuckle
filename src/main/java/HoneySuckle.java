@@ -129,6 +129,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         addMouseWheelListener(this);
         //Fetches all data from json files into appropriate hashmaps
         getJson();
+        registerFont();
 
         //Creates world 1
         World world = new World();
@@ -166,8 +167,8 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         //Renders crafting and weapon ui
         player.build.renderUi(g2d, World.worlds.get(World.level), player);
-        player.armory.renderUi(g2d, player);
         player.inventory.renderUi(g2d);
+        player.armory.renderUi(g2d, player);
 
         //Disposes of Graphics and Graphics2D
         g.dispose();
@@ -287,6 +288,15 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
                 Build.blueprintTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
             }
 
+            //Maps item data
+            Map<String, Object> itemData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/item.json").toURI()), mapType);
+            for (String key : itemData.keySet()) {
+                int intKey = Integer.parseInt(key);
+                Map<String, Object> item = (Map<String, Object>) itemData.get(key);
+                Inventory.itemNames.put(intKey, (String) item.get("name"));
+                Inventory.itemTextures.put(intKey, (Map<String, String>) item.get("texture"));
+            }
+
             //Maps biome data
             Map<String, Object> biomeData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/biome.json").toURI()), mapType);
             for (String key : biomeData.keySet()) {
@@ -339,6 +349,24 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         }
     }
 
+
+    private void registerFont(){
+        try {
+            final File fontFile = new File(HoneySuckle.class.getResource("fonts/VT323/VT323-Regular.ttf").toURI());
+
+            final Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+            final Font sizedFont = font.deriveFont(Font.PLAIN, 24f);
+
+            // Registers font globally under "VT323 Regular"
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(sizedFont);
+        } catch (FontFormatException e) {
+            System.out.println("HoneySuckle ERROR: Failed to format text font.");
+        } catch (IOException e) {
+            System.out.println("HoneySuckle ERROR: Failed to import text font file.");
+        } catch (URISyntaxException e) {
+            System.out.println("HoneySuckle ERROR: Could not find text font file.");
+        }
+    }
     //Unused methods implemented
     @Override
     public void keyTyped(KeyEvent e) {
