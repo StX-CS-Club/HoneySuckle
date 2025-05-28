@@ -34,9 +34,9 @@ public class Build {
     public double[] cursor = new double[2];
 
     //Update Build
-    public void update(Player player, World world, double[] mousePos){
+    public void update(Player player, World world, Input input) {
         for (int i = 0; i < 2; i++) {
-            double mouseDiff = mousePos[i]
+            double mouseDiff = input.mousePos[i]
                     - (HoneySuckle.size[i] / 2.0
                     + Math.floor(player.pos[i] / HoneySuckle.tileSize) * HoneySuckle.tileSize
                     - world.camera[i]);
@@ -107,9 +107,9 @@ public class Build {
     }
 
     //Change selected blueprint based on scroll wheel
-    public void scrollBar(double scroll) {
-        if (Math.abs(scroll) >= 1) {
-            blueprintIndex += Math.signum(scroll);
+    public void scrollBar(double mouseScroll) {
+        if (Math.abs(mouseScroll) >= Input.criticalMouseScroll) {
+            blueprintIndex += Math.signum(mouseScroll);
             if (blueprintIndex < 0) {
                 blueprintIndex = blueprints.size() - 1;
             }

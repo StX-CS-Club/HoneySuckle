@@ -13,9 +13,6 @@ public class Armory {
     public Weapon[] weapons = new Weapon[3];
     public Armor armor;
 
-    //Measures clickData from last frame
-    private boolean[] lastClick = new boolean[5];
-
     //Armory Constructor
     public Armory(Weapon[] weapons, Armor armor) {
         //Provides default equipment
@@ -28,18 +25,18 @@ public class Armory {
     }
 
     //Update Armory
-    public void update(boolean[] click, boolean[] keyDown, Player player) {
+    public void update(Input input, Player player) {
         //If left click and selected weapon exists, attack
-        if (click[1]) {
+        if (input.clickDown(1)) {
             if (weapons[weaponIndex] != null) {
-                if(weapons[weaponIndex].constClick || !lastClick[1]){
+                if(weapons[weaponIndex].constClick || input.clickPressed(1)){
                     weapons[weaponIndex].attack(player);
                 }
             }
         }
         //Selects weapon from number key
         for (int i = 0; i < 3; i++) {
-            if (keyDown[49 + i]) {
+            if (input.keyDown(49 + i)) {
                 weaponIndex = i;
                 break;
             }
@@ -48,8 +45,6 @@ public class Armory {
         if (weapons[weaponIndex] != null) {
             weapons[weaponIndex].update(player);
         }
-        //Set lastClick to click at end of frame
-        lastClick = click.clone();
     }
 
     //Update Armory Armor
@@ -70,9 +65,9 @@ public class Armory {
     }
 
     //Updates selected weapon from scroll wheel
-    public void scrollBar(double scroll) {
-        if (Math.abs(scroll) >= 1) {
-            weaponIndex += Math.signum(scroll);
+    public void scrollBar(double mouseScroll) {
+        if (Math.abs(mouseScroll) >= Input.criticalMouseScroll) {
+            weaponIndex += Math.signum(mouseScroll);
             if (weaponIndex < 0) {
                 weaponIndex = 2;
             }

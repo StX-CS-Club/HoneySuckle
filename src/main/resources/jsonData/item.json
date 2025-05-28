@@ -10,34 +10,29 @@
         "texture": {
             "texture": "items/slime"
         }
-
     },
     "coal": {
         "name": "Coal Nugget",
         "texture": {
             "texture": "items/coal"
         }
-
     },
     "pumpkin": {
         "name": "Pumpkin",
         "texture": {
             "texture": "items/pumpkin"
         }
-
     },
     "cactus": {
         "name": "Cactus",
         "texture": {
             "texture": "items/cactus"
         }
-        
     }, 
     "scale": {
         "name": "Dragon Scale",
         "texture": {
             "texture": "items/scale"
         }
-
     }
 }

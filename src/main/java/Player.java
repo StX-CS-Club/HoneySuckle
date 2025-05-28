@@ -55,7 +55,7 @@ public class Player {
     private boolean weaponScroll = false;
 
     //Render Player
-    public void render(Graphics2D g, double[] mousePos) {
+    public void render(Graphics2D g) {
         //If not dead, render
         if (health > 0) {
             //Render building and armory
@@ -96,7 +96,7 @@ public class Player {
     }
 
     //Update Player
-    public void update(boolean[] keyDown, double[] mousePos, boolean[] click, double scroll) {
+    public void update(Input input) {
         //Player/Armor attributes
         Map<String, Double> attributes = armory.getAttributes();
 
@@ -116,28 +116,29 @@ public class Player {
         double[] camera = world.camera;
 
         //Toggle weaponScroll on scroll wheel click
-        if (click[2]) {
+        if (input.clickPressed(2)) {
             weaponScroll = !weaponScroll;
         }
 
         //Decide where scroll wheel affects
         if (weaponScroll) {
-            armory.scrollBar(scroll);
+            armory.scrollBar(input.mouseScroll);
         } else {
-            build.scrollBar(scroll);
+            build.scrollBar(input.mouseScroll);
         }
 
         //Update player build and armory
-        build.update(this, world, mousePos);
-        armory.update(click, keyDown, this);
+        build.update(this, world, input);
+        armory.update(input, this);
+        inventory.update();
 
         //Build on right click
-        if (click[3]) {
+        if (input.clickDown(3)) {
             build.build(World.worlds.get(World.level), this);
         }
 
         //If space pressed, reset acel to dash acel
-        if (keyDown[32]) {
+        if (input.keyPressed(32)) {
             //If have stamina...
             if (stamina == 1) {
                 vel[0] = 0;
@@ -154,21 +155,21 @@ public class Player {
         }
 
         //If going diaganol, divide by sqrt 2
-        if ((keyDown[83] || keyDown[87]) && (keyDown[65] || keyDown[68])) {
+        if ((input.keyDown(83) || input.keyDown(87)) && (input.keyDown(65) || input.keyDown(68))) {
             incriment /= Math.sqrt(2);
         }
 
         //Add acel to vel if key down
-        if (keyDown[83]) {
+        if (input.keyDown(83)) {
             vel[1] += incriment;
         }
-        if (keyDown[87]) {
+        if (input.keyDown(87)) {
             vel[1] -= incriment;
         }
-        if (keyDown[65]) {
+        if (input.keyDown(65)) {
             vel[0] -= incriment;
         }
-        if (keyDown[68]) {
+        if (input.keyDown(68)) {
             vel[0] += incriment;
         }
 
@@ -220,7 +221,7 @@ public class Player {
         };
 
         //Difference between mouse and player pos on screen
-        double[] mouseDiff = new double[]{mousePos[0] - screenPos[0], mousePos[1] - screenPos[1]};
+        double[] mouseDiff = new double[]{input.mousePos[0] - screenPos[0], input.mousePos[1] - screenPos[1]};
 
         //Rotate player to face mouse
         rotation = Math.toDegrees(Math.atan(mouseDiff[0] / -mouseDiff[1]));

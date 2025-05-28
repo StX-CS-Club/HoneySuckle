@@ -48,11 +48,8 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public static final int fps = 30;
     public static int[] size = new int[]{800, 600};
 
-    //Static variables referencing inputs
-    public static boolean[] keyDown = new boolean[100];
-    public static double[] mousePos = new double[2];
-    public static boolean[] click = new boolean[6];
-    public static double scroll = 0;
+    //Static variable referencing inputs
+    private static final Input input = new Input();
 
     //Main player
     public static Player player;
@@ -154,7 +151,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         World.worlds.get(World.level).render(g2d);
         //Renders Players
         for (Player renderPlayer : Player.players) {
-            renderPlayer.render(g2d, mousePos);
+            renderPlayer.render(g2d);
         }
 
         String biome = World.worlds.get(World.level).biome;
@@ -170,6 +167,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         //Renders crafting and weapon ui
         player.build.renderUi(g2d, World.worlds.get(World.level), player);
         player.armory.renderUi(g2d, player);
+        player.inventory.renderUi(g2d);
 
         //Disposes of Graphics and Graphics2D
         g.dispose();
@@ -178,18 +176,14 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     //Update
     public void update() {
+        input.update();
+
         //Updates all players
         for (Player updatePlayer : Player.players) {
-            updatePlayer.update(keyDown, mousePos, click, scroll);
+            updatePlayer.update(input);
         }
         //Updates current world
         World.worlds.get(World.level).update();
-
-        //Refreshed click and scroll trackers
-        if (Math.abs(scroll) > 2) {
-            scroll = Math.signum(scroll) * 2;
-        }
-        scroll += -Math.signum(scroll) * 0.8;
 
         //Renders
         repaint();
@@ -214,40 +208,42 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     //Adds/removes keys down to keyDown variable
     @Override
     public void keyPressed(KeyEvent e) {
-        keyDown[e.getKeyCode()] = true;
+        input.keyDown[e.getKeyCode()] = true;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        keyDown[e.getKeyCode()] = false;
+        input.keyDown[e.getKeyCode()] = false;
     }
 
     //Tracks mouse movements and events
     @Override
     public void mouseMoved(MouseEvent e) {
         Point pos = e.getPoint();
-        mousePos = new double[]{pos.x, pos.y};
+        input.mousePos[0] = pos.x;
+        input.mousePos[1] = pos.y;
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
         Point pos = e.getPoint();
-        mousePos = new double[]{pos.x, pos.y};
+        input.mousePos[0] = pos.x;
+        input.mousePos[1] = pos.y;
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        click[e.getButton()] = true;
+        input.click[e.getButton()] = true;
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        click[e.getButton()] = false;
+        input.click[e.getButton()] = false;
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        scroll += e.getPreciseWheelRotation() * 1;
+        input.mouseScroll += e.getPreciseWheelRotation() * 1;
     }
 
     //Fetches data from json files and maps as hashmaps

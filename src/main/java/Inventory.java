@@ -1,4 +1,5 @@
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,8 @@ public class Inventory {
     public final List<Armor> armors = new ArrayList<>();
     public final Map<String, Integer> items = new HashMap<>();
     public final Map<String, Integer> ammo = new HashMap<>();
+
+    private boolean open = false;
 
     //Inventory Constructor
     public Inventory(
@@ -42,5 +45,15 @@ public class Inventory {
             return 0;
         }
         return items.get(material);
+    }
+
+    public void update(){
+
+    }
+
+    public void renderUi(Graphics2D g){
+        if(open){
+
+        }
     }
 }
