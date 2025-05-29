@@ -2,7 +2,6 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.ItemSelectable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,8 @@ import java.util.Map;
  - Class for managing player inventories
  */
 public class Inventory {
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
 
     //Static json data
     public static final Map<Integer, String> itemNames = new HashMap<>();
@@ -24,15 +25,20 @@ public class Inventory {
     public final Map<Integer, Integer> items = new HashMap<>();
     public final Map<String, Integer> ammo = new HashMap<>();
 
+    private final Player player;
+
     public boolean isOpen = false;
     private double itemScroll = 0;
+    private double weaponScroll = 0;
 
     //Inventory Constructor
     public Inventory(
+            Player player,
             List<Weapon> weapons,
             List<Armor> armors,
             Map<Integer, Integer> items,
             Map<String, Integer> ammo) {
+        this.player = player;
         //If specified, adds shit to inventory
         if (weapons != null) {
             this.weapons.addAll(weapons);
@@ -55,67 +61,94 @@ public class Inventory {
         return items.get(material);
     }
 
-    public void update(Input input) {
+    public void update(InputHandler input) {
         if (input.keyPressed(69)) {
             isOpen = !isOpen;
         }
         if (isOpen) {
-            itemScroll += input.mouseScroll;
-            if (itemScroll < 0) {
-                itemScroll = 0;
-            } else if (itemScroll > items.size() - 1) {
-                itemScroll = items.size() - 1;
-            }
+            /*
+            if (input.mousePos[1] < GAME_HEIGHT / 2 - 60) {
+                weaponScroll += input.mouseScroll;
+                if (weaponScroll < 0) {
+                    weaponScroll = 0;
+                } else if (weaponScroll > weapons.size() - 1) {
+                    weaponScroll = weapons.size() - 1;
+                }
+            } else {*/
+                itemScroll += input.mouseScroll;
+                if (itemScroll < 0) {
+                    itemScroll = 0;
+                } else if (itemScroll > items.size() - 1) {
+                    itemScroll = items.size() - 1;
+                }
+            //}
         }
     }
 
     public void renderUi(Graphics2D g) {
-        if (isOpen) {
-            final int[] size = HoneySuckle.size;
-            g.setColor(new Color(64, 64, 64, 192));
-            g.fillRect(0, 0, size[0], size[1]);
+        g.setColor(new Color(64, 64, 64, 192));
+        g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-            for (int i = 0; i < items.size(); i++) {
-                final int itemId = (int) items.keySet().toArray()[i];
+        /* 
+        // Renders Weapons
+        for (int i = 0; i < weapons.size(); i++) {
+            final Weapon weapon = weapons.get(i);
+            final String weaponTexture = weapon.texture.get("itemTexture");
 
-                String color = "#ffffff";
-                if (items.get(itemId) > 0) {
-                    color = "#f5d39d";
-                }
-
-                final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
-                g.drawImage(Rendering.texture("hud/slot", color), size[0] / 2 - 50 + offset, size[1] / 2 - 50, 100, 100, null);
-
-                final Map<String, String> texture = itemTextures.get(itemId);
-
-                final String itemTexture = texture.get("texture");
-                if (itemTexture != null) {
-                    g.drawImage(Rendering.texture(itemTexture, "#ffffff"), size[0] / 2 - 25 + offset, size[1] / 2 - 25, 50, 50, null);
-                }
-
-                final String label = itemNames.get(itemId) + " x" + items.get(itemId);
-
-                int fontOffset = 0;
-
-                // Sets the font size to fit within box
-                for(int f = 24; f > 0; f--){
-                    g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
-                    if(g.getFontMetrics().stringWidth(label) < 100){
-                        fontOffset = g.getFontMetrics().stringWidth(label)/2;
-                        break;
-                    }
-                }
-                
-                g.setColor(new Color(224, 224, 224));
-
-                // Draws the font
-                g.drawString(label, size[0] / 2 + offset - fontOffset, size[1] / 2 + 60);
+            String color = weapon.texture.get("rarityColor");
+            if(color == null){
+                color = "#ffffff";
             }
-            
-            // Displays empty slot when items left to be collected
-            if(items.size() < itemNames.size()){
-                g.drawImage(Rendering.texture("hud/slot", "#ffffff"), size[0] / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), size[1] / 2 - 50, 100, 100, null);
+
+            final int offset = 110 * i - ((int) Math.floor(weaponScroll * 110));
+            g.drawImage(Rendering.texture("hud/weapon_slot", color), GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 160, 100, 100, null);
+
+            if (weaponTexture != null) {
+                g.drawImage(Rendering.texture(weaponTexture, "#ffffff"), GAME_WIDTH / 2 - 38 + offset, GAME_HEIGHT / 2 - 148, 75, 75, null);
             }
+        }
+         */
+        // Renders Items
+        for (int i = 0; i < items.size(); i++) {
+            final int itemId = (int) items.keySet().toArray()[i];
+
+            String color = "#ffffff";
+            if (items.get(itemId) > 0) {
+                color = "#f5d39d";
+            }
+
+            final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
+            g.drawImage(Rendering.texture("hud/slot", color), GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 100, 100, null);
+
+            final Map<String, String> texture = itemTextures.get(itemId);
+
+            final String itemTexture = texture.get("texture");
+            if (itemTexture != null) {
+                g.drawImage(Rendering.texture(itemTexture, "#ffffff"), GAME_WIDTH / 2 - 25 + offset, GAME_HEIGHT / 2 - 25, 50, 50, null);
+            }
+
+            final String label = itemNames.get(itemId) + " x" + items.get(itemId);
+
+            int fontOffset = 0;
+
+            // Sets the font size to fit within box
+            for (int f = 24; f > 0; f--) {
+                g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
+                if (g.getFontMetrics().stringWidth(label) < 100) {
+                    fontOffset = g.getFontMetrics().stringWidth(label) / 2;
+                    break;
+                }
+            }
+
+            g.setColor(new Color(224, 224, 224));
+
+            // Draws the font
+            g.drawString(label, GAME_WIDTH / 2 + offset - fontOffset, GAME_HEIGHT / 2 + 60);
+        }
+
+        // Displays empty slot when items left to be collected
+        if (items.size() < itemNames.size()) {
+            g.drawImage(Rendering.texture("hud/slot", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
         }
     }
 }

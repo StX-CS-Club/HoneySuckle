@@ -28,6 +28,8 @@ import javax.imageio.stream.ImageInputStream;
  - Static lists of already rendered shit
  */
 public class Rendering {
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
 
     //Save data -> Save CPU
     public static final Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
@@ -87,7 +89,7 @@ public class Rendering {
     //Render Light
     public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Integer>> lights) {
         //Create empty light map
-        BufferedImage lightImage = new BufferedImage(HoneySuckle.size[0], HoneySuckle.size[1], BufferedImage.TYPE_INT_ARGB);
+        BufferedImage lightImage = new BufferedImage(HoneySuckle.GAME_WIDTH,GAME_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D light2d = lightImage.createGraphics();
 
         //Render all lights on light map as radial gradients
@@ -150,14 +152,14 @@ public class Rendering {
         }
         //Set paint to radial gradient
         g.setPaint(new RadialGradientPaint(
-                new Point2D.Float(HoneySuckle.size[0] / 2, HoneySuckle.size[1] / 2),
-                HoneySuckle.size[0] / 2f,
+                new Point2D.Float(HoneySuckle.GAME_WIDTH / 2,GAME_HEIGHT / 2),
+               GAME_WIDTH / 2f,
                 new float[]{0f, 1f},
                 new Color[]{new Color(0, 0, 0, 0), new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * percent))}
         ));
 
         //Render color fase
-        g.fillRect(0, 0, HoneySuckle.size[0], HoneySuckle.size[1]);
+        g.fillRect(0, 0,GAME_WIDTH,GAME_HEIGHT);
     }
 
     //Render frames of gif
@@ -228,15 +230,5 @@ public class Rendering {
         g.setStroke(new BasicStroke(border));
         g.setColor(color);
         g.drawRect(x, y, width, height);
-    }
-
-    //Render Fancy Text
-    public static void fancyText(Graphics2D g, String text, TextAlign textAlign) {
-
-    }
-
-    //Options for text alignment
-    public static enum TextAlign {
-        LEFT, CENTER, RIGHT
     }
 }

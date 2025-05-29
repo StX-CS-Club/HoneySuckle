@@ -12,6 +12,9 @@ import java.util.Map;
  - Contains static json data
  */
 public class Projectile {
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Static json data
     public static final Map<String, List<String>> projTags = new HashMap<>();
@@ -57,7 +60,7 @@ public class Projectile {
         this.angle = angle;
         this.source = source;
         weight = attributes.get("weight");
-        size = attributes.get("size")*HoneySuckle.tileSize;
+        size = attributes.get("size")*HoneySuckle.TILE_SIZE;
     }
 
     //Change velocity of projectile
@@ -82,8 +85,8 @@ public class Projectile {
         //Current world data
         World world = World.worlds.get(World.level);
         int[] posIndex = new int[]{
-            (int) Math.floor(pos[0] / HoneySuckle.tileSize),
-            (int) Math.floor(pos[1] / HoneySuckle.tileSize)
+            (int) Math.floor(pos[0] /TILE_SIZE),
+            (int) Math.floor(pos[1] /TILE_SIZE)
         };
 
         //If projectile is outa here, remove it
@@ -129,7 +132,6 @@ public class Projectile {
                                     if (Math.random() < entity.readLoot(i, "prob", 1).doubleValue()) {
                                         final int item = entity.readLoot(i, "item", 0).intValue();
                                         player.inventory.items.put(item, player.inventory.getMaterial(item) + entity.readLoot(i, "count", 1).intValue());
-                                        System.out.println(player.inventory.items.toString());
                                     }
                                 }
                             }
@@ -168,8 +170,8 @@ public class Projectile {
 
         //Position of proj on screen
         double[] screenPos = new double[]{
-            HoneySuckle.size[0] / 2.0 + pos[0] - camera[0],
-            HoneySuckle.size[1] / 2.0 + pos[1] - camera[1]
+           GAME_WIDTH / 2.0 + pos[0] - camera[0],
+           GAME_HEIGHT / 2.0 + pos[1] - camera[1]
         };
 
         //Rotate based off angle

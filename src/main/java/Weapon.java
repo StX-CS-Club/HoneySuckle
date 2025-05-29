@@ -2,6 +2,7 @@
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -10,13 +11,17 @@ import java.util.Map;
  - Contains static json data
  */
 public class Weapon {
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Static json data
     public static final Map<String, Map<String, Double>> weaponAttributes = new HashMap<>();
+    public static final Map<String, Map<String, String>> weaponStats = new HashMap<>();
     public static final Map<String, String> weaponTypes = new HashMap<>();
     public static final Map<String, Map<String, String>> weaponTextures = new HashMap<>();
     public static final Map<String, String> weaponProj = new HashMap<>();
-    public static final Map<String, Boolean> weaponClick = new HashMap<>();
+    public static final Map<String, List<String>> weaponTags = new HashMap<>();
 
     //Timing
     private int attackFrame;
@@ -28,6 +33,7 @@ public class Weapon {
     public final Map<String, String> texture;
     public final String weapon;
     public final boolean constClick;
+    public final List<String> tags;
 
     //Weapon constructor
     public Weapon(String weapon) {
@@ -36,7 +42,8 @@ public class Weapon {
         attributes = weaponAttributes.get(weapon);
         attackFrame = attributes.get("frames").intValue();
         texture = weaponTextures.get(weapon);
-        constClick = weaponClick.get(weapon);
+        tags = weaponTags.get(weapon);
+        constClick = tags.contains("constClick");
         this.weapon = weapon;
     }
 
@@ -82,7 +89,7 @@ public class Weapon {
                 //If in attack frames
                 if (attackFrame < attributes.get("frames")) {
                     attackFrame++;
-                    double size = HoneySuckle.tileSize * attributes.get("size");
+                    double size =TILE_SIZE * attributes.get("size");
                     //Check all entities
                     for (Entity entity : world.renderEntities) {
                         //If collision overlap of entity and blade
@@ -98,17 +105,16 @@ public class Weapon {
                                     if (Math.random() < entity.readLoot(i, "prob", 1).doubleValue()) {
                                         final int item = entity.readLoot(i, "item", 0).intValue();
                                         player.inventory.items.put(item, player.inventory.getMaterial(item) + entity.readLoot(i, "count", 1).intValue());
-                                        System.out.println(player.inventory.items.toString());
                                     }
                                 }
                             }
                         }
                     }
                     //Player tile
-                    int sizeTiles = (int) Math.floor(size / HoneySuckle.tileSize) + 1;
+                    int sizeTiles = (int) Math.floor(size /TILE_SIZE) + 1;
                     int[] posIndex = new int[]{
-                        (int) Math.floor(player.pos[0] / HoneySuckle.tileSize),
-                        (int) Math.floor(player.pos[1] / HoneySuckle.tileSize)
+                        (int) Math.floor(player.pos[0] /TILE_SIZE),
+                        (int) Math.floor(player.pos[1] /TILE_SIZE)
                     };
                     //Check tiles
                     for (int x = posIndex[0] - sizeTiles; x < posIndex[0] + sizeTiles; x++) {
@@ -120,8 +126,8 @@ public class Weapon {
                                             Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
                                             new Point2D.Double(size, size),
                                             player.rotation,
-                                            new Point2D.Double((x + 0.5) * HoneySuckle.tileSize, (y + 0.5) * HoneySuckle.tileSize),
-                                            new Point2D.Double(HoneySuckle.tileSize, HoneySuckle.tileSize))) {
+                                            new Point2D.Double((x + 0.5) *TILE_SIZE, (y + 0.5) *TILE_SIZE),
+                                            new Point2D.Double(HoneySuckle.TILE_SIZE,TILE_SIZE))) {
                                         WorldObject obj = world.objGrid[x][y];
                                         //Damage object, and if broken add materials
                                         if (world.objGrid[x][y].damage(attributes.get("damage"))) {
@@ -129,7 +135,6 @@ public class Weapon {
                                                 if (Math.random() < obj.readLoot(i, "prob", 1).doubleValue()) {
                                                     final int item = obj.loot.get(i).get("item").intValue();
                                                     player.inventory.items.put(item, player.inventory.getMaterial(item) + obj.readLoot(i, "count", 1).intValue());
-                                                    System.out.println(player.inventory.items.toString());
                                                 }
                                             }
                                         }
@@ -153,7 +158,7 @@ public class Weapon {
                 if (attackFrame < attributes.get("frames")) {
                     attackFrame++;
                 }
-                double size = HoneySuckle.tileSize * attributes.get("size");
+                double size =TILE_SIZE * attributes.get("size");
                 //Check all entities
                 for (Entity entity : world.renderEntities) {
                     //If collision overlap of shield and entity
@@ -178,8 +183,8 @@ public class Weapon {
                             }
                             //Bonus of parry
                             double[] parryBonus = new double[]{
-                                attributes.get("parry") / attributes.get("frames") * HoneySuckle.tileSize * (attributes.get("frames") - attackFrame) * Math.abs(Math.sin(Math.toRadians(player.rotation))),
-                                attributes.get("parry") / attributes.get("frames") * HoneySuckle.tileSize * (attributes.get("frames") - attackFrame) * Math.abs(Math.cos(Math.toRadians(player.rotation)))
+                                attributes.get("parry") / attributes.get("frames") *TILE_SIZE * (attributes.get("frames") - attackFrame) * Math.abs(Math.sin(Math.toRadians(player.rotation))),
+                                attributes.get("parry") / attributes.get("frames") *TILE_SIZE * (attributes.get("frames") - attackFrame) * Math.abs(Math.cos(Math.toRadians(player.rotation)))
                             };
                             //Yeet
                             entity.vel[0] = (Math.abs(entity.vel[0]) * attributes.get("bounce") * parryCoef + parryBonus[0]) * direction[0] / entity.weight;
@@ -223,27 +228,27 @@ public class Weapon {
                 if (attackFrame < attributes.get("frames")) {
                     //Position of slash on screen
                     double[] screenPos = new double[]{
-                        HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") * HoneySuckle.tileSize / 2.0,
-                        HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize - player.size / 2.0
+                        GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") *TILE_SIZE / 2.0,
+                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") *TILE_SIZE - player.size / 2.0
                     };
                     //Render slash
                     g.drawImage(
                             Rendering.replaceGradient(Rendering.renderGIF("images/gifs/slash.gif", ((double) attackFrame) / attributes.get("frames")), texture.get("bladeColor")),
-                            (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * attributes.get("size")), (int) (HoneySuckle.tileSize * attributes.get("size")), null);
+                            (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.TILE_SIZE * attributes.get("size")), (int) (HoneySuckle.TILE_SIZE * attributes.get("size")), null);
                 } else {
                     //Size of blase
                     double size = attributes.get("size");
 
                     //Position of blade on screen
                     double[] screenPos = new double[]{
-                        HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] + player.size / 2.0,
-                        HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * HoneySuckle.tileSize / 2.0 - HoneySuckle.tileSize / 4.0
+                        GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] + player.size / 2.0,
+                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") *TILE_SIZE / 2.0 -TILE_SIZE / 4.0
                     };
 
                     //Render blase
                     g.drawImage(
                             Rendering.texture(texture.get("texture"), "#ffffff"),
-                            (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * size), (int) (HoneySuckle.tileSize * size), null);
+                            (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.TILE_SIZE * size), (int) (HoneySuckle.TILE_SIZE * size), null);
                 }
             }
             case "gun" -> {
@@ -251,14 +256,14 @@ public class Weapon {
 
                 //Position of gun on screen
                 double[] screenPos = new double[]{
-                    HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2.0,
-                    HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2.0
+                    GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size *TILE_SIZE / 2.0,
+                    GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size *TILE_SIZE - player.size / 2.0
                 };
 
                 //Render gun
                 g.drawImage(
                         Rendering.texture(texture.get("texture"), "#ffffff"),
-                        (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * size), (int) (HoneySuckle.tileSize * size), null);
+                        (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.TILE_SIZE * size), (int) (HoneySuckle.TILE_SIZE * size), null);
             }
             case "shield" -> {
                 //Size dependant on parry animation
@@ -266,14 +271,14 @@ public class Weapon {
 
                 //Position of shield on screen
                 double[] screenPos = new double[]{
-                    HoneySuckle.size[0] / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * HoneySuckle.tileSize / 2.0,
-                    HoneySuckle.size[1] / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * HoneySuckle.tileSize - player.size / 2.0
+                    GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size *TILE_SIZE / 2.0,
+                    GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size *TILE_SIZE - player.size / 2.0
                 };
 
                 //Render Shield
                 g.drawImage(
                         Rendering.texture(texture.get("texture"), "#ffffff"),
-                        (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.tileSize * size), (int) (HoneySuckle.tileSize * size), null);
+                        (int) screenPos[0], (int) screenPos[1], (int) (HoneySuckle.TILE_SIZE * size), (int) (HoneySuckle.TILE_SIZE * size), null);
             }
         }
     }

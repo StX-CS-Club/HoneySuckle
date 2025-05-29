@@ -11,6 +11,8 @@ import java.util.Map;
  */
 
 public class Tile {
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+
     //Static json data
     public static final Map<Integer, List<String>> tileTags = new HashMap<>();
     public static final Map<Integer, Map<String, Double>> tileValues = new HashMap<>();
@@ -35,7 +37,7 @@ public class Tile {
         texture = tileTextures.get(id);
     }
 
-    public void render(Graphics2D g, World world, double[] screenPos, int size){
+    public void render(Graphics2D g, World world, double[] screenPos){
         //Default color of pure white
         String color = "#ffffff";
         //If tile has biome specific color, find color from biome
@@ -50,11 +52,11 @@ public class Tile {
         //If tile has texture, load texture with grey-scaling
         if (texture.get("texture") != null) {
             String tileTexture = texture.get("texture");
-            g.drawImage(Rendering.texture(tileTexture, color), (int) screenPos[0], (int) screenPos[1], size, size, null);
+            g.drawImage(Rendering.texture(tileTexture, color), (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
         } else {
             //Else, render basic rectangle
             g.setColor(Color.decode(color));
-            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], size, size);
+            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE);
         }
     }
 }

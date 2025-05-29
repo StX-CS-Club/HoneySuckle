@@ -6,6 +6,8 @@ import java.awt.geom.Point2D;
  -Handles methods specific to entity types
  */
 public class Brain {
+    private static final int FPS = HoneySuckle.FPS;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Update Entity based on type
     public static void update(Entity entity) {
@@ -38,7 +40,7 @@ public class Brain {
                     }
                 }
                 //If time to attack
-                if (entity.ticks % HoneySuckle.fps / 2 == 0) {
+                if (entity.ticks % FPS / 2 == 0) {
                     double[] distance = new double[]{
                         player.pos[0] - entity.pos[0],
                         player.pos[1] - entity.pos[1]
@@ -46,7 +48,7 @@ public class Brain {
                     //Magnitude of distance
                     double magnitude = Math.sqrt(distance[0] * distance[0] + distance[1] * distance[1]);
                     //If within range of view, do a little hop
-                    if (magnitude <= Entity.entityAttributes.get(entity.type).get("view") * HoneySuckle.tileSize) {
+                    if (magnitude <= Entity.entityAttributes.get(entity.type).get("view") *TILE_SIZE) {
                         if (magnitude == 0) {
                             magnitude = 1;
                         }
@@ -63,7 +65,7 @@ public class Brain {
             case "dragon" -> {
                 //Dragon is basically a gun; operated similar to the code for one
                 double speed = 1.0 + 1.125 / 19 * (15 - entity.health);
-                if (entity.ticks * speed > entity.attributes.get("cooldown") * HoneySuckle.fps / 40.0 / speed) {
+                if (entity.ticks * speed > entity.attributes.get("cooldown") * FPS / 40.0 / speed) {
                     entity.ticks = 0;
                 }
                 if (entity.ticks == Math.floor(entity.attributes.get("frames")/speed)) {
@@ -125,7 +127,7 @@ public class Brain {
             case "slime" -> {
                 //If attacking, deals damage
                 if (checkTicks(entity, 2)) {
-                    if (Math.sqrt(Math.pow(entity.pos[0] - player.pos[0], 2) + Math.pow(entity.pos[1] - player.pos[1], 2)) < HoneySuckle.tileSize) {
+                    if (Math.sqrt(Math.pow(entity.pos[0] - player.pos[0], 2) + Math.pow(entity.pos[1] - player.pos[1], 2)) <TILE_SIZE) {
                         player.damage(0.05);
                         entity.vel[0] *= -2;
                         entity.vel[1] *= -2;
@@ -139,7 +141,7 @@ public class Brain {
     //If entity's ticks are less than n, return true
     private static boolean checkTicks(Entity entity, int n) {
         for (int i = 0; i < n; i++) {
-            if ((entity.ticks + i) % HoneySuckle.fps == 0) {
+            if ((entity.ticks + i) % FPS == 0) {
                 return true;
             }
         }

@@ -11,6 +11,7 @@ import java.util.Map;
  - Static json data
  */
 public class WorldObject {
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Static json dats
     public static final Map<Integer, List<String>> objTags = new HashMap<>();
@@ -44,7 +45,7 @@ public class WorldObject {
     }
 
     //Render WorldObject
-    public void render(Graphics2D g, World world, double[] screenPos, int size) {
+    public void render(Graphics2D g, World world, double[] screenPos) {
         //Default color of pure white
         String color = "#ffffff";
         //If object has biome specific color, find color from biome
@@ -56,14 +57,14 @@ public class WorldObject {
         //If object has texture, render it
         if (texture.get("texture") != null) {
             String objTexture = texture.get("texture");
-            g.drawImage(Rendering.texture(objTexture, color), (int) screenPos[0], (int) screenPos[1], size, size, null);
+            g.drawImage(Rendering.texture(objTexture, color), (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
         } else {//If object has listed baseColor, set as color
             if (texture.get("baseColor") != null && color.equals("#ffffff")) {
                 color = texture.get("baseColor");
             }
             //Else render basic rectangle
             g.setColor(Color.decode(color));
-            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], size, size);
+            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE);
         }
     }
 

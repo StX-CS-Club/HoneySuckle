@@ -12,6 +12,10 @@ import java.util.Map;
  - Class for managing players
  */
 public class Player {
+    private static final int FPS = HoneySuckle.FPS;
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Static list of all players
     public static List<Player> players = new ArrayList<>();
@@ -27,10 +31,12 @@ public class Player {
                 new Armor("leather")
         );
         inventory = new Inventory(
+                this,
                 Arrays.asList(armory.weapons),
                 Arrays.asList(new Armor[]{armory.armor}),
                 Map.of(1, 4),
                 null);
+                inventory.weapons.add(new Weapon("dragon_sword"));
 
         //Adds player to list of players
         players.add(this);
@@ -59,7 +65,9 @@ public class Player {
         //If not dead, render
         if (health > 0) {
             //Render building and armory
-            build.render(g, World.worlds.get(World.level), this);
+            if (!inventory.isOpen) {
+                build.render(g, World.worlds.get(World.level), this);
+            }
             armory.render(g, this);
 
             //Original rotation
@@ -90,13 +98,13 @@ public class Player {
             HoneySuckle.lights.add(Map.of(
                     "posX", (int) screenPos[0],
                     "posY", (int) screenPos[1],
-                    "radius", HoneySuckle.tileSize * 6
+                    "radius", TILE_SIZE * 6
             ));
         }
     }
 
     //Update Player
-    public void update(Input input) {
+    public void update(InputHandler input) {
         //Player/Armor attributes
         Map<String, Double> attributes = armory.getAttributes();
 
@@ -109,35 +117,36 @@ public class Player {
         }
 
         //AKA magnitude of acceleration
-        double incriment = 30.0 / HoneySuckle.fps * HoneySuckle.tileSize * attributes.get("speed");
+        double incriment = 30.0 / FPS * TILE_SIZE * attributes.get("speed");
 
         //Get current world camera
         World world = World.worlds.get(World.level);
         double[] camera = world.camera;
 
-        //Toggle weaponScroll on scroll wheel click
-        if (input.clickPressed(2)) {
-            weaponScroll = !weaponScroll;
-        }
-
-        //Decide where scroll wheel affects
         if (!inventory.isOpen) {
+            //Toggle weaponScroll on scroll wheel click
+            if (input.clickPressed(2)) {
+                weaponScroll = !weaponScroll;
+            }
+
+            //Decide where scroll wheel affects
             if (weaponScroll) {
                 armory.scrollBar(input.mouseScroll);
             } else {
                 build.scrollBar(input.mouseScroll);
             }
-        }
 
-        //Update player build and armory
-        build.update(this, world, input);
-        armory.update(input, this);
+            //Update player build and armory
+            build.update(this, world, input);
+            armory.update(input, this);
+
+            //Build on right click
+            if (input.clickDown(3)) {
+                build.build(World.worlds.get(World.level), this);
+            }
+        }
+        // Updates Inventory
         inventory.update(input);
-
-        //Build on right click
-        if (input.clickDown(3)) {
-            build.build(World.worlds.get(World.level), this);
-        }
 
         //If space pressed, reset acel to dash acel
         if (input.keyPressed(32)) {
@@ -145,12 +154,12 @@ public class Player {
             if (stamina == 1) {
                 vel[0] = 0;
                 vel[1] = 0;
-                incriment = HoneySuckle.tileSize * 1.25;
+                incriment = TILE_SIZE * 1.25;
                 stamina = 0;
             }
         } else {
             //Recover stamina
-            stamina += 0.1 * 30.0 / HoneySuckle.fps;
+            stamina += 0.1 * 30.0 / FPS;
             if (stamina > 1) {
                 stamina = 1;
             }
@@ -183,20 +192,19 @@ public class Player {
         World.worlds.get(World.level).camera[1] = pos[1];
 
         double[] newCamera = World.worlds.get(World.level).camera;
-        int[] screenSize = HoneySuckle.size;
         int[] worldSize = World.worlds.get(World.level).size;
 
-        if (newCamera[0] - screenSize[0] / 2.0 < 0) {
-            World.worlds.get(World.level).camera[0] = screenSize[0] / 2.0;
+        if (newCamera[0] - GAME_WIDTH / 2.0 < 0) {
+            World.worlds.get(World.level).camera[0] = GAME_WIDTH / 2.0;
         }
-        if (newCamera[0] + screenSize[0] / 2.0 > worldSize[0] * HoneySuckle.tileSize) {
-            World.worlds.get(World.level).camera[0] = worldSize[0] * HoneySuckle.tileSize - screenSize[0] / 2.0;
+        if (newCamera[0] + GAME_WIDTH / 2.0 > worldSize[0] * TILE_SIZE) {
+            World.worlds.get(World.level).camera[0] = worldSize[0] * TILE_SIZE - GAME_WIDTH / 2.0;
         }
-        if (newCamera[1] - screenSize[1] / 2 < 0.0) {
-            World.worlds.get(World.level).camera[1] = screenSize[1] / 2.0;
+        if (newCamera[1] - GAME_HEIGHT / 2 < 0.0) {
+            World.worlds.get(World.level).camera[1] = GAME_HEIGHT / 2.0;
         }
-        if (newCamera[1] + screenSize[1] / 2.0 > worldSize[1] * HoneySuckle.tileSize) {
-            World.worlds.get(World.level).camera[1] = worldSize[1] * HoneySuckle.tileSize - screenSize[1] / 2.0;
+        if (newCamera[1] + GAME_HEIGHT / 2.0 > worldSize[1] * TILE_SIZE) {
+            World.worlds.get(World.level).camera[1] = worldSize[1] * TILE_SIZE - GAME_HEIGHT / 2.0;
         }
 
         //World interact with player
@@ -206,9 +214,9 @@ public class Player {
 
         //Regenerate health
         if (health > 0) {
-            health += attributes.get("regen") * 30.0 / HoneySuckle.fps;
+            health += attributes.get("regen") * 30.0 / FPS;
             if (vel[0] == 0 && vel[1] == 0) {
-                health += attributes.get("regen") * 30.0 / HoneySuckle.fps;
+                health += attributes.get("regen") * 30.0 / FPS;
             }
         }
         //Cap health
@@ -218,8 +226,8 @@ public class Player {
 
         //Reset position of player on screen
         screenPos = new double[]{
-            HoneySuckle.size[0] / 2.0 + pos[0] - camera[0],
-            HoneySuckle.size[1] / 2.0 + pos[1] - camera[1]
+            GAME_WIDTH / 2.0 + pos[0] - camera[0],
+            GAME_HEIGHT / 2.0 + pos[1] - camera[1]
         };
 
         //Difference between mouse and player pos on screen

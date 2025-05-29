@@ -1,49 +1,95 @@
 {
-    "sword": {
-        "name": "Sword",
-        "type": "blade",
-        "constClick": true,
-        "attributes": {
-            "damage": 0.05,
-            "frames": 10.0,
-            "size": 1.0,
-            "cooldown": 20.0
-        },
-        "texture": {
-            "bladeColor": "#ffffff",
-            "itemTexture": "items/sword",
-            "texture": "weapons/sword"
-        }
+  "sword": {
+    "name": "Sword",
+    "type": "blade",
+    "tags": ["constClick"],
+    "attributes": {
+      "damage": 0.05,
+      "frames": 10.0,
+      "size": 1.0,
+      "cooldown": 20.0
     },
-    "bow": {
-        "name": "Bow",
-        "type": "gun",
-        "constClick": true,
-        "attributes": {
-            "frames": 1.0,
-            "cooldown": 20.0,
-            "size": 1.0
-        },
-        "projectile": "arrow",
-        "texture": {
-            "itemTexture": "items/bow",
-            "texture" : "weapons/bow"
-        }
+    "stats": {
+      "Type": "Sword",
+      "Rarity": "Common",
+      "Damage": "5",
+      "Size": "1",
+      "Speed": ".5"
     },
-    "shield": {
-        "name": "Shield",
-        "type": "shield",
-        "constClick": false,
-        "attributes":{
-            "size": 1.0,
-            "frames": 5.0,
-            "cooldown": 15.0,
-            "parry": 1.1,
-            "bounce": 1.0
-        },
-        "texture": {
-            "itemTexture": "items/shield",
-            "texture": "weapons/shield"
-        }
+    "texture": {
+      "bladeColor": "#ffffff",
+      "itemTexture": "items/sword",
+      "texture": "weapons/sword",
+      "rarityColor": "#e8f1ff"
     }
+  },
+  "dragon_sword": {
+    "name": "Dragon Scale Sword",
+    "type": "blade",
+    "tags": ["constClick"],
+    "attributes": {
+      "damage": 0.2,
+      "frames": 10.0,
+      "size": 1.5,
+      "cooldown": 20.0
+    },
+    "stats": {
+      "Type": "Sword",
+      "Rarity": "Common",
+      "Damage": "20",
+      "Size": "1.5",
+      "Speed": ".5"
+    },
+    "texture": {
+      "bladeColor": "#ffffff",
+      "itemTexture": "items/dragon_sword",
+      "texture": "weapons/dragon_sword",
+      "rarityColor": "#57a5ff"
+    }
+  },
+  "bow": {
+    "name": "Bow",
+    "type": "gun",
+    "tags": ["constClick"],
+    "attributes": {
+      "frames": 1.0,
+      "cooldown": 20.0,
+      "size": 1.0
+    },
+    "stats": {
+      "Type": "Bow",
+      "Rarity": "Common",
+      "Damage": "2.5",
+      "Speed": ".5"
+    },
+    "projectile": "arrow",
+    "texture": {
+      "itemTexture": "items/bow",
+      "texture": "weapons/bow",
+      "rarityColor": "#e8f1ff"
+    }
+  },
+  "shield": {
+    "name": "Shield",
+    "type": "shield",
+    "tags": [],
+    "attributes": {
+      "size": 1.0,
+      "frames": 5.0,
+      "cooldown": 15.0,
+      "parry": 1.1,
+      "bounce": 1.0
+    },
+    "stats": {
+      "Type": "Shield",
+      "Strength": "1.1",
+      "Size": "1",
+      "Speed": ".67"
+    },
+    "texture": {
+      "itemTexture": "items/shield",
+      "texture": "weapons/shield",
+      "rarityColor": "#e8f1ff"
+    }
+  }
 }

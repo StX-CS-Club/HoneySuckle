@@ -13,6 +13,9 @@ import java.util.Map;
  - References to Brain.java for specific methods
  */
 public class Entity {
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Satic data imported from json files
     public static final Map<String, Map<String, Double>> entityAttributes = new HashMap<>();
@@ -52,7 +55,7 @@ public class Entity {
 
         //Interprets basic attributes
         health = attributes.get("health");
-        size = attributes.get("size") * HoneySuckle.tileSize;
+        size = attributes.get("size") *TILE_SIZE;
         this.pos = pos;
         weight = attributes.get("weight");
     }
@@ -61,8 +64,8 @@ public class Entity {
     public void render(Graphics2D g, double[] camera) {
         //Position of entity on screen
         double[] screenPos = new double[]{
-            HoneySuckle.size[0] / 2.0 + pos[0] - camera[0] - size / 2.0,
-            HoneySuckle.size[1] / 2.0 + pos[1] - camera[1] - size / 2.0
+           GAME_WIDTH / 2.0 + pos[0] - camera[0] - size / 2.0,
+           GAME_HEIGHT / 2.0 + pos[1] - camera[1] - size / 2.0
         };
 
         //Texture data for entity

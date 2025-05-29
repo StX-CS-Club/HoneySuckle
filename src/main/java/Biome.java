@@ -10,6 +10,7 @@ import java.util.Map;
  - Static attributes from json
  */
 public class Biome {
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Progression of biomes
     public static String[] biomes = new String[]{
@@ -74,8 +75,8 @@ public class Biome {
                                         objResult[pos[0]][pos[1]] = new WorldObject(1, pos);
                                     } else if (Math.random() <= 0.02) {
                                         entityResult.add(new Entity("slime",
-                                                new double[]{(world.start - x + 0.5) * HoneySuckle.tileSize,
-                                                    (y + 0.5) * HoneySuckle.tileSize
+                                                new double[]{(world.start - x + 0.5) *TILE_SIZE,
+                                                    (y + 0.5) *TILE_SIZE
                                                 }));
                                     }
                                 }
@@ -92,8 +93,8 @@ public class Biome {
                                     objResult[world.start + x][y] = new WorldObject(1, pos);
                                 } else if (Math.random() <= 0.02) {
                                     entityResult.add(new Entity("slime",
-                                            new double[]{(world.start + x + 0.5) * HoneySuckle.tileSize,
-                                                (y + 0.5) * HoneySuckle.tileSize
+                                            new double[]{(world.start + x + 0.5) *TILE_SIZE,
+                                                (y + 0.5) *TILE_SIZE
                                             }));
                                 }
                             }
@@ -149,8 +150,8 @@ public class Biome {
                                         objResult[pos[0]][pos[1]] = new WorldObject(4, new int[]{world.start - x, y});
                                     } else if (Math.random() <= 0.01 * World.level) {
                                         entityResult.add(new Entity("slime",
-                                                new double[]{(world.start - x + 0.5) * HoneySuckle.tileSize,
-                                                    (y + 0.5) * HoneySuckle.tileSize
+                                                new double[]{(world.start - x + 0.5) *TILE_SIZE,
+                                                    (y + 0.5) *TILE_SIZE
                                                 }));
                                     }
                                 }
@@ -168,8 +169,8 @@ public class Biome {
                                     objResult[world.start + x][y] = new WorldObject(4, new int[]{world.start + x, y});
                                 } else if (Math.random() <= 0.01 * World.level) {
                                     entityResult.add(new Entity("slime",
-                                            new double[]{(world.start + x + 0.5) * HoneySuckle.tileSize,
-                                                (y + 0.5) * HoneySuckle.tileSize
+                                            new double[]{(world.start + x + 0.5) *TILE_SIZE,
+                                                (y + 0.5) *TILE_SIZE
                                             }));
                                 }
                             }
@@ -643,7 +644,7 @@ public class Biome {
                 }
                 world.entities.add(new Entity(
                         "dragon", new double[]{
-                            25.5 * HoneySuckle.tileSize, 76 * HoneySuckle.tileSize
+                            25.5 *TILE_SIZE, 76 *TILE_SIZE
                         }
                 ));
 

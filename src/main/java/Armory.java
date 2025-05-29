@@ -8,6 +8,12 @@ import java.util.Map;
  - Class for managing player's combat components (Armor, Weapons, etc.)
  */
 public class Armory {
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+
+
     //Basic armory components
     public int weaponIndex = 0;
     public Weapon[] weapons = new Weapon[3];
@@ -16,8 +22,8 @@ public class Armory {
     //Armory Constructor
     public Armory(Weapon[] weapons, Armor armor) {
         //Provides default equipment
-        for(int i = 0; i < 3; i++){
-            if(weapons.length > i){
+        for (int i = 0; i < 3; i++) {
+            if (weapons.length > i) {
                 this.weapons[i] = weapons[i];
             }
         }
@@ -25,11 +31,11 @@ public class Armory {
     }
 
     //Update Armory
-    public void update(Input input, Player player) {
+    public void update(InputHandler input, Player player) {
         //If left click and selected weapon exists, attack
         if (input.clickDown(1)) {
             if (weapons[weaponIndex] != null) {
-                if(weapons[weaponIndex].constClick || input.clickPressed(1)){
+                if (weapons[weaponIndex].constClick || input.clickPressed(1)) {
                     weapons[weaponIndex].attack(player);
                 }
             }
@@ -48,16 +54,16 @@ public class Armory {
     }
 
     //Update Armory Armor
-    public void updateArmor(Player player){
+    public void updateArmor(Player player) {
         //If armor exists, update it
-        if(armor != null){
+        if (armor != null) {
             armor.update(player);
         }
     }
 
     //If armor exists, returns armor attributes
-    public Map<String, Double> getAttributes(){
-        if(armor != null){
+    public Map<String, Double> getAttributes() {
+        if (armor != null) {
             return armor.attributes;
         }
         //Default "Naked" attributes
@@ -66,7 +72,7 @@ public class Armory {
 
     //Updates selected weapon from scroll wheel
     public void scrollBar(double mouseScroll) {
-        if (Math.abs(mouseScroll) >= Input.criticalMouseScroll) {
+        if (Math.abs(mouseScroll) >= InputHandler.criticalMouseScroll) {
             weaponIndex += Math.signum(mouseScroll);
             if (weaponIndex < 0) {
                 weaponIndex = 2;
@@ -97,7 +103,7 @@ public class Armory {
     //Render Armory Armor
     public void renderArmor(Graphics2D g, Player player) {
         //If armor exists, render it
-        if(armor != null){
+        if (armor != null) {
             armor.render(g, player);
         }
     }
@@ -105,12 +111,11 @@ public class Armory {
     //Render Armory UI
     public void renderUi(Graphics2D g, Player player) {
         //Size of slot
-        double size = HoneySuckle.size[0] / 12.0;
         double xMargin = 0;
 
         //If player in bottom left corner, display in right corner
-        if(player.screenPos[0] < size*3+HoneySuckle.tileSize && player.screenPos[1] > HoneySuckle.size[1]-size*25/12-HoneySuckle.tileSize){
-            xMargin = HoneySuckle.size[0]-size*3;
+        if (player.screenPos[0] < HUD_SIZE * 3 +TILE_SIZE && player.screenPos[1] > GAME_HEIGHT - HUD_SIZE * 25 / 12 -TILE_SIZE) {
+            xMargin = GAME_WIDTH - HUD_SIZE * 3;
         }
 
         //Go through each slot
@@ -122,12 +127,12 @@ public class Armory {
             }
 
             //Render slot
-            g.drawImage(Rendering.texture("hud/icon", color), (int) (size * i + xMargin), HoneySuckle.size[1] - (int) size, (int) size, (int) size, null);
-            if(weapons[i] != null){
+            g.drawImage(Rendering.texture("hud/icon", color), (int) (HUD_SIZE * i + xMargin), GAME_HEIGHT - HUD_SIZE, HUD_SIZE, HUD_SIZE, null);
+            if (weapons[i] != null) {
                 //Render Weapon Item
                 Map<String, String> texture = weapons[i].texture;
-                if(texture.get("itemTexture") != null){            
-            g.drawImage(Rendering.texture(texture.get("itemTexture"), "#ffffff"), (int) (size * i + size / 8 + xMargin), HoneySuckle.size[1] - (int) size*7/8, (int) size*3/4, (int) size*3/4, null);
+                if (texture.get("itemTexture") != null) {
+                    g.drawImage(Rendering.texture(texture.get("itemTexture"), "#ffffff"), (int) (HUD_SIZE * i + HUD_SIZE / 8 + xMargin), GAME_HEIGHT - HUD_SIZE * 7 / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
                 }
             }
         }

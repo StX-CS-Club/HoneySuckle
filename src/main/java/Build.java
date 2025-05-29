@@ -14,6 +14,12 @@ import java.util.Set;
  - Contains static json data
  */
 public class Build {
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+
+    private static final int[] gameSize = new int[]{GAME_WIDTH, GAME_HEIGHT};
 
     //Static json data
     public static final Map<Integer, List<Map<String, Integer>>> blueprintMats = new HashMap<>();
@@ -34,15 +40,15 @@ public class Build {
     public double[] cursor = new double[2];
 
     //Update Build
-    public void update(Player player, World world, Input input) {
+    public void update(Player player, World world, InputHandler input) {
         for (int i = 0; i < 2; i++) {
             double mouseDiff = input.mousePos[i]
-                    - (HoneySuckle.size[i] / 2.0
-                    + Math.floor(player.pos[i] / HoneySuckle.tileSize) * HoneySuckle.tileSize
+                    - (gameSize[i] / 2.0
+                    + Math.floor(player.pos[i] / TILE_SIZE) * TILE_SIZE
                     - world.camera[i]);
             if (mouseDiff < 0) {
                 cursor[i] = -1;
-            } else if (mouseDiff > HoneySuckle.tileSize) {
+            } else if (mouseDiff > TILE_SIZE) {
                 cursor[i] = 1;
             } else {
                 cursor[i] = 0;
@@ -54,8 +60,8 @@ public class Build {
     public void render(Graphics2D g, World world, Player player) {
         //Tile position of player, with cursor pos added
         int[] index = new int[]{
-            (int) Math.floor(player.pos[0] / HoneySuckle.tileSize + cursor[0]),
-            (int) Math.floor(player.pos[1] / HoneySuckle.tileSize + cursor[1])
+            (int) Math.floor(player.pos[0] / TILE_SIZE + cursor[0]),
+            (int) Math.floor(player.pos[1] / TILE_SIZE + cursor[1])
         };
 
         //Color of tile
@@ -72,20 +78,19 @@ public class Build {
         //Render Build Tile
         g.setColor(new Color(0, 0, 0, 0));
         Rendering.borderRect(g, 1, color,
-                (int) (HoneySuckle.size[0] / 2.0 + index[0] * HoneySuckle.tileSize - camera[0]),
-                (int) (HoneySuckle.size[1] / 2.0 + index[1] * HoneySuckle.tileSize - camera[1]),
-                HoneySuckle.tileSize, HoneySuckle.tileSize);
+                (int) (GAME_WIDTH / 2.0 + index[0] * TILE_SIZE - camera[0]),
+                (int) (GAME_HEIGHT / 2.0 + index[1] * TILE_SIZE - camera[1]),
+                TILE_SIZE, TILE_SIZE);
     }
 
     //Render Build UI
     public void renderUi(Graphics2D g, World world, Player player) {
         //Slot size
-        double size = HoneySuckle.size[0] / 12.0;
         double xMargin = 0;
 
         //If player is in bottom left corner, render in bottom right
-        if (player.screenPos[0] < size * 3 + HoneySuckle.tileSize && player.screenPos[1] > HoneySuckle.size[1] - size * 25.0 / 12 - HoneySuckle.tileSize) {
-            xMargin = HoneySuckle.size[0] - size * 13.0 / 12;
+        if (player.screenPos[0] < HUD_SIZE * 3 + TILE_SIZE && player.screenPos[1] > GAME_HEIGHT - HUD_SIZE * 25.0 / 12 - TILE_SIZE) {
+            xMargin = GAME_WIDTH - HUD_SIZE * 13.0 / 12;
         }
 
         //Verification color
@@ -95,20 +100,20 @@ public class Build {
             textureColor = "#00ff00";
         }
         //Render blueprint Scroll
-        g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + size / 12.0), (int) (HoneySuckle.size[1] - size * 25.0 / 12), (int) size, (int) size, null);
-        
+        g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + HUD_SIZE / 12.0), (int) (GAME_HEIGHT - HUD_SIZE * 25.0 / 12), HUD_SIZE, HUD_SIZE, null);
+
         //Render blueprint Item
         Map<String, String> texture = blueprintTextures.get((int) blueprints.toArray()[blueprintIndex]);
         if (texture != null) {
-            if (texture.get("texture") != null) {            
-                g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + size*5/24), (int) (HoneySuckle.size[1] - size * 47.0 / 24), (int) size*3/4, (int) size*3/4, null);
+            if (texture.get("texture") != null) {
+                g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + HUD_SIZE * 5 / 24), (int) (GAME_HEIGHT - HUD_SIZE * 47.0 / 24), HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
             }
         }
     }
 
     //Change selected blueprint based on scroll wheel
     public void scrollBar(double mouseScroll) {
-        if (Math.abs(mouseScroll) >= Input.criticalMouseScroll) {
+        if (Math.abs(mouseScroll) >= InputHandler.criticalMouseScroll) {
             blueprintIndex += Math.signum(mouseScroll);
             if (blueprintIndex < 0) {
                 blueprintIndex = blueprints.size() - 1;
@@ -126,11 +131,10 @@ public class Build {
         //Material data
         List<Map<String, Integer>> blueprint = blueprintMats.get(blueprintKey);
 
-
         //Position to build on
         int[] index = new int[]{
-            (int) (Math.floor(player.pos[0] / HoneySuckle.tileSize) + cursor[0]),
-            (int) (Math.floor(player.pos[1] / HoneySuckle.tileSize) + cursor[1])
+            (int) (Math.floor(player.pos[0] / TILE_SIZE) + cursor[0]),
+            (int) (Math.floor(player.pos[1] / TILE_SIZE) + cursor[1])
         };
 
         //Checks if can place on tile
@@ -138,11 +142,10 @@ public class Build {
             //Places tile
             world.objGrid[index[0]][index[1]] = new WorldObject(blueprintKey, index);
             //Removes materials
-        for (Map<String, Integer> material : blueprint) {
-            int item = readMat(material, "item", 0).intValue();
-            player.inventory.items.put(item, player.inventory.getMaterial(item) - readMat(material, "count", 1).intValue());
-            System.out.println(player.inventory.items.toString());
-        }
+            for (Map<String, Integer> material : blueprint) {
+                int item = readMat(material, "item", 0).intValue();
+                player.inventory.items.put(item, player.inventory.getMaterial(item) - readMat(material, "count", 1).intValue());
+            }
         }
     }
 
@@ -153,12 +156,12 @@ public class Build {
 
         //Position trying to build on
         int[] index = new int[]{
-            (int) (Math.floor(player.pos[0] / HoneySuckle.tileSize) + cursor[0]),
-            (int) (Math.floor(player.pos[1] / HoneySuckle.tileSize) + cursor[1])
+            (int) (Math.floor(player.pos[0] / TILE_SIZE) + cursor[0]),
+            (int) (Math.floor(player.pos[1] / TILE_SIZE) + cursor[1])
         };
-  
+
         //Checks if player has materials
-        if(!hasMaterials(player, blueprintKey)){
+        if (!hasMaterials(player, blueprintKey)) {
             return false;
         }
 
@@ -179,9 +182,9 @@ public class Build {
         return (blueprintParams.get(blueprintKey).get("tile").contains(world.grid[index[0]][index[1]].id)
                 && blueprintParams.get(blueprintKey).get("obj").contains(world.objGrid[index[0]][index[1]].id));
     }
- 
+
     //Check to see if player has materials
-    private boolean hasMaterials(Player player, int blueprintKey){ 
+    private boolean hasMaterials(Player player, int blueprintKey) {
         //Material data
         List<Map<String, Integer>> blueprint = blueprintMats.get(blueprintKey);
 
@@ -198,7 +201,7 @@ public class Build {
 
     private Number readMat(Map<String, Integer> mats, String value, Number defaultValue) {
         Number result = mats.get(value);
-        if(result == null){
+        if (result == null) {
             return defaultValue;
         }
         return result;
