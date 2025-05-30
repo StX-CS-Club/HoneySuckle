@@ -12,12 +12,14 @@ import java.util.Map;
  - Class for managing player inventories
  */
 public class Inventory {
+
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
 
     //Static json data
     public static final Map<String, String> itemNames = new HashMap<>();
     public static final Map<String, Map<String, String>> itemTextures = new HashMap<>();
+    public static final Map<String, List<String>> itemRecipeUnlocks = new HashMap<>();
     public static final Map<Integer, String> itemStringId = new HashMap<>();
     public static final Map<String, Integer> itemIntId = new HashMap<>();
 
@@ -77,12 +79,12 @@ public class Inventory {
                     weaponScroll = weapons.size() - 1;
                 }
             } else {*/
-                itemScroll += input.mouseScroll;
-                if (itemScroll < 0) {
-                    itemScroll = 0;
-                } else if (itemScroll > items.size() - 1) {
-                    itemScroll = items.size() - 1;
-                }
+            itemScroll += input.mouseScroll;
+            if (itemScroll < 0) {
+                itemScroll = 0;
+            } else if (itemScroll > items.size() - 1) {
+                itemScroll = items.size() - 1;
+            }
             //}
         }
     }
@@ -152,5 +154,27 @@ public class Inventory {
         if (items.size() < itemNames.size()) {
             g.drawImage(Rendering.texture("hud/slot", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
         }
+    }
+
+    public void addItem(Map<String, Number> item) {
+        if (Math.random() < readLoot(item, "prob", 1).doubleValue()) {
+            final String itemId = itemStringId.get(readLoot(item, "item", 0).intValue());
+            items.put(itemId, getMaterial(itemId) + readLoot(item, "count", 1).intValue());
+
+            final List<String> recipeUnlocks = itemRecipeUnlocks.get(itemId);
+            if (recipeUnlocks != null) {
+                for (String recipe : recipeUnlocks) {
+                    player.build.blueprints.add(recipe);
+                }
+            }
+        }
+    }
+
+    private Number readLoot(Map<String, Number> loot, String value, Number defaultValue) {
+        Number result = loot.get(value);
+        if (result == null) {
+            return defaultValue;
+        }
+        return result;
     }
 }

@@ -102,11 +102,8 @@ public class Weapon {
                                 new Point2D.Double(entity.size, entity.size))) {
                             //Damage entity, if dead, add materials
                             if (entity.damage(attributes.get("damage"))) {
-                                for (int i = 0; i < entity.loot.size(); i++) {
-                                    if (Math.random() < entity.readLoot(i, "prob", 1).doubleValue()) {
-                                        final String item = Inventory.itemStringId.get(entity.readLoot(i, "item", 0).intValue());
-                                        player.inventory.items.put(item, player.inventory.getMaterial(item) + entity.readLoot(i, "count", 1).intValue());
-                                    }
+                                for (Map<String, Number> loot : entity.loot) {
+                                    player.inventory.addItem(loot);
                                 }
                             }
                         }
@@ -132,11 +129,8 @@ public class Weapon {
                                         WorldObject obj = world.objGrid[x][y];
                                         //Damage object, and if broken add materials
                                         if (world.objGrid[x][y].damage(attributes.get("damage"))) {
-                                            for (int i = 0; i < obj.loot.size(); i++) {
-                                                if (Math.random() < obj.readLoot(i, "prob", 1).doubleValue()) {
-                                                    final String item = Inventory.itemStringId.get(obj.readLoot(i, "item", 0).intValue());
-                                                    player.inventory.items.put(item, player.inventory.getMaterial(item) + obj.readLoot(i, "count", 1).intValue());
-                                                }
+                                            for (Map<String, Number> loot : obj.loot) {
+                                                player.inventory.addItem(loot);
                                             }
                                         }
                                     }

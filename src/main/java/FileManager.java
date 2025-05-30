@@ -60,6 +60,7 @@ class FileManager {
                 final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
                 Inventory.itemNames.put(key, (String) item.get("name"));
                 Inventory.itemTextures.put(key, (Map<String, String>) item.get("texture"));
+                Inventory.itemRecipeUnlocks.put(key, (List<String>) item.get("recipeUnlocks"));
 
                 final int id = (int) item.get("id");
                 Inventory.itemIntId.put(key, id);
@@ -73,6 +74,7 @@ class FileManager {
                 Biome.biomeColorMap.put(key, (Map<String, String>) biome.get("colorMap"));
                 Biome.biomeTags.put(key, (List<String>) biome.get("tags"));
                 Biome.biomeGeneration.put(key, (Map<String, Object>) biome.get("generation"));
+                Biome.biomeLevel.put(key, (Integer) biome.get("level"));
             }
 
             //Maps structure data
@@ -93,7 +95,7 @@ class FileManager {
                 Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
                 Entity.entityAttributes.put(key, (Map<String, Double>) entity.get("attributes"));
                 Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
-                Entity.entityLoot.put(key, (List<Map<String, Integer>>) entity.get("loot"));
+                Entity.entityLoot.put(key, (List<Map<String, Number>>) entity.get("loot"));
                 Entity.entityTags.put(key, (List<String>) entity.get("tags"));
 
                 final int id = (int) entity.get("id");

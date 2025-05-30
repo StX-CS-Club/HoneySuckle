@@ -83,7 +83,8 @@ public class WorldObject {
                 "posX", (int) screenPos[0] + TILE_SIZE / 2,
                 "posY", (int) screenPos[1] + TILE_SIZE / 2,
                 "radius", TILE_SIZE * (int) readValue("light"),
-                "color", glowColor
+                "color", glowColor,
+                "glow", (int) readValue("glow")
         ));
     }
 
@@ -109,13 +110,5 @@ public class WorldObject {
         //If broken, remove object and return true
         World.worlds.get(World.level).objGrid[posIndex[0]][posIndex[1]] = null;
         return true;
-    }
-
-    public Number readLoot(int index, String value, Number defaultValue) {
-        Number result = loot.get(index).get(value);
-        if (result == null) {
-            return defaultValue;
-        }
-        return result;
     }
 }

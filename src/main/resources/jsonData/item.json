@@ -23,6 +23,7 @@
     "pumpkin": {
         "id": 4,
         "name": "Pumpkin",
+        "recipeUnlocks": ["jackolantern"],
         "texture": {
             "texture": "items/pumpkin"
         }
@@ -39,6 +40,21 @@
         "name": "Dragon Scale",
         "texture": {
             "texture": "items/scale"
+        }
+    },
+    "diamond": {
+        "id": 7,
+        "name": "Diamond",
+        "texture": {
+            "texture": "items/diamond"
+        }
+    },
+    "rock": {
+        "id": 8,
+        "name": "Rock",
+        "recipeUnlocks": ["bridge"],
+        "texture": {
+            "texture": "items/rock"
         }
     }
 }

@@ -1,10 +1,12 @@
 {
   "wetlands": {
     "name": "Wetlands",
+    "level": 0,
     "tags": [],
     "colorMap": {
       "landColor": "#0fc80f",
       "voidColor": "#0080ff",
+      "waterColor": "#0080ff",
       "treeColor": "#019501"
     },
     "generation": {
@@ -34,10 +36,12 @@
   },
   "peninsula": {
     "name": "Peninsula",
+    "level": 4,
     "tags": [],
     "colorMap": {
       "landColor": "#94ca53",
       "voidColor": "#4382ff",
+      "waterColor": "#4382ff",
       "treeColor": "#7eab47",
       "coalColor": "#665555"
     },
@@ -72,10 +76,12 @@
   },
   "islands": {
     "name": "Islands",
+    "level": 2,
     "tags": [],
     "colorMap": {
       "landColor": "#0fc854",
       "voidColor": "#0080ff",
+      "waterColor": "#0080ff",
       "treeColor": "#0a953e"
     },
     "generation": {
@@ -98,10 +104,12 @@
   },
   "field": {
     "name": "Field",
+    "level": 1,
     "tags": [],
     "colorMap": {
       "landColor": "#00a800",
       "voidColor": "#004aff",
+      "waterColor": "#004aff",
       "treeColor": "#006b00",
       "coalColor": "#5d4646"
     },
@@ -131,10 +139,12 @@
   },
   "swamp": {
     "name": "Swamp",
+    "level": 3,
     "tags": ["watery"],
     "colorMap": {
       "landColor": "#58860b",
       "voidColor": "#118fa1",
+      "waterColor": "#118fa1",
       "treeColor": "#5e6b00",
       "mudColor": "#6b4700"
     },
@@ -164,10 +174,12 @@
   },
   "darkForest": {
     "name": "Dark Forest",
+    "level": 5,
     "tags": ["fog"],
     "colorMap": {
       "landColor": "#2a562a",
       "voidColor": "#001139",
+      "waterColor": "#001139",
       "treeColor": "#042e00",
       "pumpkinColor": "#d88700",
       "fogColor": "#000000",
@@ -203,11 +215,13 @@
   },
   "desert": {
     "name": "Desert",
+    "level": 5,
     "tags": ["fog"],
     "colorMap": {
       "landColor": "#ffc436",
       "sandColor": "#ffd264",
       "voidColor": "#6fbbe9",
+      "waterColor": "#6fbbe9",
       "treeColor": "#8cc043",
       "cactusColor": "#47ab00",
       "fogColor": "#ecba40"
@@ -241,10 +255,12 @@
   },
   "tundra": {
     "name": "Tundra",
+    "level": 5,
     "tags": ["dangerousVoid"],
     "colorMap": {
       "landColor": "#dffffb",
       "voidColor": "#92c4ff",
+      "waterColor": "#92c4ff",
       "treeColor": "#009000",
       "iceColor": "#cbeeff",
       "coalColor": "#784d4d"
@@ -277,8 +293,60 @@
       ]
     }
   },
+  "cavern": {
+    "name": "Cavern",
+    "level": 6,
+    "tags": ["fog", "dangerousVoid"],
+    "colorMap": {
+      "stoneColor": "#888888",
+      "voidColor": "#111111",
+      "lavaColor": "#ff8800",
+      "fogColor": "#000000",
+      "coalColor": "#4d4d4d",
+      "landColor": "#0a1f19",
+      "treeColor": "#173323",
+      "diamondColor": "#4ed1f5"
+    },
+    "generation": {
+      "size": [51, 125],
+      "base": 6,
+      "tiles": [
+        {
+          "id": 7,
+          "prob": 0.0025,
+          "sideProb": [7, 0.45],
+          "bottomProb": [7, 0.525]
+        },
+        {
+          "id": 1,
+          "prob": 0.001,
+          "sideProb": [1, 0.45],
+          "bottomProb": [1, 0.45]
+        }
+      ],
+      "objects": [
+        {
+          "id": 8,
+          "tileProb": [6, 0.03]
+        },
+        {
+          "id": 4,
+          "tileProb": [6, 0.01]
+        },
+        {
+          "id": 1,
+          "tileProb": [1, 0.33]
+        },
+        {
+          "id": 7,
+          "tileProb": [6, 0.0001]
+        }
+      ]
+    }
+  },
   "bridge": {
     "name": "Bridge",
+    "level": 9,
     "tags": ["dangerousVoid", "enemyLock"],
     "colorMap": {
       "brickColor": "#847878",

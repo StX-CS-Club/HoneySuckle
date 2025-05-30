@@ -15,28 +15,31 @@ public class Biome {
 
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
-    //Progression of biomes
-    public static String[] biomes = new String[]{
-        "wetlands",
-        "field",
-        "islands",
-        "swamp",
-        "peninsula",
-        "darkForest",
-        "tundra",
-        "desert",
-        "bridge"
-    };
-
     //Static data from json
     public static final Map<String, Map<String, String>> biomeColorMap = new HashMap<>();
     public static final Map<String, Map<String, Object>> biomeGeneration = new HashMap<>();
     public static final Map<String, List<String>> biomeTags = new HashMap<>();
+    public static final Map<String, Integer> biomeLevel = new HashMap<>();
 
     public static final Map<String, Integer> structureIntId = new HashMap<>();
     public static final Map<Integer, String> structureStringId = new HashMap<>();
     public static final Map<String, String> structureName = new HashMap<>();
     public static final Map<String, Map<String, Object>> structureGeneration = new HashMap<>();
+
+    public static String randomizeBiome(String lastBiome, int level) {
+        final List<String> biomes = new ArrayList<>();
+        for (String biome : biomeLevel.keySet()) {
+            if (biomeLevel.get(biome) <= level) {
+                biomes.add(biome);
+            }
+        }
+        String biome = biomes.get((int) Math.floor(Math.random() * biomes.size()));
+        if (biome.equals(lastBiome)) {
+            biome = biomes.get((int) Math.floor(Math.random() * biomes.size()));
+        }
+
+        return biome;
+    }
 
     //Generates biome based on given type
     public static void biomeGeneration(World world) {

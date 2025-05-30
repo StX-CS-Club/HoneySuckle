@@ -113,13 +113,14 @@ public class Rendering {
                     new Color[]{Color.white, new Color(0, 0, 0, 0)}
             ));
             light2d.fill(circle);
-            if (light.get("color") != null) {
+            if (light.get("glow") != null && light.get("color") != null) {
                 Color glowColor = new Color(light.get("color"));
+                int glowValue = light.get("glow");
                 glow2d.setPaint(new RadialGradientPaint(
                         center,
                         radius,
                         new float[]{0f, 1f},
-                        new Color[]{new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 64),
+                        new Color[]{new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowValue),
                             new Color(0, 0, 0, 0)}
                 ));
                 glow2d.fill(circle);

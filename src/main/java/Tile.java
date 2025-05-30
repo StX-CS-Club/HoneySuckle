@@ -75,7 +75,8 @@ public class Tile {
                 "posX", (int) screenPos[0] + TILE_SIZE / 2,
                 "posY", (int) screenPos[1] + TILE_SIZE / 2,
                 "radius", TILE_SIZE * (int) readValue("light"),
-                "color", glowColor
+                "color", glowColor,
+                "glow", (int) readValue("glow")
         ));
     }
 

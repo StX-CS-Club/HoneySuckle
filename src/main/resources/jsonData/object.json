@@ -1,4 +1,14 @@
 {
+  "-5": {
+    "name": "Stone Bridge",
+    "texture": {
+      "baseColor": "#8b8b8b",
+      "texture": "tiles/bridge"
+    },
+    "tags": ["walkable", "safe"],
+    "values": {},
+    "loot": []
+  },
   "-4": {
     "name": "Jack-O-Lantern",
     "texture": {
@@ -10,7 +20,8 @@
     "tags": ["obstruction", "destructable", "light"],
     "values": {
       "light": 15.0,
-      "durability": 0.5
+      "durability": 0.5,
+      "glow": 32.0
     },
     "loot": [
       {
@@ -28,7 +39,8 @@
     "tags": ["destructable", "light"],
     "values": {
       "light": 8.0,
-      "durability": 0.25
+      "durability": 0.25,
+      "glow": 64.0
     },
     "loot": [
       {
@@ -155,6 +167,45 @@
       {
         "item": 1,
         "prob": 0.5
+      }
+    ]
+  },
+  "7": {
+    "name": "Diamond Ore",
+    "texture": {
+      "natColor": "diamondColor",
+      "texture": "tiles/ore_alt"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "values": {
+      "durability": 5.0
+    },
+    "loot": [
+      {
+        "item": 7,
+        "count": 1
+      }
+    ]
+  },
+  "8": {
+    "name": "Rock",
+    "texture": {
+      "natColor": "rockColor",
+      "texture": "tiles/rock"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "values": {
+      "durability": 1.5
+    },
+    "loot": [
+      {
+        "item": 8,
+        "count": 2
+      },
+      {
+        "item": 8,
+        "prob": 0.66,
+        "count": 1
       }
     ]
   }

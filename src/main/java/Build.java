@@ -35,7 +35,7 @@ public class Build {
     }
 
     //Build properties
-    private final Set<String> blueprints = new LinkedHashSet<>(Arrays.asList("wall"));
+    public final Set<String> blueprints = new LinkedHashSet<>(Arrays.asList("wall"));
     private int blueprintIndex = 0;
 
     //Index of cursor tile compared to player

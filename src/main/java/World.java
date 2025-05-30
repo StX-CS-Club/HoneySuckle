@@ -31,12 +31,8 @@ public class World {
     //World Constructor
     public World() {
         //Pseudo-Randomized Biome
-        randomizeBiome();
-        //Makes repetition less likely
-        if (!worlds.isEmpty()) {
-            if (worlds.get(level - 1).biome.equals(biome)) {
-                randomizeBiome();
-            }
+        if (level > 0) {
+            biome = Biome.randomizeBiome(worlds.get(level - 1).biome, level);
         }
         //Generates the world based on the biome
         Biome.biomeGeneration(this);
@@ -44,15 +40,6 @@ public class World {
         camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
         //Adds world to static list of worlds
         worlds.add(this);
-    }
-
-    private void randomizeBiome() {
-        //Runs progressive randomization
-        if (level < Biome.biomes.length) {
-            biome = Biome.biomes[(int) Math.floor(Math.random() * level)];
-        } else {
-            biome = Biome.biomes[(int) Math.floor(Math.random() * Biome.biomes.length)];
-        }
     }
 
     //Camera position for rendering
@@ -71,7 +58,7 @@ public class World {
     //World attributes
     public int[] size = new int[2];
     public int[] start = new int[2];
-    public String biome;
+    public String biome = "wetlands";
 
     //Bounds movement to boundaries of world
     public double[] bound(double[] pos, double[] delta, double margin) {
@@ -273,7 +260,7 @@ public class World {
                                 objGrid[x][y].renderLight(screenPos);
                             }
                         }
-                        if(grid[x][y].tags.contains("light")){
+                        if (grid[x][y].tags.contains("light")) {
                             grid[x][y].renderLight(screenPos);
                         }
                     }

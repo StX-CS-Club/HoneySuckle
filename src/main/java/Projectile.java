@@ -128,11 +128,8 @@ public class Projectile {
                         if (entity.damage(attributes.get("damage"))) {
                             if(source instanceof Player){
                                 final Player player = (Player) source;
-                                for (int i = 0; i < entity.loot.size(); i++) {
-                                    if (Math.random() < entity.readLoot(i, "prob", 1).doubleValue()) {
-                                        final String item = Inventory.itemStringId.get(entity.readLoot(i, "item", 0).intValue());
-                                        player.inventory.items.put(item, player.inventory.getMaterial(item) + entity.readLoot(i, "count", 1).intValue());
-                                    }
+                                for (Map<String, Number> loot : entity.loot) {
+                                    player.inventory.addItem(loot);
                                 }
                             }
                         }
