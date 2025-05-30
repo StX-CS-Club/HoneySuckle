@@ -57,10 +57,13 @@ class FileManager {
             //Maps item data
             Map<String, Object> itemData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/item.json").toURI()), mapType);
             for (String key : itemData.keySet()) {
-                int intKey = Integer.parseInt(key);
-                Map<String, Object> item = (Map<String, Object>) itemData.get(key);
-                Inventory.itemNames.put(intKey, (String) item.get("name"));
-                Inventory.itemTextures.put(intKey, (Map<String, String>) item.get("texture"));
+                final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
+                Inventory.itemNames.put(key, (String) item.get("name"));
+                Inventory.itemTextures.put(key, (Map<String, String>) item.get("texture"));
+
+                final int id = (int) item.get("id");
+                Inventory.itemIntId.put(key, id);
+                Inventory.itemStringId.put(id, key);
             }
 
             //Maps biome data
@@ -69,6 +72,19 @@ class FileManager {
                 Map<String, Object> biome = (Map<String, Object>) biomeData.get(key);
                 Biome.biomeColorMap.put(key, (Map<String, String>) biome.get("colorMap"));
                 Biome.biomeTags.put(key, (List<String>) biome.get("tags"));
+                Biome.biomeGeneration.put(key, (Map<String, Object>) biome.get("generation"));
+            }
+
+            //Maps structure data
+            Map<String, Object> structureData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/structure.json").toURI()), mapType);
+            for (String key : structureData.keySet()) {
+                final Map<String, Object> structure = (Map<String, Object>) structureData.get(key);
+                Biome.structureName.put(key, (String) structure.get("name"));
+                Biome.structureGeneration.put(key, (Map<String, Object>) structure.get("generation"));
+
+                final int id = (int) structure.get("id");
+                Biome.structureIntId.put(key, id);
+                Biome.structureStringId.put(id, key);
             }
 
             //Maps entity data
@@ -79,6 +95,10 @@ class FileManager {
                 Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
                 Entity.entityLoot.put(key, (List<Map<String, Integer>>) entity.get("loot"));
                 Entity.entityTags.put(key, (List<String>) entity.get("tags"));
+
+                final int id = (int) entity.get("id");
+                Entity.entityIntId.put(key, id);
+                Entity.entityStringId.put(id, key);
             }
 
             //Maps weapon data

@@ -22,6 +22,8 @@ public class Entity {
     public static final Map<String, Map<String, String>> entityTextures = new HashMap<>();
     public static final Map<String, List<Map<String, Integer>>> entityLoot = new HashMap<>();
     public static final Map<String, List<String>> entityTags = new HashMap<>();
+    public static final Map<Integer, String> entityStringId = new HashMap<>();
+    public static final Map<String, Integer> entityIntId = new HashMap<>();
 
     //Basic attributes
     public final String type;

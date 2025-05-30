@@ -1,35 +1,41 @@
 {
-    "1": {
+    "wood": {
+        "id": 1,
         "name": "Wood",
         "texture": {
             "texture": "items/wood"
         }
     },
-    "2": {
+    "sline": {
+        "id": 2,
         "name": "Slime",
         "texture": {
             "texture": "items/slime"
         }
     },
-    "3": {
+    "coal": {
+        "id": 3,
         "name": "Coal Nugget",
         "texture": {
             "texture": "items/coal"
         }
     },
-    "4": {
+    "pumpkin": {
+        "id": 4,
         "name": "Pumpkin",
         "texture": {
             "texture": "items/pumpkin"
         }
     },
-    "5": {
+    "cactus": {
+        "id": 5,
         "name": "Cactus",
         "texture": {
             "texture": "items/cactus"
         }
     }, 
-    "6": {
+    "scale": {
+        "id": 6,
         "name": "Dragon Scale",
         "texture": {
             "texture": "items/scale"

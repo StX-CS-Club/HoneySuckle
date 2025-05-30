@@ -1,94 +1,312 @@
 {
-    "wetlands": {
-      "name": "Wetlands",
-      "tags": [],
-      "colorMap": {
-        "landColor": "#0fc80f",
-        "voidColor": "#0080ff",
-        "treeColor": "#019501"
-      }
+  "wetlands": {
+    "name": "Wetlands",
+    "tags": [],
+    "colorMap": {
+      "landColor": "#0fc80f",
+      "voidColor": "#0080ff",
+      "treeColor": "#019501"
     },
-    "peninsula": {
-      "name": "Peninsula",
-      "tags": [],
-      "colorMap": {
-        "landColor": "#94ca53",
-        "voidColor": "#4382ff",
-        "treeColor": "#7eab47",
-        "coalColor": "#665555"
-      }
-    },
-    "islands": {
-      "name": "Islands",
-      "tags": [],
-      "colorMap": {
-        "landColor": "#0fc854",
-        "voidColor": "#0080ff",
-        "treeColor": "#0a953e"
-      }
-    },
-    "field": {
-      "name": "Field",
-      "tags": [],
-      "colorMap": {
-        "landColor": "#00a800",
-        "voidColor": "#004aff",
-        "treeColor": "#006b00",
-        "coalColor": "#5d4646"
-      }
-    },
-    "swamp": {
-      "name": "Swamp",
-      "tags": [],
-      "colorMap": {
-        "landColor": "#58860b",
-        "voidColor": "#118fa1",
-        "treeColor": "#5e6b00",
-        "mudColor": "#6b4700"
-      }
-    },
-    "darkForest": {
-      "name": "Dark Forest",
-      "tags": ["fog"],
-      "colorMap": {
-        "landColor": "#2a562a",
-        "voidColor": "#001139",
-        "treeColor": "#042e00",
-        "pumpkinColor": "#d88700",
-        "fogColor": "#000000",
-        "coalColor": "#271b1b"
-      }
-    },
-    "desert": {
-      "name": "Desert",
-      "tags": ["fog"],
-      "colorMap": {
-        "landColor": "#ffc436",
-        "sandColor": "#ffd264",
-        "voidColor": "#6fbbe9",
-        "treeColor": "#8cc043",
-        "cactusColor": "#47ab00",
-        "fogColor": "#ecba40"
-      }
-    },
-    "tundra": {
-      "name": "Tundra",
-      "tags": ["dangerousVoid"],
-      "colorMap": {
-        "landColor": "#dffffb",
-        "voidColor": "#92c4ff",
-        "treeColor": "#009000",
-        "iceColor": "#cbeeff",
-        "coalColor": "#784d4d"
-      }
-    },
-    "bridge": {
-      "name": "Bridge",
-      "tags": ["dangerousVoid", "enemyLock"],
-      "colorMap": {
-        "brickColor": "#847878",
-        "landColor": "#cdc5b3",
-        "voidColor": "#242475"
-      }
+    "generation": {
+      "size": [51, 90],
+      "startMap": [[1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [1, 0.55],
+          "bottomProb": [1, 0.3]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.1]
+        }
+      ],
+      "entities": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.02]
+        }
+      ]
     }
-  }  
+  },
+  "peninsula": {
+    "name": "Peninsula",
+    "tags": [],
+    "colorMap": {
+      "landColor": "#94ca53",
+      "voidColor": "#4382ff",
+      "treeColor": "#7eab47",
+      "coalColor": "#665555"
+    },
+    "generation": {
+      "size": [25, 75],
+      "startMap": [[1, 1, 1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "sideProb": [1, 0.095],
+          "bottomProb": [1, 0.90375]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.05]
+        },
+        {
+          "id": 4,
+          "tileProb": [1, 0.01]
+        }
+      ],
+      "entities": [
+        {
+          "id": 1,
+          "levelProbPower": 1,
+          "tileProb": [1, 0.01]
+        }
+      ]
+    }
+  },
+  "islands": {
+    "name": "Islands",
+    "tags": [],
+    "colorMap": {
+      "landColor": "#0fc854",
+      "voidColor": "#0080ff",
+      "treeColor": "#0a953e"
+    },
+    "generation": {
+      "size": [75, 50],
+      "tiles": [
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [1, 0.45],
+          "bottomProb": [1, 0.25]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.25]
+        }
+      ]
+    }
+  },
+  "field": {
+    "name": "Field",
+    "tags": [],
+    "colorMap": {
+      "landColor": "#00a800",
+      "voidColor": "#004aff",
+      "treeColor": "#006b00",
+      "coalColor": "#5d4646"
+    },
+    "generation": {
+      "size": [101, 100],
+      "startMap": [[1, 1, 1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [1, 0.445],
+          "bottomProb": [1, 0.445],
+          "rangeProb": [50, 50, 1]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.01]
+        },
+        {
+          "id": 4,
+          "tileProb": [1, 0.001]
+        }
+      ]
+    }
+  },
+  "swamp": {
+    "name": "Swamp",
+    "tags": ["watery"],
+    "colorMap": {
+      "landColor": "#58860b",
+      "voidColor": "#118fa1",
+      "treeColor": "#5e6b00",
+      "mudColor": "#6b4700"
+    },
+    "generation": {
+      "size": [75, 100],
+      "startMap": [[2, 1, 2]],
+      "tiles": [
+        {
+          "id": 2,
+          "sideProb": [1, 0.19, 2, 0.38],
+          "bottomProb": [1, 0.19, 2, 0.38]
+        },
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [1, 0.425, 2, 0.425],
+          "bottomProb": [1, 0.435, 2, 0.435]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.35]
+        }
+      ]
+    }
+  },
+  "darkForest": {
+    "name": "Dark Forest",
+    "tags": ["fog"],
+    "colorMap": {
+      "landColor": "#2a562a",
+      "voidColor": "#001139",
+      "treeColor": "#042e00",
+      "pumpkinColor": "#d88700",
+      "fogColor": "#000000",
+      "coalColor": "#271b1b"
+    },
+    "generation": {
+      "size": [101, 150],
+      "startMap": [[1, 1, 1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [1, 0.435],
+          "bottomProb": [1, 0.435],
+          "rangeProb": [50, 50, 1]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.1]
+        },
+        {
+          "id": 2,
+          "tileProb": [1, 0.002]
+        },
+        {
+          "id": 4,
+          "tileProb": [1, 0.005]
+        }
+      ]
+    }
+  },
+  "desert": {
+    "name": "Desert",
+    "tags": ["fog"],
+    "colorMap": {
+      "landColor": "#ffc436",
+      "sandColor": "#ffd264",
+      "voidColor": "#6fbbe9",
+      "treeColor": "#8cc043",
+      "cactusColor": "#47ab00",
+      "fogColor": "#ecba40"
+    },
+    "generation": {
+      "size": [151, 125],
+      "base": 1,
+      "tiles": [
+        {
+          "id": 0,
+          "prob": 0.005,
+          "sideProb": [0, 0.45],
+          "bottomProb": [0, 0.535]
+        },
+        {
+          "id": 3,
+          "prob": 0.2
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.005]
+        },
+        {
+          "id": 3,
+          "tileProb": [1, 0.02, 3, 0.02]
+        }
+      ]
+    }
+  },
+  "tundra": {
+    "name": "Tundra",
+    "tags": ["dangerousVoid"],
+    "colorMap": {
+      "landColor": "#dffffb",
+      "voidColor": "#92c4ff",
+      "treeColor": "#009000",
+      "iceColor": "#cbeeff",
+      "coalColor": "#784d4d"
+    },
+    "generation": {
+      "size": [75, 100],
+      "startMap": [[1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "sideProb": [1, 0.35, 4, 0.35],
+          "bottomProb": [1, 0.35, 4, 0.35]
+        },
+        {
+          "id": 4,
+          "prob": 0.025,
+          "sideProb": [1, 0.4, 4, 0.4],
+          "bottomProb": [1, 0.4, 4, 0.4]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.05]
+        },
+        {
+          "id": 4,
+          "tileProb": [1, 0.002]
+        }
+      ]
+    }
+  },
+  "bridge": {
+    "name": "Bridge",
+    "tags": ["dangerousVoid", "enemyLock"],
+    "colorMap": {
+      "brickColor": "#847878",
+      "landColor": "#cdc5b3",
+      "voidColor": "#242475"
+    },
+    "generation": {
+      "size": [51, 150],
+      "genSize": [3, 149],
+      "startMap": [[5, 5, 5, 5, 5]],
+      "tiles": [
+        {
+          "id": 5,
+          "rangeProb": [23, 27, 1]
+        }
+      ],
+      "objects": [
+        {
+          "id": 6,
+          "tileProb": [5, 0.04]
+        }
+      ],
+      "structures": [
+        {
+          "id": 1,
+          "pos": [[18, 68]]
+        }
+      ]
+    }
+  }
+}

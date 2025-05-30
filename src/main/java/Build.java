@@ -14,6 +14,7 @@ import java.util.Set;
  - Contains static json data
  */
 public class Build {
+
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
@@ -143,7 +144,7 @@ public class Build {
             world.objGrid[index[0]][index[1]] = new WorldObject(blueprintKey, index);
             //Removes materials
             for (Map<String, Integer> material : blueprint) {
-                int item = readMat(material, "item", 0).intValue();
+                String item = Inventory.itemStringId.get(readMat(material, "item", 0).intValue());
                 player.inventory.items.put(item, player.inventory.getMaterial(item) - readMat(material, "count", 1).intValue());
             }
         }
@@ -191,7 +192,9 @@ public class Build {
         //Go through all materials needed
         for (Map<String, Integer> material : blueprint) {
             //If don't have, return false
-            if (player.inventory.getMaterial(readMat(material, "item", 0).intValue()) < readMat(material, "count", 1).intValue()) {
+            String matStringId = Inventory.itemStringId.get(readMat(material, "item", 0).intValue());
+            if (player.inventory.getMaterial(matStringId)
+                    < readMat(material, "count", 1).intValue()) {
                 return false;
             }
         }

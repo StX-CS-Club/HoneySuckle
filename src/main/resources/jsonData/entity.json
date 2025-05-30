@@ -1,5 +1,6 @@
 {
   "slime": {
+    "id" : 1,
     "name": "Slime",
     "texture": {
       "baseColor": "#71cf01",
@@ -21,6 +22,7 @@
     "tags": []
   },
   "dragon": {
+    "id": 2,
     "name": "Dragon",
     "texture": {
       "baseColor": "#b4008e",

@@ -34,7 +34,7 @@ public class Player {
                 this,
                 Arrays.asList(armory.weapons),
                 Arrays.asList(new Armor[]{armory.armor}),
-                Map.of(1, 4),
+                Map.of("wood", 4),
                 null);
                 inventory.weapons.add(new Weapon("dragon_sword"));
 

@@ -39,10 +39,10 @@ public class World {
                 randomizeBiome();
             }
         }
-        //Generates the world based on teh biome
+        //Generates the world based on the biome
         Biome.biomeGeneration(this);
         //Sets camera position
-        camera = new double[]{(start + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
+        camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
         //Adds world to static list of worlds
         worlds.add(this);
     }
@@ -71,7 +71,7 @@ public class World {
 
     //World attributes
     public int[] size = new int[2];
-    public int start;
+    public int[] start = new int[2];
     public String biome;
 
     //Bounds movement to boundaries of world
@@ -135,7 +135,7 @@ public class World {
             if (!Biome.biomeTags.get(biome).contains("enemyLock") || entities.isEmpty()) {
                 level++;
                 World world = new World();
-                player.pos = new double[]{TILE_SIZE * (world.start + 0.5), TILE_SIZE * (world.size[1] - 0.5)};
+                player.pos = new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.size[1] - 0.5)};
                 return;
             }
         }

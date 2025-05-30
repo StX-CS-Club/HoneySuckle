@@ -138,5 +138,22 @@
     "tags": ["enemyGate", "obstruction", "projObstruction"],
     "values": {},
     "loot": []
+  },
+  "6": {
+    "name": "Crate",
+    "texture": {
+      "baseColor": "#c75f06",
+      "texture": "tiles/crate"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "values": {
+      "durability": 0.1
+    },
+    "loot": [
+      {
+        "item": 1,
+        "prob": 0.5
+      }
+    ]
   }
 }

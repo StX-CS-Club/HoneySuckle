@@ -16,13 +16,15 @@ public class Inventory {
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
 
     //Static json data
-    public static final Map<Integer, String> itemNames = new HashMap<>();
-    public static final Map<Integer, Map<String, String>> itemTextures = new HashMap<>();
+    public static final Map<String, String> itemNames = new HashMap<>();
+    public static final Map<String, Map<String, String>> itemTextures = new HashMap<>();
+    public static final Map<Integer, String> itemStringId = new HashMap<>();
+    public static final Map<String, Integer> itemIntId = new HashMap<>();
 
     //Inventory data
     public final List<Weapon> weapons = new ArrayList<>();
     public final List<Armor> armors = new ArrayList<>();
-    public final Map<Integer, Integer> items = new HashMap<>();
+    public final Map<String, Integer> items = new HashMap<>();
     public final Map<String, Integer> ammo = new HashMap<>();
 
     private final Player player;
@@ -36,7 +38,7 @@ public class Inventory {
             Player player,
             List<Weapon> weapons,
             List<Armor> armors,
-            Map<Integer, Integer> items,
+            Map<String, Integer> items,
             Map<String, Integer> ammo) {
         this.player = player;
         //If specified, adds shit to inventory
@@ -54,7 +56,7 @@ public class Inventory {
         }
     }
 
-    public int getMaterial(int material) {
+    public int getMaterial(String material) {
         if (items.get(material) == null) {
             return 0;
         }
@@ -110,7 +112,7 @@ public class Inventory {
          */
         // Renders Items
         for (int i = 0; i < items.size(); i++) {
-            final int itemId = (int) items.keySet().toArray()[i];
+            final String itemId = (String) items.keySet().toArray()[i];
 
             String color = "#ffffff";
             if (items.get(itemId) > 0) {

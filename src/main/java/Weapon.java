@@ -11,6 +11,7 @@ import java.util.Map;
  - Contains static json data
  */
 public class Weapon {
+
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
@@ -89,7 +90,7 @@ public class Weapon {
                 //If in attack frames
                 if (attackFrame < attributes.get("frames")) {
                     attackFrame++;
-                    double size =TILE_SIZE * attributes.get("size");
+                    double size = TILE_SIZE * attributes.get("size");
                     //Check all entities
                     for (Entity entity : world.renderEntities) {
                         //If collision overlap of entity and blade
@@ -103,7 +104,7 @@ public class Weapon {
                             if (entity.damage(attributes.get("damage"))) {
                                 for (int i = 0; i < entity.loot.size(); i++) {
                                     if (Math.random() < entity.readLoot(i, "prob", 1).doubleValue()) {
-                                        final int item = entity.readLoot(i, "item", 0).intValue();
+                                        final String item = Inventory.itemStringId.get(entity.readLoot(i, "item", 0).intValue());
                                         player.inventory.items.put(item, player.inventory.getMaterial(item) + entity.readLoot(i, "count", 1).intValue());
                                     }
                                 }
@@ -111,10 +112,10 @@ public class Weapon {
                         }
                     }
                     //Player tile
-                    int sizeTiles = (int) Math.floor(size /TILE_SIZE) + 1;
+                    int sizeTiles = (int) Math.floor(size / TILE_SIZE) + 1;
                     int[] posIndex = new int[]{
-                        (int) Math.floor(player.pos[0] /TILE_SIZE),
-                        (int) Math.floor(player.pos[1] /TILE_SIZE)
+                        (int) Math.floor(player.pos[0] / TILE_SIZE),
+                        (int) Math.floor(player.pos[1] / TILE_SIZE)
                     };
                     //Check tiles
                     for (int x = posIndex[0] - sizeTiles; x < posIndex[0] + sizeTiles; x++) {
@@ -126,14 +127,14 @@ public class Weapon {
                                             Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
                                             new Point2D.Double(size, size),
                                             player.rotation,
-                                            new Point2D.Double((x + 0.5) *TILE_SIZE, (y + 0.5) *TILE_SIZE),
-                                            new Point2D.Double(HoneySuckle.TILE_SIZE,TILE_SIZE))) {
+                                            new Point2D.Double((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE),
+                                            new Point2D.Double(HoneySuckle.TILE_SIZE, TILE_SIZE))) {
                                         WorldObject obj = world.objGrid[x][y];
                                         //Damage object, and if broken add materials
                                         if (world.objGrid[x][y].damage(attributes.get("damage"))) {
                                             for (int i = 0; i < obj.loot.size(); i++) {
                                                 if (Math.random() < obj.readLoot(i, "prob", 1).doubleValue()) {
-                                                    final int item = obj.loot.get(i).get("item").intValue();
+                                                    final String item = Inventory.itemStringId.get(obj.readLoot(i, "item", 0).intValue());
                                                     player.inventory.items.put(item, player.inventory.getMaterial(item) + obj.readLoot(i, "count", 1).intValue());
                                                 }
                                             }
@@ -158,7 +159,7 @@ public class Weapon {
                 if (attackFrame < attributes.get("frames")) {
                     attackFrame++;
                 }
-                double size =TILE_SIZE * attributes.get("size");
+                double size = TILE_SIZE * attributes.get("size");
                 //Check all entities
                 for (Entity entity : world.renderEntities) {
                     //If collision overlap of shield and entity
@@ -183,8 +184,8 @@ public class Weapon {
                             }
                             //Bonus of parry
                             double[] parryBonus = new double[]{
-                                attributes.get("parry") / attributes.get("frames") *TILE_SIZE * (attributes.get("frames") - attackFrame) * Math.abs(Math.sin(Math.toRadians(player.rotation))),
-                                attributes.get("parry") / attributes.get("frames") *TILE_SIZE * (attributes.get("frames") - attackFrame) * Math.abs(Math.cos(Math.toRadians(player.rotation)))
+                                attributes.get("parry") / attributes.get("frames") * TILE_SIZE * (attributes.get("frames") - attackFrame) * Math.abs(Math.sin(Math.toRadians(player.rotation))),
+                                attributes.get("parry") / attributes.get("frames") * TILE_SIZE * (attributes.get("frames") - attackFrame) * Math.abs(Math.cos(Math.toRadians(player.rotation)))
                             };
                             //Yeet
                             entity.vel[0] = (Math.abs(entity.vel[0]) * attributes.get("bounce") * parryCoef + parryBonus[0]) * direction[0] / entity.weight;
@@ -228,8 +229,8 @@ public class Weapon {
                 if (attackFrame < attributes.get("frames")) {
                     //Position of slash on screen
                     double[] screenPos = new double[]{
-                        GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") *TILE_SIZE / 2.0,
-                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") *TILE_SIZE - player.size / 2.0
+                        GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - attributes.get("size") * TILE_SIZE / 2.0,
+                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * TILE_SIZE - player.size / 2.0
                     };
                     //Render slash
                     g.drawImage(
@@ -242,7 +243,7 @@ public class Weapon {
                     //Position of blade on screen
                     double[] screenPos = new double[]{
                         GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] + player.size / 2.0,
-                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") *TILE_SIZE / 2.0 -TILE_SIZE / 4.0
+                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - attributes.get("size") * TILE_SIZE / 2.0 - TILE_SIZE / 4.0
                     };
 
                     //Render blase
@@ -256,8 +257,8 @@ public class Weapon {
 
                 //Position of gun on screen
                 double[] screenPos = new double[]{
-                    GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size *TILE_SIZE / 2.0,
-                    GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size *TILE_SIZE - player.size / 2.0
+                    GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * TILE_SIZE / 2.0,
+                    GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * TILE_SIZE - player.size / 2.0
                 };
 
                 //Render gun
@@ -271,8 +272,8 @@ public class Weapon {
 
                 //Position of shield on screen
                 double[] screenPos = new double[]{
-                    GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size *TILE_SIZE / 2.0,
-                    GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size *TILE_SIZE - player.size / 2.0
+                    GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - size * TILE_SIZE / 2.0,
+                    GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - size * TILE_SIZE - player.size / 2.0
                 };
 
                 //Render Shield
