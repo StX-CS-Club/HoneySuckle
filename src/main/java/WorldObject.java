@@ -11,6 +11,7 @@ import java.util.Map;
  - Static json data
  */
 public class WorldObject {
+
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Static json dats
@@ -30,6 +31,8 @@ public class WorldObject {
     public Map<String, String> texture;
     public List<Map<String, Number>> loot;
 
+    private final int glowColor;
+
     //WorldObject Contructor
     public WorldObject(int id, int[] posIndex) {
         this.id = id;
@@ -42,6 +45,13 @@ public class WorldObject {
         values = objValues.get(id);
         texture = objTextures.get(id);
         loot = objLoot.get(id);
+
+        String glowColorString = texture.get("glowColor");
+        if (glowColorString != null) {
+            glowColor = Integer.parseInt(glowColorString.substring(1), 16);
+        } else {
+            glowColor = 0;
+        }
     }
 
     //Render WorldObject
@@ -68,6 +78,22 @@ public class WorldObject {
         }
     }
 
+    public void renderLight(double[] screenPos) {
+        HoneySuckle.lights.add(Map.of(
+                "posX", (int) screenPos[0] + TILE_SIZE / 2,
+                "posY", (int) screenPos[1] + TILE_SIZE / 2,
+                "radius", TILE_SIZE * (int) readValue("light"),
+                "color", glowColor
+        ));
+    }
+
+    public double readValue(String value) {
+        if (values.get(value) != null) {
+            return values.get(value);
+        }
+        return 0;
+    }
+
     //Damages object; returns true if broken
     public boolean damage(double damage) {
         //If can't break, go fuck off
@@ -87,7 +113,7 @@ public class WorldObject {
 
     public Number readLoot(int index, String value, Number defaultValue) {
         Number result = loot.get(index).get(value);
-        if(result == null){
+        if (result == null) {
             return defaultValue;
         }
         return result;

@@ -47,11 +47,11 @@ class FileManager {
             //Maps recipe data
             Map<String, Object> blueprintData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/blueprint.json").toURI()), mapType);
             for (String key : blueprintData.keySet()) {
-                int intKey = Integer.parseInt(key);
                 Map<String, Object> recipe = (Map<String, Object>) blueprintData.get(key);
-                Build.blueprintMats.put(intKey, (List<Map<String, Integer>>) recipe.get("mats"));
-                Build.blueprintParams.put(intKey, (Map<String, List<Integer>>) recipe.get("params"));
-                Build.blueprintTextures.put(intKey, (Map<String, String>) recipe.get("texture"));
+                Build.blueprintMats.put(key, (List<Map<String, Integer>>) recipe.get("mats"));
+                Build.blueprintParams.put(key, (Map<String, List<Integer>>) recipe.get("params"));
+                Build.blueprintTextures.put(key, (Map<String, String>) recipe.get("texture"));
+                Build.blueprintProducts.put(key, (Integer) recipe.get("product"));
             }
 
             //Maps item data

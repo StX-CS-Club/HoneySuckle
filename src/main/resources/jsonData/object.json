@@ -4,7 +4,8 @@
     "texture": {
       "baseColor": "#ffb31c",
       "natColor": "pumpkinColor",
-      "texture": "tiles/pumpkin"
+      "texture": "tiles/pumpkin",
+      "glowColor": "#ff8000"
     },
     "tags": ["obstruction", "destructable", "light"],
     "values": {
@@ -21,7 +22,8 @@
     "name": "Torch",
     "texture": {
       "baseColor": "#ffc654",
-      "texture": "tiles/torch"
+      "texture": "tiles/torch",
+      "glowColor": "#ff8c00"
     },
     "tags": ["destructable", "light"],
     "values": {

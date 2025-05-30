@@ -28,8 +28,11 @@ import javax.imageio.stream.ImageInputStream;
  - Static lists of already rendered shit
  */
 public class Rendering {
+
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+
+    private static final int LIGHT_SCALE = 8;
 
     //Save data -> Save CPU
     public static final Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
@@ -89,14 +92,17 @@ public class Rendering {
     //Render Light
     public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Integer>> lights) {
         //Create empty light map
-        BufferedImage lightImage = new BufferedImage(HoneySuckle.GAME_WIDTH,GAME_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage lightImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
         Graphics2D light2d = lightImage.createGraphics();
+
+        BufferedImage glowImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D glow2d = glowImage.createGraphics();
 
         //Render all lights on light map as radial gradients
         for (Map<String, Integer> light : lights) {
-            Point2D center = new Point2D.Float(light.get("posX"), light.get("posY"));
-            int radius = light.get("radius");
-            Ellipse2D circle = new Ellipse2D.Double(
+            final Point2D center = new Point2D.Float(light.get("posX") / LIGHT_SCALE, light.get("posY") / LIGHT_SCALE);
+            final int radius = light.get("radius") / LIGHT_SCALE;
+            final Ellipse2D circle = new Ellipse2D.Double(
                     center.getX() - radius,
                     center.getY() - radius,
                     radius * 2, radius * 2);
@@ -108,25 +114,29 @@ public class Rendering {
             ));
             light2d.fill(circle);
             if (light.get("color") != null) {
-                Color color = new Color(light.get("color"));
-                g.setPaint(new RadialGradientPaint(
+                Color glowColor = new Color(light.get("color"));
+                glow2d.setPaint(new RadialGradientPaint(
                         center,
                         radius,
                         new float[]{0f, 1f},
-                        new Color[]{new Color(color.getRed(), color.getGreen(), color.getBlue(), 50), new Color(0, 0, 0, 0)}
+                        new Color[]{new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 64),
+                            new Color(0, 0, 0, 0)}
                 ));
-                g.fill(circle);
+                glow2d.fill(circle);
             }
         }
         //Input light map into translator and render
         drawLight(g, lightImage, fogColor);
+        g.drawImage(glowImage, 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
     }
 
     //Translate lightmap into light mask
     public static void drawLight(Graphics2D g, BufferedImage original, Color blendColor) {
+
         //Light map data
         int width = original.getWidth();
         int height = original.getHeight();
+
         BufferedImage transparent = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         //Go through all light map pixels...
@@ -138,7 +148,7 @@ public class Rendering {
             }
         }
         //Draw light mask
-        g.drawImage(transparent, 0, 0, null);
+        g.drawImage(transparent, 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
     }
 
     //Render screen color fade
@@ -152,14 +162,14 @@ public class Rendering {
         }
         //Set paint to radial gradient
         g.setPaint(new RadialGradientPaint(
-                new Point2D.Float(HoneySuckle.GAME_WIDTH / 2,GAME_HEIGHT / 2),
-               GAME_WIDTH / 2f,
+                new Point2D.Float(HoneySuckle.GAME_WIDTH / 2, GAME_HEIGHT / 2),
+                GAME_WIDTH / 2f,
                 new float[]{0f, 1f},
                 new Color[]{new Color(0, 0, 0, 0), new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * percent))}
         ));
 
         //Render color fase
-        g.fillRect(0, 0,GAME_WIDTH,GAME_HEIGHT);
+        g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
     }
 
     //Render frames of gif

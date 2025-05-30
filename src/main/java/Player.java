@@ -12,6 +12,7 @@ import java.util.Map;
  - Class for managing players
  */
 public class Player {
+
     private static final int FPS = HoneySuckle.FPS;
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
@@ -25,7 +26,7 @@ public class Player {
         //Assign values to properties
         this.pos = pos;
         this.size = size;
-        build = new Build(new LinkedHashSet<>(Arrays.asList(-1, -2, -3)));
+        build = new Build(new LinkedHashSet<>(Arrays.asList("wall", "raft", "torch")));
         armory = new Armory(
                 new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
                 new Armor("leather")
@@ -36,7 +37,7 @@ public class Player {
                 Arrays.asList(new Armor[]{armory.armor}),
                 Map.of("wood", 4),
                 null);
-                inventory.weapons.add(new Weapon("dragon_sword"));
+        inventory.weapons.add(new Weapon("dragon_sword"));
 
         //Adds player to list of players
         players.add(this);

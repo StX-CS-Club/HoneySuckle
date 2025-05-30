@@ -3,7 +3,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /* 
  * World.java *
@@ -238,9 +237,7 @@ public class World {
             result += grid[x][y].values.get(value);
         }
         if (objGrid[x][y] != null) {
-            if (objGrid[x][y].values.get(value) != null) {
-                result += objGrid[x][y].values.get(value);
-            }
+            result += objGrid[x][y].readValue(value);
         }
         return result;
     }
@@ -271,13 +268,13 @@ public class World {
                     }
                     //If tile/object provides light, add light to HoneySuckle.lights
                     if (Biome.biomeTags.get(biome).contains("fog")) {
-                        if (checkTag(x, y, "light")) {
-                            HoneySuckle.lights.add(Map.of(
-                                    "posX", (int) screenPos[0] + TILE_SIZE / 2,
-                                    "posY", (int) screenPos[1] + TILE_SIZE / 2,
-                                    "radius", TILE_SIZE * (int) checkValue(x, y, "light"),
-                                    "color", (255 << 16) | (140 << 8)
-                            ));
+                        if (objGrid[x][y] != null) {
+                            if (objGrid[x][y].tags.contains("light")) {
+                                objGrid[x][y].renderLight(screenPos);
+                            }
+                        }
+                        if(grid[x][y].tags.contains("light")){
+                            grid[x][y].renderLight(screenPos);
                         }
                     }
                 }

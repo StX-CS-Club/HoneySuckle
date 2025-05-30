@@ -1,6 +1,7 @@
 {
-  "-1": {
+  "wall": {
     "name": "Wall",
+    "product": -1,
     "params": {
       "tile": [1, 2, 3, 4, 5],
       "obj": [0]
@@ -14,8 +15,9 @@
       "texture": "recipes/wall"
     }
   },
-  "-2": {
+  "raft": {
     "name": "Raft",
+    "product": -2,
     "params": {
       "tile": [0, 2],
       "obj": [0]
@@ -30,8 +32,9 @@
       "texture": "recipes/raft"
     }
   },
-  "-3": {
+  "torch": {
     "name": "Torch",
+    "product": -3,
     "params": {
       "tile": [1, 2, 3, 5],
       "obj": [0]
@@ -48,8 +51,9 @@
       "texture": "recipes/torch"
     }
   },
-  "-4": {
+  "jackolantern": {
     "name": "Jack-O-Lantern",
+    "product": -4,
     "params": {
       "tile": [1, 2, 3],
       "obj": [0]

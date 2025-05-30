@@ -23,18 +23,19 @@ public class Build {
     private static final int[] gameSize = new int[]{GAME_WIDTH, GAME_HEIGHT};
 
     //Static json data
-    public static final Map<Integer, List<Map<String, Integer>>> blueprintMats = new HashMap<>();
-    public static final Map<Integer, Map<String, List<Integer>>> blueprintParams = new HashMap<>();
-    public static final Map<Integer, Map<String, String>> blueprintTextures = new HashMap<>();
+    public static final Map<String, List<Map<String, Integer>>> blueprintMats = new HashMap<>();
+    public static final Map<String, Map<String, List<Integer>>> blueprintParams = new HashMap<>();
+    public static final Map<String, Map<String, String>> blueprintTextures = new HashMap<>();
+    public static final Map<String, Integer> blueprintProducts = new HashMap<>();
 
     //Build Constructor
-    public Build(Set<Integer> blueprints) {
+    public Build(Set<String> blueprints) {
         //Assigns values to properties
         this.blueprints.addAll(blueprints);
     }
 
     //Build properties
-    private final Set<Integer> blueprints = new LinkedHashSet<>(Arrays.asList(-1));
+    private final Set<String> blueprints = new LinkedHashSet<>(Arrays.asList("wall"));
     private int blueprintIndex = 0;
 
     //Index of cursor tile compared to player
@@ -69,7 +70,7 @@ public class Build {
         Color color = Color.red;
 
         //If can place on tile, be cyan
-        if (checkCanPlace(world, player, (int) blueprints.toArray()[blueprintIndex])) {
+        if (checkCanPlace(world, player, (String) blueprints.toArray()[blueprintIndex])) {
             color = Color.cyan;
         }
 
@@ -97,14 +98,14 @@ public class Build {
         //Verification color
         String textureColor = "#ff0000";
         //If have materials, display green verification
-        if (hasMaterials(player, (int) blueprints.toArray()[blueprintIndex])) {
+        if (hasMaterials(player, (String) blueprints.toArray()[blueprintIndex])) {
             textureColor = "#00ff00";
         }
         //Render blueprint Scroll
         g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + HUD_SIZE / 12.0), (int) (GAME_HEIGHT - HUD_SIZE * 25.0 / 12), HUD_SIZE, HUD_SIZE, null);
 
         //Render blueprint Item
-        Map<String, String> texture = blueprintTextures.get((int) blueprints.toArray()[blueprintIndex]);
+        Map<String, String> texture = blueprintTextures.get((String) blueprints.toArray()[blueprintIndex]);
         if (texture != null) {
             if (texture.get("texture") != null) {
                 g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + HUD_SIZE * 5 / 24), (int) (GAME_HEIGHT - HUD_SIZE * 47.0 / 24), HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
@@ -128,7 +129,7 @@ public class Build {
     //Build something in the world
     public void build(World world, Player player) {
         //Current selected blueprint
-        int blueprintKey = (int) blueprints.toArray()[blueprintIndex];
+        String blueprintKey = (String) blueprints.toArray()[blueprintIndex];
         //Material data
         List<Map<String, Integer>> blueprint = blueprintMats.get(blueprintKey);
 
@@ -141,7 +142,7 @@ public class Build {
         //Checks if can place on tile
         if (checkCanPlace(world, player, blueprintKey)) {
             //Places tile
-            world.objGrid[index[0]][index[1]] = new WorldObject(blueprintKey, index);
+            world.objGrid[index[0]][index[1]] = new WorldObject(blueprintProducts.get(blueprintKey), index);
             //Removes materials
             for (Map<String, Integer> material : blueprint) {
                 String item = Inventory.itemStringId.get(readMat(material, "item", 0).intValue());
@@ -151,9 +152,9 @@ public class Build {
     }
 
     //Checks if blueprint can be built
-    private boolean checkCanPlace(World world, Player player, int blueprintKey) {
+    private boolean checkCanPlace(World world, Player player, String blueprintKey) {
         //Unique tags of blueprint
-        List<String> tags = WorldObject.objTags.get(blueprintKey);
+        List<String> tags = WorldObject.objTags.get(blueprintProducts.get(blueprintKey));
 
         //Position trying to build on
         int[] index = new int[]{
@@ -185,7 +186,7 @@ public class Build {
     }
 
     //Check to see if player has materials
-    private boolean hasMaterials(Player player, int blueprintKey) {
+    private boolean hasMaterials(Player player, String blueprintKey) {
         //Material data
         List<Map<String, Integer>> blueprint = blueprintMats.get(blueprintKey);
 
