@@ -1,6 +1,7 @@
 {
-  "0": {
+  "water": {
     "name": "Water",
+    "id": 0,
     "texture": {
       "natColor": "waterColor",
       "texture": "tiles/water"
@@ -10,8 +11,9 @@
     },
     "tags": ["damage"]
   },
-  "1": {
+  "land": {
     "name": "Land",
+    "id": 1,
     "texture": {
       "natColor": "landColor",
       "texture": "tiles/land"
@@ -19,9 +21,10 @@
     "values": {},
     "tags": ["walkable"]
   },
-  "2": {
+  "mud": {
+    "name": "Mud",
+    "id": 2,
     "texture": {
-      "name": "Mud",
       "natColor": "mudColor",
       "texture": "tiles/mud"
     },
@@ -30,8 +33,9 @@
     },
     "tags": ["walkable"]
   },
-  "3": {
+  "sand": {
     "name": "Sand",
+    "id": 3,
     "texture": {
       "natColor": "sandColor",
       "texture": "tiles/sand"
@@ -41,8 +45,9 @@
     },
     "tags": ["walkable"]
   },
-  "4": {
+  "ice": {
     "name": "Ice",
+    "id": 4,
     "texture": {
       "natColor": "iceColor",
       "texture": "tiles/ice"
@@ -52,8 +57,9 @@
     },
     "tags": ["walkable", "slippery"]
   },
-  "5": {
+  "brick": {
     "name": "Brick",
+    "id": 5,
     "texture": {
       "natColor": "brickColor",
       "texture": "tiles/brick"
@@ -61,8 +67,9 @@
     "values": {},
     "tags": ["walkable"]
   },
-  "6": {
+  "stone": {
     "name": "Stone",
+    "id": 6,
     "texture": {
       "natColor": "stoneColor",
       "texture": "tiles/stone"
@@ -70,14 +77,15 @@
     "values": {},
     "tags": ["walkable"]
   },
-  "7": {
+  "lava": {
     "name": "Lava",
+    "id": 7,
     "texture": {
       "natColor": "lavaColor",
       "texture": "tiles/lava",
       "glowColor": "#ee6600"
     },
-    "values": {"acel": 0.75, "damageness": 0.05, "light": 4.0, "glow": 16.0},
+    "values": { "acel": 0.75, "damageness": 0.05, "light": 4.0, "glow": 16.0 },
     "tags": ["damage", "light"]
   }
 }

@@ -26,7 +26,7 @@ public class Player {
         //Assign values to properties
         this.pos = pos;
         this.size = size;
-        build = new Build(new LinkedHashSet<>(Arrays.asList("wall", "raft", "torch")));
+        build = new Build(new LinkedHashSet<>(Arrays.asList("wall", "raft")));
         armory = new Armory(
                 new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
                 new Armor("leather")

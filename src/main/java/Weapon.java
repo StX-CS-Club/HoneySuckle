@@ -101,7 +101,7 @@ public class Weapon {
                                 new Point2D.Double(entity.pos[0], entity.pos[1]),
                                 new Point2D.Double(entity.size, entity.size))) {
                             //Damage entity, if dead, add materials
-                            if (entity.damage(attributes.get("damage"))) {
+                            if (entity.brain.damage(attributes.get("damage"))) {
                                 for (Map<String, Number> loot : entity.loot) {
                                     player.inventory.addItem(loot);
                                 }

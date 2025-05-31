@@ -20,6 +20,8 @@ public class Projectile {
     public static final Map<String, List<String>> projTags = new HashMap<>();
     public static final Map<String, Map<String, Double>> projAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> projTextures = new HashMap<>();
+    public static final Map<String, Integer> projIntId = new HashMap<>();
+    public static final Map<Integer, String> projStringId = new HashMap<>();
 
     //Projectile properties
     public double[] pos;
@@ -125,7 +127,7 @@ public class Projectile {
                             new Point2D.Double(entity.pos[0], entity.pos[1]),
                             new Point2D.Double(entity.size, entity.size))) {
                         //damage entity, and remove self
-                        if (entity.damage(attributes.get("damage"))) {
+                        if (entity.brain.damage(attributes.get("damage"))) {
                             if(source instanceof Player){
                                 final Player player = (Player) source;
                                 for (Map<String, Number> loot : entity.loot) {

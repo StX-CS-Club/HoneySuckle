@@ -31,13 +31,16 @@ public class Entity {
     public final double size;
     public final double weight;
 
+    public final Brain brain;
+    private final World world;
+
     //All attributes
     public final Map<String, Double> attributes;
     public final List<String> tags;
     public final List<Map<String, Number>> loot;
 
     //Number of frames to render as red
-    private int damageFrames = 0;
+    public int damageFrames = 0;
 
     //Position variables
     public double[] pos = new double[2];
@@ -48,7 +51,7 @@ public class Entity {
     public int ticks = 0;
 
     //Entity Constructor
-    public Entity(String type, double[] pos) {
+    public Entity(String type, double[] pos, World world) {
         //Gets attributes and tags based on type
         this.type = type;
         attributes = entityAttributes.get(type);
@@ -59,7 +62,10 @@ public class Entity {
         health = attributes.get("health");
         size = attributes.get("size") *TILE_SIZE;
         this.pos = pos;
+        this.world = world;
         weight = attributes.get("weight");
+
+        brain = new Brain(this, world);
     }
 
     //Render Entity
@@ -127,23 +133,6 @@ public class Entity {
         //Progress ticks
         ticks++;
         //Update entity through Brain
-        Brain.update(this);
-    }
-
-    //Damage Entity; returns true if dead
-    public boolean damage(double damage) {
-        //Subtract damage 
-        health -= damage;
-        //Add damageFrames
-        if (damageFrames < -5) {
-            damageFrames = (int) (1.5 * Math.floor(damage) + 1);
-        }
-        //If not dead, return false
-        if (health > 0) {
-            return false;
-        }
-        //If dead, die, and return true
-        Brain.die(this, World.worlds.get(World.level));
-        return true;
+        brain.update();
     }
 }

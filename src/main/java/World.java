@@ -35,7 +35,8 @@ public class World {
             biome = Biome.randomizeBiome(worlds.get(level - 1).biome, level);
         }
         //Generates the world based on the biome
-        Biome.biomeGeneration(this);
+        biome = "field";
+        Biome.generateWorld(this);
         //Sets camera position
         camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
         //Adds world to static list of worlds
@@ -164,7 +165,7 @@ public class World {
 
         //Allows entities to interact with player
         for (Entity entity : renderEntities) {
-            Brain.event(entity, player);
+            entity.brain.event(player);
         }
     }
 
@@ -183,9 +184,9 @@ public class World {
 
         //Checks if on damage tile
         if (checkTag(posIndex[0], posIndex[1], "damage") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            entity.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+            entity.brain.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
-                entity.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                entity.brain.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             }
         }
         //Checks if on acel tile
@@ -197,13 +198,13 @@ public class World {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
                 //Checks if touching hurty tile
                 if (checkTag(marginIndex[0][i], posIndex[1], "hurts")) {
-                    entity.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
+                    entity.brain.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
                 }
             }
             //Again...
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
                 if (checkTag(posIndex[0], marginIndex[1][i], "hurts")) {
-                    entity.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
+                    entity.brain.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
                 }
             }
         }
@@ -224,7 +225,7 @@ public class World {
             result += grid[x][y].values.get(value);
         }
         if (objGrid[x][y] != null) {
-            result += objGrid[x][y].readValue(value);
+            result += objGrid[x][y].readValue(value).doubleValue();
         }
         return result;
     }

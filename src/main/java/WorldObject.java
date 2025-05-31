@@ -16,9 +16,11 @@ public class WorldObject {
 
     //Static json dats
     public static final Map<Integer, List<String>> objTags = new HashMap<>();
-    public static final Map<Integer, Map<String, Double>> objValues = new HashMap<>();
+    public static final Map<Integer, Map<String, Number>> objValues = new HashMap<>();
     public static final Map<Integer, List<Map<String, Number>>> objLoot = new HashMap<>();
     public static final Map<Integer, Map<String, String>> objTextures = new HashMap<>();
+    public static final Map<String, Integer> objIntIds = new HashMap<>();
+    public static final Map<Integer, String> objStringIds = new HashMap<>();
 
     //Basic object attributes
     public int id;
@@ -27,7 +29,7 @@ public class WorldObject {
     //Specific object attributes
     public double durability;
     public List<String> tags;
-    public Map<String, Double> values;
+    public Map<String, Number> values;
     public Map<String, String> texture;
     public List<Map<String, Number>> loot;
 
@@ -40,7 +42,7 @@ public class WorldObject {
         //Interprets entity tags and attributes
         tags = objTags.get(id);
         if (tags.contains("destructable")) {
-            durability = objValues.get(id).get("durability");
+            durability = objValues.get(id).get("durability").doubleValue();
         }
         values = objValues.get(id);
         texture = objTextures.get(id);
@@ -88,7 +90,7 @@ public class WorldObject {
         ));
     }
 
-    public double readValue(String value) {
+    public Number readValue(String value) {
         if (values.get(value) != null) {
             return values.get(value);
         }

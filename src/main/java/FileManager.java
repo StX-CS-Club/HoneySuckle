@@ -26,22 +26,26 @@ class FileManager {
             //Maps object data
             Map<String, Object> objData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/object.json").toURI()), mapType);
             for (String key : objData.keySet()) {
-                int intKey = Integer.parseInt(key);
                 Map<String, Object> obj = (Map<String, Object>) objData.get(key);
+                int intKey = (Integer) obj.get("id");
                 WorldObject.objLoot.put(intKey, (List<Map<String, Number>>) obj.get("loot"));
                 WorldObject.objTextures.put(intKey, (Map<String, String>) obj.get("texture"));
-                WorldObject.objValues.put(intKey, (Map<String, Double>) obj.get("values"));
+                WorldObject.objValues.put(intKey, (Map<String, Number>) obj.get("values"));
                 WorldObject.objTags.put(intKey, (List<String>) obj.get("tags"));
+                WorldObject.objIntIds.put(key, intKey);
+                WorldObject.objStringIds.put(intKey, key);
             }
 
             //Maps tile data
             Map<String, Object> tileData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/tile.json").toURI()), mapType);
             for (String key : tileData.keySet()) {
-                int intKey = Integer.parseInt(key);
                 Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
+                int intKey = (Integer) tile.get("id");
                 Tile.tileTextures.put(intKey, (Map<String, String>) tile.get("texture"));
                 Tile.tileValues.put(intKey, (Map<String, Double>) tile.get("values"));
                 Tile.tileTags.put(intKey, (List<String>) tile.get("tags"));
+                Tile.tileIntIds.put(key, intKey);
+                Tile.tileStringIds.put(intKey, key);
             }
 
             //Maps recipe data
@@ -97,6 +101,7 @@ class FileManager {
                 Entity.entityTextures.put(key, (Map<String, String>) entity.get("texture"));
                 Entity.entityLoot.put(key, (List<Map<String, Number>>) entity.get("loot"));
                 Entity.entityTags.put(key, (List<String>) entity.get("tags"));
+                Brain.entityBrain.put(key, (Map<String, Object>) entity.get("brain"));
 
                 final int id = (int) entity.get("id");
                 Entity.entityIntId.put(key, id);
@@ -130,6 +135,10 @@ class FileManager {
                 Projectile.projAttributes.put(key, (Map<String, Double>) proj.get("attributes"));
                 Projectile.projTextures.put(key, (Map<String, String>) proj.get("texture"));
                 Projectile.projTags.put(key, (List<String>) proj.get("tags"));
+
+                final int id = (int) proj.get("id");
+                Projectile.projIntId.put(key, id);
+                Projectile.projStringId.put(id, key);
             }
         } catch (IOException e) {
             System.out.println("HoneySuckle ERROR: Failed to import json files.");

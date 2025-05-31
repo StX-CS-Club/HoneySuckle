@@ -16,6 +16,7 @@
     "coal": {
         "id": 3,
         "name": "Coal Nugget",
+        "recipeUnlocks": ["torch"],
         "texture": {
             "texture": "items/coal"
         }

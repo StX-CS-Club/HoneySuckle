@@ -18,6 +18,8 @@ public class Tile {
     public static final Map<Integer, List<String>> tileTags = new HashMap<>();
     public static final Map<Integer, Map<String, Double>> tileValues = new HashMap<>();
     public static final Map<Integer, Map<String, String>> tileTextures = new HashMap<>();
+    public static final Map<String, Integer> tileIntIds = new HashMap<>();
+    public static final Map<Integer, String> tileStringIds = new HashMap<>();
 
     //Basic Tile Properties
     public final int id;

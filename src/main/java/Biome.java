@@ -42,7 +42,7 @@ public class Biome {
     }
 
     //Generates biome based on given type
-    public static void biomeGeneration(World world) {
+    public static void generateWorld(World world) {
         Map<String, Object> generation = biomeGeneration.get(world.biome);
 
         // Interprets size and start values
@@ -160,7 +160,7 @@ public class Biome {
                                         final String entityId = Entity.entityStringId.get(numberFromMap(entityGenRule, "id", 0).intValue());
                                         entityResult.add(new Entity(entityId, new double[]{
                                             (pos[0] + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE
-                                        }));
+                                        }, world));
                                         break;
                                     }
                                 }
@@ -178,7 +178,7 @@ public class Biome {
 
             final int[][] setPositions = array2dFromList(listFromMap(structureGenRule, "pos", new Number[0][0]));
             for (int[] setPos : setPositions) {
-                generateStructure(result, objResult, entityResult, setPos, structureId);
+                generateStructure(world, result, objResult, entityResult, setPos, structureId);
             }
         }
 
@@ -187,7 +187,7 @@ public class Biome {
         world.entities = entityResult;
     }
 
-    private static void generateStructure(Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, int[] pos, String id) {
+    private static void generateStructure(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, int[] pos, String id) {
         final Map<String, Object> generation = structureGeneration.get(id);
 
         final int[][] tileMap = array2dFromList(listFromMap(generation, "tileMap", new Number[0][0]));
@@ -222,7 +222,7 @@ public class Biome {
                 (entityPosList.get(0).doubleValue() + pos[0]) * TILE_SIZE,
                 (entityPosList.get(1).doubleValue() + pos[1]) * TILE_SIZE
             };
-            entityResult.add(new Entity(entityId, entityPos));
+            entityResult.add(new Entity(entityId, entityPos, world));
         }
     }
 

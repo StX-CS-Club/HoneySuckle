@@ -7,7 +7,9 @@
       "landColor": "#0fc80f",
       "voidColor": "#0080ff",
       "waterColor": "#0080ff",
-      "treeColor": "#019501"
+      "treeColor": "#019501",
+      "coalColor": "#666677",
+      "rockColor": "#e0c4ad"
     },
     "generation": {
       "size": [51, 90],
@@ -24,6 +26,14 @@
         {
           "id": 1,
           "tileProb": [1, 0.1]
+        },
+        {
+          "id": 4,
+          "tileProb": [1, 0.0001]
+        },
+        {
+          "id": 8,
+          "tileProb": [1, 0.001]
         }
       ],
       "entities": [
@@ -132,6 +142,12 @@
         },
         {
           "id": 4,
+          "tileProb": [1, 0.001]
+        }
+      ],
+      "entities": [
+        {
+          "id": 3,
           "tileProb": [1, 0.001]
         }
       ]
@@ -305,7 +321,8 @@
       "coalColor": "#4d4d4d",
       "landColor": "#0a1f19",
       "treeColor": "#173323",
-      "diamondColor": "#4ed1f5"
+      "diamondColor": "#4ed1f5",
+      "rockColor": "#ddddee"
     },
     "generation": {
       "size": [51, 125],
@@ -339,7 +356,7 @@
         },
         {
           "id": 7,
-          "tileProb": [6, 0.0001]
+          "tileProb": [6, 0.0002]
         }
       ]
     }
@@ -351,6 +368,7 @@
     "colorMap": {
       "brickColor": "#847878",
       "landColor": "#cdc5b3",
+      "waterColor": "#242475",
       "voidColor": "#242475"
     },
     "generation": {

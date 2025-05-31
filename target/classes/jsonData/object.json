@@ -1,6 +1,7 @@
 {
-  "-5": {
+  "bridge": {
     "name": "Stone Bridge",
+    "id": -5,
     "texture": {
       "baseColor": "#8b8b8b",
       "texture": "tiles/bridge"
@@ -9,8 +10,9 @@
     "values": {},
     "loot": []
   },
-  "-4": {
+  "jackolantern": {
     "name": "Jack-O-Lantern",
+    "id": -4,
     "texture": {
       "baseColor": "#ffb31c",
       "natColor": "pumpkinColor",
@@ -29,8 +31,9 @@
       }
     ]
   },
-  "-3": {
+  "torch": {
     "name": "Torch",
+    "id": -3,
     "texture": {
       "baseColor": "#ffc654",
       "texture": "tiles/torch",
@@ -48,8 +51,9 @@
       }
     ]
   },
-  "-2": {
+  "raft": {
     "name": "Raft",
+    "id": -2,
     "texture": {
       "baseColor": "#aa6608",
       "texture": "tiles/raft"
@@ -58,8 +62,9 @@
     "values": {},
     "loot": []
   },
-  "-1": {
+  "wall": {
     "name": "Wall",
+    "id": -1,
     "texture": {
       "baseColor": "#893f00",
       "texture": "tiles/wall"
@@ -74,8 +79,9 @@
       }
     ]
   },
-  "1": {
+  "tree": {
     "name": "Tree",
+    "id": 1,
     "texture": {
       "natColor": "treeColor",
       "texture": "tiles/tree"
@@ -94,8 +100,9 @@
       }
     ]
   },
-  "2": {
+  "pumpkin": {
     "name": "Pumpkin",
+    "id": 2,
     "texture": {
       "natColor": "pumpkinColor",
       "texture": "tiles/pumpkin"
@@ -110,8 +117,9 @@
       }
     ]
   },
-  "3": {
+  "cactus": {
     "name": "Cactus",
+    "id": 3,
     "texture": {
       "natColor": "cactusColor",
       "texture": "tiles/cactus"
@@ -127,8 +135,9 @@
       }
     ]
   },
-  "4": {
+  "coal": {
     "name": "Coal Ore",
+    "id": 4,
     "texture": {
       "natColor": "coalColor",
       "texture": "tiles/ore"
@@ -144,17 +153,19 @@
       }
     ]
   },
-  "5": {
+  "deathgate": {
     "name": "Death Gate",
+    "id": 5,
     "texture": {
       "texture": "tiles/gate"
     },
-    "tags": ["enemyGate", "obstruction", "projObstruction"],
-    "values": {},
+    "tags": ["obstruction", "projObstruction"],
+    "values": {"deathGateId": 1},
     "loot": []
   },
-  "6": {
+  "crate": {
     "name": "Crate",
+    "id": 6,
     "texture": {
       "baseColor": "#c75f06",
       "texture": "tiles/crate"
@@ -170,8 +181,9 @@
       }
     ]
   },
-  "7": {
+  "diamond": {
     "name": "Diamond Ore",
+    "id": 7,
     "texture": {
       "natColor": "diamondColor",
       "texture": "tiles/ore_alt"
@@ -187,8 +199,9 @@
       }
     ]
   },
-  "8": {
+  "rock": {
     "name": "Rock",
+    "id": 8,
     "texture": {
       "natColor": "rockColor",
       "texture": "tiles/rock"
