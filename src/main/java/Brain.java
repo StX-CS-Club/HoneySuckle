@@ -17,6 +17,7 @@ public class Brain {
     private final Entity entity;
     private final World world;
     private final Map<String, Object> brainMap;
+    private final Map<String, Boolean> states = new HashMap<>();
 
     // Attack Brain Maps
     private final Map<String, Number> lungeAttack;
@@ -24,6 +25,8 @@ public class Brain {
     private final Map<String, Number> contactAttack;
     private final Map<String, Number> flee;
     private final Map<String, Number> chase;
+
+    public double chaseAngle = 180;
 
     public final Map<String, Number> death;
 
@@ -63,9 +66,12 @@ public class Brain {
             player.pos[1] - entity.pos[1]
         };
         double playerAbsDistance = Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]);
-        double playerAngle = Math.toDegrees(Math.atan(-playerDistance[0] / playerDistance[1]));
+        chaseAngle = Math.toDegrees(Math.atan(-playerDistance[0] / playerDistance[1]));
         if (playerDistance[1] > 0) {
-            playerAngle += 180;
+            chaseAngle += 180;
+        }
+        if(chaseAngle < 0){
+            chaseAngle += 360;
         }
 
         //Friction
@@ -105,12 +111,17 @@ public class Brain {
             final String projectileId = Projectile.projStringId.get(readMap(shootAttack, "proj", 1).intValue());
 
             if (playerAbsDistance <= range * TILE_SIZE) {
+                if(entity.ticks < frames){
+                    states.put("shooting", true);
+                } else {
+                    states.put("shooting", false);
+                }
                 if (entity.ticks * speed > cooldown * FPS / 40.0 / speed) {
                     entity.ticks = 0;
                 }
                 if (entity.ticks == Math.floor(frames / speed)) {
-                    Projectile projectile = new Projectile(projectileId, entity.pos, entity.vel, playerAngle, entity);
-                    projectile.alterVel(entity.pos, entity.vel, playerAngle, vel, entity);
+                    Projectile projectile = new Projectile(projectileId, entity.pos, entity.vel, chaseAngle, entity);
+                    projectile.alterVel(entity.pos, entity.vel, chaseAngle, vel, entity);
                     world.projectiles.add(projectile);
                 }
             }
@@ -125,8 +136,8 @@ public class Brain {
                 fleeing = true;
             }
             if (playerAbsDistance <= range * TILE_SIZE) {
-                entity.vel[0] -= TILE_SIZE*speed*-Math.cos(Math.toRadians(playerAngle+90));
-                entity.vel[1] -= TILE_SIZE*speed*Math.sin(Math.toRadians(playerAngle-90));
+                entity.vel[0] -= TILE_SIZE*speed*-Math.cos(Math.toRadians(chaseAngle+90));
+                entity.vel[1] -= TILE_SIZE*speed*Math.sin(Math.toRadians(chaseAngle-90));
             }
         }
 
@@ -134,15 +145,14 @@ public class Brain {
             final double range = readMap(chase, "range", 5).doubleValue();
             final double speed = readMap(chase, "speed", 0.1).doubleValue();
             if (playerAbsDistance <= range * TILE_SIZE) {
-                entity.vel[0] += TILE_SIZE*speed*-Math.cos(Math.toRadians(playerAngle+90));
-                entity.vel[1] += TILE_SIZE*speed*Math.sin(Math.toRadians(playerAngle-90));
+                entity.vel[0] += TILE_SIZE*speed*-Math.cos(Math.toRadians(chaseAngle+90));
+                entity.vel[1] += TILE_SIZE*speed*Math.sin(Math.toRadians(chaseAngle-90));
             }
         }
 
         //Update velocity and events based on pos
         entity.pos = world.bound(entity.pos, entity.vel, entity.size / 2.0);
         world.entityEvent(entity);
-        entity.direction[0] = (int) Math.signum(entity.vel[0]);
     }
 
     //Damage Entity; returns true if dead
@@ -215,6 +225,13 @@ public class Brain {
             }
 
         }
+    }
+
+    public boolean checkState(String state){
+        if(states.get(state) != null){
+            return states.get(state);
+        }
+        return false;
     }
 
     //If entity's ticks are less than n, return true

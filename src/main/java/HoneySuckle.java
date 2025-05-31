@@ -195,9 +195,6 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         }
         //Updates current world
         World.worlds.get(World.level).update();
-
-        //Renders
-        repaint();
     }
 
     //Run Loop
@@ -207,6 +204,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         while (true) {
             //Update
             update();
+            repaint();
             try {
                 //Sleep for appropriate time to mantain FPS and allow CPU to chill
                 Thread.sleep((int) (1000.0 / FPS));

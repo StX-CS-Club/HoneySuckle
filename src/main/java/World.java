@@ -35,7 +35,6 @@ public class World {
             biome = Biome.randomizeBiome(worlds.get(level - 1).biome, level);
         }
         //Generates the world based on the biome
-        biome = "field";
         Biome.generateWorld(this);
         //Sets camera position
         camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
@@ -221,9 +220,7 @@ public class World {
     //Gives sum of tile and obj value
     private double checkValue(int x, int y, String value) {
         double result = 0;
-        if (grid[x][y].values.get(value) != null) {
-            result += grid[x][y].values.get(value);
-        }
+        result += grid[x][y].readValue(value).doubleValue();
         if (objGrid[x][y] != null) {
             result += objGrid[x][y].readValue(value).doubleValue();
         }
@@ -238,6 +235,8 @@ public class World {
 
         //Center tile on screen
         int[] cameraTile = new int[]{(int) Math.floor(camera[0] / TILE_SIZE), (int) Math.floor(camera[1] / TILE_SIZE)};
+
+        final boolean fog = Biome.biomeTags.get(biome).contains("fog");
 
         //Runs through all nearby (on screen) tiles to render
         for (int y = cameraTile[1] - renderOffset[1]; y < cameraTile[1] + renderOffset[1]; y++) {
@@ -255,7 +254,7 @@ public class World {
                         objGrid[x][y].render(g, this, screenPos);
                     }
                     //If tile/object provides light, add light to HoneySuckle.lights
-                    if (Biome.biomeTags.get(biome).contains("fog")) {
+                    if (fog) {
                         if (objGrid[x][y] != null) {
                             if (objGrid[x][y].tags.contains("light")) {
                                 objGrid[x][y].renderLight(screenPos);

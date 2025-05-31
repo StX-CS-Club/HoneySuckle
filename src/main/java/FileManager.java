@@ -42,7 +42,7 @@ class FileManager {
                 Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
                 int intKey = (Integer) tile.get("id");
                 Tile.tileTextures.put(intKey, (Map<String, String>) tile.get("texture"));
-                Tile.tileValues.put(intKey, (Map<String, Double>) tile.get("values"));
+                Tile.tileValues.put(intKey, (Map<String, Number>) tile.get("values"));
                 Tile.tileTags.put(intKey, (List<String>) tile.get("tags"));
                 Tile.tileIntIds.put(key, intKey);
                 Tile.tileStringIds.put(intKey, key);

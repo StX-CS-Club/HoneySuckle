@@ -5,7 +5,7 @@
     "texture": {
       "baseColor": "#71cf01",
       "texture": "entities/slime/slime",
-      "anim": "horizontal"
+      "anim": "_x_"
     },
     "attributes": {
       "size": 0.5,
@@ -38,7 +38,7 @@
     "texture": {
       "baseColor": "#b4008e",
       "texture": "entities/dragon/dragon",
-      "anim": "fire"
+      "anim": "_shoot_"
     },
     "attributes": {
       "size": 5.0,
@@ -71,14 +71,14 @@
     "id": 3,
     "name": "Archer",
     "texture": {
-      "baseColor": "#111166"
+      "baseColor": "#111166",
+      "texture": "entities/archer/archer",
+      "natColor": "archerColor",
+      "anim": "_xy_shoot_"
     },
     "attributes": {
-      "size": 1.0,
-      "health": 1.0,
-      "view": 10,
-      "frames": 10.0,
-      "cooldown": 80.0,
+      "size": 1.25,
+      "health": 1.25,
       "weight": 1.0
     },
     "loot": [],

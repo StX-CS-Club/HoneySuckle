@@ -32,7 +32,6 @@ public class Entity {
     public final double weight;
 
     public final Brain brain;
-    private final World world;
 
     //All attributes
     public final Map<String, Double> attributes;
@@ -45,7 +44,6 @@ public class Entity {
     //Position variables
     public double[] pos = new double[2];
     public double[] vel = new double[2];
-    public int[] direction = new int[2];
 
     //Update ticks
     public int ticks = 0;
@@ -62,7 +60,6 @@ public class Entity {
         health = attributes.get("health");
         size = attributes.get("size") *TILE_SIZE;
         this.pos = pos;
-        this.world = world;
         weight = attributes.get("weight");
 
         brain = new Brain(this, world);
@@ -93,20 +90,33 @@ public class Entity {
         //If entity has texture, display
         if (textureMap.get("texture") != null) {
             String texture = textureMap.get("texture");
+            String animation = textureMap.get("anim");
             //Add paremeters to stem file name, if applicable
-            switch (textureMap.get("anim")) {
-                case "horizontal" -> {
-                    if (direction[0] < 0) {
-                        texture = texture + "Left";
+            if(animation != null){
+                if(animation.contains("_x_")){
+                    if (brain.chaseAngle > 180) {
+                        texture = texture + "_left";
                     } else {
-                        texture = texture + "Right";
+                        texture = texture + "_right";
                     }
                 }
-                case "fire" -> {
-                    if (ticks < attributes.get("frames")) {
-                        texture = texture + "Fire";
+                if(animation.contains("_xy_")){
+                    if(brain.chaseAngle >= 45 && brain.chaseAngle < 135){
+                        texture = texture + "_right";
+                    } else if(brain.chaseAngle < 225){
+                        texture = texture + "_down";
+                    } else if(brain.chaseAngle < 315){
+                        texture = texture + "_left";
+                    } else {
+                        texture = texture + "_up";
                     }
                 }
+                if(animation.contains("_shoot_")){
+                    if(brain.checkState("shooting")){
+                        texture = texture + "_shoot";
+                    }
+                }
+
             }
             //Find image
             BufferedImage image = Rendering.texture(texture, color);

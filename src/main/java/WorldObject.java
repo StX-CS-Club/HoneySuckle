@@ -84,9 +84,9 @@ public class WorldObject {
         HoneySuckle.lights.add(Map.of(
                 "posX", (int) screenPos[0] + TILE_SIZE / 2,
                 "posY", (int) screenPos[1] + TILE_SIZE / 2,
-                "radius", TILE_SIZE * (int) readValue("light"),
+                "radius", TILE_SIZE * readValue("light").intValue(),
                 "color", glowColor,
-                "glow", (int) readValue("glow")
+                "glow", readValue("glow").intValue()
         ));
     }
 

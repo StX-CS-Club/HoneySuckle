@@ -121,7 +121,8 @@
       "voidColor": "#004aff",
       "waterColor": "#004aff",
       "treeColor": "#006b00",
-      "coalColor": "#5d4646"
+      "coalColor": "#5d4646",
+      "archerColor": "#019194"
     },
     "generation": {
       "size": [101, 100],
@@ -199,7 +200,8 @@
       "treeColor": "#042e00",
       "pumpkinColor": "#d88700",
       "fogColor": "#000000",
-      "coalColor": "#271b1b"
+      "coalColor": "#271b1b",
+      "archerColor": "#ee2222"
     },
     "generation": {
       "size": [101, 150],
@@ -225,6 +227,12 @@
         {
           "id": 4,
           "tileProb": [1, 0.005]
+        }
+      ],
+      "entities": [
+        {
+          "id": 3,
+          "tileProb": [1, 0.001]
         }
       ]
     }
