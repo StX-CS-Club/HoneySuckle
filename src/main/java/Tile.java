@@ -17,7 +17,7 @@ public class Tile {
 
     //Static json data
     public static final Map<Integer, List<String>> tileTags = new HashMap<>();
-    public static final Map<Integer, Map<String, Number>> tileValues = new HashMap<>();
+    public static final Map<Integer, Map<String, Number>> tileAttributes = new HashMap<>();
     public static final Map<Integer, Map<String, String>> tileTextures = new HashMap<>();
     public static final Map<String, Integer> tileIntIds = new HashMap<>();
     public static final Map<Integer, String> tileStringIds = new HashMap<>();
@@ -28,20 +28,20 @@ public class Tile {
 
     //Specific Tile Properties
     public final List<String> tags;
-    public final Map<String, Number> values;
+    public final Map<String, Number> attributes;
     private final Map<String, String> texture;
 
-    private BufferedImage textureImage;
-
     private final int glowColor;
+    private final String color;
+    private final BufferedImage staticTexture;
 
     //Tile Constructor
-    public Tile(int id, int[] posIndex) {
+    public Tile(int id, int[] posIndex, World world) {
         this.id = id;
         this.posIndex = posIndex;
 
         tags = tileTags.get(id);
-        values = tileValues.get(id);
+        attributes = tileAttributes.get(id);
         texture = tileTextures.get(id);
 
         String glowColorString = texture.get("glowColor");
@@ -50,29 +50,14 @@ public class Tile {
         } else {
             glowColor = 0;
         }
+        color = getColor(world);
+        staticTexture = getTexture();
     }
 
     public void render(Graphics2D g, World world, double[] screenPos) {
-        if(textureImage != null){
-            g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
-            return;
-        }
-        //Default color of pure white
-        String color = "#ffffff";
-        //If tile has biome specific color, find color from biome
-        if (texture.get("natColor") != null) {
-            if (Biome.biomeColorMap.get(world.biome).get(texture.get("natColor")) != null) {
-                color = Biome.biomeColorMap.get(world.biome).get(texture.get("natColor"));
-            }
-            //If tile has listed base color, set as color
-        } else if (texture.get("baseColor") != null) {
-            color = texture.get("baseColor");
-        }
         //If tile has texture, load texture with grey-scaling
-        if (texture.get("texture") != null) {
-            String tileTexture = texture.get("texture");
-            textureImage = Rendering.texture(tileTexture, color);
-            g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
+        if (staticTexture != null) {
+            g.drawImage(staticTexture, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
         } else {
             //Else, render basic rectangle
             g.setColor(Color.decode(color));
@@ -80,20 +65,34 @@ public class Tile {
         }
     }
 
+    private String getColor(World world) {
+        //If tile has biome specific color, find color from biome
+        String natColorId = texture.get("natColor");
+        if (natColorId != null) {
+            String natColor = Biome.biomeColorMap.get(world.biome).get(natColorId);
+            if (natColor != null) {
+                return natColor;
+            }
+            //If tile has listed base color, set as color
+        } 
+        return texture.getOrDefault("baseColor", "#ffffff");
+    }
+
+    private BufferedImage getTexture(){
+        String textureString = texture.get("texture");
+        if (textureString != null) {
+            return Rendering.texture(textureString, color);
+        }
+        return null;
+    }
+
     public void renderLight(double[] screenPos) {
         HoneySuckle.lights.add(Map.of(
                 "posX", (int) screenPos[0] + TILE_SIZE / 2,
                 "posY", (int) screenPos[1] + TILE_SIZE / 2,
-                "radius", TILE_SIZE * (int) readValue("light"),
+                "radius", TILE_SIZE * attributes.getOrDefault("light", 0).intValue(),
                 "color", glowColor,
-                "glow", (int) readValue("glow")
+                "glow", attributes.getOrDefault("glow", 0).intValue()
         ));
-    }
-
-    public Number readValue(String value) {
-        if (values.get(value) != null) {
-            return values.get(value);
-        }
-        return 0;
     }
 }

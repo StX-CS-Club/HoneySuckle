@@ -142,7 +142,7 @@ public class Build {
         //Checks if can place on tile
         if (checkCanPlace(world, player, blueprintKey)) {
             //Places tile
-            world.objGrid[index[0]][index[1]] = new WorldObject(blueprintProducts.get(blueprintKey), index);
+            world.objGrid[index[0]][index[1]] = new WorldObject(blueprintProducts.get(blueprintKey), index, world);
             //Removes materials
             for (Map<String, Integer> material : blueprint) {
                 String item = Inventory.itemStringId.get(readMat(material, "item", 0).intValue());

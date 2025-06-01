@@ -162,10 +162,8 @@ public class Inventory {
             items.put(itemId, getMaterial(itemId) + readLoot(item, "count", 1).intValue());
 
             final List<String> recipeUnlocks = itemRecipeUnlocks.get(itemId);
-            if (recipeUnlocks != null) {
-                for (String recipe : recipeUnlocks) {
-                    player.build.blueprints.add(recipe);
-                }
+            for (String recipe : recipeUnlocks) {
+                player.build.blueprints.add(recipe);
             }
         }
     }

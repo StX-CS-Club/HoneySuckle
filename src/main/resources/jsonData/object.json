@@ -6,9 +6,7 @@
       "baseColor": "#8b8b8b",
       "texture": "tiles/bridge"
     },
-    "tags": ["walkable", "safe"],
-    "values": {},
-    "loot": []
+    "tags": ["walkable", "safe"]
   },
   "jackolantern": {
     "name": "Jack-O-Lantern",
@@ -20,7 +18,7 @@
       "glowColor": "#ff8000"
     },
     "tags": ["obstruction", "destructable", "light"],
-    "values": {
+    "attributes": {
       "light": 15.0,
       "durability": 0.5,
       "glow": 32.0
@@ -40,7 +38,7 @@
       "glowColor": "#ff8c00"
     },
     "tags": ["destructable", "light"],
-    "values": {
+    "attributes": {
       "light": 8.0,
       "durability": 0.25,
       "glow": 64.0
@@ -59,7 +57,6 @@
       "texture": "tiles/raft"
     },
     "tags": ["walkable", "safe"],
-    "values": {},
     "loot": []
   },
   "wall": {
@@ -70,7 +67,7 @@
       "texture": "tiles/wall"
     },
     "tags": ["obstruction", "destructable", "placeAway", "projObstruction"],
-    "values": {
+    "attributes": {
       "durability": 2.0
     },
     "loot": [
@@ -87,7 +84,7 @@
       "texture": "tiles/tree"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
-    "values": {
+    "attributes": {
       "durability": 1.0
     },
     "loot": [
@@ -108,7 +105,7 @@
       "texture": "tiles/pumpkin"
     },
     "tags": ["obstruction", "destructable"],
-    "values": {
+    "attributes": {
       "durability": 0.75
     },
     "loot": [
@@ -125,7 +122,7 @@
       "texture": "tiles/cactus"
     },
     "tags": ["obstruction", "hurts", "destructable", "projObstruction"],
-    "values": {
+    "attributes": {
       "hurtness": 2.0,
       "durability": 0.75
     },
@@ -143,7 +140,7 @@
       "texture": "tiles/ore"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
-    "values": {
+    "attributes": {
       "durability": 2.0
     },
     "loot": [
@@ -159,9 +156,8 @@
     "texture": {
       "texture": "tiles/gate"
     },
-    "tags": ["obstruction", "projObstruction"],
-    "values": {"deathGateId": 1},
-    "loot": []
+    "tags": ["obstruction"],
+    "attributes": {"deathGateId": 1}
   },
   "crate": {
     "name": "Crate",
@@ -171,7 +167,7 @@
       "texture": "tiles/crate"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
-    "values": {
+    "attributes": {
       "durability": 0.1
     },
     "loot": [
@@ -189,7 +185,7 @@
       "texture": "tiles/ore_alt"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
-    "values": {
+    "attributes": {
       "durability": 5.0
     },
     "loot": [
@@ -207,7 +203,7 @@
       "texture": "tiles/rock"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
-    "values": {
+    "attributes": {
       "durability": 1.5
     },
     "loot": [

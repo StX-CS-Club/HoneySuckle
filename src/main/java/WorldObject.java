@@ -1,9 +1,11 @@
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 /*
  * WorldObject.java *
@@ -16,7 +18,7 @@ public class WorldObject {
 
     //Static json dats
     public static final Map<Integer, List<String>> objTags = new HashMap<>();
-    public static final Map<Integer, Map<String, Number>> objValues = new HashMap<>();
+    public static final Map<Integer, Map<String, Number>> objAttributes = new HashMap<>();
     public static final Map<Integer, List<Map<String, Number>>> objLoot = new HashMap<>();
     public static final Map<Integer, Map<String, String>> objTextures = new HashMap<>();
     public static final Map<String, Integer> objIntIds = new HashMap<>();
@@ -29,24 +31,29 @@ public class WorldObject {
     //Specific object attributes
     public double durability;
     public List<String> tags;
-    public Map<String, Number> values;
+    public Map<String, Number> attributes;
     public Map<String, String> texture;
     public List<Map<String, Number>> loot;
 
+    private double frameDamage = 0;
+
     private final int glowColor;
+    private final String color;
+    private final BufferedImage staticTexture;
 
     //WorldObject Contructor
-    public WorldObject(int id, int[] posIndex) {
+    public WorldObject(int id, int[] posIndex, World world) {
         this.id = id;
         this.posIndex = posIndex;
         //Interprets entity tags and attributes
         tags = objTags.get(id);
-        if (tags.contains("destructable")) {
-            durability = objValues.get(id).get("durability").doubleValue();
-        }
-        values = objValues.get(id);
+        attributes = objAttributes.get(id);
         texture = objTextures.get(id);
         loot = objLoot.get(id);
+
+        if (tags.contains("destructable")) {
+            durability = attributes.get("durability").doubleValue();
+        }
 
         String glowColorString = texture.get("glowColor");
         if (glowColorString != null) {
@@ -54,47 +61,65 @@ public class WorldObject {
         } else {
             glowColor = 0;
         }
+        color = getColor(world);
+        staticTexture = getTexture();
     }
 
     //Render WorldObject
     public void render(Graphics2D g, World world, double[] screenPos) {
-        //Default color of pure white
-        String color = "#ffffff";
-        //If object has biome specific color, find color from biome
-        if (texture.get("natColor") != null) {
-            if (Biome.biomeColorMap.get(world.biome).get(texture.get("natColor")) != null) {
-                color = Biome.biomeColorMap.get(world.biome).get(texture.get("natColor"));
-            }
-        }
         //If object has texture, render it
-        if (texture.get("texture") != null) {
-            String objTexture = texture.get("texture");
-            g.drawImage(Rendering.texture(objTexture, color), (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
-        } else {//If object has listed baseColor, set as color
-            if (texture.get("baseColor") != null && color.equals("#ffffff")) {
-                color = texture.get("baseColor");
-            }
+        int size = TILE_SIZE;
+        double[] pos = screenPos.clone();
+        if(frameDamage != 0 && ThreadLocalRandom.current().nextBoolean()){
+            size *= .8;
+            pos[0] += ((double) TILE_SIZE)/10;
+            pos[1] += ((double) TILE_SIZE)/10;
+        }
+
+        if (staticTexture != null) {
+            g.drawImage(staticTexture, (int) pos[0], (int) pos[1], size, size, null);
+        } else {
             //Else render basic rectangle
             g.setColor(Color.decode(color));
-            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE);
+            Rendering.borderRect(g, 2, Color.black, (int) pos[0], (int) pos[1], size, size);
         }
+        frameDamage -= 0.1;
+        frameDamage = Math.clamp(frameDamage, 0, 1);
+    }
+
+    private String getColor(World world) {
+        //If tile has biome specific color, find color from biome
+        String natColorId = texture.get("natColor");
+        if (natColorId != null) {
+            String natColor = Biome.biomeColorMap.get(world.biome).get(natColorId);
+            if (natColor != null) {
+                return natColor;
+            }
+            //If tile has listed base color, set as color
+        } 
+        String baseColor = texture.get("baseColor");
+        if (baseColor != null) {
+            return baseColor;
+        }
+        return "#ffffff";
+    }
+
+    private BufferedImage getTexture(){
+        String textureString = texture.get("texture");
+        if (textureString != null) {
+            return Rendering.texture(textureString, color);
+        }
+        return null;
     }
 
     public void renderLight(double[] screenPos) {
         HoneySuckle.lights.add(Map.of(
                 "posX", (int) screenPos[0] + TILE_SIZE / 2,
                 "posY", (int) screenPos[1] + TILE_SIZE / 2,
-                "radius", TILE_SIZE * readValue("light").intValue(),
+                "radius", TILE_SIZE * attributes.getOrDefault("light", 0).intValue(),
                 "color", glowColor,
-                "glow", readValue("glow").intValue()
+                "glow", attributes.getOrDefault("glow", 0).intValue()
         ));
-    }
-
-    public Number readValue(String value) {
-        if (values.get(value) != null) {
-            return values.get(value);
-        }
-        return 0;
     }
 
     //Damages object; returns true if broken
@@ -105,6 +130,7 @@ public class WorldObject {
         }
         //Damages object
         durability -= damage;
+        frameDamage = damage;
         //If still there, return false
         if (durability > 0) {
             return false;

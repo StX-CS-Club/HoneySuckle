@@ -83,9 +83,9 @@ public class Brain {
         }
 
         if (!lungeAttack.isEmpty()) {
-            final int rate = readMap(lungeAttack, "rate", 1).intValue();
-            final double view = readMap(lungeAttack, "view", 10).doubleValue();
-            final double length = readMap(lungeAttack, "length", 1).doubleValue();
+            final int rate = lungeAttack.getOrDefault("rate", 1).intValue();
+            final double view = lungeAttack.getOrDefault("view", 10).doubleValue();
+            final double length = lungeAttack.getOrDefault("length", 1).doubleValue();
 
             if (entity.ticks % FPS / rate == 0) {
                 //If within range of view, do a little hop
@@ -98,17 +98,17 @@ public class Brain {
         }
 
         if (!shootAttack.isEmpty()) {
-            double healthLost = entity.attributes.get("health") - entity.health;
-            double panicSpeed = readMap(shootAttack, "panicSpeed", 0).doubleValue();
-            double speed = readMap(shootAttack, "speed", 1).doubleValue();
-            final double panicVel = readMap(shootAttack, "panicVel", panicSpeed).doubleValue() * healthLost;
-            final double vel = readMap(shootAttack, "vel", speed).doubleValue() + panicVel;
+            double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
+            double panicSpeed = shootAttack.getOrDefault("panicSpeed", 0).doubleValue();
+            double speed = shootAttack.getOrDefault("speed", 1).doubleValue();
+            final double panicVel = shootAttack.getOrDefault("panicVel", panicSpeed).doubleValue() * healthLost;
+            final double vel = shootAttack.getOrDefault("vel", speed).doubleValue() + panicVel;
             panicSpeed *= healthLost;
             speed += panicSpeed;
-            final double cooldown = readMap(shootAttack, "cooldown", 100).doubleValue();
-            final int frames = readMap(shootAttack, "frames", 10).intValue();
-            final double range = readMap(shootAttack, "range", 100).doubleValue();
-            final String projectileId = Projectile.projStringId.get(readMap(shootAttack, "proj", 1).intValue());
+            final double cooldown = shootAttack.getOrDefault("cooldown", 100).doubleValue();
+            final int frames = shootAttack.getOrDefault("frames", 10).intValue();
+            final double range = shootAttack.getOrDefault("range", 100).doubleValue();
+            final String projectileId = Projectile.projStringId.get(shootAttack.getOrDefault("proj", 1).intValue());
 
             if (playerAbsDistance <= range * TILE_SIZE) {
                 if(entity.ticks < frames){
@@ -129,9 +129,9 @@ public class Brain {
 
         boolean fleeing = false;
         if (!flee.isEmpty()) {
-            final double range = readMap(flee, "range", 5).doubleValue();
-            final double speed = readMap(flee, "speed", 0.1).doubleValue();
-            final double hesitateRange = readMap(flee, "hesitateRange", range).doubleValue();
+            final double range = flee.getOrDefault("range", 5).doubleValue();
+            final double speed = flee.getOrDefault("speed", 0.1).doubleValue();
+            final double hesitateRange = flee.getOrDefault("hesitateRange", range).doubleValue();
             if(playerAbsDistance <= hesitateRange * TILE_SIZE){
                 fleeing = true;
             }
@@ -142,8 +142,8 @@ public class Brain {
         }
 
         if (!chase.isEmpty() && !fleeing) {
-            final double range = readMap(chase, "range", 5).doubleValue();
-            final double speed = readMap(chase, "speed", 0.1).doubleValue();
+            final double range = chase.getOrDefault("range", 5).doubleValue();
+            final double speed = chase.getOrDefault("speed", 0.1).doubleValue();
             if (playerAbsDistance <= range * TILE_SIZE) {
                 entity.vel[0] += TILE_SIZE*speed*-Math.cos(Math.toRadians(chaseAngle+90));
                 entity.vel[1] += TILE_SIZE*speed*Math.sin(Math.toRadians(chaseAngle-90));
@@ -175,23 +175,20 @@ public class Brain {
     //Kill Entity events
     public void die(World world) {
         if (!death.isEmpty()) {
-            System.out.println("y");
-            final int gateId = readMap(death, "gateId", 0).intValue();
+            final int gateId = death.getOrDefault("gateId", 0).intValue();
             if (gateId != 0) {
-                System.out.print("yo");
                 boolean cleared = true;
                 for (Entity worldEntity : world.entities) {
-                    if (readMap(worldEntity.brain.death, "gateId", 0).intValue() == gateId && worldEntity != entity) {
+                    if (worldEntity.brain.death.getOrDefault("gateId", 0).intValue() == gateId && worldEntity != entity) {
                         cleared = false;
                         break;
                     }
                 }
                 if (cleared) {
-                    System.out.println("yoo");
                     for (WorldObject[] objColumn : world.objGrid) {
                         for (int y = 0; y < objColumn.length; y++) {
                             if (objColumn[y] != null) {
-                                if (objColumn[y].readValue("deathGateId").intValue() == gateId) {
+                                if (objColumn[y].attributes.getOrDefault("deathGateId", 0).intValue() == gateId) {
                                     objColumn[y] = null;
                                 }
                             }
@@ -211,10 +208,10 @@ public class Brain {
         };
 
         if (!contactAttack.isEmpty()) {
-            final double damage = readMap(contactAttack, "damage", 0).doubleValue();
-            final double bounce = readMap(contactAttack, "bounce", 0).doubleValue();
-            final double range = readMap(contactAttack, "range", 1).doubleValue();
-            final int rate = readMap(contactAttack, "rate", 1).intValue();
+            final double damage = contactAttack.getOrDefault("damage", 0).doubleValue();
+            final double bounce = contactAttack.getOrDefault("bounce", 0).doubleValue();
+            final double range = contactAttack.getOrDefault("range", 1).doubleValue();
+            final int rate = contactAttack.getOrDefault("rate", 1).intValue();
 
             if (checkTicks(entity, rate)) {
                 if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
@@ -254,12 +251,5 @@ public class Brain {
             }
         }
         return new HashMap<>();
-    }
-
-    private static <T> T readMap(Map<String, T> map, String key, T defaultValue) {
-        if (map.get(key) != null) {
-            return map.get(key);
-        }
-        return defaultValue;
     }
 }

@@ -72,7 +72,6 @@
   "shield": {
     "name": "Shield",
     "type": "shield",
-    "tags": [],
     "attributes": {
       "size": 1.0,
       "frames": 5.0,

@@ -56,9 +56,10 @@ public class Biome {
         List<Entity> entityResult = new ArrayList<>();
 
         // Generates base tiles
+        int baseTileId = numberFromMap(generation, "base", 0).intValue();
         for (int x = 0; x < world.size[0]; x++) {
             for (int y = 0; y < world.size[1]; y++) {
-                result[x][y] = new Tile(numberFromMap(generation, "base", 0).intValue(), new int[]{x, y});
+                result[x][y] = new Tile(baseTileId, new int[]{x, y}, world);
             }
         }
 
@@ -66,12 +67,12 @@ public class Biome {
         final int[][] start = array2dFromList(listFromMap(generation, "startMap", new Number[][]{new Number[]{1}}));
 
         final int[] startSize = new int[]{start[0].length, start.length};
-        final double startSide = (startSize[0] - 1) / 2.0;
+        final int startSide = (int) Math.floor((startSize[0] - 1) / 2.0);
 
         for (int i = 0; i < startSize[0]; i++) {
             for (int e = 0; e < startSize[1]; e++) {
-                final int[] pos = new int[]{world.start[0] - (int) Math.floor(startSide) + i, world.start[1] - startSize[1] + 1 + e};
-                result[pos[0]][pos[1]] = new Tile(start[e][i], pos);
+                final int[] pos = new int[]{world.start[0] - startSide + i, world.start[1] - startSize[1] + 1 + e};
+                result[pos[0]][pos[1]] = new Tile(start[e][i], pos, world);
             }
         }
 
@@ -85,6 +86,7 @@ public class Biome {
 
         final List<String> tags = biomeTags.get(world.biome);
 
+        final boolean watery = tags.contains("watery");
         for (int x = 0; x < margin[0]; x++) {
             for (int y = world.start[1] - startSize[1]; y > Math.max(world.start[1] - margin[1] - 1, -1); y--) {
                 for (int i = 1; i > -2; i -= 2) {
@@ -94,7 +96,7 @@ public class Biome {
                         if (pos[0] >= 0 && pos[0] < world.size[0]) {
                             // Generates tiles
                             for (Map<String, Object> tileGenRule : tileGenRules) {
-                                if (tags.contains("watery") && x == 0 && result[pos[0]][y + 1].id != 0) {
+                                if (watery && x == 0 && result[pos[0]][y + 1].id != 0) {
                                     break;
                                 }
 
@@ -124,7 +126,7 @@ public class Biome {
                                 }
 
                                 if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                                    result[pos[0]][y] = new Tile(numberFromMap(tileGenRule, "id", 1).intValue(), pos);
+                                    result[pos[0]][y] = new Tile(numberFromMap(tileGenRule, "id", 1).intValue(), pos, world);
                                     break;
                                 }
                             }
@@ -139,7 +141,7 @@ public class Biome {
                                 }
 
                                 if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                                    objResult[pos[0]][y] = new WorldObject(numberFromMap(objGenRule, "id", 1).intValue(), pos);
+                                    objResult[pos[0]][y] = new WorldObject(numberFromMap(objGenRule, "id", 1).intValue(), pos, world);
                                     break;
                                 }
                             }
@@ -195,7 +197,7 @@ public class Biome {
             for (int y = 0; y < tileMap.length; y++) {
                 for (int x = 0; x < tileMap[0].length; x++) {
                     final int[] tilePos = new int[]{pos[0] + x, pos[1] + y};
-                    result[tilePos[0]][tilePos[1]] = new Tile(tileMap[y][x], tilePos);
+                    result[tilePos[0]][tilePos[1]] = new Tile(tileMap[y][x], tilePos, world);
                 }
             }
         }
@@ -206,7 +208,7 @@ public class Biome {
                 for (int x = 0; x < objMap[0].length; x++) {
                     final int[] objPos = new int[]{pos[0] + x, pos[1] + y};
                     if (objMap[y][x] != 0) {
-                        objResult[objPos[0]][objPos[1]] = new WorldObject(objMap[y][x], objPos);
+                        objResult[objPos[0]][objPos[1]] = new WorldObject(objMap[y][x], objPos, world);
                     } else {
                         objResult[objPos[0]][objPos[1]] = null;
                     }

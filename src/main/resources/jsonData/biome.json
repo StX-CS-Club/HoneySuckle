@@ -2,14 +2,12 @@
   "wetlands": {
     "name": "Wetlands",
     "level": 0,
-    "tags": [],
     "colorMap": {
       "landColor": "#0fc80f",
       "voidColor": "#0080ff",
       "waterColor": "#0080ff",
       "treeColor": "#019501",
-      "coalColor": "#666677",
-      "rockColor": "#e0c4ad"
+      "coalColor": "#666677"
     },
     "generation": {
       "size": [51, 90],
@@ -30,10 +28,6 @@
         {
           "id": 4,
           "tileProb": [1, 0.0001]
-        },
-        {
-          "id": 8,
-          "tileProb": [1, 0.001]
         }
       ],
       "entities": [
@@ -47,7 +41,6 @@
   "peninsula": {
     "name": "Peninsula",
     "level": 4,
-    "tags": [],
     "colorMap": {
       "landColor": "#94ca53",
       "voidColor": "#4382ff",
@@ -87,7 +80,6 @@
   "islands": {
     "name": "Islands",
     "level": 2,
-    "tags": [],
     "colorMap": {
       "landColor": "#0fc854",
       "voidColor": "#0080ff",
@@ -115,7 +107,6 @@
   "field": {
     "name": "Field",
     "level": 1,
-    "tags": [],
     "colorMap": {
       "landColor": "#00a800",
       "voidColor": "#004aff",

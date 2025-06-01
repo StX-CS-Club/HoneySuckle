@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -108,11 +109,12 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         super.paintComponent(g);
         //Resets lights every frame
         lights = new LinkedHashSet<>();
+        BufferedImage internalFrame = new BufferedImage(
+                GAME_WIDTH, GAME_HEIGHT, BufferedImage.TYPE_INT_ARGB
+        );
 
         //Converts Graphics to Graphics2D for more methods
-        Graphics2D g2d = (Graphics2D) g;
-
-        scaleGraphics(g2d);
+        Graphics2D g2d = (Graphics2D) internalFrame.getGraphics();
 
         //Renders World
         World.worlds.get(World.level).render(g2d);
@@ -139,13 +141,13 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             player.armory.renderUi(g2d, player);
         }
 
-        renderSides(g2d);
+        scaleGraphics(g, internalFrame);
         //Disposes of Graphics and Graphics2D
         g.dispose();
         g2d.dispose();
     }
 
-    public void scaleGraphics(Graphics2D g) {
+    public void scaleGraphics(Graphics g, BufferedImage frame) {
         double width = getWidth();
         double height = getHeight();
 
@@ -154,35 +156,23 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         double scale = Math.min(scaleX, scaleY);
 
-        int offsetX = (int) ((width - GAME_WIDTH * scale) / 2);
-        int offsetY = (int) ((height - GAME_HEIGHT * scale) / 2);
+        int offsetX = (int) Math.floor((width - GAME_WIDTH * scale) / 2);
+        int offsetY = (int) Math.floor((height - GAME_HEIGHT * scale) / 2);
 
+        int gameWidth = (int) Math.floor(GAME_WIDTH * scale);
+        int gameHeight = (int) Math.floor(GAME_HEIGHT * scale);
         // Apply scaling and translation
-        g.translate(offsetX, offsetY);
-        g.scale(scale, scale);
-
-        inputHandler.setScale(scale, offsetX, offsetY);
-    }
-
-    public void renderSides(Graphics2D g) {
-        double width = getWidth();
-        double height = getHeight();
-
-        double scaleX = width / (double) GAME_WIDTH;
-        double scaleY = height / (double) GAME_HEIGHT;
-
-        double scale = Math.min(scaleX, scaleY);
-
-        int offsetX = (int) ((width - GAME_WIDTH * scale) / 2);
-        int offsetY = (int) ((height - GAME_HEIGHT * scale) / 2);
+        g.drawImage(frame, offsetX, offsetY, gameWidth, gameHeight, null);
 
         g.setColor(Color.BLACK);
 
-        g.fillRect((int) Math.floor(-offsetX / scale), 0, (int) Math.ceil(offsetX / scale), GAME_HEIGHT);
-        g.fillRect(GAME_WIDTH, 0, (int) Math.ceil(offsetX / scale), GAME_HEIGHT);
+        g.fillRect(0, 0, offsetX+1, gameHeight+1);
+        g.fillRect(gameWidth+offsetX, 0, offsetX+1, gameHeight+1);
 
-        g.fillRect(0, (int) Math.floor(-offsetY / scale), GAME_WIDTH, (int) Math.floor(offsetY / scale));
-        g.fillRect(0, GAME_HEIGHT, GAME_WIDTH, (int) Math.ceil(offsetY / scale));
+        g.fillRect(0, 0, gameWidth+1, offsetY+1);
+        g.fillRect(0, gameHeight+offsetY, gameWidth+1, offsetY+1);
+
+        inputHandler.setScale(scale, offsetX, offsetY);
     }
 
     //Update

@@ -220,9 +220,9 @@ public class World {
     //Gives sum of tile and obj value
     private double checkValue(int x, int y, String value) {
         double result = 0;
-        result += grid[x][y].readValue(value).doubleValue();
+        result += grid[x][y].attributes.getOrDefault(value, 0).doubleValue();
         if (objGrid[x][y] != null) {
-            result += objGrid[x][y].readValue(value).doubleValue();
+            result += objGrid[x][y].attributes.getOrDefault(value, 0).doubleValue();
         }
         return result;
     }

@@ -1,7 +1,6 @@
 {
     "default": {
         "name": "Naked",
-        "texture": {},
         "attributes": {
             "defense": 1.0,
             "regen": 0.001,
