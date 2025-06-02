@@ -20,13 +20,13 @@ public class Weapon {
     //Static json data
     public static final Map<String, Map<String, Number>> weaponAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> weaponStats = new HashMap<>();
-    public static final Map<String, List<Map<String, Object>>> weaponBehaviors = new HashMap<>();
+    public static final Map<String, Map<String, Map<String, Object>>> weaponBehaviors = new HashMap<>();
     public static final Map<String, Map<String, String>> weaponTextures = new HashMap<>();
     public static final Map<String, List<String>> weaponTags = new HashMap<>();
 
     //Weapon properties
     private final Map<String, Number> attributes;
-    private final List<Map<String, Object>> behavior;
+    private final Map<String, Map<String, Object>> behavior;
     public final Map<String, String> texture;
     public final String weapon;
     public final boolean constClick;
@@ -332,14 +332,13 @@ public class Weapon {
     }
 
     private Map<String, Object> registerBehavior(String behaviorType) {
-        for (Map<String, Object> behaviorEntry : behavior) {
-            if (behaviorType.equals(behaviorEntry.get("type"))) {
-                behaviorEntry.putIfAbsent("attackId", "base");
-                String attackId = (String) behaviorEntry.get("attackId");
-                attackFrames.put(attackId, 0);
-                attackFrames.put(attackId, 0);
-                return behaviorEntry;
-            }
+        Map<String, Object> behaviorEntry = behavior.get(behaviorType);
+        if (behaviorEntry != null) {
+            behaviorEntry.putIfAbsent("attackId", "base");
+            String attackId = (String) behaviorEntry.get("attackId");
+            attackFrames.put(attackId, 0);
+            attackFrames.put(attackId, 0);
+            return behaviorEntry;
         }
         return null;
     }

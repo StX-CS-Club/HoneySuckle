@@ -116,7 +116,7 @@ class FileManager {
                 Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
                 Weapon.weaponAttributes.put(key, (Map<String, Number>) weapon.getOrDefault("attributes", new HashMap<>()));
                 Weapon.weaponStats.put(key, (Map<String, String>) weapon.getOrDefault("stats", new HashMap<>()));
-                Weapon.weaponBehaviors.put(key, (List<Map<String, Object>>) weapon.getOrDefault("behavior", new ArrayList<>()));
+                Weapon.weaponBehaviors.put(key, (Map<String, Map<String, Object>>) weapon.getOrDefault("behavior", new HashMap<>()));
                 Weapon.weaponTags.put(key, (List<String>) weapon.getOrDefault("tags", new ArrayList<>()));
                 Weapon.weaponTextures.put(key, (Map<String, String>) weapon.getOrDefault("texture", new HashMap<>()));
             }

@@ -17,14 +17,13 @@
       "animation": "_swing_",
       "type": "side"
     },
-    "behavior": [
-      {
-        "type": "swing",
+    "behavior": {
+      "swing": {
         "damage": 0.05,
         "cooldown": 20,
         "frames": 10
       }
-    ]
+    }
   },
   "bow": {
     "name": "Bow",
@@ -42,14 +41,13 @@
       "animation": "_shoot_",
       "type": "front"
     },
-    "behavior": [
-      {
-        "type": "shoot",
+    "behavior": {
+      "shoot": {
         "cooldown": 20,
         "frames": 5,
         "proj": 1
       }
-    ]
+    }
   },
   "shield": {
     "name": "Shield",
@@ -66,14 +64,13 @@
       "animation": "_parry_",
       "type": "front"
     },
-    "behavior": [
-      {
-        "type": "shield",
+    "behavior": {
+      "shield": {
         "frames": 5.0,
         "cooldown": 15.0,
         "parry": 1.1,
         "bounce": 1
       }
-    ]
+    }
   }
 }
