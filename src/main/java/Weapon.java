@@ -230,14 +230,12 @@ public class Weapon {
                             player.vel[0] += projectile.vel[0] / 2 * projectile.weight / bounce;
                             player.vel[1] += projectile.vel[1] / 2 * projectile.weight / bounce;
                         } else {
+                            projectile.alterVel(projectile.pos, player.vel, player.rotation, parry, player);
                             //Send projectile towards shield direction at double velocity
                             final int projId = Projectile.projIntId.get(projectile.type);
-                            final double[] pos = Collision.pointToArray(
-                                    Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size * 2 + projectile.size, player.rotation)
-                            );
-                            Projectile newProjectile = new Projectile(
-                                    Projectile.projStringId.get(projectile.attributes.getOrDefault("parryProj", projId).intValue()),
-                                    pos, player.vel, player.rotation, player);
+                            final String projString = Projectile.projStringId.get(projectile.attributes.getOrDefault("parryProj", projId).intValue());
+                            Projectile newProjectile = new Projectile(projString,
+                                    projectile.pos, projectile.vel, player.rotation, player);
                             world.projectiles.add(newProjectile);
                         }
                     }

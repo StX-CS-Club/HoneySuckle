@@ -138,8 +138,9 @@ public class Inventory {
             // Sets the font size to fit within box
             for (int f = 24; f > 0; f--) {
                 g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
-                if (g.getFontMetrics().stringWidth(label) < 100) {
-                    fontOffset = g.getFontMetrics().stringWidth(label) / 2;
+                int fontSize = g.getFontMetrics().stringWidth(label);
+                if (fontSize < 100) {
+                    fontOffset = fontSize/2;
                     break;
                 }
             }

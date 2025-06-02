@@ -1,8 +1,10 @@
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ public class Entity {
     public static final Map<String, Map<String, String>> entityTextures = new HashMap<>();
     public static final Map<String, List<Map<String, Number>>> entityLoot = new HashMap<>();
     public static final Map<String, List<String>> entityTags = new HashMap<>();
+    public static final Map<String, String> entityNames = new HashMap<>();
     public static final Map<Integer, String> entityStringId = new HashMap<>();
     public static final Map<String, Integer> entityIntId = new HashMap<>();
 
@@ -32,6 +35,7 @@ public class Entity {
     public double health;
     public final double size;
     public final double weight;
+    public final String name;
 
     public final Brain brain;
 
@@ -43,6 +47,7 @@ public class Entity {
 
     //Number of frames to render as red
     public int damageFrames = 0;
+    private int healthBarFrames = 0;
     private final String color;
     private final String staticTextureId;
     private final String animation;
@@ -58,10 +63,11 @@ public class Entity {
     public Entity(String type, double[] pos, World world) {
         //Gets attributes and tags based on type
         this.type = type;
-        attributes = entityAttributes.getOrDefault(type, new HashMap<>());
-        tags = entityTags.getOrDefault(type, new ArrayList<>());
-        loot = entityLoot.getOrDefault(type, new ArrayList<>());
-        texture = entityTextures.getOrDefault(type, new HashMap<>());
+        attributes = entityAttributes.get(type);
+        tags = entityTags.get(type);
+        loot = entityLoot.get(type);
+        texture = entityTextures.get(type);
+        name = entityNames.get(type);
 
         ticks.put("base", 0l);
 
@@ -111,7 +117,7 @@ public class Entity {
                 }
                 if (animation.contains("_lunge_")) {
                     if (brain.checkState("lunging")) {
-                        screenPos[1] += screenSize[1]*.375;
+                        screenPos[1] += screenSize[1] * .375;
                         screenSize[1] *= 0.75;
                     }
                 }
@@ -137,6 +143,36 @@ public class Entity {
             g.setColor(Color.decode(color));
             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1]);
         }
+    }
+
+    public void renderHealthBar(Graphics2D g, int index) {
+        if (index < 3) {
+            healthBarFrames++;
+            final float opacity = Math.min(healthBarFrames*3, 255)/255f;
+            Composite originalComposite = g.getComposite();
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+
+            g.setColor(Color.DARK_GRAY);
+            g.fillRect(GAME_WIDTH / 4, 25+index*35, GAME_WIDTH / 2, 10);
+
+            final double barWidth = (GAME_WIDTH / 2) * (health / attributes.get("health").doubleValue());
+
+            g.setColor(Color.decode(texture.getOrDefault("healthBarColor", "#c4021f")));
+            g.fillRect(GAME_WIDTH / 4, 25+index*35, (int) Math.ceil(barWidth), 10);
+
+            
+            final String symbol = texture.getOrDefault("healthBarSymbol", "=");
+            final String label = (symbol + " " + name + " " + symbol).toUpperCase();
+
+            g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
+            g.setColor(Color.WHITE);
+            final int fontOffset = g.getFontMetrics().stringWidth(label)/2;
+            
+            g.drawString(label, GAME_WIDTH / 2 - fontOffset, 30+index*35);
+
+            g.setComposite(originalComposite);
+        }
+
     }
 
     private String getColor(World world) {

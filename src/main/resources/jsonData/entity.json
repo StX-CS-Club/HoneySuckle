@@ -42,10 +42,8 @@
     "attributes": {
       "size": 5.0,
       "health": 20.0,
-      "range": 12.5,
       "weight": 5.0,
-      "frames": 15.0,
-      "cooldown": 90.0
+      "healthBarDistance": 40
     },
     "loot": [
       {

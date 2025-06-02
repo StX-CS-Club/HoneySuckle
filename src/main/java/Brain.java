@@ -82,6 +82,15 @@ public class Brain {
             }
         }
 
+        final double healthBarDistance = entity.attributes.getOrDefault("healthBarDistance", 0).doubleValue() * TILE_SIZE;
+        if (healthBarDistance != 0) {
+            if (healthBarDistance >= playerAbsDistance) {
+                HoneySuckle.healthBars.add(entity);
+            } else {
+                HoneySuckle.healthBars.remove(entity);
+            }
+        }
+
         boolean hesitate = false;
         if (!lungeAttack.isEmpty()) {
             final int rate = FPS / numberFromMap(lungeAttack, "rate", 1).intValue();
@@ -212,6 +221,7 @@ public class Brain {
             }
         }
         world.entities.remove(entity);
+        HoneySuckle.healthBars.remove(entity);
     }
 
     //Entity interacts with player

@@ -49,6 +49,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     //Public set of light data used in lighting system
     public static Set<Map<String, Integer>> lights = new LinkedHashSet<>();
+    public static Set<Entity> healthBars = new LinkedHashSet<>();
 
     //Main Method
     public static void main(String[] args) {
@@ -132,6 +133,12 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         //Creates red overlay when at low health
         Rendering.colorFade(g2d, Color.red, 1 - player.health);
+
+        int healthBarIndex = 0;
+        for(Entity entity : healthBars){
+            entity.renderHealthBar(g2d, healthBarIndex);
+            healthBarIndex++;
+        }
 
         //Renders crafting and weapon ui
         if (player.inventory.isOpen) {

@@ -197,7 +197,11 @@ public class Biome {
             for (int y = 0; y < tileMap.length; y++) {
                 for (int x = 0; x < tileMap[0].length; x++) {
                     final int[] tilePos = new int[]{pos[0] + x, pos[1] + y};
-                    result[tilePos[0]][tilePos[1]] = new Tile(tileMap[y][x], tilePos, world);
+                    if (tilePos[0] < result.length && tilePos[1] < result[0].length) {
+                        result[tilePos[0]][tilePos[1]] = new Tile(tileMap[y][x], tilePos, world);
+                    } else {
+                        break;
+                    }
                 }
             }
         }
@@ -207,10 +211,14 @@ public class Biome {
             for (int y = 0; y < objMap.length; y++) {
                 for (int x = 0; x < objMap[0].length; x++) {
                     final int[] objPos = new int[]{pos[0] + x, pos[1] + y};
-                    if (objMap[y][x] != 0) {
-                        objResult[objPos[0]][objPos[1]] = new WorldObject(objMap[y][x], objPos, world);
+                    if (objPos[0] < objResult.length && objPos[1] < objResult[0].length) {
+                        if (objMap[y][x] != 0) {
+                            objResult[objPos[0]][objPos[1]] = new WorldObject(objMap[y][x], objPos, world);
+                        } else {
+                            objResult[objPos[0]][objPos[1]] = null;
+                        }
                     } else {
-                        objResult[objPos[0]][objPos[1]] = null;
+                        break;
                     }
                 }
             }

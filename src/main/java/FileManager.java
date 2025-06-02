@@ -103,6 +103,7 @@ class FileManager {
                 Entity.entityTextures.put(key, (Map<String, String>) entity.getOrDefault("texture", new HashMap<>()));
                 Entity.entityLoot.put(key, (List<Map<String, Number>>) entity.getOrDefault("loot", new ArrayList<>()));
                 Entity.entityTags.put(key, (List<String>) entity.getOrDefault("tags", new ArrayList<>()));
+                Entity.entityNames.put(key, (String) entity.getOrDefault("name", ""));
                 Brain.entityBrain.put(key, (Map<String, Map<String, Object>>) entity.getOrDefault("brain", new HashMap<>()));
 
                 final int id = (int) entity.get("id");
