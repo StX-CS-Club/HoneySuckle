@@ -94,6 +94,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         //Fetches all data from json files into appropriate hashmaps
+
         FileManager.readJsonData();
         FileManager.registerFont();
 
