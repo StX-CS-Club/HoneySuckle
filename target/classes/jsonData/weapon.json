@@ -1,14 +1,7 @@
 {
   "sword": {
     "name": "Sword",
-    "type": "blade",
     "tags": ["constClick"],
-    "attributes": {
-      "damage": 0.05,
-      "frames": 10.0,
-      "size": 1.0,
-      "cooldown": 20.0
-    },
     "stats": {
       "Type": "Sword",
       "Rarity": "Common",
@@ -20,65 +13,46 @@
       "bladeColor": "#ffffff",
       "itemTexture": "items/sword",
       "texture": "weapons/sword",
-      "rarityColor": "#e8f1ff"
-    }
-  },
-  "dragon_sword": {
-    "name": "Dragon Scale Sword",
-    "type": "blade",
-    "tags": ["constClick"],
-    "attributes": {
-      "damage": 0.2,
-      "frames": 10.0,
-      "size": 1.5,
-      "cooldown": 20.0
+      "rarityColor": "#e8f1ff",
+      "animation": "_swing_",
+      "type": "side"
     },
-    "stats": {
-      "Type": "Sword",
-      "Rarity": "Common",
-      "Damage": "20",
-      "Size": "1.5",
-      "Speed": ".5"
-    },
-    "texture": {
-      "bladeColor": "#ffffff",
-      "itemTexture": "items/dragon_sword",
-      "texture": "weapons/dragon_sword",
-      "rarityColor": "#57a5ff"
-    }
+    "behavior": [
+      {
+        "type": "swing",
+        "damage": 0.05,
+        "cooldown": 20,
+        "frames": 10
+      }
+    ]
   },
   "bow": {
     "name": "Bow",
-    "type": "gun",
     "tags": ["constClick"],
-    "attributes": {
-      "frames": 1.0,
-      "cooldown": 20.0,
-      "size": 1.0
-    },
     "stats": {
       "Type": "Bow",
       "Rarity": "Common",
       "Damage": "2.5",
       "Speed": ".5"
     },
-    "projectile": "arrow",
     "texture": {
       "itemTexture": "items/bow",
-      "texture": "weapons/bow",
-      "rarityColor": "#e8f1ff"
-    }
+      "texture": "weapons/bow/bow",
+      "rarityColor": "#e8f1ff",
+      "animation": "_shoot_",
+      "type": "front"
+    },
+    "behavior": [
+      {
+        "type": "shoot",
+        "cooldown": 20,
+        "frames": 5,
+        "proj": 1
+      }
+    ]
   },
   "shield": {
     "name": "Shield",
-    "type": "shield",
-    "attributes": {
-      "size": 1.0,
-      "frames": 5.0,
-      "cooldown": 15.0,
-      "parry": 1.1,
-      "bounce": 1.0
-    },
     "stats": {
       "Type": "Shield",
       "Strength": "1.1",
@@ -88,7 +62,18 @@
     "texture": {
       "itemTexture": "items/shield",
       "texture": "weapons/shield",
-      "rarityColor": "#e8f1ff"
-    }
+      "rarityColor": "#e8f1ff",
+      "animation": "_parry_",
+      "type": "front"
+    },
+    "behavior": [
+      {
+        "type": "shield",
+        "frames": 5.0,
+        "cooldown": 15.0,
+        "parry": 1.1,
+        "bounce": 1
+      }
+    ]
   }
 }

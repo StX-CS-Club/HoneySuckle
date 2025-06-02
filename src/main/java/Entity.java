@@ -52,7 +52,7 @@ public class Entity {
     public double[] vel = new double[2];
 
     //Update ticks
-    public int ticks = 0;
+    public final Map<String, Long> ticks = new HashMap<>();
 
     //Entity Constructor
     public Entity(String type, double[] pos, World world) {
@@ -63,6 +63,8 @@ public class Entity {
         loot = entityLoot.getOrDefault(type, new ArrayList<>());
         texture = entityTextures.getOrDefault(type, new HashMap<>());
 
+        ticks.put("base", 0l);
+
         //Interprets basic attributes
         health = attributes.getOrDefault("health", 1).doubleValue();
         size = attributes.getOrDefault("size", 1).doubleValue() * TILE_SIZE;
@@ -72,7 +74,7 @@ public class Entity {
         brain = new Brain(this, world);
         color = getColor(world);
         staticTextureId = texture.get("texture");
-        animation = texture.get("anim");;
+        animation = texture.get("anim");
     }
 
     //Render Entity
@@ -82,6 +84,7 @@ public class Entity {
             GAME_WIDTH / 2.0 + pos[0] - camera[0] - size / 2.0,
             GAME_HEIGHT / 2.0 + pos[1] - camera[1] - size / 2.0
         };
+        double[] screenSize = new double[]{size, size};
 
         //If entity has texture, display
         if (staticTextureId != null) {
@@ -106,6 +109,12 @@ public class Entity {
                         textureId = textureId + "_left";
                     }
                 }
+                if (animation.contains("_lunge_")) {
+                    if (brain.checkState("lunging")) {
+                        screenPos[1] += screenSize[1]*.375;
+                        screenSize[1] *= 0.75;
+                    }
+                }
                 if (animation.contains("_shoot_")) {
                     if (brain.checkState("shooting")) {
                         textureId = textureId + "_shoot";
@@ -117,16 +126,16 @@ public class Entity {
             BufferedImage textureImage = Rendering.texture(textureId, color);
             //Render red overlay when damaged
             if (damageFrames > 0) {
-                textureImage = Rendering.applyOverlay(textureImage, "#ff0000");
+                textureImage = Rendering.applyOverlay(textureImage, "#ff0000", 128);
             }
             damageFrames--;
 
             //Draw Texture
-            g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], (int) size, (int) size, null);
+            g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1], null);
         } else {//If entity has specified baseColor, set as color
             //Else render simple rectangle
             g.setColor(Color.decode(color));
-            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) size, (int) size);
+            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1]);
         }
     }
 
@@ -150,7 +159,7 @@ public class Entity {
     //Update Entity
     public void update() {
         //Progress ticks
-        ticks++;
+        ticks.put("base", ticks.get("base") + 1);
         //Update entity through Brain
         brain.update();
     }

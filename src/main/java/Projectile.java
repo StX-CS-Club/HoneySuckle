@@ -2,6 +2,7 @@
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class Projectile {
 
     //Static json data
     public static final Map<String, List<String>> projTags = new HashMap<>();
-    public static final Map<String, Map<String, Double>> projAttributes = new HashMap<>();
+    public static final Map<String, Map<String, Number>> projAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> projTextures = new HashMap<>();
     public static final Map<String, Integer> projIntId = new HashMap<>();
     public static final Map<Integer, String> projStringId = new HashMap<>();
@@ -27,7 +28,9 @@ public class Projectile {
     public double[] pos;
     public double[] vel;
     public final double size;
+    private final double baseSpeed;
     public double angle;
+    private final double damage;
     public final double weight;
     public final String type;
 
@@ -36,8 +39,10 @@ public class Projectile {
 
     //Specific projectile attributes
     private final Map<String, String> texture;
-    private final Map<String, Double> attributes;
+    public final Map<String, Number> attributes;
     private final List<String> tags;
+
+    private final BufferedImage staticTexture;
 
     //Projectile Constructor
     public Projectile(String type, double[] pos, double[] currentVel, double angle, Object source) {
@@ -46,9 +51,11 @@ public class Projectile {
         attributes = projAttributes.get(type);
         tags = projTags.get(type);
 
+        baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * TILE_SIZE;
+
         //Trig variables
-        double sin = Math.sin(Math.toRadians(-angle)) * -attributes.get("speed");
-        double cos = Math.cos(Math.toRadians(-angle)) * -attributes.get("speed");
+        double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
+        double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
 
         //Calculate velocity based on angle and magnitude
         vel = new double[]{sin, cos};
@@ -61,15 +68,18 @@ public class Projectile {
         this.type = type;
         this.angle = angle;
         this.source = source;
-        weight = attributes.get("weight");
-        size = attributes.get("size")*HoneySuckle.TILE_SIZE;
+        weight = attributes.getOrDefault("weight", 1.0).doubleValue();
+        size = attributes.getOrDefault("size", 0.5).doubleValue()*HoneySuckle.TILE_SIZE;
+        damage = attributes.getOrDefault("damage", 0.25).doubleValue();
+
+        staticTexture = getTexture();
     }
 
     //Change velocity of projectile
     public void alterVel(double[] pos, double[] currentVel, double angle, double velCoef, Object source) {
         //Trig variables
-        double sin = Math.sin(Math.toRadians(-angle)) * velCoef * -attributes.get("speed");
-        double cos = Math.cos(Math.toRadians(-angle)) * velCoef * -attributes.get("speed");
+        double sin = Math.sin(Math.toRadians(-angle)) * velCoef * -baseSpeed;
+        double cos = Math.cos(Math.toRadians(-angle)) * velCoef * -baseSpeed;
 
         //Reset shit
         vel = new double[]{sin, cos};
@@ -101,7 +111,7 @@ public class Projectile {
                 //If can damage tile, apply damage
                 if (tags.contains("damageTile")) {
                     //If failed to destroy object, remove projectile
-                    if (!object.damage(attributes.get("damage"))) {
+                    if (!object.damage(damage)) {
                         if (object.tags.contains("projObstruction")) {
                             world.projectiles.remove(this);
                         }
@@ -127,7 +137,7 @@ public class Projectile {
                             new Point2D.Double(entity.pos[0], entity.pos[1]),
                             new Point2D.Double(entity.size, entity.size))) {
                         //damage entity, and remove self
-                        if (entity.brain.damage(attributes.get("damage"))) {
+                        if (entity.brain.damage(damage)) {
                             if(source instanceof Player){
                                 final Player player = (Player) source;
                                 for (Map<String, Number> loot : entity.loot) {
@@ -153,7 +163,7 @@ public class Projectile {
                             new Point2D.Double(player.pos[0], player.pos[1]),
                             new Point2D.Double(player.size, player.size))) {
                         //damage player, and remove self
-                        player.damage(attributes.get("damage"));
+                        player.damage(damage);
                         world.projectiles.remove(this);
                         break;
                     }
@@ -177,9 +187,13 @@ public class Projectile {
         g.rotate(Math.toRadians(angle), screenPos[0], screenPos[1]);
 
         //Render projectiles
-        g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (screenPos[0] - size / 2.0), (int) (screenPos[1] - size / 2.0), (int) size, (int) size, null);
+        g.drawImage(staticTexture, (int) (screenPos[0] - size / 2.0), (int) (screenPos[1] - size / 2.0), (int) size, (int) size, null);
         
         //Reset rotation
         g.setTransform(originalTransform);
+    }
+
+    private BufferedImage getTexture(){
+        return Rendering.texture(texture.get("texture"), "#ffffff");
     }
 }

@@ -5,7 +5,7 @@
     "texture": {
       "baseColor": "#71cf01",
       "texture": "entities/slime/slime",
-      "anim": "_x_"
+      "anim": "_x_lunge_"
     },
     "attributes": {
       "size": 0.5,
@@ -20,9 +20,9 @@
     ],
     "brain": {
       "lunge": {
-        "rate": 2,
-        "view": 7.5,
-        "length": 0.375
+        "range": 7.5,
+        "length": 0.375,
+        "hesitationTime": 5
       },
       "contact": {
         "damage": 0.05,
@@ -42,7 +42,7 @@
     "attributes": {
       "size": 5.0,
       "health": 20.0,
-      "view": 12.5,
+      "range": 12.5,
       "weight": 5.0,
       "frames": 15.0,
       "cooldown": 90.0

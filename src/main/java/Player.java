@@ -37,7 +37,6 @@ public class Player {
                 Arrays.asList(new Armor[]{armory.armor}),
                 Map.of("wood", 4),
                 null);
-        inventory.weapons.add(new Weapon("dragon_sword"));
 
         //Adds player to list of players
         players.add(this);
@@ -139,7 +138,7 @@ public class Player {
 
             //Update player build and armory
             build.update(this, world, input);
-            armory.update(input, this);
+            armory.updateControls(input, this);
 
             //Build on right click
             if (input.clickDown(3)) {
@@ -147,6 +146,7 @@ public class Player {
             }
         }
         // Updates Inventory
+        armory.updateWeapons(this);
         inventory.update(input);
 
         //If space pressed, reset acel to dash acel

@@ -8,11 +8,11 @@ import java.util.Map;
  - Class for managing player's combat components (Armor, Weapons, etc.)
  */
 public class Armory {
+
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
     private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
-
 
     //Basic armory components
     public int weaponIndex = 0;
@@ -31,25 +31,28 @@ public class Armory {
     }
 
     //Update Armory
-    public void update(InputHandler input, Player player) {
+    public void updateControls(InputHandler inputHandler, Player player) {
         //If left click and selected weapon exists, attack
-        if (input.clickDown(1)) {
-            if (weapons[weaponIndex] != null) {
-                if (weapons[weaponIndex].constClick || input.clickPressed(1)) {
-                    weapons[weaponIndex].attack(player);
-                }
-            }
+        if (weapons[weaponIndex] != null) {
+                weapons[weaponIndex].updateControls(inputHandler, player);
         }
         //Selects weapon from number key
         for (int i = 0; i < 3; i++) {
-            if (input.keyDown(49 + i)) {
+            if (inputHandler.keyDown(49 + i)) {
                 weaponIndex = i;
                 break;
             }
         }
-        //If selected weapon exists, update it
-        if (weapons[weaponIndex] != null) {
-            weapons[weaponIndex].update(player);
+    }
+
+    public void updateWeapons(Player player){
+        for(int i = 0; i < weapons.length; i++){
+            if(weapons[i] != null){
+                weapons[i].passiveUpdate();
+                if(i == weaponIndex){
+                    weapons[i].update(player);
+                }
+            }
         }
     }
 
@@ -114,7 +117,7 @@ public class Armory {
         double xMargin = 0;
 
         //If player in bottom left corner, display in right corner
-        if (player.screenPos[0] < HUD_SIZE * 3 +TILE_SIZE && player.screenPos[1] > GAME_HEIGHT - HUD_SIZE * 25 / 12 -TILE_SIZE) {
+        if (player.screenPos[0] < HUD_SIZE * 3 + TILE_SIZE && player.screenPos[1] > GAME_HEIGHT - HUD_SIZE * 25 / 12 - TILE_SIZE) {
             xMargin = GAME_WIDTH - HUD_SIZE * 3;
         }
 

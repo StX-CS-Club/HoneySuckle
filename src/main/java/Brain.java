@@ -12,36 +12,36 @@ public class Brain {
     private static final int FPS = HoneySuckle.FPS;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
-    public static final Map<String, Map<String, Object>> entityBrain = new HashMap<>();
+    public static final Map<String, Map<String, Map<String, Object>>> entityBrain = new HashMap<>();
 
     private final Entity entity;
     private final World world;
-    private final Map<String, Object> brainMap;
+    private final Map<String, Map<String, Object>> brainMap;
     private final Map<String, Boolean> states = new HashMap<>();
 
     // Attack Brain Maps
-    private final Map<String, Number> lungeAttack;
-    private final Map<String, Number> shootAttack;
-    private final Map<String, Number> contactAttack;
-    private final Map<String, Number> flee;
-    private final Map<String, Number> chase;
+    private final Map<String, Object> lungeAttack;
+    private final Map<String, Object> shootAttack;
+    private final Map<String, Object> contactAttack;
+    private final Map<String, Object> flee;
+    private final Map<String, Object> chase;
 
     public double chaseAngle = 180;
 
-    public final Map<String, Number> death;
+    public final Map<String, Object> death;
 
     public Brain(Entity entity, World world) {
         this.entity = entity;
         this.world = world;
         brainMap = entityBrain.get(entity.type);
 
-        lungeAttack = mapFromMap(brainMap, "lunge");
-        shootAttack = mapFromMap(brainMap, "shoot");
-        contactAttack = mapFromMap(brainMap, "contact");
-        flee = mapFromMap(brainMap, "flee");
-        chase = mapFromMap(brainMap, "chase");
+        lungeAttack = registerBrain("lunge");
+        shootAttack = registerBrain("shoot");
+        contactAttack = registerBrain("contact");
+        flee = registerBrain("flee");
+        chase = registerBrain("chase");
 
-        death = mapFromMap(brainMap, "death");
+        death = registerBrain("death");
     }
 
     //Update Entity based on type
@@ -70,7 +70,7 @@ public class Brain {
         if (playerDistance[1] > 0) {
             chaseAngle += 180;
         }
-        if(chaseAngle < 0){
+        if (chaseAngle < 0) {
             chaseAngle += 360;
         }
 
@@ -82,44 +82,59 @@ public class Brain {
             }
         }
 
+        boolean hesitate = false;
         if (!lungeAttack.isEmpty()) {
-            final int rate = lungeAttack.getOrDefault("rate", 1).intValue();
-            final double view = lungeAttack.getOrDefault("view", 10).doubleValue();
-            final double length = lungeAttack.getOrDefault("length", 1).doubleValue();
+            final int rate = FPS / numberFromMap(lungeAttack, "rate", 1).intValue();
+            final int hesitationTime = numberFromMap(lungeAttack, "hesitationTime", 0).intValue();
+            final double range = numberFromMap(lungeAttack, "range", 10).doubleValue();
+            final double length = numberFromMap(lungeAttack, "length", 1).doubleValue();
 
-            if (entity.ticks % FPS / rate == 0) {
-                //If within range of view, do a little hop
-                if (playerAbsDistance <= view * TILE_SIZE) {
+            if (playerAbsDistance <= range * TILE_SIZE) {
+                long ticks = incrementTicks("lunge", 1);
+                if (ticks == rate) {
+                    ticks = 0;
+                    entity.ticks.put("lunge", 0l);
+                }
+                if (ticks == 0) {
+                    //If within range of view, do a little hop
                     double coefficient = TILE_SIZE * length / Math.max(1, playerAbsDistance);
                     entity.vel[0] += playerDistance[0] * coefficient;
                     entity.vel[1] += playerDistance[1] * coefficient;
+                }
+                if (ticks >= rate - hesitationTime) {
+                    hesitate = true;
+                    states.put("lunging", true);
+                } else {
+                    states.put("lunging", false);
                 }
             }
         }
 
         if (!shootAttack.isEmpty()) {
             double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
-            double panicSpeed = shootAttack.getOrDefault("panicSpeed", 0).doubleValue();
-            double speed = shootAttack.getOrDefault("speed", 1).doubleValue();
-            final double panicVel = shootAttack.getOrDefault("panicVel", panicSpeed).doubleValue() * healthLost;
-            final double vel = shootAttack.getOrDefault("vel", speed).doubleValue() + panicVel;
+            double panicSpeed = numberFromMap(shootAttack, "panicSpeed", 0).doubleValue();
+            double speed = numberFromMap(shootAttack, "speed", 1).doubleValue();
+            final double panicVel = numberFromMap(shootAttack, "panicVel", panicSpeed).doubleValue() * healthLost;
+            final double vel = numberFromMap(shootAttack, "vel", speed).doubleValue() + panicVel;
             panicSpeed *= healthLost;
             speed += panicSpeed;
-            final double cooldown = shootAttack.getOrDefault("cooldown", 100).doubleValue();
-            final int frames = shootAttack.getOrDefault("frames", 10).intValue();
-            final double range = shootAttack.getOrDefault("range", 100).doubleValue();
-            final String projectileId = Projectile.projStringId.get(shootAttack.getOrDefault("proj", 1).intValue());
+            final double cooldown = numberFromMap(shootAttack, "cooldown", 100).doubleValue();
+            final int frames = numberFromMap(shootAttack, "frames", 10).intValue();
+            final double range = numberFromMap(shootAttack, "range", 100).doubleValue();
+            final String projectileId = Projectile.projStringId.get(numberFromMap(shootAttack, "proj", 3).intValue());
 
             if (playerAbsDistance <= range * TILE_SIZE) {
-                if(entity.ticks < frames){
+                long ticks = incrementTicks("shoot", 1);
+                if (ticks < frames) {
                     states.put("shooting", true);
                 } else {
                     states.put("shooting", false);
                 }
-                if (entity.ticks * speed > cooldown * FPS / 40.0 / speed) {
-                    entity.ticks = 0;
+                if (ticks * speed > cooldown * FPS / 40.0 / speed) {
+                    entity.ticks.put("shoot", 0l);
+                    ticks = 0;
                 }
-                if (entity.ticks == Math.floor(frames / speed)) {
+                if (ticks == Math.floor(frames / speed)) {
                     Projectile projectile = new Projectile(projectileId, entity.pos, entity.vel, chaseAngle, entity);
                     projectile.alterVel(entity.pos, entity.vel, chaseAngle, vel, entity);
                     world.projectiles.add(projectile);
@@ -127,26 +142,25 @@ public class Brain {
             }
         }
 
-        boolean fleeing = false;
-        if (!flee.isEmpty()) {
-            final double range = flee.getOrDefault("range", 5).doubleValue();
-            final double speed = flee.getOrDefault("speed", 0.1).doubleValue();
-            final double hesitateRange = flee.getOrDefault("hesitateRange", range).doubleValue();
-            if(playerAbsDistance <= hesitateRange * TILE_SIZE){
-                fleeing = true;
+        if (!flee.isEmpty() && !hesitate) {
+            final double range = numberFromMap(flee, "range", 5).doubleValue();
+            final double speed = numberFromMap(flee, "speed", 0.1).doubleValue();
+            final double hesitateRange = numberFromMap(flee, "hesitateRange", range).doubleValue();
+            if (playerAbsDistance <= hesitateRange * TILE_SIZE) {
+                hesitate = true;
             }
             if (playerAbsDistance <= range * TILE_SIZE) {
-                entity.vel[0] -= TILE_SIZE*speed*-Math.cos(Math.toRadians(chaseAngle+90));
-                entity.vel[1] -= TILE_SIZE*speed*Math.sin(Math.toRadians(chaseAngle-90));
+                entity.vel[0] -= TILE_SIZE * speed * -Math.cos(Math.toRadians(chaseAngle + 90));
+                entity.vel[1] -= TILE_SIZE * speed * Math.sin(Math.toRadians(chaseAngle - 90));
             }
         }
 
-        if (!chase.isEmpty() && !fleeing) {
-            final double range = chase.getOrDefault("range", 5).doubleValue();
-            final double speed = chase.getOrDefault("speed", 0.1).doubleValue();
+        if (!chase.isEmpty() && !hesitate) {
+            final double range = numberFromMap(chase, "range", 5).doubleValue();
+            final double speed = numberFromMap(chase, "speed", 0.1).doubleValue();
             if (playerAbsDistance <= range * TILE_SIZE) {
-                entity.vel[0] += TILE_SIZE*speed*-Math.cos(Math.toRadians(chaseAngle+90));
-                entity.vel[1] += TILE_SIZE*speed*Math.sin(Math.toRadians(chaseAngle-90));
+                entity.vel[0] += TILE_SIZE * speed * -Math.cos(Math.toRadians(chaseAngle + 90));
+                entity.vel[1] += TILE_SIZE * speed * Math.sin(Math.toRadians(chaseAngle - 90));
             }
         }
 
@@ -175,11 +189,11 @@ public class Brain {
     //Kill Entity events
     public void die(World world) {
         if (!death.isEmpty()) {
-            final int gateId = death.getOrDefault("gateId", 0).intValue();
+            final int gateId = numberFromMap(death, "gateId", 0).intValue();
             if (gateId != 0) {
                 boolean cleared = true;
                 for (Entity worldEntity : world.entities) {
-                    if (worldEntity.brain.death.getOrDefault("gateId", 0).intValue() == gateId && worldEntity != entity) {
+                    if (numberFromMap(worldEntity.brain.death, "gateId", 0).intValue() == gateId && worldEntity != entity) {
                         cleared = false;
                         break;
                     }
@@ -208,13 +222,14 @@ public class Brain {
         };
 
         if (!contactAttack.isEmpty()) {
-            final double damage = contactAttack.getOrDefault("damage", 0).doubleValue();
-            final double bounce = contactAttack.getOrDefault("bounce", 0).doubleValue();
-            final double range = contactAttack.getOrDefault("range", 1).doubleValue();
-            final int rate = contactAttack.getOrDefault("rate", 1).intValue();
+            final double damage = numberFromMap(contactAttack, "damage", 0).doubleValue();
+            final double bounce = numberFromMap(contactAttack, "bounce", 0).doubleValue();
+            final double range = numberFromMap(contactAttack, "range", 1).doubleValue();
+            final int rate = numberFromMap(contactAttack, "rate", 1).intValue();
 
-            if (checkTicks(entity, rate)) {
-                if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
+            if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
+                long ticks = incrementTicks("contact", 1);
+                if (checkTicks(ticks, rate)) {
                     player.damage(damage);
                     entity.vel[0] *= -bounce;
                     entity.vel[1] *= -bounce;
@@ -224,32 +239,42 @@ public class Brain {
         }
     }
 
-    public boolean checkState(String state){
-        if(states.get(state) != null){
+    public boolean checkState(String state) {
+        if (states.get(state) != null) {
             return states.get(state);
         }
         return false;
     }
 
+    private long incrementTicks(String key, int amount) {
+        long ticks = entity.ticks.get(key);
+        entity.ticks.put(key, ticks + amount);
+        return ticks + amount;
+    }
+
     //If entity's ticks are less than n, return true
-    private static boolean checkTicks(Entity entity, int n) {
+    private static boolean checkTicks(long ticks, int n) {
         for (int i = 0; i < n; i++) {
-            if ((entity.ticks + i) % FPS == 0) {
+            if ((ticks + i) % FPS == 0) {
                 return true;
             }
         }
         return false;
     }
 
-    private static <T> Map<String, T> mapFromMap(Map<String, Object> map, String key) {
-        if (map.get(key) instanceof Map<?, ?>) {
-            try {
-                Map<String, T> result = (Map<String, T>) map.get(key);
-                return result;
-            } catch (Exception e) {
-                System.out.println("HoneySuckle ERROR: Expected Map<String, Object> under key '" + key + "'");
-            }
+    private Map<String, Object> registerBrain(String brainType) {
+        Map<String, Object> brain = brainMap.get(brainType);
+        if (brain != null) {
+            entity.ticks.put(brainType, 0l);
+            return brain;
         }
         return new HashMap<>();
+    }
+
+    private static Number numberFromMap(Map<String, Object> map, String key, Number defaultValue) {
+        if (map.get(key) instanceof Number) {
+            return (Number) map.get(key);
+        }
+        return defaultValue;
     }
 }

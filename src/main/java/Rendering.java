@@ -209,7 +209,7 @@ public class Rendering {
     }
 
     //Apply opacity overlay to image
-    public static BufferedImage applyOverlay(BufferedImage image, String color) {
+    public static BufferedImage applyOverlay(BufferedImage image, String color, int alpha) {
         //Width of image
         int width = image.getWidth();
         int height = image.getHeight();
@@ -224,7 +224,7 @@ public class Rendering {
         //Apply opacity overlay
         g.setComposite(AlphaComposite.SrcAtop);
         Color c = Color.decode(color);
-        g.setColor(new Color(c.getRed(), c.getBlue(), c.getGreen(), 128));
+        g.setColor(new Color(c.getRed(), c.getBlue(), c.getGreen(), alpha));
         g.fillRect(0, 0, width, height);
 
         //Dispose of Graphics, return image

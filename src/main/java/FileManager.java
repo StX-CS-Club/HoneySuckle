@@ -103,7 +103,7 @@ class FileManager {
                 Entity.entityTextures.put(key, (Map<String, String>) entity.getOrDefault("texture", new HashMap<>()));
                 Entity.entityLoot.put(key, (List<Map<String, Number>>) entity.getOrDefault("loot", new ArrayList<>()));
                 Entity.entityTags.put(key, (List<String>) entity.getOrDefault("tags", new ArrayList<>()));
-                Brain.entityBrain.put(key, (Map<String, Object>) entity.getOrDefault("brain", new HashMap<>()));
+                Brain.entityBrain.put(key, (Map<String, Map<String, Object>>) entity.getOrDefault("brain", new HashMap<>()));
 
                 final int id = (int) entity.get("id");
                 Entity.entityIntId.put(key, id);
@@ -114,10 +114,9 @@ class FileManager {
             Map<String, Object> weaponData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/weapon.json").toURI()), mapType);
             for (String key : weaponData.keySet()) {
                 Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
-                Weapon.weaponAttributes.put(key, (Map<String, Double>) weapon.getOrDefault("attributes", new HashMap<>()));
+                Weapon.weaponAttributes.put(key, (Map<String, Number>) weapon.getOrDefault("attributes", new HashMap<>()));
                 Weapon.weaponStats.put(key, (Map<String, String>) weapon.getOrDefault("stats", new HashMap<>()));
-                Weapon.weaponTypes.put(key, (String) weapon.getOrDefault("type", "blade"));
-                Weapon.weaponProj.put(key, (String) weapon.getOrDefault("projectile", "arrow"));
+                Weapon.weaponBehaviors.put(key, (List<Map<String, Object>>) weapon.getOrDefault("behavior", new ArrayList<>()));
                 Weapon.weaponTags.put(key, (List<String>) weapon.getOrDefault("tags", new ArrayList<>()));
                 Weapon.weaponTextures.put(key, (Map<String, String>) weapon.getOrDefault("texture", new HashMap<>()));
             }
@@ -134,7 +133,7 @@ class FileManager {
             Map<String, Object> projData = objectMapper.readValue(new File(HoneySuckle.class.getResource("jsonData/projectile.json").toURI()), mapType);
             for (String key : projData.keySet()) {
                 Map<String, Object> proj = (Map<String, Object>) projData.get(key);
-                Projectile.projAttributes.put(key, (Map<String, Double>) proj.getOrDefault("attributes", new HashMap<>()));
+                Projectile.projAttributes.put(key, (Map<String, Number>) proj.getOrDefault("attributes", new HashMap<>()));
                 Projectile.projTextures.put(key, (Map<String, String>) proj.getOrDefault("texture", new HashMap<>()));
                 Projectile.projTags.put(key, (List<String>) proj.getOrDefault("tags", new ArrayList<>()));
 
