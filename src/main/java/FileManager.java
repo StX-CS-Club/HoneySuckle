@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,14 +51,15 @@ class FileManager {
                 Tile.tileStringIds.put(intKey, key);
             }
 
-            //Maps recipe data
+            //Maps blueprint data
             Map<String, Object> blueprintData = readJsonDirectory(FileManager.class.getResource("jsonData/blueprints").toURI());
             for (String key : blueprintData.keySet()) {
-                Map<String, Object> recipe = (Map<String, Object>) blueprintData.get(key);
-                Build.blueprintMats.put(key, (List<Map<String, Integer>>) recipe.getOrDefault("mats", new ArrayList<>()));
-                Build.blueprintParams.put(key, (Map<String, List<Integer>>) recipe.getOrDefault("params", new HashMap<>()));
-                Build.blueprintTextures.put(key, (Map<String, String>) recipe.getOrDefault("texture", new HashMap<>()));
-                Build.blueprintProducts.put(key, (Integer) recipe.getOrDefault("product", 0));
+                Map<String, Object> blueprint = (Map<String, Object>) blueprintData.get(key);
+                Build.blueprintMats.put(key, (List<Map<String, Integer>>) blueprint.getOrDefault("mats", new ArrayList<>()));
+                Build.blueprintParams.put(key, (Map<String, List<Integer>>) blueprint.getOrDefault("params", new HashMap<>()));
+                Build.blueprintTextures.put(key, (Map<String, String>) blueprint.getOrDefault("texture", new HashMap<>()));
+                Build.blueprintProducts.put(key, (Integer) blueprint.getOrDefault("product", 0));
+                Build.blueprintTags.put(key, (List<String>) blueprint.getOrDefault("tags", new ArrayList<>()));
             }
 
             //Maps item data

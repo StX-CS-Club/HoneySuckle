@@ -1,81 +1,4 @@
 {
-  "bridge": {
-    "name": "Stone Bridge",
-    "id": -5,
-    "texture": {
-      "baseColor": "#8b8b8b",
-      "texture": "tiles/bridge"
-    },
-    "tags": ["walkable", "safe"]
-  },
-  "jackolantern": {
-    "name": "Jack-O-Lantern",
-    "id": -4,
-    "texture": {
-      "baseColor": "#ffb31c",
-      "natColor": "pumpkinColor",
-      "texture": "tiles/pumpkin",
-      "glowColor": "#ff8000"
-    },
-    "tags": ["obstruction", "destructable", "light"],
-    "attributes": {
-      "light": 15.0,
-      "durability": 0.5,
-      "glow": 32.0
-    },
-    "loot": [
-      {
-        "item": 4
-      }
-    ]
-  },
-  "torch": {
-    "name": "Torch",
-    "id": -3,
-    "texture": {
-      "baseColor": "#ffc654",
-      "texture": "tiles/torch",
-      "glowColor": "#ff8c00"
-    },
-    "tags": ["destructable", "light"],
-    "attributes": {
-      "light": 8.0,
-      "durability": 0.25,
-      "glow": 64.0
-    },
-    "loot": [
-      {
-        "item": 1
-      }
-    ]
-  },
-  "raft": {
-    "name": "Raft",
-    "id": -2,
-    "texture": {
-      "baseColor": "#aa6608",
-      "texture": "tiles/raft"
-    },
-    "tags": ["walkable", "safe"],
-    "loot": []
-  },
-  "wall": {
-    "name": "Wall",
-    "id": -1,
-    "texture": {
-      "baseColor": "#893f00",
-      "texture": "tiles/wall"
-    },
-    "tags": ["obstruction", "destructable", "placeAway", "projObstruction"],
-    "attributes": {
-      "durability": 2.0
-    },
-    "loot": [
-      {
-        "item": 1
-      }
-    ]
-  },
   "tree": {
     "name": "Tree",
     "id": 1,
@@ -121,7 +44,7 @@
       "natColor": "cactusColor",
       "texture": "tiles/cactus"
     },
-    "tags": ["obstruction", "hurts", "destructable", "projObstruction"],
+    "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
       "hurtness": 2.0,
       "durability": 0.75
@@ -157,7 +80,7 @@
       "texture": "tiles/gate"
     },
     "tags": ["obstruction"],
-    "attributes": {"deathGateId": 1}
+    "attributes": { "deathGateId": 1 }
   },
   "crate": {
     "name": "Crate",

@@ -1,11 +1,11 @@
 {
   "wall": {
     "name": "Wall",
-    "product": -1,
+    "product": 9,
     "params": {
-      "tile": [1, 2, 3, 4, 5, 6],
-      "obj": [0]
+      "tile": [1, 2, 3, 4, 5, 6]
     },
+    "tags": ["placeAway"],
     "mats": [
       {
         "item": 1
@@ -17,10 +17,9 @@
   },
   "raft": {
     "name": "Raft",
-    "product": -2,
+    "product": 10,
     "params": {
-      "tile": [0, 2],
-      "obj": [0]
+      "tile": [0, 2]
     },
     "mats": [
       {
@@ -34,11 +33,11 @@
   },
   "bridge": {
     "name": "Stone Bridge",
-    "product": -5,
+    "product": 13,
     "params": {
-      "tile": [0, 7],
-      "obj": [0]
+      "tile": [0, 7]
     },
+    "tags": ["placeAway"],
     "mats": [
       {
         "item": 8,
@@ -55,10 +54,9 @@
   },
   "torch": {
     "name": "Torch",
-    "product": -3,
+    "product": 11,
     "params": {
-      "tile": [1, 2, 3, 5, 6],
-      "obj": [0]
+      "tile": [1, 2, 3, 5, 6]
     },
     "mats": [
       {
@@ -74,10 +72,9 @@
   },
   "jackolantern": {
     "name": "Jack-O-Lantern",
-    "product": -4,
+    "product": 12,
     "params": {
-      "tile": [1, 2, 3],
-      "obj": [0]
+      "tile": [1, 2, 3]
     },
     "mats": [
       {

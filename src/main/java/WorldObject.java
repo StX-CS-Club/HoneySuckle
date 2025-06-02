@@ -52,7 +52,7 @@ public class WorldObject {
         loot = objLoot.get(id);
 
         if (tags.contains("destructable")) {
-            durability = attributes.get("durability").doubleValue();
+            durability = attributes.getOrDefault("durability", 1).doubleValue();
         }
 
         String glowColorString = texture.get("glowColor");
@@ -116,9 +116,10 @@ public class WorldObject {
         HoneySuckle.lights.add(Map.of(
                 "posX", (int) screenPos[0] + TILE_SIZE / 2,
                 "posY", (int) screenPos[1] + TILE_SIZE / 2,
-                "radius", TILE_SIZE * attributes.getOrDefault("light", 0).intValue(),
+                "radius", TILE_SIZE * attributes.getOrDefault("lightRadius", 0).intValue(),
                 "color", glowColor,
-                "glow", attributes.getOrDefault("glow", 0).intValue()
+                "glow", attributes.getOrDefault("glow", 0).intValue(),
+                "glowRadius", attributes.getOrDefault("glowRadius", 0).intValue()
         ));
     }
 

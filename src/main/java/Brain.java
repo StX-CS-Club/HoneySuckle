@@ -234,7 +234,7 @@ public class Brain {
         if (!contactAttack.isEmpty()) {
             final double damage = numberFromMap(contactAttack, "damage", 0).doubleValue();
             final double bounce = numberFromMap(contactAttack, "bounce", 0).doubleValue();
-            final double range = numberFromMap(contactAttack, "range", 1).doubleValue();
+            final double range = numberFromMap(contactAttack, "range", entity.size).doubleValue();
             final int rate = numberFromMap(contactAttack, "rate", 1).intValue();
 
             if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {

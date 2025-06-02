@@ -311,7 +311,7 @@ public class Weapon {
         if (overlayColor != null) {
             textureImage = Rendering.applyOverlay(textureImage, overlayColor, 192);
         }
-        switch (texture.getOrDefault("type", "")) {
+        switch (texture.getOrDefault("type", "front")) {
             case "side" -> {
                 screenPos[0] += player.size / 2.0;
                 screenPos[1] -= size / 2.0 + TILE_SIZE / 4.0;

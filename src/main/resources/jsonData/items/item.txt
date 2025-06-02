@@ -1,0 +1,9 @@
+{
+    [String ID: snake_case String ID to identify item]: {
+        "id": int ID of item,
+        "name": String to represent item's name in text,
+        "texture": {
+            "texture": String URI of texture file from images/sprites (autofils .png)
+        }
+    }
+}

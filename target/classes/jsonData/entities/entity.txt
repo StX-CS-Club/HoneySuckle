@@ -1,0 +1,62 @@
+{
+    [String ID: snake_case String ID to identify entity]: {
+        "id": int ID of entity,
+        "name": String to represent entity's name in text,
+        "texture": {
+            "baseColor": String HEX color of entity's placeholder square,
+            "texture": String URI of texture file from images/sprites (autofils .png & animation subfixes),
+            "animation": String of animation tags in format "_tag_othertag_"
+        },
+        "attributes": {
+            "size": Number of tiles of entity's size (default 1),
+            "health": Number of entity's starting health (default 1),
+            "weaight": Number of entity's weight (default 1),
+            "healthBarDistance": Number of entity's health bar's maximum distance from player (default 0)
+        },
+        "loot": List of following item data: [
+            {
+                "item": int ID of item,
+                "count": int count of item (default 1)
+            }
+        ],
+        "tags": List of following String tags of entity:[
+            "alwaysRender" - Include to always render/update entity
+        ],
+        "brain": Map of following entity brains: {
+            "lunge": {
+                "rate": Number of lunges per second (default 1),
+                "hesitationTime": Number of frames to hesitate before lunging (default 0),
+                "range": Number of tile distance at which entity will attempt to lunge (default 10),
+                "length": Number of length of tiles the entity will lunge for (default 1),
+            },
+            "shoot": {
+                "speed: Number of speed at which entity will shoot at (default 1),
+                "panicSpeed": Number of additional speed gained per health lost (default 0),
+                "vel": Number of velocity of shot projectile (default speed),
+                "panicVel": Number of additional velocity gained per health lost (default panisSpeed),
+                "cooldown": Number of cooldown frames before firing again (default 100),
+                "frames": Number of frames at which entity charges up shot (default 10),
+                "range": Number of tile distance at which entity will attempt to shoot (default 100),
+                "proj": int ID of projectile fired (default 3)
+            },
+            "flee": {
+                "range": Number of tile distance at which entity will flee (default 5),
+                "speed": Number at which entity will accelerate while fleeing (default 0.1),
+                "hesitateRange": Number of tile distance at which entity will hesitate to flee (default range)
+            },
+            "chase": {
+                "range": Number of tile distance at which entity will chase (default 5),
+                "speed": Number at which entity will accelerate whiel fleeing (default 0.1)
+            },
+            "contact": {
+                "damage": Number of damage entity does on contact (default 0),
+                "bounce": Number of velocity entity will bounce back at on contact (default 0),
+                "range": Number of tile distance at whcih entity will contact at (default size),
+                "rate": Number of contact / second (default 1)
+            },
+            "death": {
+                "gateId": int ID of death gate to open on death
+            }
+        }
+    }
+}

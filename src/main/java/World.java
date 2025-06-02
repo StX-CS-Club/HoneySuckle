@@ -137,27 +137,27 @@ public class World {
         };
 
         //Checks if on damage tile
-        if (checkTag(posIndex[0], posIndex[1], "damage") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            player.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+        if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
+            player.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
-                player.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                player.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             }
         }
         //Checks if on acel tile
-        if (!checkTag(posIndex[0], posIndex[1], "safe") && checkValue(posIndex[0], posIndex[1], "acel") != 0) {
-            player.vel[0] *= checkValue(posIndex[0], posIndex[1], "acel");
-            player.vel[1] *= checkValue(posIndex[0], posIndex[1], "acel");
+        if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
+            player.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
+            player.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
         }
         for (int i = 0; i < 2; i++) {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
                 //Checks if touching hurty tile
-                if (checkTag(marginIndex[0][i], posIndex[1], "hurts")) {
-                    player.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
+                if (checkAttribute(marginIndex[0][i], posIndex[1], "hurtness")) {
+                    player.damage(0.01 * getAttribute(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
                 }
             }
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
-                if (checkTag(posIndex[0], marginIndex[1][i], "hurts")) {
-                    player.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
+                if (checkAttribute(posIndex[0], marginIndex[1][i], "hurtness")) {
+                    player.damage(0.01 * getAttribute(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
                 }
             }
         }
@@ -182,28 +182,28 @@ public class World {
         };
 
         //Checks if on damage tile
-        if (checkTag(posIndex[0], posIndex[1], "damage") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            entity.brain.damage(checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+        if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
+            entity.brain.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
-                entity.brain.damage(0.01 * checkValue(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                entity.brain.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             }
         }
         //Checks if on acel tile
-        if (!checkTag(posIndex[0], posIndex[1], "safe") && checkValue(posIndex[0], posIndex[1], "acel") != 0) {
-            entity.vel[0] *= checkValue(posIndex[0], posIndex[1], "acel");
-            entity.vel[1] *= checkValue(posIndex[0], posIndex[1], "acel");
+        if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
+            entity.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
+            entity.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
         }
         for (int i = 0; i < 2; i++) {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
                 //Checks if touching hurty tile
-                if (checkTag(marginIndex[0][i], posIndex[1], "hurts")) {
-                    entity.brain.damage(0.01 * checkValue(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
+                if (checkAttribute(marginIndex[0][i], posIndex[1], "hurts")) {
+                    entity.brain.damage(0.01 * getAttribute(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
                 }
             }
             //Again...
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
-                if (checkTag(posIndex[0], marginIndex[1][i], "hurts")) {
-                    entity.brain.damage(0.01 * checkValue(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
+                if (checkAttribute(posIndex[0], marginIndex[1][i], "hurts")) {
+                    entity.brain.damage(0.01 * getAttribute(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
                 }
             }
         }
@@ -218,13 +218,20 @@ public class World {
     }
 
     //Gives sum of tile and obj value
-    private double checkValue(int x, int y, String value) {
+    private double getAttribute(int x, int y, String value) {
         double result = 0;
         result += grid[x][y].attributes.getOrDefault(value, 0).doubleValue();
         if (objGrid[x][y] != null) {
             result += objGrid[x][y].attributes.getOrDefault(value, 0).doubleValue();
         }
         return result;
+    }
+
+    private boolean checkAttribute(int x, int y, String value){
+        if (objGrid[x][y] != null) {
+            return objGrid[x][y].attributes.containsKey(value) || grid[x][y].attributes.containsKey(value);
+        }
+        return grid[x][y].attributes.containsKey(value);
     }
 
     //Render World
@@ -256,11 +263,11 @@ public class World {
                     //If tile/object provides light, add light to HoneySuckle.lights
                     if (fog) {
                         if (objGrid[x][y] != null) {
-                            if (objGrid[x][y].tags.contains("light")) {
+                            if (objGrid[x][y].attributes.containsKey("lightRadius") || objGrid[x][y].attributes.containsKey("glowRadius")) {
                                 objGrid[x][y].renderLight(screenPos);
                             }
                         }
-                        if (grid[x][y].tags.contains("light")) {
+                        if (grid[x][y].attributes.containsKey("lightRadius") || grid[x][y].attributes.containsKey("glowRadius")) {
                             grid[x][y].renderLight(screenPos);
                         }
                     }

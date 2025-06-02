@@ -1,0 +1,81 @@
+{
+  "wall": {
+    "name": "Wall",
+    "id": 9,
+    "texture": {
+      "baseColor": "#893f00",
+      "texture": "tiles/wall"
+    },
+    "tags": ["obstruction", "destructable",  "projObstruction"],
+    "attributes": {
+      "durability": 2.0
+    },
+    "loot": [
+      {
+        "item": 1
+      }
+    ]
+  },
+  "raft": {
+    "name": "Raft",
+    "id": 10,
+    "texture": {
+      "baseColor": "#aa6608",
+      "texture": "tiles/raft"
+    },
+    "tags": ["walkable", "safe"],
+    "loot": []
+  },
+  "torch": {
+    "name": "Torch",
+    "id": 11,
+    "texture": {
+      "baseColor": "#ffc654",
+      "texture": "tiles/torch",
+      "glowColor": "#ff8c00"
+    },
+    "tags": ["destructable"],
+    "attributes": {
+      "lightRadius": 8.0,
+      "durability": 0.25,
+      "glowRadius": 8.0,
+      "glow": 64.0
+    },
+    "loot": [
+      {
+        "item": 1
+      }
+    ]
+  },
+  "jackolantern": {
+    "name": "Jack-O-Lantern",
+    "id": 12,
+    "texture": {
+      "baseColor": "#ffb31c",
+      "natColor": "pumpkinColor",
+      "texture": "tiles/pumpkin",
+      "glowColor": "#ff8000"
+    },
+    "tags": ["obstruction", "destructable"],
+    "attributes": {
+      "lightRadius": 15.0,
+      "durability": 0.5,
+      "glow": 32.0,
+      "glowRadius": 15.0
+    },
+    "loot": [
+      {
+        "item": 4
+      }
+    ]
+  },
+  "bridge": {
+    "name": "Stone Bridge",
+    "id": 13,
+    "texture": {
+      "baseColor": "#8b8b8b",
+      "texture": "tiles/bridge"
+    },
+    "tags": ["walkable", "safe"]
+  }
+}

@@ -1,6 +1,7 @@
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -27,6 +28,7 @@ public class Build {
     public static final Map<String, Map<String, List<Integer>>> blueprintParams = new HashMap<>();
     public static final Map<String, Map<String, String>> blueprintTextures = new HashMap<>();
     public static final Map<String, Integer> blueprintProducts = new HashMap<>();
+    public static final Map<String, List<String>> blueprintTags = new HashMap<>();
 
     //Build Constructor
     public Build(Set<String> blueprints) {
@@ -154,7 +156,7 @@ public class Build {
     //Checks if blueprint can be built
     private boolean checkCanPlace(World world, Player player, String blueprintKey) {
         //Unique tags of blueprint
-        List<String> tags = WorldObject.objTags.get(blueprintProducts.get(blueprintKey));
+        List<String> tags = blueprintTags.get(blueprintKey);
 
         //Position trying to build on
         int[] index = new int[]{
@@ -176,13 +178,15 @@ public class Build {
             return false;
         }
 
+        final List<Integer> tileList = blueprintParams.get(blueprintKey).getOrDefault("tile", new ArrayList<>());
+        final List<Integer> objList = blueprintParams.get(blueprintKey).getOrDefault("obj", List.of(0));
         //If object doesnt exist, only check tile
         if (world.objGrid[index[0]][index[1]] == null) {
-            return blueprintParams.get(blueprintKey).get("tile").contains(world.grid[index[0]][index[1]].id);
+            return tileList.contains(world.grid[index[0]][index[1]].id) && objList.contains(0);
         }
         //Check object and tile
-        return (blueprintParams.get(blueprintKey).get("tile").contains(world.grid[index[0]][index[1]].id)
-                && blueprintParams.get(blueprintKey).get("obj").contains(world.objGrid[index[0]][index[1]].id));
+        return (tileList.contains(world.grid[index[0]][index[1]].id)
+                && objList.contains(world.objGrid[index[0]][index[1]].id));
     }
 
     //Check to see if player has materials

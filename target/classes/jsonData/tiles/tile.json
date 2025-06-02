@@ -8,8 +8,7 @@
     },
     "attributes": {
       "damageness": 0.01
-    },
-    "tags": ["damage"]
+    }
   },
   "land": {
     "name": "Land",
@@ -82,7 +81,6 @@
       "texture": "tiles/lava",
       "glowColor": "#ee6600"
     },
-    "attributes": { "acel": 0.75, "damageness": 0.05, "light": 4.0, "glow": 16.0 },
-    "tags": ["damage", "light"]
+    "attributes": { "acel": 0.75, "damageness": 0.05, "lightRadius": 4.0, "glow": 16.0, "glowRadius": 4.0 }
   }
 }

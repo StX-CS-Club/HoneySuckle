@@ -27,7 +27,7 @@
       "texture": "projectiles/fireball"
     }
   },
-  "enemyArrow": {
+  "enemy_arrow": {
     "name": "Enemy Arrow",
     "id": 3,
     "tags": ["hurtPlayer"],

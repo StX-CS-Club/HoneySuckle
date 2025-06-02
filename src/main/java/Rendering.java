@@ -116,9 +116,10 @@ public class Rendering {
             if (light.get("glow") != null && light.get("color") != null) {
                 Color glowColor = new Color(light.get("color"));
                 int glowValue = light.get("glow");
+                final int glowRadius = light.get("glowRadius") / LIGHT_SCALE;
                 glow2d.setPaint(new RadialGradientPaint(
                         center,
-                        radius,
+                        glowRadius,
                         new float[]{0f, 1f},
                         new Color[]{new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowValue),
                             new Color(0, 0, 0, 0)}

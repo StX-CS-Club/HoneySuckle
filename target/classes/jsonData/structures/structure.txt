@@ -1,0 +1,16 @@
+{
+    [String ID: snake_case String ID to identify structure]: {
+        "id": int ID of structure,
+        "name": String to represent structure's name in text,
+        "generation": {
+            "tileMap": 2D Array of int Tile IDs,
+            "objMap": 2D Array of int Object IDs,
+            "entities": List of following Entity generation data:[
+                {
+                    "id": int ID of Entity,
+                    "pos": [int entity x pos, int entity y pos]
+                }
+            ]
+        }
+    }
+}

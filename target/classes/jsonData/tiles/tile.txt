@@ -1,0 +1,22 @@
+{
+    [String ID: snake_case String ID to identify tile]: {
+        "id": int ID of tile,
+        "name": String to represent tile's name in text,
+        "texture": {
+            "texture": String URI of texture file from images/sprites (autofils .png),
+            "natColor": String ID of color from biome to reverse gray scale,
+            "baseColor": String HEX color of tile's placeholder square,
+            "glowColor": String HEX color of tile's glow
+        },
+        "tags": List of following String tags of tile:[
+            "walkable", - Include to allow entities to walk on tile
+            "slipery", - Include to allow entities to slip of tile
+        ],
+        "attributes": {
+            "damageness": Number of damage dealth to entity standong on tile (default 0),
+            "lightRadius": Number of tiles tile's light spreads (default 0),
+            "glow": 8-Bit opacity of tile's glow (default 0),
+            "glowRadius": Number of tiles tile's glow spreads (default 0)
+        }
+    }
+}
