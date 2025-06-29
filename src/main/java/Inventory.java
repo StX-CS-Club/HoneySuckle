@@ -1,6 +1,5 @@
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,26 +7,22 @@ import java.util.List;
 import java.util.Map;
 
 /*
- * Inventory.java *
+ * Item.java *
  - Class for managing player inventories
  */
 public class Inventory {
 
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-
-    //Static json data
-    public static final Map<String, String> itemNames = new HashMap<>();
-    public static final Map<String, Map<String, String>> itemTextures = new HashMap<>();
-    public static final Map<String, List<String>> itemRecipeUnlocks = new HashMap<>();
-    public static final Map<Integer, String> itemStringId = new HashMap<>();
-    public static final Map<String, Integer> itemIntId = new HashMap<>();
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Inventory data
     public final List<Weapon> weapons = new ArrayList<>();
     public final List<Armor> armors = new ArrayList<>();
-    public final Map<String, Integer> items = new HashMap<>();
+    public final List<Item> items = new ArrayList<>();
     public final Map<String, Integer> ammo = new HashMap<>();
+
+    private final List<Item> splashItems = new ArrayList<>();
 
     private final Player player;
 
@@ -40,7 +35,7 @@ public class Inventory {
             Player player,
             List<Weapon> weapons,
             List<Armor> armors,
-            Map<String, Integer> items,
+            List<Item> items,
             Map<String, Integer> ammo) {
         this.player = player;
         //If specified, adds shit to inventory
@@ -51,18 +46,11 @@ public class Inventory {
             this.armors.addAll(armors);
         }
         if (items != null) {
-            this.items.putAll(items);
+            this.items.addAll(items);
         }
         if (ammo != null) {
             this.ammo.putAll(ammo);
         }
-    }
-
-    public int getMaterial(String material) {
-        if (items.get(material) == null) {
-            return 0;
-        }
-        return items.get(material);
     }
 
     public void update(InputHandler input) {
@@ -86,6 +74,16 @@ public class Inventory {
                 itemScroll = items.size() - 1;
             }
             //}
+        }
+    }
+
+    public void renderItemSplashes(Graphics2D g, double[] screenPos) {
+        for (int i = 0; i < Math.min(splashItems.size(), 3); i++) {
+            Item item = splashItems.get(i);
+
+            if (!item.renderSplash(g, (int) screenPos[0], (int) (screenPos[1] - 25 * i - TILE_SIZE*1.25))) {
+                splashItems.remove(item);
+            }
         }
     }
 
@@ -114,59 +112,76 @@ public class Inventory {
          */
         // Renders Items
         for (int i = 0; i < items.size(); i++) {
-            final String itemId = (String) items.keySet().toArray()[i];
-
-            String color = "#ffffff";
-            if (items.get(itemId) > 0) {
-                color = "#f5d39d";
-            }
 
             final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
-            g.drawImage(Rendering.texture("hud/slot", color), GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 100, 100, null);
-
-            final Map<String, String> texture = itemTextures.get(itemId);
-
-            final String itemTexture = texture.get("texture");
-            if (itemTexture != null) {
-                g.drawImage(Rendering.texture(itemTexture, "#ffffff"), GAME_WIDTH / 2 - 25 + offset, GAME_HEIGHT / 2 - 25, 50, 50, null);
-            }
-
-            final String label = itemNames.get(itemId) + " x" + items.get(itemId);
-
-            int fontOffset = 0;
-
-            // Sets the font size to fit within box
-            for (int f = 24; f > 0; f--) {
-                g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
-                int fontSize = g.getFontMetrics().stringWidth(label);
-                if (fontSize < 100) {
-                    fontOffset = fontSize/2;
-                    break;
-                }
-            }
-
-            g.setColor(new Color(224, 224, 224));
-
-            // Draws the font
-            g.drawString(label, GAME_WIDTH / 2 + offset - fontOffset, GAME_HEIGHT / 2 + 60);
+            items.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50);
         }
 
         // Displays empty slot when items left to be collected
-        if (items.size() < itemNames.size()) {
+        if (items.size() < Item.itemNames.size()) {
             g.drawImage(Rendering.texture("hud/slot", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
         }
     }
 
-    public void addItem(Map<String, Number> item) {
-        if (Math.random() < readLoot(item, "prob", 1).doubleValue()) {
-            final String itemId = itemStringId.get(readLoot(item, "item", 0).intValue());
-            items.put(itemId, getMaterial(itemId) + readLoot(item, "count", 1).intValue());
+    public void incrementItem(Map<String, Number> itemData, boolean gain) {
+        if (Math.random() < readLoot(itemData, "prob", 1).doubleValue()) {
+            final String itemId = Item.itemStringId.get(readLoot(itemData, "item", 0).intValue());
+            Item item = getItem(itemId);
 
-            final List<String> recipeUnlocks = itemRecipeUnlocks.get(itemId);
-            for (String recipe : recipeUnlocks) {
-                player.build.blueprints.add(recipe);
+            int itemCount = readLoot(itemData, "count", 1).intValue();
+            if(!gain){
+                itemCount *= -1;
+            }
+            if (item == null) {
+                item = new Item(itemId, itemCount);
+                items.add(item);
+            } else {
+                item.count += itemCount;
+
+                final List<String> recipeUnlocks = Item.itemRecipeUnlocks.get(itemId);
+                for (String recipe : recipeUnlocks) {
+                    player.build.blueprints.add(recipe);
+                }
+            }
+
+            if (gain) {
+                Item splashItem = getSplashItem(itemId);
+                if (splashItem == null) {
+                    splashItem = new Item(itemId, itemCount);
+                    splashItems.add(splashItem);
+                } else {
+                    splashItem.count += itemCount;
+                    splashItem.resetSplashFrame();
+                }
             }
         }
+    }
+
+    private Item getItem(String itemId) {
+        for (Item item : items) {
+            if (item.id.equals(itemId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private Item getSplashItem(String itemId) {
+        for (Item item : splashItems) {
+            if (item.id.equals(itemId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public int getItemCount(String itemId) {
+        for (Item item : items) {
+            if (item.id.equals(itemId)) {
+                return item.count;
+            }
+        }
+        return 0;
     }
 
     private Number readLoot(Map<String, Number> loot, String value, Number defaultValue) {

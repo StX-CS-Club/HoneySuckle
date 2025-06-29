@@ -141,7 +141,7 @@ public class Projectile {
                             if(source instanceof Player){
                                 final Player player = (Player) source;
                                 for (Map<String, Number> loot : entity.loot) {
-                                    player.inventory.addItem(loot);
+                                    player.inventory.incrementItem(loot, true);
                                 }
                             }
                         }

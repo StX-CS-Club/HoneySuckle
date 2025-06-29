@@ -126,7 +126,7 @@ public class Weapon {
                         //Damage entity, if dead, add materials
                         if (entity.brain.damage(damage)) {
                             for (Map<String, Number> loot : entity.loot) {
-                                player.inventory.addItem(loot);
+                                player.inventory.incrementItem(loot, true);
                             }
                         }
                     }
@@ -153,7 +153,7 @@ public class Weapon {
                                     //Damage object, and if broken add materials
                                     if (world.objGrid[x][y].damage(damage)) {
                                         for (Map<String, Number> loot : obj.loot) {
-                                            player.inventory.addItem(loot);
+                                            player.inventory.incrementItem(loot, true);
                                         }
                                     }
                                 }

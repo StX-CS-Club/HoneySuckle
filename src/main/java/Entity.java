@@ -166,9 +166,8 @@ public class Entity {
 
             g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
             g.setColor(Color.WHITE);
-            final int fontOffset = g.getFontMetrics().stringWidth(label)/2;
             
-            g.drawString(label, GAME_WIDTH / 2 - fontOffset, 30+index*35);
+            Rendering.centeredText(g, label, GAME_WIDTH / 2, 30+index*35);
 
             g.setComposite(originalComposite);
         }

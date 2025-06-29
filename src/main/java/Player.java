@@ -35,7 +35,7 @@ public class Player {
                 this,
                 Arrays.asList(armory.weapons),
                 Arrays.asList(new Armor[]{armory.armor}),
-                Map.of("wood", 4),
+                Arrays.asList(new Item[]{new Item("wood", 4)}),
                 null);
 
         //Adds player to list of players
@@ -69,6 +69,7 @@ public class Player {
                 build.render(g, World.worlds.get(World.level), this);
             }
             armory.render(g, this);
+            inventory.renderItemSplashes(g, screenPos);
 
             //Original rotation
             AffineTransform originalTransform = g.getTransform();

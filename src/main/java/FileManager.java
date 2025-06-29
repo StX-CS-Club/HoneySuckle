@@ -55,8 +55,8 @@ class FileManager {
             Map<String, Object> blueprintData = readJsonDirectory(FileManager.class.getResource("jsonData/blueprints").toURI());
             for (String key : blueprintData.keySet()) {
                 Map<String, Object> blueprint = (Map<String, Object>) blueprintData.get(key);
-                Build.blueprintMats.put(key, (List<Map<String, Integer>>) blueprint.getOrDefault("mats", new ArrayList<>()));
-                Build.blueprintParams.put(key, (Map<String, List<Integer>>) blueprint.getOrDefault("params", new HashMap<>()));
+                Build.blueprintMats.put(key, (List<Map<String, Number>>) blueprint.getOrDefault("mats", new ArrayList<>()));
+                Build.blueprintParams.put(key, (Map<String, List<Number>>) blueprint.getOrDefault("params", new HashMap<>()));
                 Build.blueprintTextures.put(key, (Map<String, String>) blueprint.getOrDefault("texture", new HashMap<>()));
                 Build.blueprintProducts.put(key, (Integer) blueprint.getOrDefault("product", 0));
                 Build.blueprintTags.put(key, (List<String>) blueprint.getOrDefault("tags", new ArrayList<>()));
@@ -66,13 +66,14 @@ class FileManager {
             Map<String, Object> itemData = readJsonDirectory(FileManager.class.getResource("jsonData/items").toURI());
             for (String key : itemData.keySet()) {
                 final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
-                Inventory.itemNames.put(key, (String) item.getOrDefault("name", ""));
-                Inventory.itemTextures.put(key, (Map<String, String>) item.getOrDefault("texture", new HashMap<>()));
-                Inventory.itemRecipeUnlocks.put(key, (List<String>) item.getOrDefault("recipeUnlocks", new ArrayList<>()));
+                Item.itemNames.put(key, (String) item.getOrDefault("name", ""));
+                Item.itemTextures.put(key, (Map<String, String>) item.getOrDefault("texture", new HashMap<>()));
+                Item.itemRecipeUnlocks.put(key, (List<String>) item.getOrDefault("recipeUnlocks", new ArrayList<>()));
+                Item.itemAttributes.put(key, (Map<String, Number>) item.getOrDefault("attributes", new HashMap<>()));
 
                 final int id = (int) item.get("id");
-                Inventory.itemIntId.put(key, id);
-                Inventory.itemStringId.put(id, key);
+                Item.itemIntId.put(key, id);
+                Item.itemStringId.put(id, key);
             }
 
             //Maps biome data

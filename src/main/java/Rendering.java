@@ -244,4 +244,26 @@ public class Rendering {
         g.setColor(color);
         g.drawRect(x, y, width, height);
     }
+
+    public static void centeredText(Graphics2D g, String text, int x, int y) {
+        int fontOffset = g.getFontMetrics().stringWidth(text);
+
+        g.drawString(text, x - fontOffset, y);
+    }
+
+    public static void centeredText(Graphics2D g, String text, int x, int y, int width, int maxFontSize) {
+        int fontOffset = 0;
+
+            // Sets the font size to fit within box
+            for (int f = maxFontSize; f > 0; f--) {
+                g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
+                int fontSize = g.getFontMetrics().stringWidth(text);
+                if (fontSize < 100) {
+                    fontOffset = fontSize/2;
+                    break;
+                }
+            }
+
+        g.drawString(text, x - fontOffset, y);
+    }
 }

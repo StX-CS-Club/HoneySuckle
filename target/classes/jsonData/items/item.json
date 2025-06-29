@@ -4,9 +4,12 @@
         "name": "Wood",
         "texture": {
             "texture": "items/wood"
+        },
+        "attributes": {
+            "splashFrames": 60
         }
     },
-    "sline": {
+    "slime": {
         "id": 2,
         "name": "Slime",
         "texture": {
