@@ -91,14 +91,14 @@ public class Player {
         }
 
         //Biome of current world
-        String biome = World.worlds.get(World.level).biome;
+        Biome biome = World.worlds.get(World.level).biome;
 
         //If biome is foggy, add light source at player
-        if (Biome.biomeTags.get(biome).contains("fog")) {
+        if (biome.tags.contains("fog")) {
             HoneySuckle.lights.add(Map.of(
-                    "posX", (int) screenPos[0],
-                    "posY", (int) screenPos[1],
-                    "radius", TILE_SIZE * 6
+                    "posX", screenPos[0],
+                    "posY", screenPos[1],
+                    "radius", 6
             ));
         }
     }

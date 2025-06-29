@@ -31,6 +31,7 @@ public class Rendering {
 
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     private static final int LIGHT_SCALE = 8;
 
@@ -90,7 +91,7 @@ public class Rendering {
     }
 
     //Render Light
-    public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Integer>> lights) {
+    public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Number>> lights) {
         //Create empty light map
         BufferedImage lightImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
         Graphics2D light2d = lightImage.createGraphics();
@@ -99,9 +100,9 @@ public class Rendering {
         Graphics2D glow2d = glowImage.createGraphics();
 
         //Render all lights on light map as radial gradients
-        for (Map<String, Integer> light : lights) {
-            final Point2D center = new Point2D.Float(light.get("posX") / LIGHT_SCALE, light.get("posY") / LIGHT_SCALE);
-            final int radius = light.get("radius") / LIGHT_SCALE;
+        for (Map<String, Number> light : lights) {
+            final Point2D center = new Point2D.Float(light.get("posX").floatValue() / LIGHT_SCALE, light.get("posY").floatValue() / LIGHT_SCALE);
+            final int radius = (int) Math.floor(light.get("radius").doubleValue() * TILE_SIZE / LIGHT_SCALE);
             final Ellipse2D circle = new Ellipse2D.Double(
                     center.getX() - radius,
                     center.getY() - radius,
@@ -114,9 +115,9 @@ public class Rendering {
             ));
             light2d.fill(circle);
             if (light.get("glow") != null && light.get("color") != null) {
-                Color glowColor = new Color(light.get("color"));
-                int glowValue = light.get("glow");
-                final int glowRadius = light.get("glowRadius") / LIGHT_SCALE;
+                Color glowColor = new Color(light.get("color").intValue());
+                int glowValue = light.get("glow").intValue();
+                final int glowRadius = (int) Math.floor(light.get("glowRadius").doubleValue() * TILE_SIZE / LIGHT_SCALE);
                 glow2d.setPaint(new RadialGradientPaint(
                         center,
                         glowRadius,

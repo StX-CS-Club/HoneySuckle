@@ -48,7 +48,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public static Player player;
 
     //Public set of light data used in lighting system
-    public static Set<Map<String, Integer>> lights = new LinkedHashSet<>();
+    public static Set<Map<String, Number>> lights = new LinkedHashSet<>();
     public static Set<Entity> healthBars = new LinkedHashSet<>();
 
     //Main Method
@@ -125,10 +125,10 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             renderPlayer.render(g2d);
         }
 
-        String biome = World.worlds.get(World.level).biome;
+        Biome biome = World.worlds.get(World.level).biome;
         //Renders fog, is present
-        if (Biome.biomeTags.get(biome).contains("fog")) {
-            Color fogColor = Color.decode(Biome.biomeColorMap.get(biome).get("fogColor"));
+        if (biome.tags.contains("fog")) {
+            Color fogColor = Color.decode(biome.colorMap.get("fogColor"));
             Rendering.renderLight(g2d, fogColor, lights);
         }
 

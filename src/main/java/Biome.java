@@ -26,11 +26,28 @@ public class Biome {
     public static final Map<String, String> structureName = new HashMap<>();
     public static final Map<String, Map<String, Object>> structureGeneration = new HashMap<>();
 
+    public final String biomeId;
+
+    public final List<String> tags;
+    public final Map<String, String> colorMap;
+    private final Map<String, Object> generation;
+
+    public Biome(){
+        if(World.level > 0){
+            biomeId = randomizeBiome(World.worlds.getLast().biome.biomeId, World.level);
+        } else {
+            biomeId = "wetlands";
+        }
+        tags = biomeTags.get(biomeId);
+        colorMap = biomeColorMap.get(biomeId);
+        generation = biomeGeneration.get(biomeId);
+    }
+
     public static String randomizeBiome(String lastBiome, int level) {
         final List<String> biomes = new ArrayList<>();
-        for (String biome : biomeLevel.keySet()) {
-            if (biomeLevel.get(biome) <= level) {
-                biomes.add(biome);
+        for (String biomeId : biomeLevel.keySet()) {
+            if (biomeLevel.get(biomeId) <= level) {
+                biomes.add(biomeId);
             }
         }
         String biome = biomes.get((int) Math.floor(Math.random() * biomes.size()));
@@ -42,9 +59,7 @@ public class Biome {
     }
 
     //Generates biome based on given type
-    public static void generateWorld(World world) {
-        Map<String, Object> generation = biomeGeneration.get(world.biome);
-
+    public void generateWorld(World world) {
         // Interprets size and start values
         world.size = arrayFromList(listFromMap(generation, "size", new Number[]{51, 100}));
         world.start = arrayFromList(listFromMap(generation, "start", new Number[]{world.size[0] / 2, world.size[1] - 1}));
@@ -83,8 +98,6 @@ public class Biome {
         final List<Map<String, Object>> tileGenRules = listFromMap(generation, "tiles");
         final List<Map<String, Object>> objGenRules = listFromMap(generation, "objects");
         final List<Map<String, Object>> entityGenRules = listFromMap(generation, "entities");
-
-        final List<String> tags = biomeTags.get(world.biome);
 
         final boolean watery = tags.contains("watery");
         for (int x = 0; x < margin[0]; x++) {

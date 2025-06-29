@@ -31,11 +31,9 @@ public class World {
     //World Constructor
     public World() {
         //Pseudo-Randomized Biome
-        if (level > 0) {
-            biome = Biome.randomizeBiome(worlds.get(level - 1).biome, level);
-        }
+        biome = new Biome();
         //Generates the world based on the biome
-        Biome.generateWorld(this);
+        biome.generateWorld(this);
         //Sets camera position
         camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
         //Adds world to static list of worlds
@@ -58,7 +56,7 @@ public class World {
     //World attributes
     public int[] size = new int[2];
     public int[] start = new int[2];
-    public String biome = "wetlands";
+    public final Biome biome;
 
     //Bounds movement to boundaries of world
     public double[] bound(double[] pos, double[] delta, double margin) {
@@ -118,7 +116,7 @@ public class World {
     public void playerEvent(Player player) {
         //Checks if player is at end of world, then progresses
         if (player.pos[1] <= player.size / 2.0) {
-            if (!Biome.biomeTags.get(biome).contains("enemyLock") || entities.isEmpty()) {
+            if (!biome.tags.contains("enemyLock") || entities.isEmpty()) {
                 level++;
                 World world = new World();
                 player.pos = new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.size[1] - 0.5)};
@@ -139,7 +137,7 @@ public class World {
         //Checks if on damage tile
         if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
             player.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
-            if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
+            if (biome.tags.contains("dangerousVoid")) {
                 player.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             }
         }
@@ -184,7 +182,7 @@ public class World {
         //Checks if on damage tile
         if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
             entity.brain.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
-            if (Biome.biomeTags.get(biome).contains("dangerousVoid")) {
+            if (biome.tags.contains("dangerousVoid")) {
                 entity.brain.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
             }
         }
@@ -237,13 +235,13 @@ public class World {
     //Render World
     public void render(Graphics2D g) {
         //Fills background as voidColor
-        g.setColor(Color.decode(Biome.biomeColorMap.get(biome).get("voidColor")));
+        g.setColor(Color.decode(biome.colorMap.get("voidColor")));
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         //Center tile on screen
         int[] cameraTile = new int[]{(int) Math.floor(camera[0] / TILE_SIZE), (int) Math.floor(camera[1] / TILE_SIZE)};
 
-        final boolean fog = Biome.biomeTags.get(biome).contains("fog");
+        final boolean fog = biome.tags.contains("fog");
 
         //Runs through all nearby (on screen) tiles to render
         for (int y = cameraTile[1] - renderOffset[1]; y < cameraTile[1] + renderOffset[1]; y++) {

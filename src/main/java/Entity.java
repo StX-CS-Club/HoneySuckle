@@ -179,7 +179,7 @@ public class Entity {
         //If entity has biome specific color, get color from biome
         String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = Biome.biomeColorMap.get(world.biome).get(natColorId);
+            String natColor = world.biome.colorMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }

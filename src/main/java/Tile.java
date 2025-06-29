@@ -69,7 +69,7 @@ public class Tile {
         //If tile has biome specific color, find color from biome
         String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = Biome.biomeColorMap.get(world.biome).get(natColorId);
+            String natColor = world.biome.colorMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }
@@ -88,12 +88,12 @@ public class Tile {
 
     public void renderLight(double[] screenPos) {
         HoneySuckle.lights.add(Map.of(
-                "posX", (int) screenPos[0] + TILE_SIZE / 2,
-                "posY", (int) screenPos[1] + TILE_SIZE / 2,
-                "radius", TILE_SIZE * attributes.getOrDefault("lightRadius", 0).intValue(),
+                "posX", screenPos[0] + TILE_SIZE / 2,
+                "posY", screenPos[1] + TILE_SIZE / 2,
+                "radius", attributes.get("lightRadius"),
                 "color", glowColor,
-                "glow", attributes.getOrDefault("glow", 0).intValue(),
-                "glowRadius", attributes.getOrDefault("glowRadius", 0).intValue()
+                "glow", attributes.getOrDefault("glow", 0),
+                "glowRadius", attributes.get("glowRadius")
         ));
     }
 }
