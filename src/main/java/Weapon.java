@@ -1,4 +1,6 @@
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -325,6 +327,25 @@ public class Weapon {
 
                 g.drawImage(textureImage,
                         (int) screenPos[0], (int) screenPos[1], (int) size, (int) size, null);
+            }
+        }
+    }
+
+    public void renderUiTile(Graphics2D g, int x, int y, double factor, Weapon[] weapons) {
+        final String weaponTexture = texture.get("itemTexture");
+        final String color = texture.get("rarityColor");
+
+        g.drawImage(Rendering.texture("hud/weapon_slot", color), (int) (x-50*(factor-1)), (int) (y-50*(factor-1)), (int) (100 * factor), (int) (100 * factor), null);
+
+        if (weaponTexture != null) {
+            g.drawImage(Rendering.texture(weaponTexture, "#ffffff"), x+0xc, y+12, 75, 75, null);
+        }
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("VT323 Regular", Font.PLAIN, 28));
+        for (int w = 0; w < weapons.length; w++) {
+            if (weapons[w] == this) {
+                Rendering.centeredText(g, Integer.toString(w+1), x+95, y+100);
             }
         }
     }

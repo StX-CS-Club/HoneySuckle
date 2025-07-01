@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,9 +30,13 @@ public class Inventory {
 
     public boolean isOpen = false;
     private int page = 0;
+    private final String[] iconColors = new String[2];
+
     private double itemScroll = 0;
+
     private double weaponScroll = 0;
-    private String[] iconColors = new String[2];
+    private int weaponHover = -1;
+    private int weaponSelect = -1;
 
     //Inventory Constructor
     public Inventory(
@@ -61,6 +66,7 @@ public class Inventory {
     public void update(InputHandler input) {
         if (input.keyPressed(69)) {
             isOpen = !isOpen;
+            weaponSelect = -1;
             setPage(0);
         }
         if (isOpen) {
@@ -70,11 +76,35 @@ public class Inventory {
                 }
                 case 1 -> {
                     weaponScroll = Math.clamp(weaponScroll + input.mouseScroll, 0, weapons.size() - 1);
+                    weaponHover = -1;
+                    if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
+                        double weaponHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
+                        if (weaponSelect == -1) {
+                            weaponHighlight += weaponScroll * 110;
+                        }
+                        if (weaponHighlight % 110 <= 100) {
+                            weaponHover = (int) Math.floor(weaponHighlight / 110);
+                        }
+                    }
                 }
             }
 
             if (input.clickPressed(1)) {
-                if (Math.abs(GAME_HEIGHT * 9 / 10 - input.mousePos[1]) <= 25) {
+                if (weaponSelect != -1) {
+                    if (Math.abs(weaponHover) <= 1) {
+                        final Weapon weapon = weapons.get(weaponSelect);
+                        for (int i = 0; i < 3; i++) {
+                            if (weapon == player.armory.weapons[i]) {
+                                player.armory.weapons[i] = null;
+                                break;
+                            }
+                        }
+                        player.armory.weapons[weaponHover + 1] = weapon;
+                        weaponSelect = -1;
+                    }
+                } else if (page == 1 && weaponHover >= 0 && weaponHover < weapons.size()) {
+                    weaponSelect = weaponHover;
+                } else if (Math.abs(GAME_HEIGHT * 9 / 10 - input.mousePos[1]) <= 25) {
                     for (int i = 0; i < 2; i++) {
                         if (Math.abs(GAME_WIDTH / 2 - 35 + i * 70 - input.mousePos[0]) <= 25) {
                             setPage(i);
@@ -110,40 +140,58 @@ public class Inventory {
         g.setColor(new Color(64, 64, 64, 192));
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-        // Renders Items
-        if (page == 0) {
-            for (int i = 0; i < items.size(); i++) {
+        if (weaponSelect != -1) {
+            final Weapon weapon = weapons.get(weaponSelect);
 
-                final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
-                items.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50);
-            }
+            weapon.renderUiTile(g, GAME_WIDTH / 2 - 50, GAME_HEIGHT / 2 + 75, 1, player.armory.weapons);
 
-            // Displays empty slot when items left to be collected
-            if (items.size() < Item.itemNames.size()) {
-                g.drawImage(Rendering.texture("hud/slot", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
-            }
-        }
+            for (int i = 0; i < 3; i++) {
+                Weapon iWeapon = player.armory.weapons[i];
 
-        if (page == 1) {
-            // Renders Weapons
-            for (int i = 0; i < weapons.size(); i++) {
-                final Weapon weapon = weapons.get(i);
-                final String weaponTexture = weapon.texture.get("itemTexture");
+                double factor = 1;
+                if (weaponHover + 1 == i) {
+                    factor = 1.1;
+                }
 
-                String color = weapon.texture.get("rarityColor");
-
-                final int offset = 110 * i - ((int) Math.floor(weaponScroll * 110));
-                g.drawImage(Rendering.texture("hud/weapon_slot", color), GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 100, 100, null);
-
-                if (weaponTexture != null) {
-                    g.drawImage(Rendering.texture(weaponTexture, "#ffffff"), GAME_WIDTH / 2 - 38 + offset, GAME_HEIGHT / 2 - 38, 75, 75, null);
+                if (iWeapon != null) {
+                    iWeapon.renderUiTile(g, GAME_WIDTH / 2 - 160 + i * 110, GAME_HEIGHT / 2 - 50, factor, player.armory.weapons);
+                } else {
+                    g.drawImage(Rendering.texture("hud/weapon_slot", "#ffffff"), (int) (GAME_WIDTH / 2 - 50 * factor + (i - 1) * 110), (int) (GAME_HEIGHT / 2 - 50 * factor), (int) (100 * factor), (int) (100 * factor), null);
+                    g.setColor(Color.WHITE);
+                    g.setFont(new Font("VT323 Regular", Font.PLAIN, 28));
+                    Rendering.centeredText(g, Integer.toString(i + 1), (int) (GAME_WIDTH / 2 + 45 + (i - 1) * 110), (int) (GAME_HEIGHT / 2 + 50));
                 }
             }
+        } else {
+            // Renders Items
+            if (page == 0) {
+                for (int i = 0; i < items.size(); i++) {
 
+                    final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
+                    items.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50);
+                }
+
+                // Displays empty slot when items left to be collected
+                if (items.size() < Item.itemNames.size()) {
+                    g.drawImage(Rendering.texture("hud/slot", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
+                }
+            } else if (page == 1) {
+                // Renders Weapons
+                for (int i = 0; i < weapons.size(); i++) {
+                    final int offset = 110 * i - ((int) Math.floor(weaponScroll * 110));
+
+                    if (i == weaponHover) {
+                        weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1.1, player.armory.weapons);
+                    } else {
+                        weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1, player.armory.weapons);
+                    }
+                }
+
+            }
+
+            g.drawImage(Rendering.texture("hud/items", iconColors[0]), GAME_WIDTH / 2 - 60, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/weapons", iconColors[1]), GAME_WIDTH / 2 + 10, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
         }
-
-        g.drawImage(Rendering.texture("hud/items", iconColors[0]), GAME_WIDTH / 2 - 60, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-        g.drawImage(Rendering.texture("hud/weapons", iconColors[1]), GAME_WIDTH / 2 + 10, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
     }
 
     public void incrementItem(Map<String, Number> itemData, boolean gain) {

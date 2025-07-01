@@ -37,6 +37,7 @@ public class Player {
                 Arrays.asList(new Armor[]{armory.armor}),
                 Arrays.asList(new Item[]{new Item("wood", 4)}),
                 null);
+        inventory.weapons.add(new Weapon("dragon_sword"));
 
         //Adds player to list of players
         players.add(this);

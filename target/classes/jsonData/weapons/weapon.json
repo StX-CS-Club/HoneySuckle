@@ -72,5 +72,36 @@
         "bounce": 1
       }
     }
+  },
+  "dragon_sword": {
+    "name": "Dragon Scale Sword",
+    "type": "blade",
+    "tags": ["constClick"],
+    "attributes": {
+      "size": 1.5
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.2,
+        "cooldown": 20,
+        "frames": 10,
+      "size": 1.5
+      }
+    },
+    "stats": {
+      "Type": "Sword",
+      "Rarity": "Common",
+      "Damage": "20",
+      "Size": "1.5",
+      "Speed": ".5"
+    },
+    "texture": {
+      "bladeColor": "#ffffff",
+      "itemTexture": "items/dragon_sword",
+      "texture": "weapons/dragon_sword",
+      "rarityColor": "#57a5ff",
+      "animation": "_swing_",
+      "type": "side"
+    }
   }
 }
