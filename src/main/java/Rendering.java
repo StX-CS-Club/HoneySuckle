@@ -44,6 +44,9 @@ public class Rendering {
 
     //Render sprite
     public static BufferedImage texture(String texture, String color) {
+        if(color == null){
+            color = "#ffffff";
+        }
         //If already rendered, return
         if (textures.get(texture) != null) {
             if (textures.get(texture).get(color) != null) {
