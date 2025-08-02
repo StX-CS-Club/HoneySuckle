@@ -70,6 +70,7 @@ class FileManager {
                 Craft.recipeAttributes.put(key, (Map<String, Number>) recipe.getOrDefault("attributes", new HashMap<>()));
                 Craft.recipeTextures.put(key, (Map<String, String>) recipe.getOrDefault("texture", new HashMap<>()));
                 Craft.recipeTypes.put(key, (String) recipe.getOrDefault("type", "item"));
+                Craft.recipeNames.put(key, (String) recipe.getOrDefault("name", key));
                 Craft.recipeProducts.put(key, (List<Map<String, Number>>) recipe.getOrDefault("products", new ArrayList<>()));
             }
 
@@ -77,9 +78,10 @@ class FileManager {
             Map<String, Object> itemData = readJsonDirectory(FileManager.class.getResource("jsonData/items").toURI());
             for (String key : itemData.keySet()) {
                 final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
-                Item.itemNames.put(key, (String) item.getOrDefault("name", ""));
+                Item.itemNames.put(key, (String) item.getOrDefault("name", key));
                 Item.itemTextures.put(key, (Map<String, String>) item.getOrDefault("texture", new HashMap<>()));
                 Item.itemBlueprintUnlocks.put(key, (List<String>) item.getOrDefault("blueprintUnlocks", new ArrayList<>()));
+                Item.itemRecipeUnlocks.put(key, (List<String>) item.getOrDefault("recipeUnlocks", new ArrayList<>()));
                 Item.itemAttributes.put(key, (Map<String, Number>) item.getOrDefault("attributes", new HashMap<>()));
 
                 final int id = (int) item.get("id");
@@ -101,7 +103,7 @@ class FileManager {
             Map<String, Object> structureData = readJsonDirectory(FileManager.class.getResource("jsonData/structures").toURI());
             for (String key : structureData.keySet()) {
                 final Map<String, Object> structure = (Map<String, Object>) structureData.get(key);
-                Biome.structureName.put(key, (String) structure.getOrDefault("name", new HashMap<>()));
+                Biome.structureName.put(key, (String) structure.getOrDefault("name", key));
                 Biome.structureGeneration.put(key, (Map<String, Object>) structure.getOrDefault("generation", new HashMap<>()));
 
                 final int id = (int) structure.get("id");
@@ -117,7 +119,7 @@ class FileManager {
                 Entity.entityTextures.put(key, (Map<String, String>) entity.getOrDefault("texture", new HashMap<>()));
                 Entity.entityLoot.put(key, (List<Map<String, Number>>) entity.getOrDefault("loot", new ArrayList<>()));
                 Entity.entityTags.put(key, (List<String>) entity.getOrDefault("tags", new ArrayList<>()));
-                Entity.entityNames.put(key, (String) entity.getOrDefault("name", ""));
+                Entity.entityNames.put(key, (String) entity.getOrDefault("name", key));
                 Brain.entityBrain.put(key, (Map<String, Map<String, Object>>) entity.getOrDefault("brain", new HashMap<>()));
 
                 final int id = (int) entity.get("id");

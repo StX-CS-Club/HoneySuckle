@@ -27,7 +27,7 @@ public class Player {
         this.pos = pos;
         this.size = size;
         build = new Build(new LinkedHashSet<>(Arrays.asList("wall", "raft")));
-        craft = new Craft(new LinkedHashSet<>(Arrays.asList(new String[]{"dragon_sword"})));
+        craft = new Craft(new LinkedHashSet<>());
         armory = new Armory(
                 new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
                 new Armor("leather")
@@ -103,6 +103,11 @@ public class Player {
                     "posY", screenPos[1],
                     "radius", 6
             ));
+        }
+
+        if(inventory.ideaFrames >= 0){
+            g.drawImage(Rendering.texture("hud/idea", inventory.ideaColor), (int) screenPos[0] - 15, (int) screenPos[1] - 15 - size, 30, 30, null);
+            inventory.ideaFrames--;
         }
     }
 

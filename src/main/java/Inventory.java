@@ -28,6 +28,9 @@ public class Inventory {
 
     private final Player player;
 
+    public int ideaFrames = 0;
+    public String ideaColor = "#ffff00";
+
     public boolean isOpen = false;
     private int page = 1;
     private final String[] iconColors = new String[3];
@@ -68,6 +71,11 @@ public class Inventory {
             isOpen = !isOpen;
             weaponSelect = -1;
             setPage(1);
+        }
+        if (input.keyPressed(82)) {
+            isOpen = !isOpen;
+            weaponSelect = -1;
+            setPage(0);
         }
         if (isOpen) {
             switch (page) {
@@ -205,10 +213,10 @@ public class Inventory {
     public void incrementItem(Map<String, Number> itemData, boolean gain) {
         if (Math.random() < itemData.getOrDefault("prob", 1).doubleValue()) {
             int id = itemData.getOrDefault("id", 0).intValue();
-            int itemCount = itemData.getOrDefault("count", 1).intValue();
+            int count = itemData.getOrDefault("count", 1).intValue();
 
             if (!gain) {
-                itemCount *= -1;
+                count *= -1;
             }
 
             switch (itemData.getOrDefault("type", 0).intValue()) {
@@ -218,24 +226,37 @@ public class Inventory {
                     Item item = getItem(itemId);
 
                     if (item == null) {
-                        item = new Item(itemId, itemCount);
+                        item = new Item(itemId, count);
                         items.add(item);
                     } else {
-                        item.count += itemCount;
-
-                        final List<String> blueprintUnlocks = Item.itemBlueprintUnlocks.get(itemId);
-                        for (String blueprint : blueprintUnlocks) {
-                            player.build.blueprints.add(blueprint);
-                        }
+                        item.count += count;
                     }
 
                     if (gain) {
+                        final List<String> blueprintUnlocks = Item.itemBlueprintUnlocks.get(itemId);
+                        for (String blueprint : blueprintUnlocks) {
+                            if (!player.build.blueprints.contains(blueprint)) {
+                                player.build.blueprints.add(blueprint);
+                                ideaFrames = 80;
+                                ideaColor = "#ddff00";
+                            }
+                        }
+
+                        final List<String> recipeUnlocks = Item.itemRecipeUnlocks.get(itemId);
+                        for (String recipe : recipeUnlocks) {
+                            if (!player.craft.recipes.contains(recipe)) {
+                                player.craft.recipes.add(recipe);
+                                ideaFrames = 80;
+                                ideaColor = "#ffcc00";
+                            }
+                        }
+
                         Item splashItem = getSplashItem(itemId);
                         if (splashItem == null) {
-                            splashItem = new Item(itemId, itemCount);
+                            splashItem = new Item(itemId, count);
                             splashItems.add(splashItem);
                         } else {
-                            splashItem.count += itemCount;
+                            splashItem.count += count;
                             splashItem.resetSplashFrame();
                         }
                     }
@@ -243,10 +264,45 @@ public class Inventory {
                 case 1 -> {
                     String weaponId = Weapon.weaponStringId.get(id);
 
-                    weapons.add(new Weapon(weaponId));
+                    if (gain) {
+                        weapons.add(new Weapon(weaponId));
+                    } else {
+                        int removed = 0;
+                        for (int i = weapons.size() - 1; i > -1; i--) {
+                            Weapon weapon = weapons.get(i);
+                            if (weapon.weapon.equals(weaponId)) {
+                                weapons.remove(weapon);
+                                removed++;
+                                if (removed == count) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    public boolean hasMaterial(Map<String, Number> matData) {
+        final int count = matData.getOrDefault("count", 1).intValue();
+        final int id = matData.get("id").intValue();
+        switch (matData.getOrDefault("type", 0).intValue()) {
+            case 0 -> {
+                return getItemCount(Item.itemStringId.get(id)) >= count;
+            }
+            case 1 -> {
+                final String weaponId = Weapon.weaponStringId.get(id);
+                int inventoryCount = 0;
+                for (Weapon weapon : weapons) {
+                    if (weapon.weapon.equals(weaponId)) {
+                        inventoryCount++;
+                    }
+                }
+                return inventoryCount >= count;
+            }
+        }
+        return false;
     }
 
     private Item getItem(String itemId) {

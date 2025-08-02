@@ -12,6 +12,7 @@
     "slime": {
         "id": 2,
         "name": "Slime",
+        "recipeUnlocks": ["slime_shield"],
         "texture": {
             "texture": "items/slime"
         }
@@ -42,6 +43,7 @@
     "scale": {
         "id": 6,
         "name": "Dragon Scale",
+        "recipeUnlocks": ["dragon_sword"],
         "texture": {
             "texture": "items/scale"
         }

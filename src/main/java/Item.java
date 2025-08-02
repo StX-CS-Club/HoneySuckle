@@ -15,6 +15,7 @@ public class Item {
     public static final Map<String, Map<String, String>> itemTextures = new HashMap<>();
     public static final Map<String, Map<String, Number>> itemAttributes = new HashMap<>();
     public static final Map<String, List<String>> itemBlueprintUnlocks = new HashMap<>();
+    public static final Map<String, List<String>> itemRecipeUnlocks = new HashMap<>();
     public static final Map<Integer, String> itemStringId = new HashMap<>();
     public static final Map<String, Integer> itemIntId = new HashMap<>();
 

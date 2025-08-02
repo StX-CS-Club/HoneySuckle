@@ -3,7 +3,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -215,9 +214,7 @@ public class Build {
         //Go through all materials needed
         for (Map<String, Number> material : blueprint) {
             //If don't have, return false
-            String matStringId = Item.itemStringId.get(material.getOrDefault("id", 0).intValue());
-            if (player.inventory.getItemCount(matStringId)
-                    < material.getOrDefault("count", 1).intValue()) {
+            if (!player.inventory.hasMaterial(material)) {
                 return false;
             }
         }
