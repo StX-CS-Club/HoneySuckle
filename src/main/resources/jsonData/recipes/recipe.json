@@ -1,0 +1,15 @@
+{
+  "dragon_sword": {
+    "name": "Dragon Sword",
+    "type": "weapon",
+    "products": [{ "id": 4, "type": 1 }],
+    "texture": {
+      "texture": "items/dragon_sword"
+    },
+    "mats": [
+      {
+        "id": 6
+      }
+    ]
+  }
+}

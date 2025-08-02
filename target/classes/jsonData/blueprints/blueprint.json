@@ -8,7 +8,7 @@
     "tags": ["placeAway"],
     "mats": [
       {
-        "item": 1
+        "id": 1
       }
     ],
     "texture": {
@@ -23,7 +23,7 @@
     },
     "mats": [
       {
-        "item": 1,
+        "id": 1,
         "count": 2
       }
     ],
@@ -40,11 +40,11 @@
     "tags": ["placeAway"],
     "mats": [
       {
-        "item": 8,
+        "id": 8,
         "count": 3
       },
       {
-        "item": 1,
+        "id": 1,
         "count": 1
       }
     ],
@@ -60,10 +60,10 @@
     },
     "mats": [
       {
-        "item": 1
+        "id": 1
       },
       {
-        "item": 3
+        "id": 3
       }
     ],
     "texture": {
@@ -78,13 +78,13 @@
     },
     "mats": [
       {
-        "item": 4
+        "id": 4
       },
       {
-        "item": 3
+        "id": 3
       },
       {
-        "item": 1
+        "id": 1
       }
     ],
     "texture": {

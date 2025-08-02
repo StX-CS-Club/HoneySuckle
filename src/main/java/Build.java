@@ -38,7 +38,7 @@ public class Build {
     }
 
     //Build properties
-    public final Set<String> blueprints = new LinkedHashSet<>(Arrays.asList("wall"));
+    public final Set<String> blueprints = new LinkedHashSet<>();
     private int blueprintIndex = 0;
 
     //Index of cursor tile compared to player
@@ -105,7 +105,7 @@ public class Build {
             textureColor = "#00ff00";
         }
         //Render blueprint Scroll
-        g.drawImage(Rendering.texture("hud/recipe", textureColor), (int) (xMargin + HUD_SIZE / 12.0), (int) (GAME_HEIGHT - HUD_SIZE * 25.0 / 12), HUD_SIZE, HUD_SIZE, null);
+        g.drawImage(Rendering.texture("hud/blueprint", textureColor), (int) (xMargin + HUD_SIZE / 12.0), (int) (GAME_HEIGHT - HUD_SIZE * 25.0 / 12), HUD_SIZE, HUD_SIZE, null);
 
         //Render blueprint Item
         String blueprintKey = (String) blueprints.toArray()[blueprintIndex];
@@ -119,7 +119,7 @@ public class Build {
         List<Map<String, Number>> blueprint = blueprintMats.get(blueprintKey);
         for (int i = 0; i < blueprint.size(); i++) {
             Map<String, Number> mat = blueprint.get(i);
-            String itemId = Item.itemStringId.get(mat.get("item").intValue());
+            String itemId = Item.itemStringId.get(mat.get("id").intValue());
             String name = Item.itemNames.get(itemId);
             int itemCount = mat.getOrDefault("count", 1).intValue();
 
@@ -208,28 +208,20 @@ public class Build {
     }
 
     //Check to see if player has materials
-    private boolean hasMaterials(Player player, String blueprintKey) {
+    private static boolean hasMaterials(Player player, String blueprintKey) {
         //Material data
         List<Map<String, Number>> blueprint = blueprintMats.get(blueprintKey);
 
         //Go through all materials needed
         for (Map<String, Number> material : blueprint) {
             //If don't have, return false
-            String matStringId = Item.itemStringId.get(readMat(material, "item", 0).intValue());
+            String matStringId = Item.itemStringId.get(material.getOrDefault("id", 0).intValue());
             if (player.inventory.getItemCount(matStringId)
-                    < readMat(material, "count", 1).intValue()) {
+                    < material.getOrDefault("count", 1).intValue()) {
                 return false;
             }
         }
         //If makes it past check, return true
         return true;
-    }
-
-    private Number readMat(Map<String, Number> mats, String value, Number defaultValue) {
-        Number result = mats.get(value);
-        if (result == null) {
-            return defaultValue;
-        }
-        return result;
     }
 }

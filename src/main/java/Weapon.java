@@ -25,6 +25,8 @@ public class Weapon {
     public static final Map<String, Map<String, Map<String, Object>>> weaponBehaviors = new HashMap<>();
     public static final Map<String, Map<String, String>> weaponTextures = new HashMap<>();
     public static final Map<String, List<String>> weaponTags = new HashMap<>();
+    public static final Map<String, Integer> weaponIntId = new HashMap<>();
+    public static final Map<Integer, String> weaponStringId = new HashMap<>();
 
     //Weapon properties
     private final Map<String, Number> attributes;

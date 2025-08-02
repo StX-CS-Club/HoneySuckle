@@ -12,7 +12,7 @@
         ]
         "mats": List of following required material data:[
             {
-                "item": int ID of item,
+                "id": int ID of item,
                 "count": int count of item (default 1)
             }
         ],

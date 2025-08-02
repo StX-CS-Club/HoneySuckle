@@ -29,8 +29,8 @@ public class Inventory {
     private final Player player;
 
     public boolean isOpen = false;
-    private int page = 0;
-    private final String[] iconColors = new String[2];
+    private int page = 1;
+    private final String[] iconColors = new String[3];
 
     private double itemScroll = 0;
 
@@ -67,14 +67,17 @@ public class Inventory {
         if (input.keyPressed(69)) {
             isOpen = !isOpen;
             weaponSelect = -1;
-            setPage(0);
+            setPage(1);
         }
         if (isOpen) {
             switch (page) {
                 case 0 -> {
-                    itemScroll = Math.clamp(itemScroll + input.mouseScroll, 0, items.size() - 1);
+                    player.craft.update(player, input);
                 }
                 case 1 -> {
+                    itemScroll = Math.clamp(itemScroll + input.mouseScroll, 0, items.size() - 1);
+                }
+                case 2 -> {
                     weaponScroll = Math.clamp(weaponScroll + input.mouseScroll, 0, weapons.size() - 1);
                     weaponHover = -1;
                     if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
@@ -102,11 +105,11 @@ public class Inventory {
                         player.armory.weapons[weaponHover + 1] = weapon;
                         weaponSelect = -1;
                     }
-                } else if (page == 1 && weaponHover >= 0 && weaponHover < weapons.size()) {
+                } else if (page == 2 && weaponHover >= 0 && weaponHover < weapons.size()) {
                     weaponSelect = weaponHover;
                 } else if (Math.abs(GAME_HEIGHT * 9 / 10 - input.mousePos[1]) <= 25) {
-                    for (int i = 0; i < 2; i++) {
-                        if (Math.abs(GAME_WIDTH / 2 - 35 + i * 70 - input.mousePos[0]) <= 25) {
+                    for (int i = 0; i < 3; i++) {
+                        if (Math.abs(GAME_WIDTH / 2 - 60 + i * 60 - input.mousePos[0]) <= 25) {
                             setPage(i);
                             break;
                         }
@@ -164,65 +167,83 @@ public class Inventory {
             }
         } else {
             // Renders Items
-            if (page == 0) {
-                for (int i = 0; i < items.size(); i++) {
-
-                    final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
-                    items.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50);
+            switch (page) {
+                case 0 -> {
+                    player.craft.renderUi(g, player);
                 }
+                case 1 -> {
+                    for (int i = 0; i < items.size(); i++) {
+                        final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
+                        items.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50);
+                    }
 
-                // Displays empty slot when items left to be collected
-                if (items.size() < Item.itemNames.size()) {
-                    g.drawImage(Rendering.texture("hud/slot", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
-                }
-            } else if (page == 1) {
-                // Renders Weapons
-                for (int i = 0; i < weapons.size(); i++) {
-                    final int offset = 110 * i - ((int) Math.floor(weaponScroll * 110));
-
-                    if (i == weaponHover) {
-                        weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1.1, player.armory.weapons);
-                    } else {
-                        weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1, player.armory.weapons);
+                    // Displays empty slot when items left to be collected
+                    if (items.size() < Item.itemNames.size()) {
+                        g.drawImage(Rendering.texture("hud/slot", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
                     }
                 }
+                case 2 -> {
+                    // Renders Weapons
+                    for (int i = 0; i < weapons.size(); i++) {
+                        final int offset = 110 * i - ((int) Math.floor(weaponScroll * 110));
 
+                        if (i == weaponHover) {
+                            weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1.1, player.armory.weapons);
+                        } else {
+                            weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1, player.armory.weapons);
+                        }
+                    }
+                }
             }
 
-            g.drawImage(Rendering.texture("hud/items", iconColors[0]), GAME_WIDTH / 2 - 60, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/weapons", iconColors[1]), GAME_WIDTH / 2 + 10, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/craft", iconColors[0]), GAME_WIDTH / 2 - 85, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/items", iconColors[1]), GAME_WIDTH / 2 - 25, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/weapons", iconColors[2]), GAME_WIDTH / 2 + 35, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
         }
     }
 
     public void incrementItem(Map<String, Number> itemData, boolean gain) {
-        if (Math.random() < readLoot(itemData, "prob", 1).doubleValue()) {
-            final String itemId = Item.itemStringId.get(readLoot(itemData, "item", 0).intValue());
-            Item item = getItem(itemId);
+        if (Math.random() < itemData.getOrDefault("prob", 1).doubleValue()) {
+            int id = itemData.getOrDefault("id", 0).intValue();
+            int itemCount = itemData.getOrDefault("count", 1).intValue();
 
-            int itemCount = readLoot(itemData, "count", 1).intValue();
             if (!gain) {
                 itemCount *= -1;
             }
-            if (item == null) {
-                item = new Item(itemId, itemCount);
-                items.add(item);
-            } else {
-                item.count += itemCount;
 
-                final List<String> recipeUnlocks = Item.itemRecipeUnlocks.get(itemId);
-                for (String recipe : recipeUnlocks) {
-                    player.build.blueprints.add(recipe);
+            switch (itemData.getOrDefault("type", 0).intValue()) {
+                case 0 -> {
+                    String itemId = Item.itemStringId.get(id);
+
+                    Item item = getItem(itemId);
+
+                    if (item == null) {
+                        item = new Item(itemId, itemCount);
+                        items.add(item);
+                    } else {
+                        item.count += itemCount;
+
+                        final List<String> blueprintUnlocks = Item.itemBlueprintUnlocks.get(itemId);
+                        for (String blueprint : blueprintUnlocks) {
+                            player.build.blueprints.add(blueprint);
+                        }
+                    }
+
+                    if (gain) {
+                        Item splashItem = getSplashItem(itemId);
+                        if (splashItem == null) {
+                            splashItem = new Item(itemId, itemCount);
+                            splashItems.add(splashItem);
+                        } else {
+                            splashItem.count += itemCount;
+                            splashItem.resetSplashFrame();
+                        }
+                    }
                 }
-            }
+                case 1 -> {
+                    String weaponId = Weapon.weaponStringId.get(id);
 
-            if (gain) {
-                Item splashItem = getSplashItem(itemId);
-                if (splashItem == null) {
-                    splashItem = new Item(itemId, itemCount);
-                    splashItems.add(splashItem);
-                } else {
-                    splashItem.count += itemCount;
-                    splashItem.resetSplashFrame();
+                    weapons.add(new Weapon(weaponId));
                 }
             }
         }
@@ -253,13 +274,5 @@ public class Inventory {
             }
         }
         return 0;
-    }
-
-    private Number readLoot(Map<String, Number> loot, String value, Number defaultValue) {
-        Number result = loot.get(value);
-        if (result == null) {
-            return defaultValue;
-        }
-        return result;
     }
 }

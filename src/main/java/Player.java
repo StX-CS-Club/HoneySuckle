@@ -27,6 +27,7 @@ public class Player {
         this.pos = pos;
         this.size = size;
         build = new Build(new LinkedHashSet<>(Arrays.asList("wall", "raft")));
+        craft = new Craft(new LinkedHashSet<>(Arrays.asList(new String[]{"dragon_sword"})));
         armory = new Armory(
                 new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
                 new Armor("leather")
@@ -37,7 +38,6 @@ public class Player {
                 Arrays.asList(new Armor[]{armory.armor}),
                 Arrays.asList(new Item[]{new Item("wood", 4)}),
                 null);
-        inventory.weapons.add(new Weapon("dragon_sword"));
 
         //Adds player to list of players
         players.add(this);
@@ -56,6 +56,7 @@ public class Player {
 
     public final Inventory inventory;
     public final Build build;
+    public final Craft craft;
     public final Armory armory;
 
     //If scroll wheel goes to weapons or recipes

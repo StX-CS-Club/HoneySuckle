@@ -19,7 +19,7 @@
     "coal": {
         "id": 3,
         "name": "Coal Nugget",
-        "recipeUnlocks": ["torch"],
+        "blueprintUnlocks": ["torch"],
         "texture": {
             "texture": "items/coal"
         }
@@ -27,7 +27,7 @@
     "pumpkin": {
         "id": 4,
         "name": "Pumpkin",
-        "recipeUnlocks": ["jackolantern"],
+        "blueprintUnlocks": ["jackolantern"],
         "texture": {
             "texture": "items/pumpkin"
         }
@@ -56,7 +56,7 @@
     "rock": {
         "id": 8,
         "name": "Rock",
-        "recipeUnlocks": ["bridge"],
+        "blueprintUnlocks": ["bridge"],
         "texture": {
             "texture": "items/rock"
         }

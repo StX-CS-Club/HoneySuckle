@@ -1,6 +1,7 @@
 {
   "sword": {
     "name": "Sword",
+    "id": 1,
     "tags": ["constClick"],
     "stats": {
       "Type": "Sword",
@@ -27,6 +28,7 @@
   },
   "bow": {
     "name": "Bow",
+    "id": 2,
     "tags": ["constClick"],
     "stats": {
       "Type": "Bow",
@@ -51,6 +53,7 @@
   },
   "shield": {
     "name": "Shield",
+    "id": 3,
     "stats": {
       "Type": "Shield",
       "Strength": "1.1",
@@ -75,6 +78,7 @@
   },
   "dragon_sword": {
     "name": "Dragon Scale Sword",
+    "id": 4,
     "type": "blade",
     "tags": ["constClick"],
     "attributes": {

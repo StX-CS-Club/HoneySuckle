@@ -62,13 +62,24 @@ class FileManager {
                 Build.blueprintTags.put(key, (List<String>) blueprint.getOrDefault("tags", new ArrayList<>()));
             }
 
+            //Maps recipe data
+            Map<String, Object> recipeData = readJsonDirectory(FileManager.class.getResource("jsonData/recipes").toURI());
+            for (String key : recipeData.keySet()) {
+                Map<String, Object> recipe = (Map<String, Object>) recipeData.get(key);
+                Craft.recipeMats.put(key, (List<Map<String, Number>>) recipe.getOrDefault("mats", new ArrayList<>()));
+                Craft.recipeAttributes.put(key, (Map<String, Number>) recipe.getOrDefault("attributes", new HashMap<>()));
+                Craft.recipeTextures.put(key, (Map<String, String>) recipe.getOrDefault("texture", new HashMap<>()));
+                Craft.recipeTypes.put(key, (String) recipe.getOrDefault("type", "item"));
+                Craft.recipeProducts.put(key, (List<Map<String, Number>>) recipe.getOrDefault("products", new ArrayList<>()));
+            }
+
             //Maps item data
             Map<String, Object> itemData = readJsonDirectory(FileManager.class.getResource("jsonData/items").toURI());
             for (String key : itemData.keySet()) {
                 final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
                 Item.itemNames.put(key, (String) item.getOrDefault("name", ""));
                 Item.itemTextures.put(key, (Map<String, String>) item.getOrDefault("texture", new HashMap<>()));
-                Item.itemRecipeUnlocks.put(key, (List<String>) item.getOrDefault("recipeUnlocks", new ArrayList<>()));
+                Item.itemBlueprintUnlocks.put(key, (List<String>) item.getOrDefault("blueprintUnlocks", new ArrayList<>()));
                 Item.itemAttributes.put(key, (Map<String, Number>) item.getOrDefault("attributes", new HashMap<>()));
 
                 final int id = (int) item.get("id");
@@ -123,6 +134,10 @@ class FileManager {
                 Weapon.weaponBehaviors.put(key, (Map<String, Map<String, Object>>) weapon.getOrDefault("behavior", new HashMap<>()));
                 Weapon.weaponTags.put(key, (List<String>) weapon.getOrDefault("tags", new ArrayList<>()));
                 Weapon.weaponTextures.put(key, (Map<String, String>) weapon.getOrDefault("texture", new HashMap<>()));
+
+                final int id = (int) weapon.get("id");
+                Weapon.weaponIntId.put(key, id);
+                Weapon.weaponStringId.put(id, key);
             }
 
             //Maps armor data

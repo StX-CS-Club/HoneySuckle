@@ -249,7 +249,7 @@ public class Rendering {
     }
 
     public static void centeredText(Graphics2D g, String text, int x, int y) {
-        int fontOffset = g.getFontMetrics().stringWidth(text);
+        int fontOffset = g.getFontMetrics().stringWidth(text)/2;
 
         g.drawString(text, x - fontOffset, y);
     }
