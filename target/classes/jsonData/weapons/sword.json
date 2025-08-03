@@ -5,16 +5,14 @@
     "tags": ["constClick"],
     "stats": {
       "Type": "Sword",
-      "Rarity": "Common",
       "Damage": "5",
       "Size": "1",
-      "Speed": ".5"
+      "Speed": "0.5"
     },
     "texture": {
       "bladeColor": "#ffffff",
       "itemTexture": "items/sword",
       "texture": "weapons/sword",
-      "rarityColor": "#e8f1ff",
       "animation": "_swing_",
       "type": "side"
     },

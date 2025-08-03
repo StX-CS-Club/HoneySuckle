@@ -13,6 +13,12 @@
       "regen": 0.001,
       "speed": 0.1,
       "maxHealth": 1.0
+    },
+    "stats": {
+        "Defense": "1",
+        "Regen": "1",
+        "Speed": "1",
+        "Health": "1"
     }
   },
   "a_rock": {
@@ -21,13 +27,21 @@
     "texture": {
       "texture": "armor/a_rock/top",
       "front_texture": "armor/a_rock/front",
-      "item_texture": "armor/a_rock/item"
+      "item_texture": "armor/a_rock/item",
+      "rarityColor": "#bb3311"
     },
     "attributes": {
       "defense": 2.0,
       "speed": 0.09,
       "maxHealth": 1.0,
       "regen": 0
+    },
+    "stats": {
+        "Defense": "2",
+        "Regen": "0",
+        "Speed": "0.9",
+        "Health": "1",
+        "Rock": "is there"
     }
   }
 }

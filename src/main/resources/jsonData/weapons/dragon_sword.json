@@ -16,11 +16,10 @@
       }
     },
     "stats": {
-      "Type": "Sword",
-      "Rarity": "Common",
+      "Type": "Blade",
       "Damage": "20",
       "Size": "1.5",
-      "Speed": ".5"
+      "Speed": "0.5"
     },
     "texture": {
       "bladeColor": "#ffffff",

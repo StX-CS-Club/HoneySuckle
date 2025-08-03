@@ -38,12 +38,8 @@ public class Inventory {
     private double itemScroll = 0;
 
     private double weaponScroll = 0;
-    private int weaponHover = -1;
+    private int weaponHover = -2;
     private int weaponSelect = -1;
-
-    private double armorScroll = 0;
-    private int armorOffset = 0;
-    private int armorHover = -1;
 
     //Inventory Constructor
     public Inventory(
@@ -102,7 +98,7 @@ public class Inventory {
                 }
                 case 2 -> {
                     weaponScroll = Math.clamp(weaponScroll + input.mouseScroll, 0, weapons.size() - 1);
-                    weaponHover = -1;
+                    weaponHover = -2;
                     if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
                         double weaponHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
                         if (weaponSelect == -1) {
@@ -131,25 +127,7 @@ public class Inventory {
                     }
                 }
                 case 3 -> {
-                    armorScroll = Math.clamp(armorScroll + input.mouseScroll, 0, armors.size() - 1);
-                    armorHover = -1;
-                    if (Math.abs(input.mousePos[0] - GAME_WIDTH + 100) <= 60) {
-                        double armorHighlight = (input.mousePos[1] - (GAME_HEIGHT / 2 - 60)) + armorScroll * 130;
-                        if (armorHighlight % 130 <= 120) {
-                            armorHover = (int) Math.floor(armorHighlight / 130);
-                        }
-                    }
-                    if (input.clickPressed(1)) {
-                        if (armorHover > -1 && armorHover < armors.size()) {
-                            Armor armor = armors.get(armorHover);
-                            if (armor == player.armory.armor) {
-                                player.armory.armor = null;
-                            } else {
-                                player.armory.armor = armor;
-                                armorOffset = 200;
-                            }
-                        }
-                    }
+                    player.armory.updateArmorMenu(player, input);
                 }
             }
         }
@@ -201,6 +179,15 @@ public class Inventory {
                     Rendering.centeredText(g, Integer.toString(i + 1), (int) (GAME_WIDTH / 2 + 45 + (i - 1) * 110), (int) (GAME_HEIGHT / 2 + 50));
                 }
             }
+
+            Weapon scrollWeapon = weapon;
+            if(weaponHover> -2 && weaponHover < 2){
+                if(player.armory.weapons[weaponHover+1] != null){
+                    scrollWeapon = player.armory.weapons[weaponHover+1];
+                }
+            }
+
+            scrollWeapon.renderScroll(g);
         } else {
             // Renders Items
             switch (page) {
@@ -229,39 +216,13 @@ public class Inventory {
                             weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1, player.armory.weapons);
                         }
                     }
+
+                    if(weaponHover > -1 && weaponHover < weapons.size()){
+                        weapons.get(weaponHover).renderScroll(g);
+                    }
                 }
                 case 3 -> {
-                    if (player.armory.armor != null) {
-                        Map<String, String> armorTexture = player.armory.armor.texture;
-
-                        String back = armorTexture.get("back_texture");
-                        if (back != null) {
-                            g.drawImage(Rendering.texture(back, "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
-                        }
-
-                        g.drawImage(Rendering.texture("player/front", "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
-
-                        String front = armorTexture.get("front_texture");
-                        if (front != null) {
-                            g.drawImage(Rendering.texture(front, "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
-                        }
-                    } else {
-                        g.drawImage(Rendering.texture("player/front", "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
-                    }
-
-                    armorOffset *= 0.75;
-
-                    for (int i = 0; i < armors.size(); i++) {
-                        final int offset = 130 * i - ((int) Math.floor(armorScroll * 130));
-
-                        if (i == armorHover) {
-                            Armor armor = armors.get(i);
-                            armor.renderUiTile(g, GAME_WIDTH - 170, (int) (GAME_HEIGHT / 2 - 60 + offset), 1.1, armor == player.armory.armor);
-                        } else {
-                            Armor armor = armors.get(i);
-                            armor.renderUiTile(g, GAME_WIDTH - 170, (int) (GAME_HEIGHT / 2 - 60 + offset), 1, armor == player.armory.armor);
-                        }
-                    }
+                    player.armory.renderArmorMenu(g, player);
                 }
             }
 
@@ -348,8 +309,8 @@ public class Inventory {
                     String armorId = Armor.armorStrignId.get(id);
 
                     if (gain) {
-                        for(int i = 0; i < count; i++){
-                        armors.add(new Armor(armorId));
+                        for (int i = 0; i < count; i++) {
+                            armors.add(new Armor(armorId));
                         }
                     } else {
                         int removed = 0;
@@ -381,6 +342,16 @@ public class Inventory {
                 int inventoryCount = 0;
                 for (Weapon weapon : weapons) {
                     if (weapon.weapon.equals(weaponId)) {
+                        inventoryCount++;
+                    }
+                }
+                return inventoryCount >= count;
+            }
+            case 2 -> {
+                final String armorId = Armor.armorStrignId.get(id);
+                int inventoryCount = 0;
+                for (Armor armor : armors) {
+                    if (armor.type.equals(armorId)) {
                         inventoryCount++;
                     }
                 }

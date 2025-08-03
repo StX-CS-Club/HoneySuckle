@@ -111,11 +111,7 @@ public class Craft {
             // Render Scroll
             int scrollWidth = Math.ceilDiv(Math.max(textSize, mats.size() * 60), 16);
 
-            g.drawImage(Rendering.texture("hud/scroll_end", "#ffffff"), (int) (GAME_WIDTH - scrollWidth * 16) / 2 - 16, 40, 16, 128, null);
-            for (int i = 0; i < scrollWidth; i++) {
-                g.drawImage(Rendering.texture("hud/scroll_middle", "#ffffff"), (int) (GAME_WIDTH - scrollWidth * 16) / 2 + i * 16, 40, 16, 128, null);
-            }
-            g.drawImage(Rendering.texture("hud/scroll_end", "#ffffff"), (int) (GAME_WIDTH + scrollWidth * 16) / 2, 40, 16, 128, null);
+            g.drawImage(Rendering.scroll(scrollWidth), (int) (GAME_WIDTH - scrollWidth * 16) / 2 - 16, 40, scrollWidth * 16 + 32, 128, null);
 
             // Render Title
             if (hasMaterials(player, recipe)) {

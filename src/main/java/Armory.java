@@ -20,6 +20,10 @@ public class Armory {
     public Weapon[] weapons = new Weapon[3];
     public Armor armor;
 
+    private double armorScroll = 0;
+    private int armorOffset = 0;
+    private int armorHover = -1;
+
     //Armory Constructor
     public Armory(Weapon[] weapons, Armor armor) {
         //Provides default equipment
@@ -35,7 +39,7 @@ public class Armory {
     public void updateControls(InputHandler inputHandler, Player player) {
         //If left click and selected weapon exists, attack
         if (weapons[weaponIndex] != null) {
-                weapons[weaponIndex].updateControls(inputHandler, player);
+            weapons[weaponIndex].updateControls(inputHandler, player);
         }
         //Selects weapon from number key
         for (int i = 0; i < 3; i++) {
@@ -46,11 +50,11 @@ public class Armory {
         }
     }
 
-    public void updateWeapons(Player player){
-        for(int i = 0; i < weapons.length; i++){
-            if(weapons[i] != null){
+    public void updateWeapons(Player player) {
+        for (int i = 0; i < weapons.length; i++) {
+            if (weapons[i] != null) {
                 weapons[i].passiveUpdate();
-                if(i == weaponIndex){
+                if (i == weaponIndex) {
                     weapons[i].update(player);
                 }
             }
@@ -63,6 +67,29 @@ public class Armory {
         if (armor != null) {
             armor.update(player);
         }
+    }
+
+    public void updateArmorMenu(Player player, InputHandler input) {
+        armorScroll = Math.clamp(armorScroll + input.mouseScroll, 0, player.inventory.armors.size() - 1);
+        armorHover = -1;
+        if (Math.abs(input.mousePos[0] - GAME_WIDTH + 100) <= 60) {
+            double armorHighlight = (input.mousePos[1] - (GAME_HEIGHT / 2 - 60)) + armorScroll * 130;
+            if (armorHighlight % 130 <= 120) {
+                armorHover = (int) Math.floor(armorHighlight / 130);
+            }
+        }
+        if (input.clickPressed(1)) {
+            if (armorHover > -1 && armorHover < player.inventory.armors.size()) {
+                Armor invArmor = player.inventory.armors.get(armorHover);
+                if (invArmor == armor) {
+                    armor = null;
+                } else {
+                    armor = invArmor;
+                    armorOffset = 200;
+                }
+            }
+        }
+
     }
 
     //If armor exists, returns armor attributes
@@ -109,6 +136,49 @@ public class Armory {
         //If armor exists, render it
         if (armor != null) {
             armor.render(g, player);
+        }
+    }
+
+    public void renderArmorMenu(Graphics2D g, Player player) {
+        if (armor != null) {
+            Map<String, String> armorTexture = armor.texture;
+
+            String back = armorTexture.get("back_texture");
+            if (back != null) {
+                g.drawImage(Rendering.texture(back, "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
+            }
+
+            g.drawImage(Rendering.texture("player/front", "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
+
+            String front = armorTexture.get("front_texture");
+            if (front != null) {
+                g.drawImage(Rendering.texture(front, "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
+            }
+        } else {
+            g.drawImage(Rendering.texture("player/front", "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
+        }
+
+        armorOffset *= 0.75;
+
+        for (int i = 0; i < player.inventory.armors.size(); i++) {
+            final int offset = 130 * i - ((int) Math.floor(armorScroll * 130));
+
+            if (i == armorHover) {
+                Armor invArmor = player.inventory.armors.get(i);
+                invArmor.renderUiTile(g, GAME_WIDTH - 170, (int) (GAME_HEIGHT / 2 - 60 + offset), 1.1, invArmor == armor);
+            } else {
+                Armor invArmor = player.inventory.armors.get(i);
+                invArmor.renderUiTile(g, GAME_WIDTH - 170, (int) (GAME_HEIGHT / 2 - 60 + offset), 1, invArmor == armor);
+            }
+        }
+
+        Armor scrollArmor = armor;
+        if (armorHover > -1 && armorHover < player.inventory.armors.size()) {
+            scrollArmor = player.inventory.armors.get(armorHover);
+        }
+
+        if (scrollArmor != null) {
+            scrollArmor.renderScroll(g);
         }
     }
 

@@ -6,12 +6,11 @@
       "Type": "Shield",
       "Strength": "1.1",
       "Size": "1",
-      "Speed": ".33"
+      "Speed": "0.33"
     },
     "texture": {
       "itemTexture": "items/shield",
       "texture": "weapons/shield",
-      "rarityColor": "#e8f1ff",
       "animation": "_parry_",
       "type": "front"
     },

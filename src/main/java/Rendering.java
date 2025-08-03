@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RadialGradientPaint;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -44,7 +46,7 @@ public class Rendering {
 
     //Render sprite
     public static BufferedImage texture(String texture, String color) {
-        if(color == null){
+        if (color == null) {
             color = "#ffffff";
         }
         //If already rendered, return
@@ -249,7 +251,7 @@ public class Rendering {
     }
 
     public static void centeredText(Graphics2D g, String text, int x, int y) {
-        int fontOffset = g.getFontMetrics().stringWidth(text)/2;
+        int fontOffset = g.getFontMetrics().stringWidth(text) / 2;
 
         g.drawString(text, x - fontOffset, y);
     }
@@ -257,16 +259,62 @@ public class Rendering {
     public static void centeredText(Graphics2D g, String text, int x, int y, int width, int maxFontSize) {
         int fontOffset = 0;
 
-            // Sets the font size to fit within box
-            for (int f = maxFontSize; f > 0; f--) {
-                g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
-                int fontSize = g.getFontMetrics().stringWidth(text);
-                if (fontSize < 100) {
-                    fontOffset = fontSize/2;
-                    break;
-                }
+        // Sets the font size to fit within box
+        for (int f = maxFontSize; f > 0; f--) {
+            g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
+            int fontSize = g.getFontMetrics().stringWidth(text);
+            if (fontSize < width) {
+                fontOffset = fontSize / 2;
+                break;
             }
+        }
 
         g.drawString(text, x - fontOffset, y);
+    }
+
+    public static BufferedImage scroll(int length) {
+        BufferedImage result = new BufferedImage(length * 4 + 8, 32, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = result.createGraphics();
+
+        g.drawImage(Rendering.texture("hud/scroll_end", "#ffffff"), 0, 0, 4, 32, null);
+        for (int i = 0; i < length; i++) {
+            g.drawImage(Rendering.texture("hud/scroll_middle", "#ffffff"), 4 + i * 4, 0, 4, 32, null);
+        }
+        g.drawImage(Rendering.texture("hud/scroll_end", "#ffffff"), 4 + length * 4, 0, 4, 32, null);
+
+        return result;
+    }
+
+    public static BufferedImage rotateImage(BufferedImage image, double degrees) {
+        // Convert angle to radians
+        double angle = Math.toRadians(degrees);
+
+        int w = image.getWidth();
+        int h = image.getHeight();
+
+        // Calculate new dimensions after rotation
+        double sin = Math.abs(Math.sin(angle));
+        double cos = Math.abs(Math.cos(angle));
+        int newW = (int) Math.floor(w * cos + h * sin);
+        int newH = (int) Math.floor(h * cos + w * sin);
+
+        // Create a new image with the new dimensions and an alpha channel
+        BufferedImage rotated = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = rotated.createGraphics();
+
+        // Maintain image quality
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        // Create an AffineTransform to rotate around the center
+        AffineTransform at = new AffineTransform();
+        at.translate(newW / 2.0, newH / 2.0); // Move origin to center
+        at.rotate(angle);
+        at.translate(-w / 2.0, -h / 2.0); // Move image back
+
+        // Draw the original image with the transform
+        g.drawImage(image, at, null);
+        g.dispose();
+
+        return rotated;
     }
 }

@@ -1,4 +1,6 @@
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -11,9 +13,13 @@ import java.util.Map;
  */
 public class Armor {
 
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+
     //Static json data
     public static final Map<String, Map<String, String>> armorTextures = new HashMap<>();
     public static final Map<String, Map<String, Number>> armorAttributes = new HashMap<>();
+    public static final Map<String, Map<String, String>> armorStats = new HashMap<>();
+    public static final Map<String, String> armorNames = new HashMap<>();
     public static final Map<String, Integer> armorIntId = new HashMap<>();
     public static final Map<Integer, String> armorStrignId = new HashMap<>();
 
@@ -21,6 +27,8 @@ public class Armor {
     public final String type;
     public final Map<String, String> texture;
     public final Map<String, Number> attributes;
+    public final Map<String, String> stats;
+    public final String name;
 
     private final BufferedImage staticTexture;
 
@@ -30,6 +38,8 @@ public class Armor {
         this.type = type;
         texture = armorTextures.get(type);
         attributes = armorAttributes.get(type);
+        stats = armorStats.get(type);
+        name = armorNames.get(type);
 
         staticTexture = getTexture();
     }
@@ -49,14 +59,31 @@ public class Armor {
 
     public void renderUiTile(Graphics2D g, int x, int y, double factor, boolean active) {
         if (active) {
-            g.drawImage(Rendering.texture("hud/armor_slot", "#ffffff"), (int) (x-60*(factor-1)), (int) (y-60*(factor-1)), (int) (120 * factor), (int) (120 * factor), null);
+            g.drawImage(Rendering.texture("hud/armor_slot", "#ffffff"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
         } else {
-            g.drawImage(Rendering.texture("hud/armor_slot", "#666666"), (int) (x-60*(factor-1)), (int) (y-60*(factor-1)), (int) (120 * factor), (int) (120 * factor), null);
+            g.drawImage(Rendering.texture("hud/armor_slot", "#666666"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
         }
 
         final String itemTexture = texture.get("item_texture");
         if (itemTexture != null) {
             g.drawImage(Rendering.texture(itemTexture, "#ffffff"), x + 10, y + 10, 100, 100, null);
+        }
+    }
+
+    public void renderScroll(Graphics2D g) {
+        int scrollLength = stats.size() + 3;
+        g.drawImage(Rendering.rotateImage(Rendering.scroll(scrollLength), 90), 25, (int) (GAME_HEIGHT - scrollLength * 32) / 2, 256, scrollLength * 32, null);
+
+        g.setColor(Color.decode(texture.getOrDefault("rarityColor", "#333333")));
+        g.setFont(new Font("VT323 Regular", Font.PLAIN, 32));
+
+        Rendering.centeredText(g, name, 153, (int) (GAME_HEIGHT - scrollLength * 32) / 2 + 48);
+
+        g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
+        g.setColor(Color.BLACK);
+        String[] statKeys = stats.keySet().toArray(String[]::new);
+        for (int i = 0; i < statKeys.length; i++) {
+            Rendering.centeredText(g, statKeys[i] + ": " + stats.get(statKeys[i]), 153, (int) (GAME_HEIGHT - scrollLength * 32) / 2 + 80 + 32 * i);
         }
     }
 
