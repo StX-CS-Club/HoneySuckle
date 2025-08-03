@@ -1,0 +1,35 @@
+{
+  "dragon": {
+    "id": 2,
+    "name": "Dragon",
+    "texture": {
+      "baseColor": "#b4008e",
+      "texture": "entities/dragon/dragon",
+      "anim": "_shoot_"
+    },
+    "attributes": {
+      "size": 5.0,
+      "health": 20.0,
+      "weight": 5.0,
+      "healthBarDistance": 40
+    },
+    "loot": [
+      {
+        "id": 6
+      }
+    ],
+    "tags": ["alwaysRender"],
+    "brain": {
+      "shoot": {
+        "speed": 0.7,
+        "panicSpeed": 0.06,
+        "frames": 15.0,
+        "cooldown": 90.0,
+        "proj": 2
+      },
+      "death": {
+        "gateId": 1
+      }
+    }
+  }
+}

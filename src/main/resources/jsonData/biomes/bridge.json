@@ -1,0 +1,36 @@
+{
+  "bridge": {
+    "name": "Bridge",
+    "level": 9,
+    "tags": ["dangerousVoid", "enemyLock"],
+    "colorMap": {
+      "brickColor": "#847878",
+      "landColor": "#cdc5b3",
+      "waterColor": "#242475",
+      "voidColor": "#242475"
+    },
+    "generation": {
+      "size": [51, 150],
+      "genSize": [3, 149],
+      "startMap": [[5, 5, 5, 5, 5]],
+      "tiles": [
+        {
+          "id": 5,
+          "rangeProb": [23, 27, 1]
+        }
+      ],
+      "objects": [
+        {
+          "id": 6,
+          "tileProb": [5, 0.04]
+        }
+      ],
+      "structures": [
+        {
+          "id": 1,
+          "pos": [[18, 68]]
+        }
+      ]
+    }
+  }
+}

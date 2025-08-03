@@ -1,0 +1,27 @@
+{
+  "shield": {
+    "name": "Shield",
+    "id": 3,
+    "stats": {
+      "Type": "Shield",
+      "Strength": "1.1",
+      "Size": "1",
+      "Speed": ".33"
+    },
+    "texture": {
+      "itemTexture": "items/shield",
+      "texture": "weapons/shield",
+      "rarityColor": "#e8f1ff",
+      "animation": "_parry_",
+      "type": "front"
+    },
+    "behavior": {
+      "shield": {
+        "frames": 5.0,
+        "cooldown": 15.0,
+        "parry": 1.1,
+        "bounce": 1
+      }
+    }
+  }
+}

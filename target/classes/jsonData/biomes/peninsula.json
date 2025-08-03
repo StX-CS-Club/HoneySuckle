@@ -1,0 +1,41 @@
+{
+  "peninsula": {
+    "name": "Peninsula",
+    "level": 4,
+    "colorMap": {
+      "landColor": "#94ca53",
+      "voidColor": "#4382ff",
+      "waterColor": "#4382ff",
+      "treeColor": "#7eab47",
+      "coalColor": "#665555"
+    },
+    "generation": {
+      "size": [25, 75],
+      "startMap": [[1, 1, 1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "sideProb": [1, 0.095],
+          "bottomProb": [1, 0.90375]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.05]
+        },
+        {
+          "id": 4,
+          "tileProb": [1, 0.01]
+        }
+      ],
+      "entities": [
+        {
+          "id": 1,
+          "levelProbPower": 1,
+          "tileProb": [1, 0.01]
+        }
+      ]
+    }
+  }
+}

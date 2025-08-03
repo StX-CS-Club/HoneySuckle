@@ -1,0 +1,29 @@
+{
+  "islands": {
+    "name": "Islands",
+    "level": 2,
+    "colorMap": {
+      "landColor": "#0fc854",
+      "voidColor": "#0080ff",
+      "waterColor": "#0080ff",
+      "treeColor": "#0a953e"
+    },
+    "generation": {
+      "size": [75, 50],
+      "tiles": [
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [1, 0.45],
+          "bottomProb": [1, 0.25]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.25]
+        }
+      ]
+    }
+  }
+}

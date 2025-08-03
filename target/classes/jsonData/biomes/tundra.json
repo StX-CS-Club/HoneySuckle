@@ -1,0 +1,42 @@
+{
+    "tundra": {
+    "name": "Tundra",
+    "level": 5,
+    "tags": ["dangerousVoid"],
+    "colorMap": {
+      "landColor": "#dffffb",
+      "voidColor": "#92c4ff",
+      "waterColor": "#92c4ff",
+      "treeColor": "#009000",
+      "iceColor": "#cbeeff",
+      "coalColor": "#784d4d"
+    },
+    "generation": {
+      "size": [75, 100],
+      "startMap": [[1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "sideProb": [1, 0.35, 4, 0.35],
+          "bottomProb": [1, 0.35, 4, 0.35]
+        },
+        {
+          "id": 4,
+          "prob": 0.025,
+          "sideProb": [1, 0.4, 4, 0.4],
+          "bottomProb": [1, 0.4, 4, 0.4]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [1, 0.05]
+        },
+        {
+          "id": 4,
+          "tileProb": [1, 0.002]
+        }
+      ]
+    }
+  }
+}

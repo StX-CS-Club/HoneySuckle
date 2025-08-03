@@ -1,0 +1,27 @@
+{
+  "bow": {
+    "name": "Bow",
+    "id": 2,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Bow",
+      "Rarity": "Common",
+      "Damage": "2.5",
+      "Speed": ".5"
+    },
+    "texture": {
+      "itemTexture": "items/bow",
+      "texture": "weapons/bow/bow",
+      "rarityColor": "#e8f1ff",
+      "animation": "_shoot_",
+      "type": "front"
+    },
+    "behavior": {
+      "shoot": {
+        "cooldown": 20,
+        "frames": 5,
+        "proj": 1
+      }
+    }
+  }
+}

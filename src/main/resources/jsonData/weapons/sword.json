@@ -1,0 +1,29 @@
+{
+  "sword": {
+    "name": "Sword",
+    "id": 1,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Sword",
+      "Rarity": "Common",
+      "Damage": "5",
+      "Size": "1",
+      "Speed": ".5"
+    },
+    "texture": {
+      "bladeColor": "#ffffff",
+      "itemTexture": "items/sword",
+      "texture": "weapons/sword",
+      "rarityColor": "#e8f1ff",
+      "animation": "_swing_",
+      "type": "side"
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.05,
+        "cooldown": 20,
+        "frames": 10
+      }
+    }
+  }
+}

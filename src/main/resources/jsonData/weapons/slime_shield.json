@@ -1,0 +1,30 @@
+{
+  "slime_shield": {
+    "name": "Bouncy Shield",
+    "id": 5,
+    "stats": {
+      "Type": "Shield",
+      "Strength": "1.4",
+      "Size": "0.9",
+      "Speed": "0.2"
+    },
+    "texture": {
+      "itemTexture": "items/slime_shield",
+      "texture": "weapons/slime_shield",
+      "rarityColor": "#00db33",
+      "animation": "_parry_",
+      "type": "front"
+    },
+    "attributes": {
+      "size": 0.9
+    },
+    "behavior": {
+      "shield": {
+        "frames": 5.0,
+        "cooldown": 25.0,
+        "parry": 1.4,
+        "bounce": 1.2
+      }
+    }
+  }
+}
