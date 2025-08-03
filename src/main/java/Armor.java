@@ -10,14 +10,17 @@ import java.util.Map;
  - COntains static json data
  */
 public class Armor {
+
     //Static json data
     public static final Map<String, Map<String, String>> armorTextures = new HashMap<>();
-    public static final Map<String, Map<String, Double>> armorAttributes = new HashMap<>();
+    public static final Map<String, Map<String, Number>> armorAttributes = new HashMap<>();
+    public static final Map<String, Integer> armorIntId = new HashMap<>();
+    public static final Map<Integer, String> armorStrignId = new HashMap<>();
 
     //Basic Armor Attributes
-    private final String type;
-    private final Map<String, String> texture;
-    public final Map<String, Double> attributes;
+    public final String type;
+    public final Map<String, String> texture;
+    public final Map<String, Number> attributes;
 
     private final BufferedImage staticTexture;
 
@@ -44,14 +47,28 @@ public class Armor {
         }
     }
 
-    private BufferedImage getTexture(){
+    public void renderUiTile(Graphics2D g, int x, int y, double factor, boolean active) {
+        if (active) {
+            g.drawImage(Rendering.texture("hud/armor_slot", "#ffffff"), (int) (x-60*(factor-1)), (int) (y-60*(factor-1)), (int) (120 * factor), (int) (120 * factor), null);
+        } else {
+            g.drawImage(Rendering.texture("hud/armor_slot", "#666666"), (int) (x-60*(factor-1)), (int) (y-60*(factor-1)), (int) (120 * factor), (int) (120 * factor), null);
+        }
+
+        final String itemTexture = texture.get("item_texture");
+        if (itemTexture != null) {
+            g.drawImage(Rendering.texture(itemTexture, "#ffffff"), x + 10, y + 10, 100, 100, null);
+        }
+    }
+
+    private BufferedImage getTexture() {
         String textureId = texture.get("texture");
-        if(textureId != null){
+        if (textureId != null) {
             return Rendering.texture(textureId, "#ffffff");
         }
         return null;
     }
 
     //Update Armor
-    public void update(Player player){}
+    public void update(Player player) {
+    }
 }

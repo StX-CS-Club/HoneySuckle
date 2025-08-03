@@ -50,7 +50,7 @@ public class Craft {
             scroll = Math.clamp(scroll + input.mouseScroll, 0, recipes.size() - 1);
             hover = -1;
             if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
-                double highlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
+                double highlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50)) + scroll * 110;
                 if (highlight % 110 <= 100) {
                     hover = (int) Math.floor(highlight / 110);
                 }
@@ -139,6 +139,9 @@ public class Craft {
                     }
                     case 1 -> {
                         texture = Weapon.weaponTextures.get(Weapon.weaponStringId.get(id)).get("item_texture");
+                    }
+                    case 2 -> {
+                        texture = Armor.armorTextures.get(Armor.armorStrignId.get(id)).get("item_texture");
                     }
                 }
 

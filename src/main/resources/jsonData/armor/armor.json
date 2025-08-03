@@ -1,23 +1,33 @@
 {
-    "default": {
-        "name": "Naked",
-        "attributes": {
-            "defense": 1.0,
-            "regen": 0.001,
-            "speed": 0.1,
-            "maxHealth": 1.0
-        }
+  "leather": {
+    "name": "Leather Hood",
+    "id": 1,
+    "texture": {
+      "texture": "armor/leather/top",
+      "front_texture": "armor/leather/front",
+      "back_texture": "armor/leather/back",
+      "item_texture": "armor/leather/item"
     },
-    "leather": {
-        "name": "Leather Hood",
-        "texture": {
-            "texture": "armor/leather"
-        },
-        "attributes": {
-            "defense": 1.0,
-            "regen": 0.001,
-            "speed": 0.1,
-            "maxHealth": 1.0
-        }
+    "attributes": {
+      "defense": 1.0,
+      "regen": 0.001,
+      "speed": 0.1,
+      "maxHealth": 1.0
     }
+  },
+  "a_rock": {
+    "name": "Rock",
+    "id": 2,
+    "texture": {
+      "texture": "armor/a_rock/top",
+      "front_texture": "armor/a_rock/front",
+      "item_texture": "armor/a_rock/item"
+    },
+    "attributes": {
+      "defense": 2.0,
+      "speed": 0.09,
+      "maxHealth": 1.0,
+      "regen": 0
+    }
+  }
 }

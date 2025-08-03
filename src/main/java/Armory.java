@@ -1,6 +1,7 @@
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -65,12 +66,12 @@ public class Armory {
     }
 
     //If armor exists, returns armor attributes
-    public Map<String, Double> getAttributes() {
+    public Map<String, Number> getAttributes() {
         if (armor != null) {
             return armor.attributes;
         }
         //Default "Naked" attributes
-        return Armor.armorAttributes.get("default");
+        return new HashMap<>();
     }
 
     //Updates selected weapon from scroll wheel

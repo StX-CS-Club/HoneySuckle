@@ -147,7 +147,11 @@ class FileManager {
             for (String key : armorData.keySet()) {
                 Map<String, Object> armor = (Map<String, Object>) armorData.get(key);
                 Armor.armorTextures.put(key, (Map<String, String>) armor.getOrDefault("texture", new HashMap<>()));
-                Armor.armorAttributes.put(key, (Map<String, Double>) armor.getOrDefault("attributes", new HashMap<>()));
+                Armor.armorAttributes.put(key, (Map<String, Number>) armor.getOrDefault("attributes", new HashMap<>()));
+
+                final int id = (int) armor.get("id");
+                Armor.armorIntId.put(key, id);
+                Armor.armorStrignId.put(id, key);
             }
 
             //Maps Projectile data

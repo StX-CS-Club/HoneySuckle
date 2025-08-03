@@ -28,5 +28,18 @@
         "id": 1
       }
     ]
+  },
+  "a_rock": {
+    "name": "Special Rock",
+    "type": "armor",
+    "products": [{ "id": 2, "type": 2 }],
+    "texture": {
+      "texture": "armor/a_rock/item"
+    },
+    "mats": [
+      {
+        "id": 8
+      }
+    ]
   }
 }

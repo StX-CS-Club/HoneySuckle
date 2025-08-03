@@ -81,7 +81,7 @@ public class Player {
 
             //Render Player
             g.drawImage(
-                    Rendering.texture("player", "#ffffff"),
+                    Rendering.texture("player/top", "#ffffff"),
                     (int) (screenPos[0] - size / 2.0),
                     (int) (screenPos[1] - size / 2.0),
                     size, size, null
@@ -105,7 +105,7 @@ public class Player {
             ));
         }
 
-        if(inventory.ideaFrames >= 0){
+        if (inventory.ideaFrames >= 0) {
             g.drawImage(Rendering.texture("hud/idea", inventory.ideaColor), (int) screenPos[0] - 15, (int) screenPos[1] - 15 - size, 30, 30, null);
             inventory.ideaFrames--;
         }
@@ -114,7 +114,7 @@ public class Player {
     //Update Player
     public void update(InputHandler input) {
         //Player/Armor attributes
-        Map<String, Double> attributes = armory.getAttributes();
+        Map<String, Number> attributes = armory.getAttributes();
 
         //Friction
         for (int i = 0; i < 2; i++) {
@@ -125,7 +125,7 @@ public class Player {
         }
 
         //AKA magnitude of acceleration
-        double incriment = 30.0 / FPS * TILE_SIZE * attributes.get("speed");
+        double incriment = 30.0 / FPS * TILE_SIZE * attributes.getOrDefault("speed", 0.1).doubleValue();
 
         //Get current world camera
         World world = World.worlds.get(World.level);
@@ -223,14 +223,16 @@ public class Player {
 
         //Regenerate health
         if (health > 0) {
-            health += attributes.get("regen") * 30.0 / FPS;
+            double regen = attributes.getOrDefault("regen", 0.001).doubleValue();
+            health += regen * 30.0 / FPS;
             if (vel[0] == 0 && vel[1] == 0) {
-                health += attributes.get("regen") * 30.0 / FPS;
+                health += regen * 30.0 / FPS;
             }
         }
         //Cap health
-        if (health > attributes.get("maxHealth")) {
-            health = attributes.get("maxHealth");
+        double maxHealth = attributes.getOrDefault("maxHealth", 1).doubleValue();
+        if (health > maxHealth) {
+            health = maxHealth;
         }
 
         //Reset position of player on screen
@@ -254,8 +256,8 @@ public class Player {
     //Damage Player
     public void damage(double damage) {
         //Player/Armor attributes
-        Map<String, Double> attributes = armory.getAttributes();
+        Map<String, Number> attributes = armory.getAttributes();
         //Divide damage by defense
-        health -= damage / attributes.get("defense");
+        health -= damage / attributes.getOrDefault("defense", 1).doubleValue();
     }
 }
