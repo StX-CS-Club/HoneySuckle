@@ -9,7 +9,7 @@
       "Speed": ".5"
     },
     "texture": {
-      "itemTexture": "items/bow",
+      "itemTexture": "weapons/bow/item",
       "texture": "weapons/bow/bow",
       "animation": "_shoot_",
       "type": "front"

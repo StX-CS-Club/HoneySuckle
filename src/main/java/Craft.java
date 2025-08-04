@@ -61,6 +61,7 @@ public class Craft {
                     final String recipe = (String) recipes.toArray()[hover];
                     if (hasMaterials(player, recipe)) {
                         craft(player, recipe);
+                        hover = -1;
                     }
                 }
             }
@@ -134,10 +135,10 @@ public class Craft {
                         texture = Item.itemTextures.get(Item.itemStringId.get(id)).get("texture");
                     }
                     case 1 -> {
-                        texture = Weapon.weaponTextures.get(Weapon.weaponStringId.get(id)).get("item_texture");
+                        texture = Weapon.weaponTextures.get(Weapon.weaponStringId.get(id)).get("itemTexture");
                     }
                     case 2 -> {
-                        texture = Armor.armorTextures.get(Armor.armorStrignId.get(id)).get("item_texture");
+                        texture = Armor.armorTextures.get(Armor.armorStrignId.get(id)).get("itemTexture");
                     }
                 }
 

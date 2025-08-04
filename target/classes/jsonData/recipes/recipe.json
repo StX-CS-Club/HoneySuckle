@@ -4,7 +4,7 @@
     "type": "weapon",
     "products": [{ "id": 4, "type": 1 }],
     "texture": {
-      "texture": "items/dragon_sword"
+      "texture": "items/dragon_sword/item"
     },
     "mats": [
       {
@@ -17,7 +17,7 @@
     "type": "weapon",
     "products": [{ "id": 5, "type": 1 }],
     "texture": {
-      "texture": "items/slime_shield"
+      "texture": "weapons/slime_shield/item"
     },
     "mats": [
       {
@@ -29,16 +29,39 @@
       }
     ]
   },
-  "a_rock": {
-    "name": "Special Rock",
-    "type": "armor",
-    "products": [{ "id": 2, "type": 2 }],
+  "cactus_sword": {
+    "name": "Cactus Sword",
+    "type": "weapon",
+    "products": [{ "id": 6, "type": 1 }],
     "texture": {
-      "texture": "armor/a_rock/item"
+      "texture": "weapons/cactus_sword/item"
     },
     "mats": [
       {
-        "id": 8
+        "id": 5,
+        "count": 10
+      },
+      {
+        "id": 1,
+        "count": 15
+      }
+    ]
+  },
+  "diamond_sword": {
+    "name": "Diamond Sword",
+    "type": "weapon",
+    "products": [{ "id": 7, "type": 1 }],
+    "texture": {
+      "texture": "weapons/diamond_sword/item"
+    },
+    "mats": [
+      {
+        "id": 7,
+        "count": 99
+      },
+      {
+        "id": 1,
+        "type": 1
       }
     ]
   }

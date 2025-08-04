@@ -9,8 +9,8 @@
       "Speed": "0.2"
     },
     "texture": {
-      "itemTexture": "items/slime_shield",
-      "texture": "weapons/slime_shield",
+      "itemTexture": "weapons/slime_shield/item",
+      "texture": "weapons/slime_shield/slime_shield",
       "rarityColor": "#00db33",
       "animation": "_parry_",
       "type": "front"

@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -19,6 +20,8 @@ public class Armor {
     public static final Map<String, Map<String, String>> armorTextures = new HashMap<>();
     public static final Map<String, Map<String, Number>> armorAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> armorStats = new HashMap<>();
+    public static final Map<String, List<String>> armorRecipeUnlocks = new HashMap<>();
+    public static final Map<String, List<String>> armorBlueprintUnlocks = new HashMap<>();
     public static final Map<String, String> armorNames = new HashMap<>();
     public static final Map<String, Integer> armorIntId = new HashMap<>();
     public static final Map<Integer, String> armorStrignId = new HashMap<>();
@@ -64,7 +67,7 @@ public class Armor {
             g.drawImage(Rendering.texture("hud/armor_slot", "#666666"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
         }
 
-        final String itemTexture = texture.get("item_texture");
+        final String itemTexture = texture.get("itemTexture");
         if (itemTexture != null) {
             g.drawImage(Rendering.texture(itemTexture, "#ffffff"), x + 10, y + 10, 100, 100, null);
         }

@@ -9,8 +9,8 @@
       "Speed": "0.33"
     },
     "texture": {
-      "itemTexture": "items/shield",
-      "texture": "weapons/shield",
+      "itemTexture": "weapons/shield/item",
+      "texture": "weapons/shield/shield",
       "animation": "_parry_",
       "type": "front"
     },

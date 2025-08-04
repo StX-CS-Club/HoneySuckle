@@ -1,0 +1,51 @@
+{
+  "a_rock": {
+    "name": "Special Rock",
+    "type": "armor",
+    "products": [{ "id": 2, "type": 2 }],
+    "texture": {
+      "texture": "armor/a_rock/item"
+    },
+    "mats": [
+      {
+        "id": 8
+      }
+    ]
+  },
+  "pumpkin_helm": {
+    "name": "Pumpkin Helm",
+    "type": "armor",
+    "products": [{ "id": 3, "type": 2 }],
+    "texture": {
+      "texture": "armor/pumpkin_helm/item"
+    },
+    "mats": [
+      {
+        "id": 4,
+        "count": 5
+      }
+    ]
+  },
+  "jackolantern_helm": {
+    "name": "Jack-o-lantern Helm",
+    "type": "armor",
+    "products": [{ "id": 4, "type": 2 }],
+    "texture": {
+      "texture": "armor/jackolantern_helm/item"
+    },
+    "mats": [
+      {
+        "id": 4,
+        "count": 3
+      },
+      {
+        "id": 3,
+        "type": 2
+      },
+      {
+        "id": 3,
+        "count": 3
+      }
+    ]
+  }
+}

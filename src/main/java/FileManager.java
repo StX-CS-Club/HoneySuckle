@@ -135,6 +135,8 @@ class FileManager {
                 Weapon.weaponStats.put(key, (Map<String, String>) weapon.getOrDefault("stats", new HashMap<>()));
                 Weapon.weaponBehaviors.put(key, (Map<String, Map<String, Object>>) weapon.getOrDefault("behavior", new HashMap<>()));
                 Weapon.weaponTags.put(key, (List<String>) weapon.getOrDefault("tags", new ArrayList<>()));
+                Weapon.weaponRecipeUnlocks.put(key, (List<String>) weapon.getOrDefault("recipeUnlocks", new ArrayList<>()));
+                Weapon.weaponBlueprintUnlocks.put(key, (List<String>) weapon.getOrDefault("blueprintUnlocks", new ArrayList<>()));
                 Weapon.weaponTextures.put(key, (Map<String, String>) weapon.getOrDefault("texture", new HashMap<>()));
                 Weapon.weaponNames.put(key, (String) weapon.getOrDefault("name", key));
 
@@ -149,6 +151,8 @@ class FileManager {
                 Map<String, Object> armor = (Map<String, Object>) armorData.get(key);
                 Armor.armorTextures.put(key, (Map<String, String>) armor.getOrDefault("texture", new HashMap<>()));
                 Armor.armorAttributes.put(key, (Map<String, Number>) armor.getOrDefault("attributes", new HashMap<>()));
+                Armor.armorRecipeUnlocks.put(key, (List<String>) armor.getOrDefault("recipeUnlocks", new ArrayList<>()));
+                Armor.armorBlueprintUnlocks.put(key, (List<String>) armor.getOrDefault("blueprintUnlocks", new ArrayList<>()));
                 Armor.armorStats.put(key, (Map<String, String>) armor.getOrDefault("stats", new HashMap<>()));
                 Armor.armorNames.put(key, (String) armor.getOrDefault("name", key));
 

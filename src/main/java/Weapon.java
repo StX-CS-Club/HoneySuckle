@@ -25,6 +25,8 @@ public class Weapon {
     public static final Map<String, Map<String, Map<String, Object>>> weaponBehaviors = new HashMap<>();
     public static final Map<String, Map<String, String>> weaponTextures = new HashMap<>();
     public static final Map<String, List<String>> weaponTags = new HashMap<>();
+    public static final Map<String, List<String>> weaponRecipeUnlocks = new HashMap<>();
+    public static final Map<String, List<String>> weaponBlueprintUnlocks = new HashMap<>();
     public static final Map<String, String> weaponNames = new HashMap<>();
     public static final Map<String, Integer> weaponIntId = new HashMap<>();
     public static final Map<Integer, String> weaponStringId = new HashMap<>();

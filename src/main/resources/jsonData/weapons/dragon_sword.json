@@ -23,8 +23,8 @@
     },
     "texture": {
       "bladeColor": "#ffffff",
-      "itemTexture": "items/dragon_sword",
-      "texture": "weapons/dragon_sword",
+      "itemTexture": "weapons/dragon_sword/item",
+      "texture": "weapons/dragon_sword/dragon_sword",
       "rarityColor": "#57a5ff",
       "animation": "_swing_",
       "type": "side"

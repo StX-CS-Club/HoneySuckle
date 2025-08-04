@@ -64,6 +64,9 @@ public class Player {
 
     //Render Player
     public void render(Graphics2D g) {
+        //Player/Armor attributes
+        Map<String, Number> attributes = armory.getAttributes();
+
         //If not dead, render
         if (health > 0) {
             //Render building and armory
@@ -101,7 +104,7 @@ public class Player {
             HoneySuckle.lights.add(Map.of(
                     "posX", screenPos[0],
                     "posY", screenPos[1],
-                    "radius", 6
+                    "radius", attributes.getOrDefault("lightRadius", 6)
             ));
         }
 
@@ -193,9 +196,6 @@ public class Player {
             vel[0] += incriment;
         }
 
-        //Bound player to world
-        pos = world.bound(pos, vel, size / 2.0);
-
         //Reset camera
         World.worlds.get(World.level).camera[0] = pos[0];
         World.worlds.get(World.level).camera[1] = pos[1];
@@ -215,6 +215,9 @@ public class Player {
         if (newCamera[1] + GAME_HEIGHT / 2.0 > worldSize[1] * TILE_SIZE) {
             World.worlds.get(World.level).camera[1] = worldSize[1] * TILE_SIZE - GAME_HEIGHT / 2.0;
         }
+
+        //Bound player to world
+        pos = world.bound(pos, vel, size / 2.0);
 
         //World interact with player
         world.playerEvent(this);

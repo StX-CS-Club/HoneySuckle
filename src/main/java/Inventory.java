@@ -181,9 +181,9 @@ public class Inventory {
             }
 
             Weapon scrollWeapon = weapon;
-            if(weaponHover> -2 && weaponHover < 2){
-                if(player.armory.weapons[weaponHover+1] != null){
-                    scrollWeapon = player.armory.weapons[weaponHover+1];
+            if (weaponHover > -2 && weaponHover < 2) {
+                if (player.armory.weapons[weaponHover + 1] != null) {
+                    scrollWeapon = player.armory.weapons[weaponHover + 1];
                 }
             }
 
@@ -217,7 +217,7 @@ public class Inventory {
                         }
                     }
 
-                    if(weaponHover > -1 && weaponHover < weapons.size()){
+                    if (weaponHover > -1 && weaponHover < weapons.size()) {
                         weapons.get(weaponHover).renderScroll(g);
                     }
                 }
@@ -256,23 +256,7 @@ public class Inventory {
                     }
 
                     if (gain) {
-                        final List<String> blueprintUnlocks = Item.itemBlueprintUnlocks.get(itemId);
-                        for (String blueprint : blueprintUnlocks) {
-                            if (!player.build.blueprints.contains(blueprint)) {
-                                player.build.blueprints.add(blueprint);
-                                ideaFrames = 80;
-                                ideaColor = "#ddff00";
-                            }
-                        }
-
-                        final List<String> recipeUnlocks = Item.itemRecipeUnlocks.get(itemId);
-                        for (String recipe : recipeUnlocks) {
-                            if (!player.craft.recipes.contains(recipe)) {
-                                player.craft.recipes.add(recipe);
-                                ideaFrames = 80;
-                                ideaColor = "#ffcc00";
-                            }
-                        }
+                        unlockRecipes(Item.itemBlueprintUnlocks.get(itemId), Item.itemRecipeUnlocks.get(itemId));
 
                         Item splashItem = getSplashItem(itemId);
                         if (splashItem == null) {
@@ -291,12 +275,19 @@ public class Inventory {
                         for (int i = 0; i < count; i++) {
                             weapons.add(new Weapon(weaponId));
                         }
+
+                        unlockRecipes(Weapon.weaponBlueprintUnlocks.get(weaponId), Weapon.weaponRecipeUnlocks.get(weaponId));
                     } else {
                         int removed = 0;
                         for (int i = weapons.size() - 1; i > -1; i--) {
                             Weapon weapon = weapons.get(i);
                             if (weapon.weapon.equals(weaponId)) {
                                 weapons.remove(weapon);
+                                for (int e = 0; e < player.armory.weapons.length; e++) {
+                                    if (player.armory.weapons[e] == weapon) {
+                                        player.armory.weapons[e] = null;
+                                    }
+                                }
                                 removed++;
                                 if (removed == count) {
                                     break;
@@ -312,12 +303,17 @@ public class Inventory {
                         for (int i = 0; i < count; i++) {
                             armors.add(new Armor(armorId));
                         }
+
+                        unlockRecipes(Armor.armorBlueprintUnlocks.get(armorId), Armor.armorRecipeUnlocks.get(armorId));
                     } else {
                         int removed = 0;
                         for (int i = armors.size() - 1; i > -1; i--) {
                             Armor armor = armors.get(i);
                             if (armor.type.equals(armorId)) {
                                 armors.remove(armor);
+                                if (armor == player.armory.armor) {
+                                    player.armory.armor = null;
+                                }
                                 removed++;
                                 if (removed == count) {
                                     break;
@@ -359,6 +355,24 @@ public class Inventory {
             }
         }
         return false;
+    }
+
+    public void unlockRecipes(List<String> blueprintUnlocks, List<String> recipeUnlocks) {
+        for (String blueprint : blueprintUnlocks) {
+            if (!player.build.blueprints.contains(blueprint)) {
+                player.build.blueprints.add(blueprint);
+                ideaFrames = 80;
+                ideaColor = "#ddff00";
+            }
+        }
+
+        for (String recipe : recipeUnlocks) {
+            if (!player.craft.recipes.contains(recipe)) {
+                player.craft.recipes.add(recipe);
+                ideaFrames = 80;
+                ideaColor = "#ffcc00";
+            }
+        }
     }
 
     private Item getItem(String itemId) {

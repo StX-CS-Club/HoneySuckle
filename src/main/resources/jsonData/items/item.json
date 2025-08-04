@@ -29,6 +29,7 @@
         "id": 4,
         "name": "Pumpkin",
         "blueprintUnlocks": ["jackolantern"],
+        "recipeUnlocks": ["pumpkin_helm"],
         "texture": {
             "texture": "items/pumpkin"
         }
@@ -36,6 +37,7 @@
     "cactus": {
         "id": 5,
         "name": "Cactus",
+        "recipeUnlocks": ["cactus_sword"],
         "texture": {
             "texture": "items/cactus"
         }
@@ -51,6 +53,7 @@
     "diamond": {
         "id": 7,
         "name": "Diamond",
+        "recipeUnlocks": ["diamond_sword"],
         "texture": {
             "texture": "items/diamond"
         }

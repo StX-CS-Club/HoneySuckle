@@ -143,14 +143,14 @@ public class Armory {
         if (armor != null) {
             Map<String, String> armorTexture = armor.texture;
 
-            String back = armorTexture.get("back_texture");
+            String back = armorTexture.get("backTexture");
             if (back != null) {
                 g.drawImage(Rendering.texture(back, "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
             }
 
             g.drawImage(Rendering.texture("player/front", "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
 
-            String front = armorTexture.get("front_texture");
+            String front = armorTexture.get("frontTexture");
             if (front != null) {
                 g.drawImage(Rendering.texture(front, "#ffffff"), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
             }

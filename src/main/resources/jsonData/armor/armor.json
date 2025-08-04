@@ -4,9 +4,9 @@
     "id": 1,
     "texture": {
       "texture": "armor/leather/top",
-      "front_texture": "armor/leather/front",
-      "back_texture": "armor/leather/back",
-      "item_texture": "armor/leather/item"
+      "frontTexture": "armor/leather/front",
+      "backTexture": "armor/leather/back",
+      "itemTexture": "armor/leather/item"
     },
     "attributes": {
       "defense": 1.0,
@@ -26,8 +26,8 @@
     "id": 2,
     "texture": {
       "texture": "armor/a_rock/top",
-      "front_texture": "armor/a_rock/front",
-      "item_texture": "armor/a_rock/item",
+      "frontTexture": "armor/a_rock/front",
+      "itemTexture": "armor/a_rock/item",
       "rarityColor": "#bb3311"
     },
     "attributes": {
@@ -42,6 +42,55 @@
         "Speed": "0.9",
         "Health": "1",
         "Rock": "is there"
+    }
+  },
+  "pumpkin_helm": {
+    "name": "Pumpkin Helm",
+    "id": 3,
+    "recipeUnlocks": ["jackolantern_helm"],
+    "texture": {
+      "texture": "armor/pumpkin_helm/top",
+      "frontTexture": "armor/pumpkin_helm/front",
+      "backTexture": "armor/pumpkin_helm/back",
+      "itemTexture": "armor/pumpkin_helm/item",
+      "rarityColor": "#00db33"
+    },
+    "attributes": {
+      "defense": 0.8,
+      "regen": 0.0025,
+      "speed": 0.1,
+      "maxHealth": 1.0
+    },
+    "stats": {
+        "Defense": "0.8",
+        "Regen": "2.5",
+        "Speed": "1",
+        "Health": "1"
+    }
+  },
+  "jackolantern_helm": {
+    "name": "Jack-o-lantern Helm",
+    "id": 4,
+    "texture": {
+      "texture": "armor/jackolantern_helm/top",
+      "frontTexture": "armor/jackolantern_helm/front",
+      "backTexture": "armor/jackolantern_helm/back",
+      "itemTexture": "armor/jackolantern_helm/item",
+      "rarityColor": "#00db33"
+    },
+    "attributes": {
+      "defense": 0.75,
+      "regen": 0.0025,
+      "speed": 0.08,
+      "maxHealth": 1.0,
+      "lightRadius": 9
+    },
+    "stats": {
+        "Defense": "0.75",
+        "Regen": "2.5",
+        "Speed": "0.8",
+        "Health": "1",
+        "Light": "9"
     }
   }
 }
