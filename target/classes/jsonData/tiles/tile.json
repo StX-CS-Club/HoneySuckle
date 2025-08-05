@@ -82,5 +82,14 @@
       "glowColor": "#ee6600"
     },
     "attributes": { "acel": 0.75, "damageness": 0.05, "lightRadius": 4.0, "glow": 16.0, "glowRadius": 4.0 }
+  },
+  "brick_wall": {
+    "name": "Brick Wall",
+    "id": 8,
+    "texture": {
+      "natColor": "brickColor",
+      "texture": "tiles/brick_wall"
+    },
+    "tags": ["obstruction"]
   }
 }

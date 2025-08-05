@@ -20,29 +20,29 @@
         {
           "id": 1,
           "prob": 0.1,
-          "sideProb": [1, 0.435],
-          "bottomProb": [1, 0.435],
-          "rangeProb": [50, 50, 1]
+          "sideProb": [[1, 0.435]],
+          "bottomProb": [[1, 0.435]],
+          "rangeProb": [[50, 50, 1]]
         }
       ],
       "objects": [
         {
           "id": 1,
-          "tileProb": [1, 0.1]
+          "tileProb": [[1, 0.1]]
         },
         {
           "id": 2,
-          "tileProb": [1, 0.002]
+          "tileProb": [[1, 0.002]]
         },
         {
           "id": 4,
-          "tileProb": [1, 0.005]
+          "tileProb": [[1, 0.005]]
         }
       ],
       "entities": [
         {
           "id": 3,
-          "tileProb": [1, 0.001]
+          "tileProb": [[1, 0.001]]
         }
       ]
     }

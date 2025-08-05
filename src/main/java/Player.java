@@ -38,6 +38,9 @@ public class Player {
                 Arrays.asList(new Armor[]{armory.armor}),
                 Arrays.asList(new Item[]{new Item("wood", 4)}),
                 null);
+        inventory.incrementItem(Map.of("id", 9, "count", 12), true);
+        
+        attributes = armory.getAttributes();
 
         //Adds player to list of players
         players.add(this);
@@ -48,6 +51,8 @@ public class Player {
     public double[] vel = new double[2];
     public double[] screenPos = new double[2];
     public double rotation;
+
+    public Map<String, Number> attributes;
 
     public double health = 1;
     private double stamina = 1;
@@ -64,9 +69,6 @@ public class Player {
 
     //Render Player
     public void render(Graphics2D g) {
-        //Player/Armor attributes
-        Map<String, Number> attributes = armory.getAttributes();
-
         //If not dead, render
         if (health > 0) {
             //Render building and armory
@@ -117,7 +119,7 @@ public class Player {
     //Update Player
     public void update(InputHandler input) {
         //Player/Armor attributes
-        Map<String, Number> attributes = armory.getAttributes();
+        attributes = armory.getAttributes();
 
         //Friction
         for (int i = 0; i < 2; i++) {
@@ -257,10 +259,11 @@ public class Player {
     }
 
     //Damage Player
-    public void damage(double damage) {
-        //Player/Armor attributes
-        Map<String, Number> attributes = armory.getAttributes();
+    public void damage(double damage, boolean defense) {
         //Divide damage by defense
-        health -= damage / attributes.getOrDefault("defense", 1).doubleValue();
+        if(defense){
+            damage /= attributes.getOrDefault("defense", 1).doubleValue();
+        }
+        health -= damage;
     }
 }

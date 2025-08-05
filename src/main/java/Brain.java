@@ -240,7 +240,7 @@ public class Brain {
             if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
                 long ticks = incrementTicks("contact", 1);
                 if (checkTicks(ticks, rate)) {
-                    player.damage(damage);
+                    player.damage(damage, true);
                     entity.vel[0] *= -bounce;
                     entity.vel[1] *= -bounce;
                 }

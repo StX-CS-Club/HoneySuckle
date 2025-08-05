@@ -66,5 +66,13 @@
         "texture": {
             "texture": "items/rock"
         }
+    },
+    "scrap": {
+        "id": 9,
+        "name": "Scrap",
+        "blueprintUnlocks": ["tunnel"],
+        "texture": {
+            "texture": "items/scrap"
+        }
     }
 }

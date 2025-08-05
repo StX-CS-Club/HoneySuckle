@@ -21,32 +21,32 @@
         {
           "id": 7,
           "prob": 0.0025,
-          "sideProb": [7, 0.45],
-          "bottomProb": [7, 0.525]
+          "sideProb": [[7, 0.45]],
+          "bottomProb": [[7, 0.525]]
         },
         {
           "id": 1,
           "prob": 0.001,
-          "sideProb": [1, 0.45],
-          "bottomProb": [1, 0.45]
+          "sideProb": [[1, 0.45]],
+          "bottomProb": [[1, 0.45]]
         }
       ],
       "objects": [
         {
           "id": 8,
-          "tileProb": [6, 0.03]
+          "tileProb": [[6, 0.03]]
         },
         {
           "id": 4,
-          "tileProb": [6, 0.01]
+          "tileProb": [[6, 0.01]]
         },
         {
           "id": 1,
-          "tileProb": [1, 0.33]
+          "tileProb": [[1, 0.33]]
         },
         {
           "id": 7,
-          "tileProb": [6, 0.0002]
+          "tileProb": [[6, 0.0002]]
         }
       ]
     }

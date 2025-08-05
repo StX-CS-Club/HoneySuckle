@@ -90,5 +90,25 @@
     "texture": {
       "texture": "blueprints/jackolantern"
     }
+  },
+  "tunnel": {
+    "name": "Tunnel",
+    "product": 15,
+    "params": {
+      "tile": [8]
+    },
+    "mats": [
+      {
+        "id": 1,
+        "count": 3
+      },
+      {
+        "id": 9,
+        "count": 2
+      }
+    ],
+    "texture": {
+      "texture": "blueprints/tunnel"
+    }
   }
 }

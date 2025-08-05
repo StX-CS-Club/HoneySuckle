@@ -23,8 +23,7 @@
       "baseColor": "#aa6608",
       "texture": "tiles/raft"
     },
-    "tags": ["walkable", "safe"],
-    "loot": []
+    "tags": ["walkable", "safe"]
   },
   "torch": {
     "name": "Torch",
@@ -77,5 +76,15 @@
       "texture": "tiles/bridge"
     },
     "tags": ["walkable", "safe"]
+  },
+  "tunnel": {
+    "name": "Tunnel",
+    "id": 15,
+    "texture": {
+      "baseColor": "#aa6608",
+      "overlayColor": "#ffffff",
+      "texture": "tiles/tunnel"
+    },
+    "tags": ["walkable", "safe", "tunnel"]
   }
 }

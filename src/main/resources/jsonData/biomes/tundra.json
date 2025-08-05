@@ -17,24 +17,24 @@
       "tiles": [
         {
           "id": 1,
-          "sideProb": [1, 0.35, 4, 0.35],
-          "bottomProb": [1, 0.35, 4, 0.35]
+          "sideProb": [[1, 0.35], [4, 0.35]],
+          "bottomProb": [[1, 0.35], [4, 0.35]]
         },
         {
           "id": 4,
           "prob": 0.025,
-          "sideProb": [1, 0.4, 4, 0.4],
-          "bottomProb": [1, 0.4, 4, 0.4]
+          "sideProb": [[1, 0.4], [4, 0.4]],
+          "bottomProb": [[1, 0.4], [4, 0.4]]
         }
       ],
       "objects": [
         {
           "id": 1,
-          "tileProb": [1, 0.05]
+          "tileProb": [[1, 0.05]]
         },
         {
           "id": 4,
-          "tileProb": [1, 0.002]
+          "tileProb": [[1, 0.002]]
         }
       ]
     }

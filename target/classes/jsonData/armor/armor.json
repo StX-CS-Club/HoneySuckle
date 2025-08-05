@@ -21,7 +21,7 @@
         "Health": "1"
     }
   },
-  "a_rock": {
+  "aRock": {
     "name": "Rock",
     "id": 2,
     "texture": {
@@ -44,7 +44,7 @@
         "Rock": "is there"
     }
   },
-  "pumpkin_helm": {
+  "pumpkinHelm": {
     "name": "Pumpkin Helm",
     "id": 3,
     "recipeUnlocks": ["jackolantern_helm"],
@@ -68,7 +68,7 @@
         "Health": "1"
     }
   },
-  "jackolantern_helm": {
+  "jackolanternHelm": {
     "name": "Jack-o-lantern Helm",
     "id": 4,
     "texture": {

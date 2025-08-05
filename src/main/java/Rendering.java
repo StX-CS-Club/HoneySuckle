@@ -317,4 +317,12 @@ public class Rendering {
 
         return rotated;
     }
+
+    public static Color decodeColor(String colorId, int alpha){
+        if(colorId == null){
+            return null;
+        }
+        final Color color = Color.decode(colorId);
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+    }
 }

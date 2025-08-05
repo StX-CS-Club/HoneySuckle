@@ -10,6 +10,7 @@
       "waterColor": "#6fbbe9",
       "treeColor": "#8cc043",
       "cactusColor": "#47ab00",
+      "diamondColor": "#4ef5f5",
       "fogColor": "#ecba40"
     },
     "generation": {
@@ -19,8 +20,8 @@
         {
           "id": 0,
           "prob": 0.005,
-          "sideProb": [0, 0.45],
-          "bottomProb": [0, 0.535]
+          "sideProb": [[0, 0.45]],
+          "bottomProb": [[0, 0.535]]
         },
         {
           "id": 3,
@@ -30,11 +31,19 @@
       "objects": [
         {
           "id": 1,
-          "tileProb": [1, 0.005]
+          "tileProb": [[1, 0.005]]
         },
         {
           "id": 3,
-          "tileProb": [1, 0.02, 3, 0.02]
+          "tileProb": [[1, 0.02], [3, 0.02]]
+        }
+      ],
+      "structures": [
+        {
+          "id": 2,
+          "prob": 0.00005,
+          "offsetBL": [1, 1],
+          "offsetBR": [9, 9]
         }
       ]
     }

@@ -67,7 +67,7 @@ public class Item {
             double size = Math.min((double) splashFrame / animFrames, 1);
             int opacity = (int) Math.floor(255 * Math.min((double) (maxFrames - splashFrame) / animFrames, 1));
 
-            BufferedImage textImage = new BufferedImage(100, 24, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage textImage = new BufferedImage(100, 32, BufferedImage.TYPE_INT_ARGB);
             Graphics2D textGraphics = textImage.createGraphics();
 
             Color baseColor = Color.decode(texture.getOrDefault("pickupColor", "#ffffff"));
@@ -75,7 +75,7 @@ public class Item {
             Rendering.centeredText(textGraphics, name + " x" + count, 50, 24, 100, 24);
 
             int width = (int) (100 * size);
-            int height = (int) (24 * size);
+            int height = (int) (32 * size);
 
             g.drawImage(textImage, x - width / 2, y - height / 2, width, height, null);
             return true;

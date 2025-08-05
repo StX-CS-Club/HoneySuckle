@@ -14,14 +14,14 @@
         {
           "id": 1,
           "prob": 0.1,
-          "sideProb": [1, 0.45],
-          "bottomProb": [1, 0.25]
+          "sideProb": [[1, 0.45]],
+          "bottomProb": [[1, 0.25]]
         }
       ],
       "objects": [
         {
           "id": 1,
-          "tileProb": [1, 0.25]
+          "tileProb": [[1, 0.25]]
         }
       ]
     }

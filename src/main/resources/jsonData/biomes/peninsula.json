@@ -15,25 +15,25 @@
       "tiles": [
         {
           "id": 1,
-          "sideProb": [1, 0.095],
-          "bottomProb": [1, 0.90375]
+          "sideProb": [[1, 0.095]],
+          "bottomProb": [[1, 0.90375]]
         }
       ],
       "objects": [
         {
           "id": 1,
-          "tileProb": [1, 0.05]
+          "tileProb": [[1, 0.05]]
         },
         {
           "id": 4,
-          "tileProb": [1, 0.01]
+          "tileProb": [[1, 0.01]]
         }
       ],
       "entities": [
         {
           "id": 1,
           "levelProbPower": 1,
-          "tileProb": [1, 0.01]
+          "tileProb": [[1, 0.01]]
         }
       ]
     }

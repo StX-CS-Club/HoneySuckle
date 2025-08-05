@@ -78,9 +78,8 @@ public class Armor {
         g.drawImage(Rendering.rotateImage(Rendering.scroll(scrollLength), 90), 25, (int) (GAME_HEIGHT - scrollLength * 32) / 2, 256, scrollLength * 32, null);
 
         g.setColor(Color.decode(texture.getOrDefault("rarityColor", "#333333")));
-        g.setFont(new Font("VT323 Regular", Font.PLAIN, 32));
 
-        Rendering.centeredText(g, name, 153, (int) (GAME_HEIGHT - scrollLength * 32) / 2 + 48);
+        Rendering.centeredText(g, name, 153, (int) (GAME_HEIGHT - scrollLength * 32) / 2 + 48, 192, 32);
 
         g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
         g.setColor(Color.BLACK);

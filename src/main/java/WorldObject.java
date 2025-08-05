@@ -39,6 +39,7 @@ public class WorldObject {
 
     private final int glowColor;
     private final String color;
+    private final Color overlayColor;
     private final BufferedImage staticTexture;
 
     //WorldObject Contructor
@@ -62,6 +63,7 @@ public class WorldObject {
             glowColor = 0;
         }
         color = getColor(world);
+        overlayColor = Rendering.decodeColor(texture.get("overlayColor"), 16);
         staticTexture = getTexture();
     }
 
@@ -70,6 +72,13 @@ public class WorldObject {
         //If object has texture, render it
         int size = TILE_SIZE;
         double[] pos = screenPos.clone();
+
+        
+        if(overlayColor != null){
+            g.setColor(overlayColor);
+            g.fillRect((int) pos[0], (int) pos[1], size, size);
+        }
+
         if(frameDamage != 0 && ThreadLocalRandom.current().nextBoolean()){
             size *= .8;
             pos[0] += ((double) TILE_SIZE)/10;

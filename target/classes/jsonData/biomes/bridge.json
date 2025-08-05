@@ -16,13 +16,13 @@
       "tiles": [
         {
           "id": 5,
-          "rangeProb": [23, 27, 1]
+          "rangeProb": [[23, 27, 1]]
         }
       ],
       "objects": [
         {
           "id": 6,
-          "tileProb": [5, 0.04]
+          "tileProb": [[5, 0.04]]
         }
       ],
       "structures": [

@@ -32,8 +32,8 @@ public class Biome {
     public final Map<String, String> colorMap;
     private final Map<String, Object> generation;
 
-    public Biome(){
-        if(World.level > 0){
+    public Biome() {
+        if (World.level > 0) {
             biomeId = randomizeBiome(World.worlds.getLast().biome.biomeId, World.level);
         } else {
             biomeId = "wetlands";
@@ -61,8 +61,8 @@ public class Biome {
     //Generates biome based on given type
     public void generateWorld(World world) {
         // Interprets size and start values
-        world.size = arrayFromList(listFromMap(generation, "size", new Number[]{51, 100}));
-        world.start = arrayFromList(listFromMap(generation, "start", new Number[]{world.size[0] / 2, world.size[1] - 1}));
+        world.size = intArray(listFromMap(generation, "size", new Number[]{51, 100}).toArray(Number[]::new), 101);
+        world.start = intArray(listFromMap(generation, "start", new Number[]{world.size[0] / 2, world.size[1] - 1}).toArray(Number[]::new), 51);
 
         Tile[][] result = new Tile[world.size[0]][world.size[1]];
 
@@ -79,7 +79,7 @@ public class Biome {
         }
 
         // Generates start tiles
-        final int[][] start = array2dFromList(listFromMap(generation, "startMap", new Number[][]{new Number[]{1}}));
+        final int[][] start = int2dArray(array2dFromList(listFromMap(generation, "startMap", new Number[][]{new Number[]{1}})), 1);
 
         final int[] startSize = new int[]{start[0].length, start.length};
         final int startSide = (int) Math.floor((startSize[0] - 1) / 2.0);
@@ -92,14 +92,21 @@ public class Biome {
         }
 
         // Generates world
-        final int[] margin = arrayFromList(listFromMap(generation, "genSize", new Number[]{Math.ceil(world.size[0] / 2) + 1, world.size[1] - startSize[1]}));
+        final int[] margin = intArray(listFromMap(generation, "genSize", new Number[]{Math.ceil(world.size[0] / 2) + 1, world.size[1] - startSize[1]}).toArray(Number[]::new), 0);
 
         // Generation Rules
         final List<Map<String, Object>> tileGenRules = listFromMap(generation, "tiles");
         final List<Map<String, Object>> objGenRules = listFromMap(generation, "objects");
         final List<Map<String, Object>> entityGenRules = listFromMap(generation, "entities");
 
+        final boolean structuresFirst = tags.contains("structuresFirst");
+        if(structuresFirst){
+            generateStructures(world, result, objResult, entityResult);
+        }
+
         final boolean watery = tags.contains("watery");
+
+        
         for (int x = 0; x < margin[0]; x++) {
             for (int y = world.start[1] - startSize[1]; y > Math.max(world.start[1] - margin[1] - 1, -1); y--) {
                 for (int i = 1; i > -2; i -= 2) {
@@ -115,26 +122,25 @@ public class Biome {
 
                                 double prob = numberFromMap(tileGenRule, "prob", 0).doubleValue();
 
-                                final List<Number> sideProbs = listFromMap(tileGenRule, "sideProb", new Number[]{});
-                                if (!sideProbs.isEmpty()) {
-                                    for (int e = 0; e <= sideProbs.size() / 2; e += 2) {
-                                        prob += conditionalProb(result[pos[0] + i][y], sideProbs.get(e).intValue(), sideProbs.get(e + 1).doubleValue());
-                                    }
+                                final Number[][] tileProbs = array2dFromList(listFromMap(tileGenRule, "tileProb", new Number[0][]));
+                                for (Number[] tileProb : tileProbs) {
+                                    prob += conditionalProb(result[pos[0]][y], tileProb[0].intValue(), tileProb[1].doubleValue());
                                 }
 
-                                final List<Number> bottomProbs = listFromMap(tileGenRule, "bottomProb", new Number[]{});
-                                if (!bottomProbs.isEmpty()) {
-                                    for (int e = 0; e <= bottomProbs.size() / 2; e += 2) {
-                                        prob += conditionalProb(result[world.start[0] - i * x][y + 1], bottomProbs.get(e).intValue(), bottomProbs.get(e + 1).doubleValue());
-                                    }
+                                final Number[][] sideProbs = array2dFromList(listFromMap(tileGenRule, "sideProb", new Number[0][]));
+                                for (Number[] sideProb : sideProbs) {
+                                    prob += conditionalProb(result[pos[0] + i][y], sideProb[0].intValue(), sideProb[1].doubleValue());
                                 }
 
-                                final List<Number> rangeProbs = listFromMap(tileGenRule, "rangeProb", new Number[]{});
-                                if (!rangeProbs.isEmpty()) {
-                                    for (int e = 0; e <= rangeProbs.size() / 3; e += 3) {
-                                        if (pos[0] >= rangeProbs.get(e).intValue() && pos[0] <= rangeProbs.get(e + 1).intValue()) {
-                                            prob += rangeProbs.get(e + 2).intValue();
-                                        }
+                                final Number[][] bottomProbs = array2dFromList(listFromMap(tileGenRule, "bottomProb", new Number[0][]));
+                                for (Number[] bottomProb : bottomProbs) {
+                                    prob += conditionalProb(result[world.start[0] - i * x][y + 1], bottomProb[0].intValue(), bottomProb[1].doubleValue());
+                                }
+
+                                final Number[][] rangeProbs = array2dFromList(listFromMap(tileGenRule, "rangeProb", new Number[0][]));
+                                for (Number[] rangeProb : rangeProbs) {
+                                    if (pos[0] >= rangeProb[0].intValue() && pos[0] <= rangeProb[1].intValue()) {
+                                        prob += rangeProb[2].doubleValue();
                                     }
                                 }
 
@@ -148,9 +154,9 @@ public class Biome {
                             for (Map<String, Object> objGenRule : objGenRules) {
                                 double prob = numberFromMap(objGenRule, "prob", 0).doubleValue();
 
-                                final List<Number> tileProbs = listFromMap(objGenRule, "tileProb", new Number[]{});
-                                for (int e = 0; e < tileProbs.size() / 2; e += 2) {
-                                    prob += conditionalProb(result[pos[0]][y], tileProbs.get(e).intValue(), tileProbs.get(e + 1).doubleValue());
+                                final Number[][] tileProbs = array2dFromList(listFromMap(objGenRule, "tileProb", new Number[0][]));
+                                for (Number[] tileProb : tileProbs) {
+                                    prob += conditionalProb(result[pos[0]][y], tileProb[0].intValue(), tileProb[1].doubleValue());
                                 }
 
                                 if (ThreadLocalRandom.current().nextDouble() <= prob) {
@@ -164,9 +170,9 @@ public class Biome {
                                 for (Map<String, Object> entityGenRule : entityGenRules) {
                                     double prob = numberFromMap(entityGenRule, "prob", 0).doubleValue();
 
-                                    final List<Number> tileProbs = listFromMap(entityGenRule, "tileProb", new Number[]{});
-                                    for (int e = 0; e < tileProbs.size() / 2; e += 2) {
-                                        prob += conditionalProb(result[pos[0]][y], tileProbs.get(e).intValue(), tileProbs.get(e + 1).doubleValue());
+                                    final Number[][] tileProbs = array2dFromList(listFromMap(entityGenRule, "tileProb", new Number[0][]));
+                                    for (Number[] tileProb : tileProbs) {
+                                        prob += conditionalProb(result[pos[0]][y], tileProb[0].intValue(), tileProb[1].doubleValue());
                                     }
 
                                     prob *= Math.pow(World.level, numberFromMap(entityGenRule, "levelProbPower", 0).doubleValue());
@@ -186,15 +192,9 @@ public class Biome {
             }
         }
 
-        // Generates Structures
-        final List<Map<String, Object>> structureGenRules = listFromMap(generation, "structures");
-        for (Map<String, Object> structureGenRule : structureGenRules) {
-            final String structureId = structureStringId.get(numberFromMap(structureGenRule, "id", 0).intValue());
-
-            final int[][] setPositions = array2dFromList(listFromMap(structureGenRule, "pos", new Number[0][0]));
-            for (int[] setPos : setPositions) {
-                generateStructure(world, result, objResult, entityResult, setPos, structureId);
-            }
+        
+        if(!structuresFirst){
+            generateStructures(world, result, objResult, entityResult);
         }
 
         world.grid = result;
@@ -202,10 +202,55 @@ public class Biome {
         world.entities = entityResult;
     }
 
+    private void generateStructures(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult){
+        // Generates Structures
+        final List<Map<String, Object>> structureGenRules = listFromMap(generation, "structures");
+        for (Map<String, Object> structureGenRule : structureGenRules) {
+            final String structureId = structureStringId.get(numberFromMap(structureGenRule, "id", 0).intValue());
+            final int[] offsetBr = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
+            final int[] offsetBl = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
+
+            final int[][] setPositions = int2dArray(array2dFromList(listFromMap(structureGenRule, "pos", new Number[0][])), 0);
+            for (int[] setPos : setPositions) {
+                generateStructure(world, result, objResult, entityResult, setPos, structureId);
+            }
+
+            final int[][] grids = int2dArray(array2dFromList(listFromMap(structureGenRule, "grid", new Number[1][4])), 0);
+
+            final double baseProb = numberFromMap(structureGenRule, "prob", 0).doubleValue();
+            final Number[][] tileProbs = array2dFromList(listFromMap(structureGenRule, "tileProb", new Number[0][]));
+            for (int[] grid : grids) {
+
+                grid[0] = Math.max(grid[0], offsetBl[0]);
+                grid[1] = Math.max(grid[1], offsetBl[1]);
+                grid[2] = Math.max(grid[2], 1);
+                grid[3] = Math.max(grid[3], 1);
+
+                for (int x = grid[0]; x < world.size[0] - offsetBr[0]; x += grid[2]) {
+                    for (int y = grid[1]; y < world.size[1] - offsetBr[1]; y += grid[3]) {
+                        double prob = baseProb;
+
+                        for (Number[] tileProb : tileProbs) {
+                            if (result[x][y].id == tileProb[0].intValue()) {
+                                prob += tileProb[1].doubleValue();
+                            }
+                        }
+
+                        if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                            generateStructure(world, result, objResult, entityResult, new int[]{x, y}, structureId);
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
+
     private static void generateStructure(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, int[] pos, String id) {
         final Map<String, Object> generation = structureGeneration.get(id);
 
-        final int[][] tileMap = array2dFromList(listFromMap(generation, "tileMap", new Number[0][0]));
+        final int[][] tileMap = int2dArray(array2dFromList(listFromMap(generation, "tileMap", new Number[0][0])), 0);
         if (tileMap.length > 0) {
             for (int y = 0; y < tileMap.length; y++) {
                 for (int x = 0; x < tileMap[0].length; x++) {
@@ -219,7 +264,7 @@ public class Biome {
             }
         }
 
-        final int[][] objMap = array2dFromList(listFromMap(generation, "objMap", new Number[0][0]));
+        final int[][] objMap = int2dArray(array2dFromList(listFromMap(generation, "objMap", new Number[0][0])), 0);
         if (objMap.length > 0) {
             for (int y = 0; y < objMap.length; y++) {
                 for (int x = 0; x < objMap[0].length; x++) {
@@ -240,11 +285,8 @@ public class Biome {
         final List<Map<String, Object>> entities = listFromMap(generation, "entities");
         for (Map<String, Object> entity : entities) {
             final String entityId = Entity.entityStringId.get(numberFromMap(entity, "id", 0).intValue());
-            final List<Number> entityPosList = listFromMap(entity, "pos", new Number[2]);
-            final double[] entityPos = new double[]{
-                (entityPosList.get(0).doubleValue() + pos[0]) * TILE_SIZE,
-                (entityPosList.get(1).doubleValue() + pos[1]) * TILE_SIZE
-            };
+            final double[] entityPos = doubleArray(listFromMap(entity, "pos", new Number[2]).toArray(Number[]::new), 0);
+            Arrays.setAll(entityPos, i -> (entityPos[i] + pos[i]) * TILE_SIZE);
             entityResult.add(new Entity(entityId, entityPos, world));
         }
     }
@@ -319,28 +361,53 @@ public class Biome {
     }
 
     private static Number numberFromMap(Map<String, Object> map, String key, Number defaultValue) {
-        if (map.get(key) instanceof Number) {
-            return (Number) map.get(key);
+        Object value = map.get(key);
+        if (value instanceof Number) {
+            return (Number) value;
         }
         return defaultValue;
     }
 
-    private static int[] arrayFromList(List<Number> list) {
-        final int[] result = new int[list.size()];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = list.get(i).intValue();
+    private static Number[][] array2dFromList(List<List<Number>> list) {
+        if (list.isEmpty()) {
+            return new Number[0][0];
+        }
+        final int iLength = list.size();
+        final int eLength = list.get(0).size();
+        final Number[][] result = new Number[iLength][eLength];
+        for (int i = 0; i < iLength; i++) {
+            for (int e = 0; e < eLength; e++) {
+                result[i][e] = list.get(i).get(e);
+            }
         }
         return result;
     }
 
-    private static int[][] array2dFromList(List<List<Number>> list) {
-        if (list.isEmpty()) {
+    private static int[] intArray(Number[] array, int defaultValue) {
+        int[] result = new int[array.length];
+        Arrays.setAll(result, i -> array[i] == null ? defaultValue : array[i].intValue());
+        return result;
+    }
+
+    private static double[] doubleArray(Number[] array, double defaultValue){
+        double[] result = new double[array.length];
+        Arrays.setAll(result, i -> array[i] == null ? defaultValue : array[i].doubleValue());
+        return result;
+    }
+
+    private static int[][] int2dArray(Number[][] array, int defaultValue) {
+        if (array.length == 0) {
             return new int[0][0];
         }
-        final int[][] result = new int[list.size()][list.getFirst().size()];
-        for (int i = 0; i < result.length; i++) {
-            for (int e = 0; e < result[0].length; e++) {
-                result[i][e] = list.get(i).get(e).intValue();
+        int[][] result = new int[array.length][array[0].length];
+        for (int i = 0; i < array.length; i++) {
+            for (int e = 0; e < array[0].length; e++) {
+                Number value = array[i][e];
+                if (value == null) {
+                    result[i][e] = defaultValue;
+                } else {
+                    result[i][e] = value.intValue();
+                }
             }
         }
         return result;

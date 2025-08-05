@@ -98,12 +98,12 @@ public class World {
         //Ensures not touching any obstructions
         for (int i = 0; i < 2; i++) {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0] && delta[0] != 0) {
-                if (checkTag(marginIndex[0][i], posIndex[1], "obstruction")) {
+                if (checkTag(marginIndex[0][i], posIndex[1], "obstruction") && !checkTag(marginIndex[0][i], posIndex[1], "tunnel")) {
                     newPos[0] = (marginIndex[0][i] + 0.5) * TILE_SIZE + (0.5 * TILE_SIZE + margin) * Math.pow(-1, i);
                 }
             }
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1] && delta[1] != 0) {
-                if (checkTag(posIndex[0], marginIndex[1][i], "obstruction")) {
+                if (checkTag(posIndex[0], marginIndex[1][i], "obstruction") && !checkTag(posIndex[0], marginIndex[1][i], "tunnel")) {
                     newPos[1] = (marginIndex[1][i] + 0.5) * TILE_SIZE + (0.5 * TILE_SIZE + margin) * Math.pow(-1, i);
                 }
             }
@@ -136,9 +136,9 @@ public class World {
 
         //Checks if on damage tile
         if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            player.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+            player.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS, false);
             if (biome.tags.contains("dangerousVoid")) {
-                player.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                player.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS, false);
             }
         }
         //Checks if on acel tile
@@ -150,12 +150,12 @@ public class World {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
                 //Checks if touching hurty tile
                 if (checkAttribute(marginIndex[0][i], posIndex[1], "hurtness")) {
-                    player.damage(0.01 * getAttribute(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
+                    player.damage(0.01 * getAttribute(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS, true);
                 }
             }
             if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
                 if (checkAttribute(posIndex[0], marginIndex[1][i], "hurtness")) {
-                    player.damage(0.01 * getAttribute(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
+                    player.damage(0.01 * getAttribute(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS, true);
                 }
             }
         }

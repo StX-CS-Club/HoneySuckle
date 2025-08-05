@@ -163,7 +163,7 @@ public class Projectile {
                             new Point2D.Double(player.pos[0], player.pos[1]),
                             new Point2D.Double(player.size, player.size))) {
                         //damage player, and remove self
-                        player.damage(damage);
+                        player.damage(damage, true);
                         world.projectiles.remove(this);
                         break;
                     }
