@@ -62,9 +62,9 @@ public class Armor {
 
     public void renderUiTile(Graphics2D g, int x, int y, double factor, boolean active) {
         if (active) {
-            g.drawImage(Rendering.texture("hud/armor_slot", "#ffffff"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
+            g.drawImage(Rendering.texture("hud/slots/armor", "#ffffff"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
         } else {
-            g.drawImage(Rendering.texture("hud/armor_slot", "#666666"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
+            g.drawImage(Rendering.texture("hud/slots/armor", "#666666"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
         }
 
         final String itemTexture = texture.get("itemTexture");

@@ -4,6 +4,7 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -132,6 +133,7 @@ class FileManager {
             for (String key : weaponData.keySet()) {
                 Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
                 Weapon.weaponAttributes.put(key, (Map<String, Number>) weapon.getOrDefault("attributes", new HashMap<>()));
+                Weapon.weaponAmmo.put(key, (List<String>) weapon.getOrDefault("ammo", new ArrayList<>()));
                 Weapon.weaponStats.put(key, (Map<String, String>) weapon.getOrDefault("stats", new HashMap<>()));
                 Weapon.weaponBehaviors.put(key, (Map<String, Map<String, Object>>) weapon.getOrDefault("behavior", new HashMap<>()));
                 Weapon.weaponTags.put(key, (List<String>) weapon.getOrDefault("tags", new ArrayList<>()));
@@ -143,6 +145,25 @@ class FileManager {
                 final int id = (int) weapon.get("id");
                 Weapon.weaponIntId.put(key, id);
                 Weapon.weaponStringId.put(id, key);
+            }
+
+            //Maps ammo data
+            Map<String, Object> ammoData = readJsonDirectory(FileManager.class.getResource("jsonData/ammo").toURI());
+            for (String key : ammoData.keySet()) {
+                Map<String, Object> ammo = (Map<String, Object>) ammoData.get(key);
+
+                Ammo.ammoAttributes.put(key, (Map<String, Number>) ammo.getOrDefault("attributes", new HashMap<>()));
+                Ammo.ammoNames.put(key, (String) ammo.getOrDefault("name", key));
+                Ammo.ammoStats.put(key, (Map<String, String>) ammo.getOrDefault("stats", new HashMap<>()));
+                Ammo.ammoTextures.put(key, (Map<String, String>) ammo.getOrDefault("texture", new HashMap<>()));
+                Ammo.ammoTypes.put(key, (List<String>) ammo.getOrDefault("types", new ArrayList<>()));
+                Ammo.ammoRecipeUnlocks.put(key, (List<String>) ammo.getOrDefault("recipeUnlocks", new ArrayList<>()));
+                Ammo.ammoBlueprintUnlocks.put(key, (List<String>) ammo.getOrDefault("blueprintUnlocks", new ArrayList<>()));
+                
+
+                final int id = (int) ammo.get("id");
+                Ammo.ammoIntId.put(key, id);
+                Ammo.ammoStringId.put(id, key);
             }
 
             //Maps armor data

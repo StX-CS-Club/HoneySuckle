@@ -30,8 +30,11 @@ public class Build {
     public static final Map<String, Integer> blueprintProducts = new HashMap<>();
     public static final Map<String, List<String>> blueprintTags = new HashMap<>();
 
+    private final Player player;
+
     //Build Constructor
-    public Build(Set<String> blueprints) {
+    public Build(Player player, Set<String> blueprints) {
+        this.player = player;
         //Assigns values to properties
         this.blueprints.addAll(blueprints);
     }
@@ -44,7 +47,7 @@ public class Build {
     public double[] cursor = new double[2];
 
     //Update Build
-    public void update(Player player, World world, InputHandler input) {
+    public void update(World world, InputHandler input) {
         for (int i = 0; i < 2; i++) {
             double mouseDiff = input.mousePos[i]
                     - (gameSize[i] / 2.0
@@ -61,7 +64,7 @@ public class Build {
     }
 
     //Render Build
-    public void render(Graphics2D g, World world, Player player) {
+    public void render(Graphics2D g, World world) {
         //Tile position of player, with cursor pos added
         int[] index = new int[]{
             (int) Math.floor(player.pos[0] / TILE_SIZE + cursor[0]),
@@ -72,7 +75,7 @@ public class Build {
         Color color = Color.red;
 
         //If can place on tile, be cyan
-        if (checkCanPlace(world, player, (String) blueprints.toArray()[blueprintIndex])) {
+        if (checkCanPlace(world, (String) blueprints.toArray()[blueprintIndex])) {
             color = Color.cyan;
         }
 
@@ -88,7 +91,7 @@ public class Build {
     }
 
     //Render Build UI
-    public void renderUi(Graphics2D g, World world, Player player) {
+    public void renderUi(Graphics2D g, World world) {
         //Slot size
         double xMargin = 0;
 
@@ -147,7 +150,7 @@ public class Build {
     }
 
     //Build something in the world
-    public void build(World world, Player player) {
+    public void build(World world) {
         //Current selected blueprint
         String blueprintKey = (String) blueprints.toArray()[blueprintIndex];
         //Material data
@@ -160,7 +163,7 @@ public class Build {
         };
 
         //Checks if can place on tile
-        if (checkCanPlace(world, player, blueprintKey)) {
+        if (checkCanPlace(world, blueprintKey)) {
             //Places tile
             world.objGrid[index[0]][index[1]] = new WorldObject(blueprintProducts.get(blueprintKey), index, world);
             //Removes materials
@@ -171,7 +174,7 @@ public class Build {
     }
 
     //Checks if blueprint can be built
-    private boolean checkCanPlace(World world, Player player, String blueprintKey) {
+    private boolean checkCanPlace(World world, String blueprintKey) {
         //Unique tags of blueprint
         List<String> tags = blueprintTags.get(blueprintKey);
 

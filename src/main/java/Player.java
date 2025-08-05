@@ -26,9 +26,9 @@ public class Player {
         //Assign values to properties
         this.pos = pos;
         this.size = size;
-        build = new Build(new LinkedHashSet<>(Arrays.asList("wall", "raft")));
-        craft = new Craft(new LinkedHashSet<>());
-        armory = new Armory(
+        build = new Build(this, new LinkedHashSet<>(Arrays.asList("wall", "raft")));
+        craft = new Craft(this, new LinkedHashSet<>());
+        armory = new Armory(this,
                 new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
                 new Armor("leather")
         );
@@ -37,9 +37,9 @@ public class Player {
                 Arrays.asList(armory.weapons),
                 Arrays.asList(new Armor[]{armory.armor}),
                 Arrays.asList(new Item[]{new Item("wood", 4)}),
-                null);
-        inventory.incrementItem(Map.of("id", 9, "count", 12), true);
-        
+                Arrays.asList(new Ammo("woodenArrow", 10)));
+        armory.weapons[1].setAmmo(inventory.ammo);
+
         attributes = armory.getAttributes();
 
         //Adds player to list of players
@@ -73,9 +73,9 @@ public class Player {
         if (health > 0) {
             //Render building and armory
             if (!inventory.isOpen) {
-                build.render(g, World.worlds.get(World.level), this);
+                build.render(g, World.worlds.get(World.level));
             }
-            armory.render(g, this);
+            armory.render(g);
             inventory.renderItemSplashes(g, screenPos);
 
             //Original rotation
@@ -92,7 +92,7 @@ public class Player {
                     size, size, null
             );
             //Render armor over player
-            armory.renderArmor(g, this);
+            armory.renderArmor(g);
 
             //Reset rotation
             g.setTransform(originalTransform);
@@ -150,16 +150,16 @@ public class Player {
             }
 
             //Update player build and armory
-            build.update(this, world, input);
-            armory.updateControls(input, this);
+            build.update(world, input);
+            armory.updateControls(input);
 
             //Build on right click
             if (input.clickDown(3)) {
-                build.build(World.worlds.get(World.level), this);
+                build.build(World.worlds.get(World.level));
             }
         }
         // Updates Inventory
-        armory.updateWeapons(this);
+        armory.updateWeapons();
         inventory.update(input);
 
         //If space pressed, reset acel to dash acel
@@ -224,7 +224,7 @@ public class Player {
         //World interact with player
         world.playerEvent(this);
         //Update armor
-        armory.updateArmor(this);
+        armory.updateArmor();
 
         //Regenerate health
         if (health > 0) {
@@ -261,7 +261,7 @@ public class Player {
     //Damage Player
     public void damage(double damage, boolean defense) {
         //Divide damage by defense
-        if(defense){
+        if (defense) {
             damage /= attributes.getOrDefault("defense", 1).doubleValue();
         }
         health -= damage;

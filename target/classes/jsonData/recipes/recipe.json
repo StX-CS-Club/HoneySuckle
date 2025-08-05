@@ -64,5 +64,18 @@
         "type": 1
       }
     ]
+  },
+  "wooden_arrow": {
+    "name": "Wooden Arrow",
+    "type": "ammo",
+    "products": [{ "id": 1, "type": 3}],
+    "texture": {
+      "texture": "ammo/wooden_arrow"
+    },
+    "mats": [
+      {
+        "id": 1
+      }
+    ]
   }
 }

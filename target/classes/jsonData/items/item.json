@@ -2,6 +2,7 @@
     "wood": {
         "id": 1,
         "name": "Wood",
+        "recipeUnlocks": ["wooden_arrow"],
         "texture": {
             "texture": "items/wood"
         },

@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /*
  * Projectile.java *
@@ -66,6 +67,44 @@ public class Projectile {
         //Assign values to properties
         this.pos = pos;
         this.type = type;
+        this.angle = angle;
+        this.source = source;
+        weight = attributes.getOrDefault("weight", 1.0).doubleValue();
+        size = attributes.getOrDefault("size", 0.5).doubleValue()*HoneySuckle.TILE_SIZE;
+        damage = attributes.getOrDefault("damage", 0.25).doubleValue();
+
+        staticTexture = getTexture();
+    }
+    public Projectile(Map<String, Number> attributes, double[] pos, double[] currentVel, double angle, Object source) {
+        type = projStringId.get(attributes.get("proj").intValue());
+        
+        //Interprets projectile type
+        texture = projTextures.get(type);
+        tags = projTags.get(type);
+
+        Set<String> keys = attributes.keySet();
+        Map<String, Number> defaultAttributes = projAttributes.get(type);
+        for(String key : defaultAttributes.keySet()){
+            if(!keys.contains(key)){
+                attributes.put(key, defaultAttributes.get(key));
+            }
+        }
+        this.attributes = attributes;
+
+        baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * TILE_SIZE;
+
+        //Trig variables
+        double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
+        double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
+
+        //Calculate velocity based on angle and magnitude
+        vel = new double[]{sin, cos};
+
+        vel[0] += currentVel[0];
+        vel[1] += currentVel[1];
+
+        //Assign values to properties
+        this.pos = pos;
         this.angle = angle;
         this.source = source;
         weight = attributes.getOrDefault("weight", 1.0).doubleValue();

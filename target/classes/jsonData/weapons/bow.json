@@ -2,7 +2,8 @@
   "bow": {
     "name": "Bow",
     "id": 2,
-    "tags": ["constClick"],
+    "tags": ["constClick", "loadAmmo"],
+    "ammo": ["arrow"],
     "stats": {
       "Type": "Bow",
       "Damage": "2.5",
@@ -18,7 +19,7 @@
       "shoot": {
         "cooldown": 20,
         "frames": 5,
-        "proj": 1
+        "damage": 0.5
       }
     }
   }

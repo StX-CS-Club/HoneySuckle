@@ -26,7 +26,7 @@ public class Biome {
     public static final Map<String, String> structureName = new HashMap<>();
     public static final Map<String, Map<String, Object>> structureGeneration = new HashMap<>();
 
-    public final String biomeId;
+    public final String type;
 
     public final List<String> tags;
     public final Map<String, String> colorMap;
@@ -34,13 +34,13 @@ public class Biome {
 
     public Biome() {
         if (World.level > 0) {
-            biomeId = randomizeBiome(World.worlds.getLast().biome.biomeId, World.level);
+            type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            biomeId = "wetlands";
+            type = "wetlands";
         }
-        tags = biomeTags.get(biomeId);
-        colorMap = biomeColorMap.get(biomeId);
-        generation = biomeGeneration.get(biomeId);
+        tags = biomeTags.get(type);
+        colorMap = biomeColorMap.get(type);
+        generation = biomeGeneration.get(type);
     }
 
     public static String randomizeBiome(String lastBiome, int level) {

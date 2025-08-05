@@ -27,7 +27,10 @@ public class Craft {
     private double scroll = 0;
     private int hover = -1;
 
-    public Craft(Set<String> recipes) {
+    private final Player player;
+
+    public Craft(Player player, Set<String> recipes) {
+        this.player = player;
         this.recipes.addAll(recipes);
     }
 
@@ -45,7 +48,7 @@ public class Craft {
         }
     }
 
-    public void update(Player player, InputHandler input) {
+    public void update(InputHandler input) {
         if (!recipes.isEmpty()) {
             scroll = Math.clamp(scroll + input.mouseScroll, 0, recipes.size() - 1);
             hover = -1;
@@ -56,7 +59,7 @@ public class Craft {
                 }
             }
 
-            if (input.clickPressed(1)) {
+            if (input.clickPressed(1) || input.clickDown(3)) {
                 if (hover > -1 && hover < recipes.size()) {
                     final String recipe = (String) recipes.toArray()[hover];
                     if (hasMaterials(player, recipe)) {
@@ -68,7 +71,7 @@ public class Craft {
         }
     }
 
-    public void renderUi(Graphics2D g, Player player) {
+    public void renderUi(Graphics2D g) {
         final String[] recipeArray = recipes.toArray(String[]::new);
 
         for (int i = 0; i < recipeArray.length; i++) {
@@ -84,9 +87,9 @@ public class Craft {
             }
 
             if (hover == i) {
-                g.drawImage(Rendering.texture("hud/recipe", slotColor), (int) (GAME_WIDTH / 2 - 55 + offset), (int) (GAME_HEIGHT / 2 - 55), 110, 110, null);
+                g.drawImage(Rendering.texture("hud/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 55 + offset), (int) (GAME_HEIGHT / 2 - 55), 110, 110, null);
             } else {
-                g.drawImage(Rendering.texture("hud/recipe", slotColor), (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 100, 100, null);
+                g.drawImage(Rendering.texture("hud/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 100, 100, null);
             }
 
             final String recipeTexture = texture.get("texture");
@@ -139,6 +142,9 @@ public class Craft {
                     }
                     case 2 -> {
                         texture = Armor.armorTextures.get(Armor.armorStrignId.get(id)).get("itemTexture");
+                    }
+                    case 3 -> {
+                        texture = Ammo.ammoTextures.get(Ammo.ammoStringId.get(id)).get("texture");
                     }
                 }
 
