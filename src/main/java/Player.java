@@ -76,7 +76,7 @@ public class Player {
                 build.render(g, World.worlds.get(World.level));
             }
             armory.render(g);
-            inventory.renderItemSplashes(g, screenPos);
+            inventory.renderSplashes(g, screenPos);
 
             //Original rotation
             AffineTransform originalTransform = g.getTransform();
@@ -219,7 +219,7 @@ public class Player {
         }
 
         //Bound player to world
-        pos = world.bound(pos, vel, size / 2.0);
+        pos = world.bound(pos, vel, List.of(), size / 2.0);
 
         //World interact with player
         world.playerEvent(this);

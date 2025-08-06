@@ -2,7 +2,6 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,13 +56,20 @@ public class Weapon {
         ammoTypes = weaponAmmo.get(type);
     }
 
+    public boolean correctAmmo(List<String> ammoTypeList) {
+        for (String ammoType : ammoTypes) {
+            if (ammoTypeList.contains(ammoType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setAmmo(List<Ammo> ammoList) {
         for (Ammo invAmmo : ammoList) {
-            for (String ammoType : ammoTypes) {
-                if (invAmmo.types.contains(ammoType)) {
-                    ammo = invAmmo;
-                    return;
-                }
+            if (correctAmmo(invAmmo.types)) {
+                ammo = invAmmo;
+                return;
             }
         }
     }

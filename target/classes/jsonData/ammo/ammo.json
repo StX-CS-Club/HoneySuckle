@@ -13,7 +13,7 @@
       "Weight": "0.5"
     },
     "attributes": {
-      "proj": 1,
+      "proj": 4,
       "damage": 0.5,
       "speed": 0.25,
       "size": 0.5,
@@ -39,6 +39,27 @@
       "speed": 0.33,
       "size": 0.5,
       "weight": 0.5
+    }
+  },
+  "shotgunShell": {
+    "name": "Shotgun Shell",
+    "types": ["shotgunShell"],
+    "id": 3,
+    "texture": {
+        "texture": "ammo/shotgun_shell"
+    },
+    "stats": {
+      "Damage": "0.75",
+      "Speed": "0.5",
+      "Size": "0.5",
+      "Weight": "0.75"
+    },
+    "attributes": {
+      "proj": 5,
+      "damage": 0.75,
+      "speed": 0.5,
+      "size": 0.25,
+      "weight": 0.75
     }
   }
 }

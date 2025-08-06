@@ -27,7 +27,7 @@
       "texture": "projectiles/fireball"
     }
   },
-  "enemy_arrow": {
+  "enemyArrow": {
     "name": "Enemy Arrow",
     "id": 3,
     "tags": ["hurtPlayer"],
@@ -40,6 +40,34 @@
     },
     "texture": {
       "texture": "projectiles/arrow"
+    }
+  },
+  "woodenArrow": {
+    "name": "Wooden Arrow",
+    "id": 4,
+    "tags": ["hurtEntity", "hurtPlayer"],
+    "attributes": {
+      "damage": 0.25,
+      "speed": 0.25,
+      "size": 0.5,
+      "weight": 0.5
+    },
+    "texture": {
+      "texture": "projectiles/wooden_arrow"
+    }
+  },
+  "bullet": {
+    "name": "Bullet",
+    "id": 5,
+    "tags": ["hurtEntity", "hurtPlayer", "damageTile"],
+    "attributes": {
+      "damage": 0.75,
+      "speed": 0.5,
+      "size": 0.25,
+      "weight": 0.75
+    },
+    "texture": {
+      "texture": "projectiles/bullet"
     }
   }
 }

@@ -24,7 +24,7 @@ public class Armory {
 
     private double weaponScroll = 0;
     private int weaponHover = -2;
-    public int weaponSelect = -1;
+    public Weapon weaponSelect = null;
 
     private double armorScroll = 0;
     private int armorOffset = 0;
@@ -105,7 +105,7 @@ public class Armory {
         weaponHover = -2;
         if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
             double weaponHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
-            if (weaponSelect == -1) {
+            if (weaponSelect == null) {
                 weaponHighlight += weaponScroll * 110;
             }
             if (weaponHighlight % 110 <= 100) {
@@ -113,20 +113,19 @@ public class Armory {
             }
         }
         if (input.clickPressed(1)) {
-            if (weaponSelect != -1) {
+            if (weaponSelect != null) {
                 if (Math.abs(weaponHover) <= 1) {
-                    final Weapon weapon = player.inventory.weapons.get(weaponSelect);
                     for (int i = 0; i < 3; i++) {
-                        if (weapon == weapons[i]) {
+                        if (weaponSelect == weapons[i]) {
                             weapons[i] = weapons[weaponHover + 1];
                             break;
                         }
                     }
-                    weapons[weaponHover + 1] = weapon;
-                    weaponSelect = -1;
+                    weapons[weaponHover + 1] = weaponSelect;
+                    weaponSelect = null;
                 }
             } else if (weaponHover >= 0 && weaponHover < player.inventory.weapons.size()) {
-                weaponSelect = weaponHover;
+                weaponSelect = player.inventory.weapons.get(weaponHover);
             }
         }
     }
@@ -135,18 +134,15 @@ public class Armory {
         weaponHover = -2;
         if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
             double weaponHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
-            if (weaponSelect == -1) {
-                weaponHighlight += weaponScroll * 110;
-            }
             if (weaponHighlight % 110 <= 100) {
-                weaponHover = (int) Math.floor(weaponHighlight / 110);
+                weaponHover = (int) Math.floor(weaponHighlight / 110 + weaponScroll * 110);
             }
         }
 
         if (weaponHover > -2 && weaponHover < 2) {
-            if (!weapons[weaponHover + 1].tags.contains("loadAmmo")) {
+            if (!weapons[weaponHover + 1].correctAmmo(player.inventory.ammoSelect.types)) {
                 weaponHover = -2;
-            } else if(input.clickPressed(1)){
+            } else if (input.clickPressed(1)) {
                 weapons[weaponHover + 1].ammo = player.inventory.ammoSelect;
                 player.inventory.ammoSelect = null;
             }
@@ -166,7 +162,7 @@ public class Armory {
 
     //Updates selected weapon from scroll wheel
     public void scrollBar(double mouseScroll) {
-        if (Math.abs(mouseScroll) >= InputHandler.criticalMouseScroll) {
+        if (Math.abs(mouseScroll) >= InputHandler.CRITICAL_MOUSE_SCROLL) {
             weaponIndex += Math.signum(mouseScroll);
             if (weaponIndex < 0) {
                 weaponIndex = 2;
@@ -263,14 +259,11 @@ public class Armory {
     }
 
     public void renderWeaponSelect(Graphics2D g) {
-
-        final Weapon weapon = player.inventory.weapons.get(weaponSelect);
-
-        weapon.renderUiTile(g, GAME_WIDTH / 2 - 50, GAME_HEIGHT / 2 + 75, 1, weapons);
+        weaponSelect.renderUiTile(g, GAME_WIDTH / 2 - 50, GAME_HEIGHT / 2 + 75, 1, weapons);
 
         renderWeaponList(g);
 
-        Weapon scrollWeapon = weapon;
+        Weapon scrollWeapon = weaponSelect;
         if (weaponHover > -2 && weaponHover < 2) {
             if (weapons[weaponHover + 1] != null) {
                 scrollWeapon = weapons[weaponHover + 1];
@@ -287,13 +280,13 @@ public class Armory {
 
         player.inventory.ammoSelect.renderScroll(g);
 
-        for(int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             Weapon iWeapon = weapons[i];
 
-            if(iWeapon != null){
-                if(iWeapon.ammo != null){
+            if (iWeapon != null) {
+                if (iWeapon.ammo != null) {
                     String ammoTexture = iWeapon.ammo.texture.get("texture");
-                    if(ammoTexture != null){
+                    if (ammoTexture != null) {
                         g.drawImage(Rendering.texture("hud/slots/ammo", iWeapon.ammo.texture.get("rarityColor")), GAME_WIDTH / 2 - 126 + i * 110, GAME_HEIGHT / 2 - 66, 32, 32, null);
                         g.drawImage(Rendering.texture(ammoTexture, "#ffffff"), GAME_WIDTH / 2 - 122 + i * 110, GAME_HEIGHT / 2 - 62, 24, 24, null);
                     }
@@ -301,10 +294,10 @@ public class Armory {
             }
         }
 
-        if(weaponHover > -2 && weaponHover < 2){
-            Weapon weapon = weapons[weaponHover+1];
-            if(weapon != null){
-                if(weapon.ammo != null){
+        if (weaponHover > -2 && weaponHover < 2) {
+            Weapon weapon = weapons[weaponHover + 1];
+            if (weapon != null) {
+                if (weapon.ammo != null) {
                     weapon.ammo.renderScroll(g);
                 }
             }

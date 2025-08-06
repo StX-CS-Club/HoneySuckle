@@ -22,7 +22,7 @@ public class Inventory {
     public final List<Item> items = new ArrayList<>();
     public final List<Ammo> ammo = new ArrayList<>();
 
-    private final List<Item> splashItems = new ArrayList<>();
+    private final List<Splash> splashes = new ArrayList<>();
 
     private final Player player;
 
@@ -67,13 +67,13 @@ public class Inventory {
     public void update(InputHandler input) {
         if (input.keyPressed(69)) {
             isOpen = !isOpen;
-            player.armory.weaponSelect = -1;
+            player.armory.weaponSelect = null;
             ammoSelect = null;
             setPage(1);
         }
         if (input.keyPressed(82)) {
             isOpen = !isOpen;
-            player.armory.weaponSelect = -1;
+            player.armory.weaponSelect = null;
             ammoSelect = null;
             setPage(0);
         }
@@ -118,9 +118,10 @@ public class Inventory {
                         }
                         if (input.clickPressed(1)) {
                             if (ammoHover > -1 && ammoHover < ammo.size()) {
+                                Ammo invAmmo = ammo.get(ammoHover);
                                 for (Weapon weapon : player.armory.weapons) {
-                                    if (weapon.tags.contains("loadAmmo")) {
-                                        ammoSelect = ammo.get(ammoHover);
+                                    if (weapon.correctAmmo(invAmmo.types)) {
+                                        ammoSelect = invAmmo;
                                         break;
                                     }
                                 }
@@ -145,12 +146,12 @@ public class Inventory {
         iconColors[newPage] = "#ffffff";
     }
 
-    public void renderItemSplashes(Graphics2D g, double[] screenPos) {
-        for (int i = 0; i < Math.min(splashItems.size(), 3); i++) {
-            Item item = splashItems.get(i);
+    public void renderSplashes(Graphics2D g, double[] screenPos) {
+        for (int i = 0; i < Math.min(splashes.size(), 3); i++) {
+            Splash splash = splashes.get(i);
 
-            if (!item.renderSplash(g, (int) screenPos[0], (int) (screenPos[1] - 25 * i - TILE_SIZE * 1.25))) {
-                splashItems.remove(item);
+            if (!splash.render(g, (int) screenPos[0], (int) (screenPos[1] - 25 * i - TILE_SIZE * 1.25))) {
+                splashes.remove(splash);
             }
         }
     }
@@ -159,7 +160,7 @@ public class Inventory {
         g.setColor(new Color(64, 64, 64, 192));
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-        if (player.armory.weaponSelect != -1) {
+        if (player.armory.weaponSelect != null) {
             player.armory.renderWeaponSelect(g);
         } else if (ammoSelect != null) {
             player.armory.renderAmmoSelect(g);
@@ -215,35 +216,25 @@ public class Inventory {
             int id = itemData.getOrDefault("id", 0).intValue();
             int count = itemData.getOrDefault("count", 1).intValue();
 
-            if (!gain) {
-                count *= -1;
-            }
-
+            String stringId = null;
             switch (itemData.getOrDefault("type", 0).intValue()) {
                 case 0 -> {
-                    String itemId = Item.itemStringId.get(id);
+                    stringId = Item.itemStringId.get(id);
 
-                    Item item = getItem(itemId);
+                    Item item = getItem(stringId);
+
+                    if (!gain) {
+                        count *= -1;
+                    } else { 
+                        unlockRecipes(Item.itemBlueprintUnlocks.get(stringId), Item.itemRecipeUnlocks.get(stringId));
+                    }
 
                     if (item == null) {
-                        item = new Item(itemId, count);
+                        item = new Item(stringId, count);
                         items.add(item);
                         iconColors[1] = "#00ffaa";
                     } else {
                         item.count += count;
-                    }
-
-                    if (gain) {
-                        unlockRecipes(Item.itemBlueprintUnlocks.get(itemId), Item.itemRecipeUnlocks.get(itemId));
-
-                        Item splashItem = getSplashItem(itemId);
-                        if (splashItem == null) {
-                            splashItem = new Item(itemId, count);
-                            splashItems.add(splashItem);
-                        } else {
-                            splashItem.count += count;
-                            splashItem.resetSplashFrame();
-                        }
                     }
                 }
                 case 1 -> {
@@ -252,10 +243,10 @@ public class Inventory {
                     if (gain) {
                         for (int i = 0; i < count; i++) {
                             weapons.add(new Weapon(weaponId));
+                            weapons.getLast().setAmmo(ammo);
                             iconColors[2] = "#00ffaa";
                         }
-
-                        unlockRecipes(Weapon.weaponBlueprintUnlocks.get(weaponId), Weapon.weaponRecipeUnlocks.get(weaponId));
+                        unlockRecipes(Weapon.weaponBlueprintUnlocks.get(stringId), Weapon.weaponRecipeUnlocks.get(stringId));
                     } else {
                         int removed = 0;
                         for (int i = weapons.size() - 1; i > -1; i--) {
@@ -276,15 +267,14 @@ public class Inventory {
                     }
                 }
                 case 2 -> {
-                    String armorId = Armor.armorStrignId.get(id);
+                    String armorId = Armor.armorStringId.get(id);
 
                     if (gain) {
                         for (int i = 0; i < count; i++) {
                             armors.add(new Armor(armorId));
                             iconColors[4] = "#00ffaa";
                         }
-
-                        unlockRecipes(Armor.armorBlueprintUnlocks.get(armorId), Armor.armorRecipeUnlocks.get(armorId));
+                        unlockRecipes(Armor.armorBlueprintUnlocks.get(stringId), Armor.armorRecipeUnlocks.get(stringId));
                     } else {
                         int removed = 0;
                         for (int i = armors.size() - 1; i > -1; i--) {
@@ -303,21 +293,34 @@ public class Inventory {
                     }
                 }
                 case 3 -> {
-                    String ammoId = Ammo.ammoStringId.get(id);
+                    stringId = Ammo.ammoStringId.get(id);
 
-                    Ammo invAmmo = getAmmo(ammoId);
+                    Ammo invAmmo = getAmmo(stringId);
+
+                    if (!gain) {
+                        count *= -1;
+                    } else {
+                        unlockRecipes(Ammo.ammoBlueprintUnlocks.get(stringId), Ammo.ammoRecipeUnlocks.get(stringId));
+                    }
 
                     if (invAmmo == null) {
-                        invAmmo = new Ammo(ammoId, count);
+                        invAmmo = new Ammo(stringId, count);
                         ammo.add(invAmmo);
                         iconColors[3] = "#00ffaa";
                     } else {
                         invAmmo.count += count;
                     }
+                }
+            }
 
-                    if (gain) {
-                        unlockRecipes(Ammo.ammoBlueprintUnlocks.get(ammoId), Ammo.ammoRecipeUnlocks.get(ammoId));
-                    }
+            if (gain) {
+                Splash splash = getSplash(stringId);
+                if (splash == null) {
+                    splash = new Splash(itemData);
+                    splashes.add(splash);
+                } else {
+                    splash.count += count;
+                    splash.resetSplash();
                 }
             }
         }
@@ -341,7 +344,7 @@ public class Inventory {
                 return inventoryCount >= count;
             }
             case 2 -> {
-                final String armorId = Armor.armorStrignId.get(id);
+                final String armorId = Armor.armorStringId.get(id);
                 int inventoryCount = 0;
                 for (Armor armor : armors) {
                     if (armor.type.equals(armorId)) {
@@ -394,10 +397,10 @@ public class Inventory {
         return null;
     }
 
-    private Item getSplashItem(String itemId) {
-        for (Item item : splashItems) {
-            if (item.id.equals(itemId)) {
-                return item;
+    private Splash getSplash(String itemId) {
+        for (Splash splash : splashes) {
+            if (splash.id.equals(itemId)) {
+                return splash;
             }
         }
         return null;

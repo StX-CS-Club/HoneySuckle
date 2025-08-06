@@ -51,6 +51,7 @@ public class Entity {
     private final String color;
     private final String staticTextureId;
     private final String animation;
+    private final Map<String, Long> animFrames = new HashMap<>();
 
     //Position variables
     public double[] pos = new double[2];
@@ -75,7 +76,7 @@ public class Entity {
         health = attributes.getOrDefault("health", 1).doubleValue();
         size = attributes.getOrDefault("size", 1).doubleValue() * TILE_SIZE;
         weight = attributes.getOrDefault("weight", 1).doubleValue();
-        this.pos = pos;
+        this.pos = pos.clone();
 
         brain = new Brain(this, world);
         color = getColor(world);
@@ -104,6 +105,13 @@ public class Entity {
                         textureId = textureId + "_right";
                     }
                 }
+                if (animation.contains("_y_")) {
+                    if (brain.chaseAngle >= 270 || brain.chaseAngle < 90) {
+                        textureId = textureId + "_up";
+                    } else {
+                        textureId = textureId + "_down";
+                    }
+                }
                 if (animation.contains("_xy_")) {
                     if (brain.chaseAngle >= 315 || brain.chaseAngle < 45) {
                         textureId = textureId + "_up";
@@ -115,16 +123,30 @@ public class Entity {
                         textureId = textureId + "_left";
                     }
                 }
-                if (animation.contains("_lunge_")) {
-                    if (brain.checkState("lunging")) {
-                        screenPos[1] += screenSize[1] * .375;
-                        screenSize[1] *= 0.75;
+                if (animation.contains("_chase_")) {
+                    if (brain.checkState("chase")) {
+                        textureId = textureId + "_chase";
+                    }
+                }
+                if (animation.contains("_hesitate_")) {
+                    if (brain.checkState("hesitate")) {
+                        textureId = textureId + "_hesitate";
                     }
                 }
                 if (animation.contains("_shoot_")) {
                     if (brain.checkState("shooting")) {
                         textureId = textureId + "_shoot";
                     }
+                }
+
+                if (animation.contains("_lunge_")) {
+                    if (brain.checkState("lunging")) {
+                        screenPos[1] += screenSize[1] * .375;
+                        screenSize[1] *= 0.75;
+                    }
+                }
+                if (animation.contains("_hover_")) {
+                    screenPos[1] += Math.sin(incrementFrames("hover", 1) / 10.0)*size/8;
                 }
 
             }
@@ -148,26 +170,25 @@ public class Entity {
     public void renderHealthBar(Graphics2D g, int index) {
         if (index < 3) {
             healthBarFrames++;
-            final float opacity = Math.min(healthBarFrames*3, 255)/255f;
+            final float opacity = Math.min(healthBarFrames * 3, 255) / 255f;
             Composite originalComposite = g.getComposite();
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 
             g.setColor(Color.DARK_GRAY);
-            g.fillRect(GAME_WIDTH / 4, 25+index*35, GAME_WIDTH / 2, 10);
+            g.fillRect(GAME_WIDTH / 4, 25 + index * 35, GAME_WIDTH / 2, 10);
 
             final double barWidth = (GAME_WIDTH / 2) * (health / attributes.get("health").doubleValue());
 
             g.setColor(Color.decode(texture.getOrDefault("healthBarColor", "#c4021f")));
-            g.fillRect(GAME_WIDTH / 4, 25+index*35, (int) Math.ceil(barWidth), 10);
+            g.fillRect(GAME_WIDTH / 4, 25 + index * 35, (int) Math.ceil(barWidth), 10);
 
-            
             final String symbol = texture.getOrDefault("healthBarSymbol", "=");
             final String label = (symbol + " " + name + " " + symbol).toUpperCase();
 
             g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
             g.setColor(Color.WHITE);
-            
-            Rendering.centeredText(g, label, GAME_WIDTH / 2, 30+index*35);
+
+            Rendering.centeredText(g, label, GAME_WIDTH / 2, 30 + index * 35);
 
             g.setComposite(originalComposite);
         }
@@ -197,5 +218,15 @@ public class Entity {
         ticks.put("base", ticks.get("base") + 1);
         //Update entity through Brain
         brain.update();
+    }
+
+    private long incrementFrames(String key, int amount) {
+        if (animFrames.keySet().contains(key)) {
+            long frames = animFrames.get(key);
+            animFrames.put(key, frames + amount);
+            return frames + amount;
+        }
+        animFrames.put(key, (long) amount);
+        return amount;
     }
 }

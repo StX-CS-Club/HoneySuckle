@@ -138,7 +138,7 @@ public class Build {
 
     //Change selected blueprint based on scroll wheel
     public void scrollBar(double mouseScroll) {
-        if (Math.abs(mouseScroll) >= InputHandler.criticalMouseScroll) {
+        if (Math.abs(mouseScroll) >= InputHandler.CRITICAL_MOUSE_SCROLL) {
             blueprintIndex += Math.signum(mouseScroll);
             if (blueprintIndex < 0) {
                 blueprintIndex = blueprints.size() - 1;

@@ -6,8 +6,7 @@
     "ammo": ["arrow"],
     "stats": {
       "Type": "Bow",
-      "Damage": "2.5",
-      "Speed": ".5"
+      "Damage": "2.5"
     },
     "texture": {
       "itemTexture": "weapons/bow/item",

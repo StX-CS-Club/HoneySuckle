@@ -36,7 +36,7 @@ public class Biome {
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            type = "wetlands";
+            type = "labyrinth";
         }
         tags = biomeTags.get(type);
         colorMap = biomeColorMap.get(type);
@@ -100,13 +100,12 @@ public class Biome {
         final List<Map<String, Object>> entityGenRules = listFromMap(generation, "entities");
 
         final boolean structuresFirst = tags.contains("structuresFirst");
-        if(structuresFirst){
+        if (structuresFirst) {
             generateStructures(world, result, objResult, entityResult);
         }
 
         final boolean watery = tags.contains("watery");
 
-        
         for (int x = 0; x < margin[0]; x++) {
             for (int y = world.start[1] - startSize[1]; y > Math.max(world.start[1] - margin[1] - 1, -1); y--) {
                 for (int i = 1; i > -2; i -= 2) {
@@ -192,8 +191,7 @@ public class Biome {
             }
         }
 
-        
-        if(!structuresFirst){
+        if (!structuresFirst) {
             generateStructures(world, result, objResult, entityResult);
         }
 
@@ -202,7 +200,7 @@ public class Biome {
         world.entities = entityResult;
     }
 
-    private void generateStructures(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult){
+    private void generateStructures(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult) {
         // Generates Structures
         final List<Map<String, Object>> structureGenRules = listFromMap(generation, "structures");
         for (Map<String, Object> structureGenRule : structureGenRules) {
@@ -219,6 +217,7 @@ public class Biome {
 
             final double baseProb = numberFromMap(structureGenRule, "prob", 0).doubleValue();
             final Number[][] tileProbs = array2dFromList(listFromMap(structureGenRule, "tileProb", new Number[0][]));
+            final Number[][] rangeProbs = array2dFromList(listFromMap(structureGenRule, "rangeProb", new Number[0][]));
             for (int[] grid : grids) {
 
                 grid[0] = Math.max(grid[0], offsetBl[0]);
@@ -233,6 +232,11 @@ public class Biome {
                         for (Number[] tileProb : tileProbs) {
                             if (result[x][y].id == tileProb[0].intValue()) {
                                 prob += tileProb[1].doubleValue();
+                            }
+                        }
+                        for (Number[] rangeProb : rangeProbs) {
+                            if (x >= rangeProb[0].intValue() && x <= rangeProb[1].intValue()) {
+                                prob += rangeProb[2].doubleValue();
                             }
                         }
 
@@ -288,6 +292,31 @@ public class Biome {
             final double[] entityPos = doubleArray(listFromMap(entity, "pos", new Number[2]).toArray(Number[]::new), 0);
             Arrays.setAll(entityPos, i -> (entityPos[i] + pos[i]) * TILE_SIZE);
             entityResult.add(new Entity(entityId, entityPos, world));
+        }
+
+        final List<Map<String, Object>> chests = listFromMap(generation, "chests");
+        for (Map<String, Object> chestData : chests) {
+            final double prob = numberFromMap(chestData, "prob", 1).doubleValue();
+            if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                final int[] chestPos = intArray(listFromMap(chestData, "pos", new Number[2]).toArray(Number[]::new), 0);
+                Arrays.setAll(chestPos, i -> chestPos[i] + pos[i]);
+                final WorldObject chest = new WorldObject(numberFromMap(chestData, "id", 16).intValue(), chestPos, world);
+
+                final List<Map<String, Object>> lootEntries = listFromMap(chestData, "lootEntries");
+                final double chestSeed = ThreadLocalRandom.current().nextDouble();
+                final double defaultProb = 1.0 / lootEntries.size();
+                double chestProgress = 0;
+                for(Map<String, Object> lootEntry : lootEntries){
+                    final double lootProb = numberFromMap(lootEntry, "prob", defaultProb).doubleValue() + chestProgress;
+                    if(lootProb >= chestSeed){
+                        chest.setLoot(listFromMap(lootEntry, "loot"));
+                        break;
+                    }
+                    chestProgress = lootProb;
+                }
+
+                objResult[chestPos[0]][chestPos[1]] = chest;
+            }
         }
     }
 
@@ -348,13 +377,13 @@ public class Biome {
         return result;
     }
 
-    private static List<Map<String, Object>> listFromMap(Map<String, Object> map, String key) {
+    private static <T> List<Map<String, T>> listFromMap(Map<String, Object> map, String key) {
         if (map.get(key) instanceof List<?>) {
             try {
-                List<Map<String, Object>> result = (List<Map<String, Object>>) map.get(key);
+                List<Map<String, T>> result = (List<Map<String, T>>) map.get(key);
                 return result;
             } catch (Exception e) {
-                System.out.println("HoneySuckle ERROR: Expected List<Map<String, Object>> under key '" + key + "'");
+                System.out.println("HoneySuckle ERROR: Expected List<Map<String, ?>> under key '" + key + "'");
             }
         }
         return new ArrayList<>();
@@ -389,7 +418,7 @@ public class Biome {
         return result;
     }
 
-    private static double[] doubleArray(Number[] array, double defaultValue){
+    private static double[] doubleArray(Number[] array, double defaultValue) {
         double[] result = new double[array.length];
         Arrays.setAll(result, i -> array[i] == null ? defaultValue : array[i].doubleValue());
         return result;

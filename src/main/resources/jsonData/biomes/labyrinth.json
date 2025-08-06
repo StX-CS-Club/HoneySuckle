@@ -45,6 +45,12 @@
           "tileProb": [[6, 0.5]]
         }
       ],
+      "entities": [
+        {
+          "id": 4,
+          "tileProb": [[5, 0.005]]
+        }
+      ],
       "structures": [
         {
           "id": 3,

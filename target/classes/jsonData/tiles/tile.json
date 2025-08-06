@@ -90,6 +90,6 @@
       "natColor": "brickColor",
       "texture": "tiles/brick_wall"
     },
-    "tags": ["obstruction"]
+    "tags": ["obstruction", "projObstruction"]
   }
 }

@@ -20,7 +20,7 @@ public class InputHandler {
 
     // Mouse scroll value
     public double mouseScroll = 0;
-    public static final double criticalMouseScroll = 0.25;
+    public static final double CRITICAL_MOUSE_SCROLL = 0.25;
 
     public void update() {
         // Updates key values efficiently
@@ -31,7 +31,7 @@ public class InputHandler {
         System.arraycopy(currentClick, 0, lastClick, 0, 6);
         System.arraycopy(click, 0, currentClick, 0, 6);
 
-        mouseScroll *= criticalMouseScroll;
+        mouseScroll *= CRITICAL_MOUSE_SCROLL;
     }
 
     public boolean keyDown(int keyCode) {

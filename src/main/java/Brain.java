@@ -167,14 +167,27 @@ public class Brain {
         if (!chase.isEmpty() && !hesitate) {
             final double range = numberFromMap(chase, "range", 5).doubleValue();
             final double speed = numberFromMap(chase, "speed", 0.1).doubleValue();
-            if (playerAbsDistance <= range * TILE_SIZE) {
+            final double hesitateRange = numberFromMap(chase, "hesitateRange", range).doubleValue();
+            if (playerAbsDistance <= hesitateRange * TILE_SIZE) {
+                hesitate = true;
+            }
+            if (playerAbsDistance <= range * TILE_SIZE && !hesitate) {
+                states.put("chase", true);
                 entity.vel[0] += TILE_SIZE * speed * -Math.cos(Math.toRadians(chaseAngle + 90));
                 entity.vel[1] += TILE_SIZE * speed * Math.sin(Math.toRadians(chaseAngle - 90));
+            } else {
+                states.put("chase", false);
             }
         }
 
+        if(hesitate){
+            states.put("hesitate", true);
+        } else {
+            states.put("hesitate", false);
+        }
+
         //Update velocity and events based on pos
-        entity.pos = world.bound(entity.pos, entity.vel, entity.size / 2.0);
+        entity.pos = world.bound(entity.pos, entity.vel, entity.tags, entity.size / 2.0);
         world.entityEvent(entity);
     }
 

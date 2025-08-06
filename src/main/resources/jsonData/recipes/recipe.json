@@ -4,7 +4,7 @@
     "type": "weapon",
     "products": [{ "id": 4, "type": 1 }],
     "texture": {
-      "texture": "items/dragon_sword/item"
+      "texture": "weapons/dragon_sword/item"
     },
     "mats": [
       {

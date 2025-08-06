@@ -77,10 +77,14 @@ public class Attack {
             final int frames = numberFromMap(shootBehavior, "frames", 5).intValue();
             final String attackId = (String) shootBehavior.get("attackId");
             if (attackFrames.get(attackId) == frames) {
-                final int ammoUsed = numberFromMap(shootBehavior, "ammo", 1).intValue();
+                final int bullets = numberFromMap(shootBehavior, "bulletCount", 1).intValue();
                 if (weapon.ammo != null) {
+                    final int ammoUsed = numberFromMap(shootBehavior, "ammoCount", bullets).intValue();
                     if (weapon.ammo.count >= ammoUsed) {
-                        world.projectiles.add(new Projectile(weapon.ammo.mergeAttributes(weapon.type, shootBehavior), player.pos, player.vel, player.rotation, player));
+                        final double spread = Math.toDegrees(numberFromMap(shootBehavior, "spread", 0).doubleValue());
+                        for (int i = 0; i < bullets; i++) {
+                            world.projectiles.add(new Projectile(weapon.ammo.mergeAttributes(weapon.type, shootBehavior), player.pos.clone(), player.vel, player.rotation-(bullets - 1)*spread/2+spread*i, player));
+                        }
                         weapon.ammo.count -= ammoUsed;
                     }
                 }

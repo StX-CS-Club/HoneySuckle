@@ -24,7 +24,7 @@ public class Armor {
     public static final Map<String, List<String>> armorBlueprintUnlocks = new HashMap<>();
     public static final Map<String, String> armorNames = new HashMap<>();
     public static final Map<String, Integer> armorIntId = new HashMap<>();
-    public static final Map<Integer, String> armorStrignId = new HashMap<>();
+    public static final Map<Integer, String> armorStringId = new HashMap<>();
 
     //Basic Armor Attributes
     public final String type;

@@ -59,7 +59,7 @@ public class World {
     public final Biome biome;
 
     //Bounds movement to boundaries of world
-    public double[] bound(double[] pos, double[] delta, double margin) {
+    public double[] bound(double[] pos, double[] delta, List<String> tags, double margin) {
         //Ensures position is within world
         double[] newPos = new double[]{pos[0] + delta[0], pos[1] + delta[1]};
         if (margin <= 0) {
@@ -78,7 +78,7 @@ public class World {
         int[] newPosIndex = new int[]{(int) (Math.floor(newPos[0] / TILE_SIZE)), (int) (Math.floor(newPos[1] / TILE_SIZE))};
 
         //Ensures you can walk on next tile
-        if (checkTag(posIndex[0], posIndex[1], "walkable") && !checkTag(posIndex[0], posIndex[1], "slippery")) {
+        if (checkTag(posIndex[0], posIndex[1], "walkable") && !checkTag(posIndex[0], posIndex[1], "slippery") && !tags.contains("flying")) {
             if (newPosIndex[0] >= 0 && newPosIndex[0] < size[0]) {
                 if (!checkTag(newPosIndex[0], posIndex[1], "walkable")) {
                     newPos[0] = pos[0];
@@ -180,17 +180,20 @@ public class World {
         };
 
         //Checks if on damage tile
-        if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            entity.brain.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
-            if (biome.tags.contains("dangerousVoid")) {
-                entity.brain.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+        if (!entity.tags.contains("flying")) {
+            if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
+                entity.brain.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                if (biome.tags.contains("dangerousVoid")) {
+                    entity.brain.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                }
+            }
+            //Checks if on acel tile
+            if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
+                entity.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
+                entity.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
             }
         }
-        //Checks if on acel tile
-        if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
-            entity.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
-            entity.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
-        }
+
         for (int i = 0; i < 2; i++) {
             if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
                 //Checks if touching hurty tile
@@ -208,7 +211,7 @@ public class World {
     }
 
     //Checks if tile or obj has given tag
-    private boolean checkTag(int x, int y, String tag) {
+    public boolean checkTag(int x, int y, String tag) {
         if (objGrid[x][y] == null) {
             return grid[x][y].tags.contains(tag);
         }
@@ -216,7 +219,7 @@ public class World {
     }
 
     //Gives sum of tile and obj value
-    private double getAttribute(int x, int y, String value) {
+    public double getAttribute(int x, int y, String value) {
         double result = 0;
         result += grid[x][y].attributes.getOrDefault(value, 0).doubleValue();
         if (objGrid[x][y] != null) {
@@ -225,7 +228,7 @@ public class World {
         return result;
     }
 
-    private boolean checkAttribute(int x, int y, String value){
+    private boolean checkAttribute(int x, int y, String value) {
         if (objGrid[x][y] != null) {
             return objGrid[x][y].attributes.containsKey(value) || grid[x][y].attributes.containsKey(value);
         }

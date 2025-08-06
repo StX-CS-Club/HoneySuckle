@@ -14,6 +14,7 @@ import java.util.Set;
  - Contains static json data
  */
 public class Projectile {
+
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
@@ -70,22 +71,23 @@ public class Projectile {
         this.angle = angle;
         this.source = source;
         weight = attributes.getOrDefault("weight", 1.0).doubleValue();
-        size = attributes.getOrDefault("size", 0.5).doubleValue()*HoneySuckle.TILE_SIZE;
+        size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
         staticTexture = getTexture();
     }
+
     public Projectile(Map<String, Number> attributes, double[] pos, double[] currentVel, double angle, Object source) {
         type = projStringId.get(attributes.get("proj").intValue());
-        
+
         //Interprets projectile type
         texture = projTextures.get(type);
         tags = projTags.get(type);
 
         Set<String> keys = attributes.keySet();
         Map<String, Number> defaultAttributes = projAttributes.get(type);
-        for(String key : defaultAttributes.keySet()){
-            if(!keys.contains(key)){
+        for (String key : defaultAttributes.keySet()) {
+            if (!keys.contains(key)) {
                 attributes.put(key, defaultAttributes.get(key));
             }
         }
@@ -108,7 +110,7 @@ public class Projectile {
         this.angle = angle;
         this.source = source;
         weight = attributes.getOrDefault("weight", 1.0).doubleValue();
-        size = attributes.getOrDefault("size", 0.5).doubleValue()*HoneySuckle.TILE_SIZE;
+        size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
         staticTexture = getTexture();
@@ -136,8 +138,8 @@ public class Projectile {
         //Current world data
         World world = World.worlds.get(World.level);
         int[] posIndex = new int[]{
-            (int) Math.floor(pos[0] /TILE_SIZE),
-            (int) Math.floor(pos[1] /TILE_SIZE)
+            (int) Math.floor(pos[0] / TILE_SIZE),
+            (int) Math.floor(pos[1] / TILE_SIZE)
         };
 
         //If projectile is outa here, remove it
@@ -150,17 +152,32 @@ public class Projectile {
                 //If can damage tile, apply damage
                 if (tags.contains("damageTile")) {
                     //If failed to destroy object, remove projectile
-                    if (!object.damage(damage)) {
+                    if (object.damage(damage)) {
+                            if (source instanceof Player) {
+                                final Player player = (Player) source;
+                                for (Map<String, Number> loot : object.loot) {
+                                    player.inventory.incrementItem(loot, true);
+                                }
+                            }
+                    } else {
                         if (object.tags.contains("projObstruction")) {
                             world.projectiles.remove(this);
+                            return;
                         }
                     }
                 } else {
                     //If object blocks projectile, remove it
                     if (object.tags.contains("projObstruction")) {
                         world.projectiles.remove(this);
+                        return;
                     }
                 }
+            }
+
+            Tile tile = world.grid[posIndex[0]][posIndex[1]];
+            if (tile.tags.contains("projObstruction")) {
+                world.projectiles.remove(this);
+                return;
             }
         }
         //If can hurt entity, check entities to hurt
@@ -177,7 +194,7 @@ public class Projectile {
                             new Point2D.Double(entity.size, entity.size))) {
                         //damage entity, and remove self
                         if (entity.brain.damage(damage)) {
-                            if(source instanceof Player){
+                            if (source instanceof Player) {
                                 final Player player = (Player) source;
                                 for (Map<String, Number> loot : entity.loot) {
                                     player.inventory.incrementItem(loot, true);
@@ -185,7 +202,7 @@ public class Projectile {
                             }
                         }
                         world.projectiles.remove(this);
-                        break;
+                        return;
                     }
                 }
             }
@@ -204,7 +221,7 @@ public class Projectile {
                         //damage player, and remove self
                         player.damage(damage, true);
                         world.projectiles.remove(this);
-                        break;
+                        return;
                     }
                 }
             }
@@ -218,8 +235,8 @@ public class Projectile {
 
         //Position of proj on screen
         double[] screenPos = new double[]{
-           GAME_WIDTH / 2.0 + pos[0] - camera[0],
-           GAME_HEIGHT / 2.0 + pos[1] - camera[1]
+            GAME_WIDTH / 2.0 + pos[0] - camera[0],
+            GAME_HEIGHT / 2.0 + pos[1] - camera[1]
         };
 
         //Rotate based off angle
@@ -227,12 +244,12 @@ public class Projectile {
 
         //Render projectiles
         g.drawImage(staticTexture, (int) (screenPos[0] - size / 2.0), (int) (screenPos[1] - size / 2.0), (int) size, (int) size, null);
-        
+
         //Reset rotation
         g.setTransform(originalTransform);
     }
 
-    private BufferedImage getTexture(){
+    private BufferedImage getTexture() {
         return Rendering.texture(texture.get("texture"), "#ffffff");
     }
 }

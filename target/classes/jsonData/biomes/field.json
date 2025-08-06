@@ -8,7 +8,8 @@
       "waterColor": "#004aff",
       "treeColor": "#006b00",
       "coalColor": "#5d4646",
-      "archerColor": "#019194"
+      "archerColor": "#019194",
+      "brickColor": "#94a892"
     },
     "generation": {
       "size": [101, 100],
@@ -40,6 +41,13 @@
         {
           "id": 3,
           "tileProb": [[1, 0.001]]
+        }
+      ],
+      "structures": [
+        {
+          "id": 9,
+          "rangeProb": [[0, 37, 0.0005], [62, 100, 0.0005]],
+          "offsetBR": [6, 7]
         }
       ]
     }

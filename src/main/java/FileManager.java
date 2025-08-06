@@ -179,7 +179,7 @@ class FileManager {
 
                 final int id = (int) armor.get("id");
                 Armor.armorIntId.put(key, id);
-                Armor.armorStrignId.put(id, key);
+                Armor.armorStringId.put(id, key);
             }
 
             //Maps Projectile data

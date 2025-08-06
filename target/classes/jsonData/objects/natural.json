@@ -145,11 +145,12 @@
     "name": "Scrap",
     "id": 14,
     "texture": {
-      "texture": "tiles/scrap/canister"
+      "texture": "tiles/scrap/scrap"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
-      "durability": 1.25
+      "durability": 1.25,
+      "textures": 2
     },
     "loot": [
       {
@@ -168,5 +169,17 @@
         "prob": 0.5
       }
     ]
+  },
+  "chest": {
+    "name": "Chest",
+    "id": 16,
+    "texture": {
+      "texture": "tiles/chest/chest",
+      "anim": "_destroyed_"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 1.5
+    }
   }
 }

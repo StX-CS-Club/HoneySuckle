@@ -141,7 +141,7 @@ public class Craft {
                         texture = Weapon.weaponTextures.get(Weapon.weaponStringId.get(id)).get("itemTexture");
                     }
                     case 2 -> {
-                        texture = Armor.armorTextures.get(Armor.armorStrignId.get(id)).get("itemTexture");
+                        texture = Armor.armorTextures.get(Armor.armorStringId.get(id)).get("itemTexture");
                     }
                     case 3 -> {
                         texture = Ammo.ammoTextures.get(Ammo.ammoStringId.get(id)).get("texture");

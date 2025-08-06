@@ -33,6 +33,7 @@ public class WorldObject {
     public List<String> tags;
     public Map<String, Number> attributes;
     public Map<String, String> texture;
+    private final String anim;
     public List<Map<String, Number>> loot;
 
     private double frameDamage = 0;
@@ -40,7 +41,7 @@ public class WorldObject {
     private final int glowColor;
     private final String color;
     private final Color overlayColor;
-    private final BufferedImage staticTexture;
+    private BufferedImage staticTexture;
 
     //WorldObject Contructor
     public WorldObject(int id, int[] posIndex, World world) {
@@ -50,6 +51,7 @@ public class WorldObject {
         tags = objTags.get(id);
         attributes = objAttributes.get(id);
         texture = objTextures.get(id);
+        anim = texture.getOrDefault("anim", "");
         loot = objLoot.get(id);
 
         if (tags.contains("destructable")) {
@@ -64,7 +66,12 @@ public class WorldObject {
         }
         color = getColor(world);
         overlayColor = Rendering.decodeColor(texture.get("overlayColor"), 16);
-        staticTexture = getTexture();
+        staticTexture = getTexture("");
+    }
+
+    public void setLoot(List<Map<String, Number>> newLoot) {
+        newLoot.addAll(loot);
+        loot = newLoot;
     }
 
     //Render WorldObject
@@ -73,16 +80,15 @@ public class WorldObject {
         int size = TILE_SIZE;
         double[] pos = screenPos.clone();
 
-        
-        if(overlayColor != null){
+        if (overlayColor != null) {
             g.setColor(overlayColor);
             g.fillRect((int) pos[0], (int) pos[1], size, size);
         }
 
-        if(frameDamage != 0 && ThreadLocalRandom.current().nextBoolean()){
+        if (frameDamage != 0 && ThreadLocalRandom.current().nextBoolean()) {
             size *= .8;
-            pos[0] += ((double) TILE_SIZE)/10;
-            pos[1] += ((double) TILE_SIZE)/10;
+            pos[0] += ((double) TILE_SIZE) / 10;
+            pos[1] += ((double) TILE_SIZE) / 10;
         }
 
         if (staticTexture != null) {
@@ -105,7 +111,7 @@ public class WorldObject {
                 return natColor;
             }
             //If tile has listed base color, set as color
-        } 
+        }
         String baseColor = texture.get("baseColor");
         if (baseColor != null) {
             return baseColor;
@@ -113,10 +119,15 @@ public class WorldObject {
         return "#ffffff";
     }
 
-    private BufferedImage getTexture(){
+    private BufferedImage getTexture(String postfix) {
         String textureString = texture.get("texture");
         if (textureString != null) {
-            return Rendering.texture(textureString, color);
+            int textureCount = attributes.getOrDefault("textures", 1).intValue();
+            if (textureCount > 1) {
+                textureString = textureString + "_" + ThreadLocalRandom.current().nextInt(1, textureCount+1);
+            }
+
+            return Rendering.texture(textureString+postfix, color);
         }
         return null;
     }
@@ -139,14 +150,27 @@ public class WorldObject {
             return false;
         }
         //Damages object
-        durability -= damage;
-        frameDamage = damage;
+        if (durability <= 0) {
+            destroy();
+            return false;
+        } else {
+            durability -= damage;
+            frameDamage = damage;
+        }
         //If still there, return false
         if (durability > 0) {
             return false;
         }
         //If broken, remove object and return true
-        World.worlds.get(World.level).objGrid[posIndex[0]][posIndex[1]] = null;
+        destroy();
         return true;
+    }
+
+    private void destroy() {
+        if (anim.contains("_destroyed_")) {
+            staticTexture = getTexture("_destroyed");
+        } else {
+            World.worlds.get(World.level).objGrid[posIndex[0]][posIndex[1]] = null;
+        }
     }
 }
