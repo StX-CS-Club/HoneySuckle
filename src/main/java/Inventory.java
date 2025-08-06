@@ -238,11 +238,11 @@ public class Inventory {
                     }
                 }
                 case 1 -> {
-                    String weaponId = Weapon.weaponStringId.get(id);
+                    stringId = Weapon.weaponStringId.get(id);
 
                     if (gain) {
                         for (int i = 0; i < count; i++) {
-                            weapons.add(new Weapon(weaponId));
+                            weapons.add(new Weapon(stringId));
                             weapons.getLast().setAmmo(ammo);
                             iconColors[2] = "#00ffaa";
                         }
@@ -251,7 +251,7 @@ public class Inventory {
                         int removed = 0;
                         for (int i = weapons.size() - 1; i > -1; i--) {
                             Weapon weapon = weapons.get(i);
-                            if (weapon.type.equals(weaponId)) {
+                            if (weapon.type.equals(stringId)) {
                                 weapons.remove(weapon);
                                 for (int e = 0; e < player.armory.weapons.length; e++) {
                                     if (player.armory.weapons[e] == weapon) {
@@ -267,11 +267,11 @@ public class Inventory {
                     }
                 }
                 case 2 -> {
-                    String armorId = Armor.armorStringId.get(id);
+                    stringId = Armor.armorStringId.get(id);
 
                     if (gain) {
                         for (int i = 0; i < count; i++) {
-                            armors.add(new Armor(armorId));
+                            armors.add(new Armor(stringId));
                             iconColors[4] = "#00ffaa";
                         }
                         unlockRecipes(Armor.armorBlueprintUnlocks.get(stringId), Armor.armorRecipeUnlocks.get(stringId));
@@ -279,7 +279,7 @@ public class Inventory {
                         int removed = 0;
                         for (int i = armors.size() - 1; i > -1; i--) {
                             Armor armor = armors.get(i);
-                            if (armor.type.equals(armorId)) {
+                            if (armor.type.equals(stringId)) {
                                 armors.remove(armor);
                                 if (armor == player.armory.armor) {
                                     player.armory.armor = null;

@@ -36,7 +36,7 @@ public class Biome {
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            type = "labyrinth";
+            type = "wetlands";
         }
         tags = biomeTags.get(type);
         colorMap = biomeColorMap.get(type);
@@ -300,22 +300,24 @@ public class Biome {
             if (ThreadLocalRandom.current().nextDouble() <= prob) {
                 final int[] chestPos = intArray(listFromMap(chestData, "pos", new Number[2]).toArray(Number[]::new), 0);
                 Arrays.setAll(chestPos, i -> chestPos[i] + pos[i]);
-                final WorldObject chest = new WorldObject(numberFromMap(chestData, "id", 16).intValue(), chestPos, world);
+                if (chestPos[0] > -1 && chestPos[0] < objResult.length && chestPos[1] > -1 && chestPos[1] < objResult[0].length) {
+                    final WorldObject chest = new WorldObject(numberFromMap(chestData, "id", 16).intValue(), chestPos, world);
 
-                final List<Map<String, Object>> lootEntries = listFromMap(chestData, "lootEntries");
-                final double chestSeed = ThreadLocalRandom.current().nextDouble();
-                final double defaultProb = 1.0 / lootEntries.size();
-                double chestProgress = 0;
-                for(Map<String, Object> lootEntry : lootEntries){
-                    final double lootProb = numberFromMap(lootEntry, "prob", defaultProb).doubleValue() + chestProgress;
-                    if(lootProb >= chestSeed){
-                        chest.setLoot(listFromMap(lootEntry, "loot"));
-                        break;
+                    final List<Map<String, Object>> lootEntries = listFromMap(chestData, "lootEntries");
+                    final double chestSeed = ThreadLocalRandom.current().nextDouble();
+                    final double defaultProb = 1.0 / lootEntries.size();
+                    double chestProgress = 0;
+                    for (Map<String, Object> lootEntry : lootEntries) {
+                        final double lootProb = numberFromMap(lootEntry, "prob", defaultProb).doubleValue() + chestProgress;
+                        if (lootProb >= chestSeed) {
+                            chest.setLoot(listFromMap(lootEntry, "loot"));
+                            break;
+                        }
+                        chestProgress = lootProb;
                     }
-                    chestProgress = lootProb;
-                }
 
-                objResult[chestPos[0]][chestPos[1]] = chest;
+                    objResult[chestPos[0]][chestPos[1]] = chest;
+                }
             }
         }
     }

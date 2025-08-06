@@ -1,5 +1,5 @@
 {
-  "a_rock": {
+  "aRock": {
     "name": "Special Rock",
     "type": "armor",
     "products": [{ "id": 2, "type": 2 }],
@@ -12,7 +12,7 @@
       }
     ]
   },
-  "pumpkin_helm": {
+  "pumpkinHelm": {
     "name": "Pumpkin Helm",
     "type": "armor",
     "products": [{ "id": 3, "type": 2 }],
@@ -26,7 +26,7 @@
       }
     ]
   },
-  "jackolantern_helm": {
+  "jackolanternHelm": {
     "name": "Jack-o-lantern Helm",
     "type": "armor",
     "products": [{ "id": 4, "type": 2 }],
@@ -45,6 +45,20 @@
       {
         "id": 3,
         "count": 3
+      }
+    ]
+  },
+  "dragonScaleArmor": {
+    "name": "Dragon Scale Armor",
+    "type": "armor",
+    "products": [{ "id": 5, "type": 2 }],
+    "texture": {
+      "texture": "armor/dragon_scale/item"
+    },
+    "mats": [
+      {
+        "id": 6,
+        "count": 2
       }
     ]
   }

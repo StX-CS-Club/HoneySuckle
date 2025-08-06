@@ -47,7 +47,7 @@
   "pumpkinHelm": {
     "name": "Pumpkin Helm",
     "id": 3,
-    "recipeUnlocks": ["jackolantern_helm"],
+    "recipeUnlocks": ["jackolanternHelm"],
     "texture": {
       "texture": "armor/pumpkin_helm/top",
       "frontTexture": "armor/pumpkin_helm/front",
@@ -91,6 +91,30 @@
         "Speed": "0.8",
         "Health": "1",
         "Light": "9"
+    }
+  },
+  "dragonScale": {
+    "name": "Dragon Scale Armor",
+    "id": 5,
+    "texture": {
+      "texture": "armor/dragon_scale/top",
+      "frontTexture": "armor/dragon_scale/front",
+      "backTexture": "armor/dragon_scale/back",
+      "itemTexture": "armor/dragon_scale/item",
+      "rarityColor": "#57a5ff"
+    },
+    "attributes": {
+      "defense": 1.25,
+      "regen": 0.002,
+      "speed": 0.11,
+      "maxHealth": 1.5,
+      "lightRadius": 7
+    },
+    "stats": {
+        "Defense": "1.25",
+        "Regen": "2",
+        "Speed": "1.1",
+        "Health": "1.5"
     }
   }
 }

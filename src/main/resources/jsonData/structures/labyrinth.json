@@ -71,5 +71,31 @@
         [0, 7]
       ]
     }
+  },
+  "chest": {
+    "name": "Chest",
+    "id": 10,
+    "generation": {
+      "tileMap": [
+        [5, 5, 5],
+        [5, 5, 5],
+        [5, 5, 5]
+      ],
+      "chests": [
+        {
+          "pos": [1, 1],
+          "lootEntries": [
+            {
+              "loot": [
+                {
+                  "id": 10,
+                  "count": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   }
 }
