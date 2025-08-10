@@ -1,0 +1,99 @@
+{
+  "dragonSword": {
+    "name": "Dragon Sword",
+    "type": "weapon",
+    "products": [{ "id": 4, "type": 1 }],
+    "texture": {
+      "texture": "weapons/dragon_sword/item"
+    },
+    "mats": [
+      {
+        "id": 6
+      }
+    ]
+  },
+  "slimeShield": {
+    "name": "Bouncy Shield",
+    "type": "weapon",
+    "products": [{ "id": 5, "type": 1 }],
+    "texture": {
+      "texture": "weapons/slime_shield/item"
+    },
+    "mats": [
+      {
+        "id": 2,
+        "count": 10
+      },
+      {
+        "id": 1
+      }
+    ]
+  },
+  "cactusSword": {
+    "name": "Cactus Sword",
+    "type": "weapon",
+    "products": [{ "id": 6, "type": 1 }],
+    "texture": {
+      "texture": "weapons/cactus_sword/item"
+    },
+    "mats": [
+      {
+        "id": 5,
+        "count": 10
+      },
+      {
+        "id": 1,
+        "count": 15
+      }
+    ]
+  },
+  "diamondSword": {
+    "name": "Diamond Sword",
+    "type": "weapon",
+    "products": [{ "id": 7, "type": 1 }],
+    "texture": {
+      "texture": "weapons/diamond_sword/item"
+    },
+    "mats": [
+      {
+        "id": 7,
+        "count": 99
+      },
+      {
+        "id": 1,
+        "type": 1
+      }
+    ]
+  },
+  "woodenArrow": {
+    "name": "Wooden Arrow",
+    "type": "ammo",
+    "products": [{ "id": 1, "type": 3}],
+    "texture": {
+      "texture": "ammo/wooden_arrow"
+    },
+    "mats": [
+      {
+        "id": 1
+      }
+    ]
+  },
+  "shotgunShell": {
+    "name": "Shotgun Shells",
+    "type": "ammo",
+    "products": [{ "id": 3, "type": 3, "count": 5}],
+    "texture": {
+      "texture": "ammo/shotgun_shell"
+    },
+    "mats": [
+      {
+        "id": 10,
+        "count": 2
+      },
+      {
+        "id": 9,
+        "count": 3
+      }
+    ]
+  }
+}

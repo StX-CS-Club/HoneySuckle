@@ -1,0 +1,114 @@
+{
+  "wall": {
+    "name": "Wall",
+    "product": 9,
+    "params": {
+      "tile": [1, 2, 3, 4, 5, 6]
+    },
+    "tags": ["placeAway"],
+    "mats": [
+      {
+        "id": 1
+      }
+    ],
+    "texture": {
+      "texture": "blueprints/wall"
+    }
+  },
+  "raft": {
+    "name": "Raft",
+    "product": 10,
+    "params": {
+      "tile": [0, 2]
+    },
+    "mats": [
+      {
+        "id": 1,
+        "count": 2
+      }
+    ],
+    "texture": {
+      "texture": "blueprints/raft"
+    }
+  },
+  "bridge": {
+    "name": "Stone Bridge",
+    "product": 13,
+    "params": {
+      "tile": [0, 7]
+    },
+    "tags": ["placeAway"],
+    "mats": [
+      {
+        "id": 8,
+        "count": 3
+      },
+      {
+        "id": 1,
+        "count": 1
+      }
+    ],
+    "texture": {
+      "texture": "blueprints/bridge"
+    }
+  },
+  "torch": {
+    "name": "Torch",
+    "product": 11,
+    "params": {
+      "tile": [1, 2, 3, 5, 6]
+    },
+    "mats": [
+      {
+        "id": 1
+      },
+      {
+        "id": 3
+      }
+    ],
+    "texture": {
+      "texture": "blueprints/torch"
+    }
+  },
+  "jackolantern": {
+    "name": "Jack-O-Lantern",
+    "product": 12,
+    "params": {
+      "tile": [1, 2, 3]
+    },
+    "mats": [
+      {
+        "id": 4
+      },
+      {
+        "id": 3
+      },
+      {
+        "id": 1
+      }
+    ],
+    "texture": {
+      "texture": "blueprints/jackolantern"
+    }
+  },
+  "tunnel": {
+    "name": "Tunnel",
+    "product": 15,
+    "params": {
+      "tile": [8]
+    },
+    "mats": [
+      {
+        "id": 1,
+        "count": 3
+      },
+      {
+        "id": 9,
+        "count": 2
+      }
+    ],
+    "texture": {
+      "texture": "blueprints/tunnel"
+    }
+  }
+}

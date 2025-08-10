@@ -1,0 +1,15 @@
+mvn -Prelease -DskipTests clean package
+
+Remove-Item -Recurse -Force target/app-resources -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Path target/app-resources/resources | Out-Null
+robocopy src\main\resources target\app-resources\resources /E
+
+jpackage --name HoneySuckle --type exe `
+  --app-version 1.0.0 `
+  --input target `
+  --main-jar HoneySuckle.jar `
+  --main-class HoneySuckle `
+  --resource-dir target/app-resources `
+  --win-console `
+  --icon target\app-resources\resources\images\HoneySuckleIcon.ico `
+  --type app-image

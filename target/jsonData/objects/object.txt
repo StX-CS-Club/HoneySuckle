@@ -1,0 +1,34 @@
+{
+    [String ID: snake_case String ID to identify object]: {
+        "id": int ID of object,
+        "name": String to represent object's name in text,
+        "texture": {
+            "texture": String URI of texture file from images/sprites (autofils .png),
+            "natColor": String ID of color from biome to reverse gray scale,
+            "baseColor": String HEX color of object's placeholder square,
+            "glowColor": String HEX color of object's glow
+        },
+        "tags": List of following String tags of object:[
+            "obstruction", - Include to block entities from going through object
+            "projObstruction", - Include to block projectiles from going through object
+            "walkable", - Include to allow entity to walk on object
+            "destructable", - Include to allow object to be damaged
+            "safe", - Include to negate effects of tile below
+            "light", - Include to cause object to glow
+        ],
+        "attributes": {
+            "durability": Number durability of object (default 1),
+            "hurtness": Number of damage dealt on contact (default 0),
+            "deathGateId": int ID of death gate functionality,
+            "lightRadius": Number of tiles object's light spreads (default 0),
+            "glow": 8-Bit opacity of object's glow (default 0),
+            "glowRadius": Number of tiles object's glow spreads (default 0)
+        },
+        "loot": List of following item data: [
+            {
+                "id": int ID of item,
+                "count": int count of item (default 1)
+            }
+        ],
+    }
+}

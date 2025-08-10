@@ -1,0 +1,29 @@
+{
+  "diamondSword": {
+    "name": "Diamond Sword",
+    "id": 7,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Sword",
+      "Damage": "10",
+      "Size": "1",
+      "Speed": "2",
+      "Expensive": "Very"
+    },
+    "texture": {
+      "bladeColor": "#ffffff",
+      "itemTexture": "weapons/diamond_sword/item",
+      "texture": "weapons/diamond_sword/diamond_sword",
+      "animation": "_swing_",
+      "type": "side",
+      "rarityColor": "#bb3311"
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.1,
+        "cooldown": 12,
+        "frames": 10
+      }
+    }
+  }
+}

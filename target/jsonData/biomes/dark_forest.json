@@ -1,0 +1,50 @@
+{
+  "darkForest": {
+    "name": "Dark Forest",
+    "level": 5,
+    "tags": ["fog"],
+    "colorMap": {
+      "landColor": "#2a562a",
+      "voidColor": "#001139",
+      "waterColor": "#001139",
+      "treeColor": "#042e00",
+      "pumpkinColor": "#d88700",
+      "fogColor": "#000000",
+      "coalColor": "#271b1b",
+      "archerColor": "#ee2222"
+    },
+    "generation": {
+      "size": [101, 150],
+      "startMap": [[1, 1, 1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [[1, 0.435]],
+          "bottomProb": [[1, 0.435]],
+          "rangeProb": [[50, 50, 1]]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [[1, 0.1]]
+        },
+        {
+          "id": 2,
+          "tileProb": [[1, 0.002]]
+        },
+        {
+          "id": 4,
+          "tileProb": [[1, 0.005]]
+        }
+      ],
+      "entities": [
+        {
+          "id": 3,
+          "tileProb": [[1, 0.001]]
+        }
+      ]
+    }
+  }
+}

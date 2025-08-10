@@ -1,0 +1,29 @@
+{
+  "cactusSword": {
+    "name": "Cactus Sword",
+    "id": 6,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Sword",
+      "Damage": "9",
+      "Size": "1.1",
+      "Speed": "0.5"
+    },
+    "texture": {
+      "bladeColor": "#ffffff",
+      "itemTexture": "weapons/cactus_sword/item",
+      "texture": "weapons/cactus_sword/cactus_sword",
+      "rarityColor": "#00db33",
+      "animation": "_swing_",
+      "type": "side"
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.09,
+        "cooldown": 20,
+        "frames": 10,
+        "size": 1.1
+      }
+    }
+  }
+}

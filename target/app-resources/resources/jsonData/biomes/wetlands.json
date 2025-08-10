@@ -1,0 +1,42 @@
+{ 
+  "wetlands": {
+    "name": "Wetlands",
+    "level": 0,
+    "colorMap": {
+      "landColor": "#0fc80f",
+      "voidColor": "#0080ff",
+      "waterColor": "#0080ff",
+      "treeColor": "#019501",
+      "coalColor": "#666677",
+      "rockColor": "#d9cbba"
+    },
+    "generation": {
+      "size": [51, 90],
+      "startMap": [[1, 1, 1]],
+      "tiles": [
+        {
+          "id": 1,
+          "prob": 0.1,
+          "sideProb": [[1, 0.55]],
+          "bottomProb": [[1, 0.3]]
+        }
+      ],
+      "objects": [
+        {
+          "id": 1,
+          "tileProb": [[1, 0.1]]
+        },
+        {
+          "id": 4,
+          "tileProb": [[1, 0.0001]]
+        }
+      ],
+      "entities": [
+        {
+          "id": 1,
+          "tileProb": [[1, 0.02]]
+        }
+      ]
+    }
+  }
+}

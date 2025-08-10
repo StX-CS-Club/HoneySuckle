@@ -1,0 +1,185 @@
+{
+  "tree": {
+    "name": "Tree",
+    "id": 1,
+    "texture": {
+      "natColor": "treeColor",
+      "texture": "tiles/tree"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 1.0
+    },
+    "loot": [
+      {
+        "id": 1
+      },
+      {
+        "id": 1,
+        "prob": 0.25
+      }
+    ]
+  },
+  "pumpkin": {
+    "name": "Pumpkin",
+    "id": 2,
+    "texture": {
+      "natColor": "pumpkinColor",
+      "texture": "tiles/pumpkin"
+    },
+    "tags": ["obstruction", "destructable"],
+    "attributes": {
+      "durability": 0.75
+    },
+    "loot": [
+      {
+        "id": 4
+      }
+    ]
+  },
+  "cactus": {
+    "name": "Cactus",
+    "id": 3,
+    "texture": {
+      "natColor": "cactusColor",
+      "texture": "tiles/cactus"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "hurtness": 2.0,
+      "durability": 0.75
+    },
+    "loot": [
+      {
+        "id": 5
+      }
+    ]
+  },
+  "coal": {
+    "name": "Coal Ore",
+    "id": 4,
+    "texture": {
+      "natColor": "coalColor",
+      "texture": "tiles/ore"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 2.0
+    },
+    "loot": [
+      {
+        "id": 3,
+        "count": 2
+      }
+    ]
+  },
+  "deathgate": {
+    "name": "Death Gate",
+    "id": 5,
+    "texture": {
+      "texture": "tiles/gate"
+    },
+    "tags": ["obstruction"],
+    "attributes": { "deathGateId": 1 }
+  },
+  "crate": {
+    "name": "Crate",
+    "id": 6,
+    "texture": {
+      "baseColor": "#c75f06",
+      "texture": "tiles/crate"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 0.1
+    },
+    "loot": [
+      {
+        "id": 1,
+        "prob": 0.5
+      }
+    ]
+  },
+  "diamond": {
+    "name": "Diamond Ore",
+    "id": 7,
+    "texture": {
+      "natColor": "diamondColor",
+      "texture": "tiles/ore_alt"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 5.0
+    },
+    "loot": [
+      {
+        "id": 7,
+        "count": 1
+      }
+    ]
+  },
+  "rock": {
+    "name": "Rock",
+    "id": 8,
+    "texture": {
+      "natColor": "rockColor",
+      "texture": "tiles/rock"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 1.5
+    },
+    "loot": [
+      {
+        "id": 8,
+        "count": 2
+      },
+      {
+        "id": 8,
+        "prob": 0.66,
+        "count": 1
+      }
+    ]
+  },
+  "scrap": {
+    "name": "Scrap",
+    "id": 14,
+    "texture": {
+      "texture": "tiles/scrap/scrap"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 1.25,
+      "textures": 2
+    },
+    "loot": [
+      {
+        "id": 9
+      },
+      {
+        "id": 9,
+        "prob": 0.5
+      },
+      {
+        "id": 9,
+        "prob": 0.5
+      },
+      {
+        "id": 1,
+        "prob": 0.5
+      }
+    ]
+  },
+  "chest": {
+    "name": "Chest",
+    "id": 16,
+    "texture": {
+      "texture": "tiles/chest/chest",
+      "anim": "_destroyed_"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 1.5
+    }
+  }
+}

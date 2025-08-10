@@ -1,0 +1,43 @@
+{
+    [String ID: snake_case String ID to identify weapon]: {
+        "id": int ID of weapon,
+        "name": String to represent weapon's name in text,
+        "texture": {
+            "texture": String URI of texture file from images/sprites (autofils .png & animation subfixes),
+            "texture": String URI of UI texture file from images/sprites (autofils .png),
+            "animation": String of animation tags in format "_tag_othertag_",
+            "rarityColor": String HEX color denoting weapon's rarity,
+            "type": String ID of weapon rendering scheme (default "front")
+        },
+        "stats": Map of Strings of Weapon stats for display purposes,
+        "attributes": {
+            "size": Number of tiles of weapon's size (default 1),
+        },
+        "tags": List of following String tags of weapon:[
+            "constClick" - Include to allow weapon to activate by holding down click
+        ],
+        "behavior": Map of following weapon behaviors: {
+            "swing": {
+                "attackID": String of behavior's attack ID (default "base")
+                "frames": Number of frames weapon swings for (default 5),
+                "cooldown": Number of frames until next attack allowed (default 10),
+                "size": Number of tiles of swing size (default 1),
+                "damage": Number of damage dealt from swing (default 0)
+            },
+            "shoot": {
+                "attackID": String of behavior's attack ID (default "base")
+                "frames": Number of frames weapon charges shot for (default 5),
+                "cooldown": Number of frames until next attack allowed (default 10),
+                "proj": int ID of projectile shot (default 1)
+            },
+            "shield": {
+                "attackID": String of behavior's attack ID (default "base")
+                "frames": Number of frames weapon charges shot for (default 5),
+                "cooldown": Number of frames until next attack allowed (default 10),
+                "size": Number of tiles of shield size (default 1),
+                "parry": Number of parry strength (default 1),
+                "bounce": Number of parry bounce (default 1)
+            }
+        }
+    }
+}

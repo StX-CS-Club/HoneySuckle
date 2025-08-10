@@ -46,6 +46,9 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     //Main player
     public static Player player;
+    public static Menu menu = new Menu(Menu.MenuType.MAIN_MENU);
+
+    public static boolean play = false;
 
     //Public set of light data used in lighting system
     public static Set<Map<String, Number>> lights = new LinkedHashSet<>();
@@ -97,62 +100,81 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         FileManager.readJsonData();
         FileManager.registerFont();
+    }
 
+    public static void stop() {
+        play = false;
+        World.worlds.clear();
+        World.level = 0;
+        Player.players.clear();
+    }
+
+    public static void start() {
         //Creates world 1
         World world = new World();
         //Creates main player in reference to world 1
         player = new Player(new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.start[1] + 0.5)},
                 (int) (TILE_SIZE * 0.75), Arrays.asList("leader"));
+        play = true;
     }
 
     //Render
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        //Resets lights every frame
-        lights = new LinkedHashSet<>();
+
+        //Converts Graphics to Graphics2D for more methods
         BufferedImage internalFrame = new BufferedImage(
                 GAME_WIDTH, GAME_HEIGHT, BufferedImage.TYPE_INT_ARGB
         );
-
-        //Converts Graphics to Graphics2D for more methods
         Graphics2D g2d = (Graphics2D) internalFrame.getGraphics();
 
-        //Renders World
-        World.worlds.get(World.level).render(g2d);
-        //Renders Players
-        for (Player renderPlayer : Player.players) {
-            renderPlayer.render(g2d);
+        if (play) {
+            //Resets lights every frame
+            lights = new LinkedHashSet<>();
+
+            //Renders World
+            World.worlds.get(World.level).render(g2d);
+            //Renders Players
+            for (Player renderPlayer : Player.players) {
+                renderPlayer.render(g2d);
+            }
+
+            Biome biome = World.worlds.get(World.level).biome;
+            //Renders fog, is present
+            if (biome.tags.contains("fog")) {
+                Color fogColor = Color.decode(biome.colorMap.get("fogColor"));
+                Rendering.renderLight(g2d, fogColor, lights);
+            }
+
+            //Creates red overlay when at low health
+            Rendering.colorFade(g2d, Color.red, 1 - player.health);
+
+            int healthBarIndex = 0;
+            for (Entity entity : healthBars) {
+                entity.renderHealthBar(g2d, healthBarIndex);
+                healthBarIndex++;
+            }
+
+            if (player.health > 0) {
+                //Renders crafting and weapon ui
+                if (player.inventory.isOpen) {
+                    player.inventory.renderUi(g2d);
+                } else {
+                    player.build.renderUi(g2d, World.worlds.get(World.level));
+                    player.armory.renderUi(g2d);
+                }
+            }
         }
 
-        Biome biome = World.worlds.get(World.level).biome;
-        //Renders fog, is present
-        if (biome.tags.contains("fog")) {
-            Color fogColor = Color.decode(biome.colorMap.get("fogColor"));
-            Rendering.renderLight(g2d, fogColor, lights);
-        }
-
-        //Creates red overlay when at low health
-        Rendering.colorFade(g2d, Color.red, 1 - player.health);
-
-        int healthBarIndex = 0;
-        for(Entity entity : healthBars){
-            entity.renderHealthBar(g2d, healthBarIndex);
-            healthBarIndex++;
-        }
-
-        //Renders crafting and weapon ui
-        if (player.inventory.isOpen) {
-            player.inventory.renderUi(g2d);
-        } else {
-            player.build.renderUi(g2d, World.worlds.get(World.level));
-            player.armory.renderUi(g2d);
+        if (!menu.complete) {
+            menu.render(g2d);
         }
 
         scaleGraphics(g, internalFrame);
         //Disposes of Graphics and Graphics2D
-        g.dispose();
         g2d.dispose();
+        g.dispose();
     }
 
     public void scaleGraphics(Graphics g, BufferedImage frame) {
@@ -174,11 +196,11 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         g.setColor(Color.BLACK);
 
-        g.fillRect(0, 0, offsetX+1, gameHeight+1);
-        g.fillRect(gameWidth+offsetX, 0, offsetX+1, gameHeight+1);
+        g.fillRect(0, 0, offsetX + 1, gameHeight + 1);
+        g.fillRect(gameWidth + offsetX, 0, offsetX + 1, gameHeight + 1);
 
-        g.fillRect(0, 0, gameWidth+1, offsetY+1);
-        g.fillRect(0, gameHeight+offsetY, gameWidth+1, offsetY+1);
+        g.fillRect(0, 0, gameWidth + 1, offsetY + 1);
+        g.fillRect(0, gameHeight + offsetY, gameWidth + 1, offsetY + 1);
 
         inputHandler.setScale(scale, offsetX, offsetY);
     }
@@ -187,12 +209,17 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public void update() {
         inputHandler.update();
 
-        //Updates all players
-        for (Player updatePlayer : Player.players) {
-            updatePlayer.update(inputHandler);
+        if (!menu.complete) {
+            menu.update(inputHandler);
         }
-        //Updates current world
-        World.worlds.get(World.level).update();
+        if (play) {
+            //Updates all players
+            for (Player updatePlayer : Player.players) {
+                updatePlayer.update(inputHandler);
+            }
+            //Updates current world
+            World.worlds.get(World.level).update();
+        }
     }
 
     //Run Loop

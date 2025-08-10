@@ -1,0 +1,25 @@
+{
+  "bow": {
+    "name": "Bow",
+    "id": 2,
+    "tags": ["constClick", "loadAmmo"],
+    "ammo": ["arrow"],
+    "stats": {
+      "Type": "Bow",
+      "Damage": "2.5"
+    },
+    "texture": {
+      "itemTexture": "weapons/bow/item",
+      "texture": "weapons/bow/bow",
+      "animation": "_shoot_",
+      "type": "front"
+    },
+    "behavior": {
+      "shoot": {
+        "cooldown": 20,
+        "frames": 5,
+        "damage": 0.5
+      }
+    }
+  }
+}

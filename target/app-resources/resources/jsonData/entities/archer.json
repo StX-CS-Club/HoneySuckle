@@ -1,0 +1,49 @@
+{
+  "archer": {
+    "id": 3,
+    "name": "Archer",
+    "texture": {
+      "baseColor": "#111166",
+      "texture": "entities/archer/archer",
+      "natColor": "archerColor",
+      "anim": "_xy_shoot_"
+    },
+    "attributes": {
+      "size": 1.25,
+      "health": 1.25,
+      "weight": 1.0
+    },
+    "loot": [
+      {
+        "id": 2,
+        "type": 3,
+        "prob": 0.5
+      },
+      {
+        "id": 2,
+        "type": 3,
+        "prob": 0.5
+      },
+      {
+        "id": 2,
+        "type": 3,
+        "prob": 0.5
+      }
+    ],
+    "brain": {
+      "shoot": {
+        "cooldown": 80.0,
+        "range": 10
+      },
+      "chase": {
+        "range": 15,
+        "speed": 0.1
+      },
+      "flee": {
+        "range": 5,
+        "hesitateRange": 6,
+        "speed": 0.09  
+      }
+    }
+  }
+}

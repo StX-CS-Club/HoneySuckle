@@ -1,0 +1,120 @@
+{
+  "leather": {
+    "name": "Leather Hood",
+    "id": 1,
+    "texture": {
+      "texture": "armor/leather/top",
+      "frontTexture": "armor/leather/front",
+      "backTexture": "armor/leather/back",
+      "itemTexture": "armor/leather/item"
+    },
+    "attributes": {
+      "defense": 1.0,
+      "regen": 0.001,
+      "speed": 0.1,
+      "maxHealth": 1.0
+    },
+    "stats": {
+        "Defense": "1",
+        "Regen": "1",
+        "Speed": "1",
+        "Health": "1"
+    }
+  },
+  "aRock": {
+    "name": "Rock",
+    "id": 2,
+    "texture": {
+      "texture": "armor/a_rock/top",
+      "frontTexture": "armor/a_rock/front",
+      "itemTexture": "armor/a_rock/item",
+      "rarityColor": "#bb3311"
+    },
+    "attributes": {
+      "defense": 2.0,
+      "speed": 0.09,
+      "maxHealth": 1.0,
+      "regen": 0
+    },
+    "stats": {
+        "Defense": "2",
+        "Regen": "0",
+        "Speed": "0.9",
+        "Health": "1",
+        "Rock": "is there"
+    }
+  },
+  "pumpkinHelm": {
+    "name": "Pumpkin Helm",
+    "id": 3,
+    "recipeUnlocks": ["jackolanternHelm"],
+    "texture": {
+      "texture": "armor/pumpkin_helm/top",
+      "frontTexture": "armor/pumpkin_helm/front",
+      "backTexture": "armor/pumpkin_helm/back",
+      "itemTexture": "armor/pumpkin_helm/item",
+      "rarityColor": "#00db33"
+    },
+    "attributes": {
+      "defense": 0.8,
+      "regen": 0.0025,
+      "speed": 0.1,
+      "maxHealth": 1.0
+    },
+    "stats": {
+        "Defense": "0.8",
+        "Regen": "2.5",
+        "Speed": "1",
+        "Health": "1"
+    }
+  },
+  "jackolanternHelm": {
+    "name": "Jack-o-lantern Helm",
+    "id": 4,
+    "texture": {
+      "texture": "armor/jackolantern_helm/top",
+      "frontTexture": "armor/jackolantern_helm/front",
+      "backTexture": "armor/jackolantern_helm/back",
+      "itemTexture": "armor/jackolantern_helm/item",
+      "rarityColor": "#00db33"
+    },
+    "attributes": {
+      "defense": 0.75,
+      "regen": 0.0025,
+      "speed": 0.08,
+      "maxHealth": 1.0,
+      "lightRadius": 9
+    },
+    "stats": {
+        "Defense": "0.75",
+        "Regen": "2.5",
+        "Speed": "0.8",
+        "Health": "1",
+        "Light": "9"
+    }
+  },
+  "dragonScale": {
+    "name": "Dragon Scale Armor",
+    "id": 5,
+    "texture": {
+      "texture": "armor/dragon_scale/top",
+      "frontTexture": "armor/dragon_scale/front",
+      "backTexture": "armor/dragon_scale/back",
+      "itemTexture": "armor/dragon_scale/item",
+      "rarityColor": "#57a5ff"
+    },
+    "attributes": {
+      "defense": 1.25,
+      "regen": 0.002,
+      "speed": 0.11,
+      "maxHealth": 1.5,
+      "lightRadius": 7
+    },
+    "stats": {
+        "Defense": "1.25",
+        "Regen": "2",
+        "Speed": "1.1",
+        "Health": "1.5"
+    }
+  }
+}

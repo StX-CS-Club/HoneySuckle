@@ -29,7 +29,7 @@ import javax.imageio.stream.ImageInputStream;
  - Class for running static methods involving more complex rendering
  - Static lists of already rendered shit
  */
-public class Rendering {
+public final class Rendering {
 
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
@@ -43,6 +43,31 @@ public class Rendering {
 
     //Fonts
     public static final Map<String, Font> fonts = new HashMap<>();
+
+    
+    //Render sprite
+    public static BufferedImage image(String texture) {
+        //If already rendered, return
+        if (textures.get(texture) != null) {
+            if (textures.get(texture).get(null) != null) {
+                return textures.get(texture).get(null);
+            }
+        } else {
+            textures.put(texture, new HashMap<>());
+        }
+        //Result image
+        BufferedImage result;
+        try {
+            //Gray scale texture
+            result = ImageIO.read(HoneySuckle.class.getResource("/images/" + texture + ".png"));
+            textures.get(texture).put(null, result);
+            return result;
+        } catch (IOException e) {
+            System.out.println("HoneySuckle ERROR: Could not find sprite: " + texture);
+        }
+        //If error, return null
+        return null;
+    }
 
     //Render sprite
     public static BufferedImage texture(String texture, String color) {
