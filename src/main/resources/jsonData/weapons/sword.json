@@ -10,7 +10,6 @@
       "Speed": "0.5"
     },
     "texture": {
-      "bladeColor": "#ffffff",
       "itemTexture": "weapons/sword/item",
       "texture": "weapons/sword/sword",
       "animation": "_swing_",

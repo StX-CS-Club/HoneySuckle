@@ -10,7 +10,7 @@
       "Speed": "0.5"
     },
     "texture": {
-      "bladeColor": "#ffffff",
+      "swingColor": "#00db33",
       "itemTexture": "weapons/cactus_sword/item",
       "texture": "weapons/cactus_sword/cactus_sword",
       "rarityColor": "#00db33",

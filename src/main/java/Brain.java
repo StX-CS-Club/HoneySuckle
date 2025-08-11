@@ -93,25 +93,27 @@ public class Brain {
 
         boolean hesitate = false;
         if (!lungeAttack.isEmpty()) {
-            final int rate = FPS / numberFromMap(lungeAttack, "rate", 1).intValue();
+            final int cooldown = numberFromMap(lungeAttack, "cooldown", 40).intValue();
             final int hesitationTime = numberFromMap(lungeAttack, "hesitationTime", 0).intValue();
+            final int frames = numberFromMap(lungeAttack, "frames", hesitationTime).intValue();
             final double range = numberFromMap(lungeAttack, "range", 10).doubleValue();
             final double length = numberFromMap(lungeAttack, "length", 1).doubleValue();
 
             if (playerAbsDistance <= range * TILE_SIZE) {
                 long ticks = incrementTicks("lunge", 1);
-                if (ticks == rate) {
-                    ticks = 0;
-                    entity.ticks.put("lunge", 0l);
-                }
-                if (ticks == 0) {
+                if (ticks >= cooldown) {
                     //If within range of view, do a little hop
                     double coefficient = TILE_SIZE * length / Math.max(1, playerAbsDistance);
                     entity.vel[0] += playerDistance[0] * coefficient;
                     entity.vel[1] += playerDistance[1] * coefficient;
+
+                    ticks = 0;
+                    entity.ticks.put("lunge", 0l);
                 }
-                if (ticks >= rate - hesitationTime) {
+                if (ticks >= cooldown - hesitationTime) {
                     hesitate = true;
+                }
+                if (ticks >= cooldown - frames) {
                     states.put("lunging", true);
                 } else {
                     states.put("lunging", false);
@@ -134,19 +136,19 @@ public class Brain {
 
             if (playerAbsDistance <= range * TILE_SIZE) {
                 long ticks = incrementTicks("shoot", 1);
-                if (ticks < frames) {
-                    states.put("shooting", true);
-                } else {
-                    states.put("shooting", false);
-                }
-                if (ticks * speed > cooldown * FPS / 40.0 / speed) {
-                    entity.ticks.put("shoot", 0l);
-                    ticks = 0;
-                }
-                if (ticks == Math.floor(frames / speed)) {
+                if (ticks * speed >= cooldown * FPS / 40.0 / speed) {
                     Projectile projectile = new Projectile(projectileId, entity.pos, entity.vel, chaseAngle, entity);
                     projectile.alterVel(entity.pos, entity.vel, chaseAngle, vel, entity);
                     world.projectiles.add(projectile);
+
+                    entity.ticks.put("shoot", 0l);
+                    ticks = 0;
+                }
+
+                if (ticks * speed >= cooldown * FPS / 40.0 / speed - frames) {
+                    states.put("shooting", true);
+                } else {
+                    states.put("shooting", false);
                 }
             }
         }
@@ -167,7 +169,7 @@ public class Brain {
         if (!chase.isEmpty() && !hesitate) {
             final double range = numberFromMap(chase, "range", 5).doubleValue();
             final double speed = numberFromMap(chase, "speed", 0.1).doubleValue();
-            final double hesitateRange = numberFromMap(chase, "hesitateRange", range).doubleValue();
+            final double hesitateRange = numberFromMap(chase, "hesitateRange", 0).doubleValue();
             if (playerAbsDistance <= hesitateRange * TILE_SIZE) {
                 hesitate = true;
             }
@@ -180,7 +182,7 @@ public class Brain {
             }
         }
 
-        if(hesitate){
+        if (hesitate) {
             states.put("hesitate", true);
         } else {
             states.put("hesitate", false);
@@ -248,15 +250,17 @@ public class Brain {
             final double damage = numberFromMap(contactAttack, "damage", 0).doubleValue();
             final double bounce = numberFromMap(contactAttack, "bounce", 0).doubleValue();
             final double range = numberFromMap(contactAttack, "range", Math.ceil(entity.size / TILE_SIZE)).doubleValue();
-            final int rate = numberFromMap(contactAttack, "rate", 1).intValue();
+            final int rate = (int) Math.floor(FPS / numberFromMap(contactAttack, "rate", 1).doubleValue());
 
             if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
-                long ticks = incrementTicks("contact", 1);
-                if (checkTicks(ticks, rate)) {
+                long ticks = incrementTicks("contact", 1)-1;
+                if (ticks % rate == 0) {
                     player.damage(damage, true);
                     entity.vel[0] *= -bounce;
                     entity.vel[1] *= -bounce;
                 }
+            } else {
+                entity.ticks.put("contact", 0l);
             }
 
         }
@@ -273,16 +277,6 @@ public class Brain {
         long ticks = entity.ticks.get(key);
         entity.ticks.put(key, ticks + amount);
         return ticks + amount;
-    }
-
-    //If entity's ticks are less than n, return true
-    private static boolean checkTicks(long ticks, int n) {
-        for (int i = 0; i < n; i++) {
-            if ((ticks + i) % FPS == 0) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Map<String, Object> registerBrain(String brainType) {

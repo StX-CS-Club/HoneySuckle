@@ -255,7 +255,7 @@ public class Attack {
                     };
                     //Render slash
                     g.drawImage(
-                            Rendering.replaceGradient(Rendering.renderGIF("images/gifs/slash.gif", ((double) attackFrame) / frames), weapon.texture.get("bladeColor")),
+                            Rendering.renderGIF("images/gifs/slash.gif", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
                             (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
                     return;
                 }

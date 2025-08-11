@@ -39,18 +39,19 @@ public final class Rendering {
 
     //Save data -> Save CPU
     public static final Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
-    public static final Map<String, List<BufferedImage>> gifFrames = new HashMap<>();
+    public static final Map<String, Map<String, List<BufferedImage>>> gifFrames = new HashMap<>();
 
     //Fonts
     public static final Map<String, Font> fonts = new HashMap<>();
 
-    
     //Render sprite
     public static BufferedImage image(String texture) {
         //If already rendered, return
-        if (textures.get(texture) != null) {
-            if (textures.get(texture).get(null) != null) {
-                return textures.get(texture).get(null);
+        Map<String, BufferedImage> textureMap = textures.get(texture);
+        if (textureMap != null) {
+            BufferedImage result = textureMap.get(null);
+            if (result != null) {
+                return result;
             }
         } else {
             textures.put(texture, new HashMap<>());
@@ -71,13 +72,12 @@ public final class Rendering {
 
     //Render sprite
     public static BufferedImage texture(String texture, String color) {
-        if (color == null) {
-            color = "#ffffff";
-        }
         //If already rendered, return
-        if (textures.get(texture) != null) {
-            if (textures.get(texture).get(color) != null) {
-                return textures.get(texture).get(color);
+        Map<String, BufferedImage> textureMap = textures.get(texture);
+        if (textureMap != null) {
+            BufferedImage result = textureMap.get(color);
+            if (result != null) {
+                return result;
             }
         } else {
             textures.put(texture, new HashMap<>());
@@ -98,18 +98,23 @@ public final class Rendering {
 
     //Grey scale image
     public static BufferedImage replaceGradient(BufferedImage image, String color) {
+        BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        result.getGraphics().drawImage(image, 0, 0, null);
+        if (color == null) {
+            return result;
+        }
         //Shade to replace with
         Color shade = Color.decode(color);
         //Go through ALL pixels of image
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
+        for (int x = 0; x < result.getWidth(); x++) {
+            for (int y = 0; y < result.getHeight(); y++) {
                 //Individual pixel
                 Color px = new Color(image.getRGB(x, y), true);
                 //If shade of grey...
                 if (px.getRed() == px.getGreen() && px.getRed() == px.getBlue() && px.getRed() != 0) {
                     //Set grey as percentage of shade
                     double ratio = (px.getRed()) / 255.0;
-                    image.setRGB(x, y, new Color(
+                    result.setRGB(x, y, new Color(
                             (int) (shade.getRed() * ratio),
                             (int) (shade.getGreen() * ratio),
                             (int) (shade.getBlue() * ratio)
@@ -117,7 +122,7 @@ public final class Rendering {
                 }
             }
         }
-        return image;
+        return result;
     }
 
     //Render Light
@@ -206,16 +211,27 @@ public final class Rendering {
     }
 
     //Render frames of gif
-    public static BufferedImage renderGIF(String path, double frame) {
+    public static BufferedImage renderGIF(String path, String color, double frame) {
+        //If already rendered, return
+        Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
+        if (gifMap != null) {
+            List<BufferedImage> frames = gifMap.get(color);
+            if (frames != null) {
+                return frames.get((int) Math.floor(frame * frames.size()));
+            }
+        } else {
+            gifFrames.put(path, new HashMap<>());
+        }
+
         //Current frames of gif
-        List<BufferedImage> frames = gifFrames.get(path);
+        List<BufferedImage> frames = gifFrames.get(path).get(color);
         //If frames not found...
         if (frames == null) {
             //Break down frames of gif into list of frames
             frames = new ArrayList<>();
             File gifFile;
             try {
-                gifFile = new File(Rendering.class.getResource(path).toURI());
+                gifFile = new File(HoneySuckle.class.getResource(path).toURI());
                 ImageInputStream input = ImageIO.createImageInputStream(gifFile);
                 Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
                 if (readers.hasNext()) {
@@ -224,12 +240,12 @@ public final class Rendering {
 
                     int numFrames = reader.getNumImages(true);
                     for (int i = 0; i < numFrames; i++) {
-                        BufferedImage gifFrame = reader.read(i);
+                        BufferedImage gifFrame = replaceGradient(reader.read(i), color);
                         frames.add(gifFrame);
                     }
                     reader.dispose();
                 }
-                gifFrames.put(path, frames);
+                gifFrames.get(path).put(color, frames);
             } catch (URISyntaxException e) {
                 System.out.println("HoneySuckle ERROR: Could not find gif: " + path);
             } catch (IOException e) {
@@ -343,8 +359,8 @@ public final class Rendering {
         return rotated;
     }
 
-    public static Color decodeColor(String colorId, int alpha){
-        if(colorId == null){
+    public static Color decodeColor(String colorId, int alpha) {
+        if (colorId == null) {
             return null;
         }
         final Color color = Color.decode(colorId);

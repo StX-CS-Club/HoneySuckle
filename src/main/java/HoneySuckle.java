@@ -107,6 +107,8 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         World.worlds.clear();
         World.level = 0;
         Player.players.clear();
+        healthBars.clear();
+        lights.clear();
     }
 
     public static void start() {

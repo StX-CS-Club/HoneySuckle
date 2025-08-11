@@ -29,7 +29,7 @@ public class Player {
         build = new Build(this, new LinkedHashSet<>(Arrays.asList("wall", "raft")));
         craft = new Craft(this, new LinkedHashSet<>());
         armory = new Armory(this,
-                new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
+                new Weapon[]{new Weapon("dragonSword"), new Weapon("bow"), new Weapon("shield")},
                 new Armor("leather")
         );
         inventory = new Inventory(
@@ -57,6 +57,7 @@ public class Player {
     public boolean dead = false;
     public double health = 1;
     private double stamina = 1;
+    private double immunity = 0;
 
     public int size;
 
@@ -120,7 +121,7 @@ public class Player {
     //Update Player
     public void update(InputHandler input) {
         if (!dead) {
-            if(health <= 0){
+            if (health <= 0) {
                 dead = true;
                 HoneySuckle.menu = new Menu(Menu.MenuType.GAME_OVER_MENU);
                 return;
@@ -245,6 +246,9 @@ public class Player {
                 health = maxHealth;
             }
 
+            immunity = Math.max(immunity-attributes.getOrDefault("immunityDegen", 0.15).doubleValue(), 0);
+            immunity = Math.min(immunity, 5);
+
             //Reset position of player on screen
             screenPos = new double[]{
                 GAME_WIDTH / 2.0 + pos[0] - camera[0],
@@ -267,9 +271,11 @@ public class Player {
     //Damage Player
     public void damage(double damage, boolean defense) {
         //Divide damage by defense
-        if (defense) {
-            damage /= attributes.getOrDefault("defense", 1).doubleValue();
-        }
-        health -= damage;
+            if (defense) {
+                damage /= attributes.getOrDefault("defense", 1).doubleValue();
+            }
+            System.out.println(Math.pow(attributes.getOrDefault("immunity", 2).doubleValue(), immunity));
+            health -= damage / Math.pow(attributes.getOrDefault("immunity", 2).doubleValue(), immunity);
+            immunity++;
     }
 }

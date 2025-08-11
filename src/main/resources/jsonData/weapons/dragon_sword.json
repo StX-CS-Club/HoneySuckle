@@ -22,7 +22,7 @@
       "Speed": "0.5"
     },
     "texture": {
-      "bladeColor": "#ffffff",
+      "swingColor": "#cc00cc",
       "itemTexture": "weapons/dragon_sword/item",
       "texture": "weapons/dragon_sword/dragon_sword",
       "rarityColor": "#57a5ff",
