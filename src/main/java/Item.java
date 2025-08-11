@@ -33,7 +33,7 @@ public class Item {
     }
 
     public void renderUiTile(Graphics2D g, int x, int y) {
-        String color = "#ffffff";
+        String color = null;
         if (count > 0) {
             color = "#f5d39d";
         }
@@ -42,7 +42,7 @@ public class Item {
 
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {
-            g.drawImage(Rendering.texture(itemTexture, "#ffffff"), x + 25, y + 25, 50, 50, null);
+            g.drawImage(Rendering.texture(itemTexture, null), x + 25, y + 25, 50, 50, null);
         }
 
         final String label = name + " x" + count;

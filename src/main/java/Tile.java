@@ -75,7 +75,7 @@ public class Tile {
             }
             //If tile has listed base color, set as color
         } 
-        return texture.getOrDefault("baseColor", "#ffffff");
+        return texture.getOrDefault("baseColor", null);
     }
 
     private BufferedImage getTexture(){

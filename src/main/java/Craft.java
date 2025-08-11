@@ -94,7 +94,7 @@ public class Craft {
 
             final String recipeTexture = texture.get("texture");
             if (recipeTexture != null) {
-                g.drawImage(Rendering.texture(recipeTexture, "#ffffff"), (int) (GAME_WIDTH / 2 - 40 + offset), (int) (GAME_HEIGHT / 2 - 40), 80, 80, null);
+                g.drawImage(Rendering.texture(recipeTexture, null), (int) (GAME_WIDTH / 2 - 40 + offset), (int) (GAME_HEIGHT / 2 - 40), 80, 80, null);
             }
         }
 
@@ -151,7 +151,7 @@ public class Craft {
                 int x = (int) (GAME_WIDTH - mats.size() * 60) / 2 + i * 60;
 
                 if (texture != null) {
-                    g.drawImage(Rendering.texture(texture, "#ffffff"), x + 5, 90, 50, 50, null);
+                    g.drawImage(Rendering.texture(texture, null), x + 5, 90, 50, 50, null);
                 }
 
                 String label = "x" + count;

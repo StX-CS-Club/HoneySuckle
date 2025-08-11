@@ -114,7 +114,7 @@ public class Build {
         Map<String, String> texture = blueprintTextures.get(blueprintKey);
         if (texture != null) {
             if (texture.get("texture") != null) {
-                g.drawImage(Rendering.texture(texture.get("texture"), "#ffffff"), (int) (xMargin + HUD_SIZE * 5 / 24), (int) (GAME_HEIGHT - HUD_SIZE * 47.0 / 24), HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
+                g.drawImage(Rendering.texture(texture.get("texture"), null), (int) (xMargin + HUD_SIZE * 5 / 24), (int) (GAME_HEIGHT - HUD_SIZE * 47.0 / 24), HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
             }
         }
 

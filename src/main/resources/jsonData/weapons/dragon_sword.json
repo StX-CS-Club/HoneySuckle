@@ -16,10 +16,10 @@
       }
     },
     "stats": {
-      "Type": "Blade",
+      "Type": "Sword",
       "Damage": "20",
       "Size": "1.5",
-      "Speed": "0.5"
+      "Speed": "2"
     },
     "texture": {
       "swingColor": "#cc00cc",

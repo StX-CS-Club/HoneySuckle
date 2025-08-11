@@ -7,11 +7,11 @@
       "Type": "Sword",
       "Damage": "10",
       "Size": "1",
-      "Speed": "2",
+      "Speed": "3.33",
       "Expensive": "Very"
     },
     "texture": {
-      "bladeColor": "#ffffff",
+      "bladeColor": "#0099ff",
       "itemTexture": "weapons/diamond_sword/item",
       "texture": "weapons/diamond_sword/diamond_sword",
       "animation": "_swing_",

@@ -62,14 +62,14 @@ public class Armor {
 
     public void renderUiTile(Graphics2D g, int x, int y, double factor, boolean active) {
         if (active) {
-            g.drawImage(Rendering.texture("hud/slots/armor", "#ffffff"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
+            g.drawImage(Rendering.texture("hud/slots/armor", null), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
         } else {
             g.drawImage(Rendering.texture("hud/slots/armor", "#666666"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
         }
 
         final String itemTexture = texture.get("itemTexture");
         if (itemTexture != null) {
-            g.drawImage(Rendering.texture(itemTexture, "#ffffff"), x + 10, y + 10, 100, 100, null);
+            g.drawImage(Rendering.texture(itemTexture, null), x + 10, y + 10, 100, 100, null);
         }
     }
 
@@ -92,7 +92,7 @@ public class Armor {
     private BufferedImage getTexture() {
         String textureId = texture.get("texture");
         if (textureId != null) {
-            return Rendering.texture(textureId, "#ffffff");
+            return Rendering.texture(textureId, null);
         }
         return null;
     }

@@ -250,6 +250,6 @@ public class Projectile {
     }
 
     private BufferedImage getTexture() {
-        return Rendering.texture(texture.get("texture"), "#ffffff");
+        return Rendering.texture(texture.get("texture"), null);
     }
 }

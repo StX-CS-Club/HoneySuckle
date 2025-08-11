@@ -6,7 +6,7 @@
       "Type": "Shield",
       "Strength": "1.4",
       "Size": "0.9",
-      "Speed": "0.2"
+      "Speed": "0.625"
     },
     "texture": {
       "itemTexture": "weapons/slime_shield/item",

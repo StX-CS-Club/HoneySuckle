@@ -7,7 +7,7 @@
       "Type": "Sword",
       "Damage": "5",
       "Size": "1",
-      "Speed": "0.5"
+      "Speed": "2"
     },
     "texture": {
       "itemTexture": "weapons/sword/item",

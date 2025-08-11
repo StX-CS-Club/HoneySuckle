@@ -7,7 +7,7 @@
       "Type": "Sword",
       "Damage": "9",
       "Size": "1.1",
-      "Speed": "0.5"
+      "Speed": "2"
     },
     "texture": {
       "swingColor": "#00db33",

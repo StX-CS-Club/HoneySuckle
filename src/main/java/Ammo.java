@@ -64,7 +64,7 @@ public class Ammo {
 
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {
-            g.drawImage(Rendering.texture(itemTexture, "#ffffff"), x + 15, y + 20, 70, 70, null);
+            g.drawImage(Rendering.texture(itemTexture, null), x + 15, y + 20, 70, 70, null);
         }
 
         final String label = name + " x" + count;

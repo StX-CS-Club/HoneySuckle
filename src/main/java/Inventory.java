@@ -178,7 +178,7 @@ public class Inventory {
 
                     // Displays empty slot when items left to be collected
                     if (items.size() < Item.itemNames.size()) {
-                        g.drawImage(Rendering.texture("hud/slots/item", "#ffffff"), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
+                        g.drawImage(Rendering.texture("hud/slots/item", null), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
                     }
                 }
                 case 2 -> {

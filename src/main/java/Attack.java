@@ -17,8 +17,11 @@ public class Attack {
     private final Map<String, Object> swingBehavior;
     private final Map<String, Object> shootBehavior;
     private final Map<String, Object> shieldBehavior;
+    private final Map<String, Object> stabBehavior;
 
     public final boolean constClick;
+
+    private final double size;
 
     private final Weapon weapon;
 
@@ -30,6 +33,9 @@ public class Attack {
         swingBehavior = registerBehavior("swing");
         shootBehavior = registerBehavior("shoot");
         shieldBehavior = registerBehavior("shield");
+        stabBehavior = registerBehavior("stab");
+
+        size = weapon.attributes.getOrDefault("size", 1).doubleValue() * TILE_SIZE;
 
         constClick = weapon.tags.contains("constClick");
     }
@@ -40,7 +46,8 @@ public class Attack {
                 final int cooldown = numberFromMap(swingBehavior, "cooldown", 10).intValue();
                 final String attackId = (String) swingBehavior.get("attackId");
 
-                if (attackFrames.get(attackId) >= cooldown) {
+                int attackFrame = attackFrames.get(attackId);
+                if (attackFrame >= cooldown || attackFrame == -1) {
                     attackFrames.put(attackId, 0);
                 }
             }
@@ -48,7 +55,8 @@ public class Attack {
                 final int cooldown = numberFromMap(shootBehavior, "cooldown", 10).intValue();
                 final String attackId = (String) shootBehavior.get("attackId");
 
-                if (attackFrames.get(attackId) >= cooldown) {
+                int attackFrame = attackFrames.get(attackId);
+                if (attackFrame >= cooldown || attackFrame == -1) {
                     attackFrames.put(attackId, 0);
                 }
             }
@@ -56,7 +64,17 @@ public class Attack {
                 final int cooldown = numberFromMap(shieldBehavior, "cooldown", 10).intValue();
                 final String attackId = (String) shieldBehavior.get("attackId");
 
-                if (attackFrames.get(attackId) >= cooldown) {
+                int attackFrame = attackFrames.get(attackId);
+                if (attackFrame >= cooldown || attackFrame == -1) {
+                    attackFrames.put(attackId, 0);
+                }
+            }
+            if (stabBehavior != null) {
+                final int cooldown = numberFromMap(stabBehavior, "cooldown", 10).intValue();
+                final String attackId = (String) stabBehavior.get("attackId");
+
+                int attackFrame = attackFrames.get(attackId);
+                if (attackFrame >= cooldown || attackFrame == -1) {
                     attackFrames.put(attackId, 0);
                 }
             }
@@ -66,7 +84,10 @@ public class Attack {
 
     public void passiveUpdate() {
         for (String key : attackFrames.keySet()) {
-            attackFrames.put(key, attackFrames.get(key) + 1);
+            int attackFrame = attackFrames.get(key);
+            if (attackFrame != -1) {
+                attackFrames.put(key, attackFrame + 1);
+            }
         }
     }
 
@@ -83,7 +104,7 @@ public class Attack {
                     if (weapon.ammo.count >= ammoUsed) {
                         final double spread = Math.toDegrees(numberFromMap(shootBehavior, "spread", 0).doubleValue());
                         for (int i = 0; i < bullets; i++) {
-                            world.projectiles.add(new Projectile(weapon.ammo.mergeAttributes(weapon.type, shootBehavior), player.pos.clone(), player.vel, player.rotation-(bullets - 1)*spread/2+spread*i, player));
+                            world.projectiles.add(new Projectile(weapon.ammo.mergeAttributes(weapon.type, shootBehavior), player.pos.clone(), player.vel, player.rotation - (bullets - 1) * spread / 2 + spread * i, player));
                         }
                         weapon.ammo.count -= ammoUsed;
                     }
@@ -94,16 +115,19 @@ public class Attack {
         if (swingBehavior != null) {
             final int frames = numberFromMap(swingBehavior, "frames", 5).intValue();
             final String attackId = (String) swingBehavior.get("attackId");
-            if (attackFrames.get(attackId) <= frames) {
-                final double size = TILE_SIZE * numberFromMap(swingBehavior, "size", 1).doubleValue();
+
+            int attackFrame = attackFrames.get(attackId);
+            if (attackFrame <= frames && attackFrame >= 0) {
+                final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", size / TILE_SIZE).doubleValue();
                 final double damage = numberFromMap(swingBehavior, "damage", 0.1).doubleValue();
+                final double objDamage = numberFromMap(swingBehavior, "objDamage", 1).doubleValue();
 
                 //Check all entities
                 for (Entity entity : world.renderEntities) {
                     //If collision overlap of entity and blade
                     if (Collision.isBoxOverlap(
-                            Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
-                            new Point2D.Double(size / 2, size / 2),
+                            Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), swingSize / 2, player.rotation),
+                            new Point2D.Double(swingSize, swingSize),
                             player.rotation,
                             new Point2D.Double(entity.pos[0], entity.pos[1]),
                             new Point2D.Double(entity.size, entity.size))) {
@@ -116,7 +140,7 @@ public class Attack {
                     }
                 }
                 //Player tile
-                int sizeTiles = (int) Math.floor(size / TILE_SIZE) + 1;
+                int sizeTiles = (int) Math.floor(swingSize / TILE_SIZE) + 1;
                 int[] posIndex = new int[]{
                     (int) Math.floor(player.pos[0] / TILE_SIZE),
                     (int) Math.floor(player.pos[1] / TILE_SIZE)
@@ -128,18 +152,87 @@ public class Attack {
                             if (world.objGrid[x][y] != null) {
                                 //If collision overlap of tile and blade
                                 if (Collision.isBoxOverlap(
-                                        Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
-                                        new Point2D.Double(size, size),
+                                        Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), swingSize / 2, player.rotation),
+                                        new Point2D.Double(swingSize, swingSize),
                                         player.rotation,
                                         new Point2D.Double((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE),
                                         new Point2D.Double(HoneySuckle.TILE_SIZE, TILE_SIZE))) {
                                     WorldObject obj = world.objGrid[x][y];
                                     //Damage object, and if broken add materials
-                                    if (world.objGrid[x][y].damage(damage)) {
+                                    if (world.objGrid[x][y].damage(damage * objDamage)) {
                                         for (Map<String, Number> loot : obj.loot) {
                                             player.inventory.incrementItem(loot, true);
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        if (stabBehavior != null) {
+            final int frames = numberFromMap(stabBehavior, "frames", 5).intValue();
+            final String attackId = (String) stabBehavior.get("attackId");
+
+            int attackFrame = attackFrames.get(attackId);
+            if (attackFrame <= frames && attackFrame >= 0) {
+                final double stabSize = TILE_SIZE * numberFromMap(stabBehavior, "size", size / TILE_SIZE).doubleValue();
+                final double damage = numberFromMap(stabBehavior, "damage", 0.5).doubleValue();
+                final double objDamage = numberFromMap(stabBehavior, "objDamage", 1).doubleValue();
+
+                final double progress = Math.min(attackFrame / (frames * 0.67), 1.0);
+                System.out.println(progress);
+
+                //Check all entities
+                for (Entity entity : world.renderEntities) {
+                    //If collision overlap of entity and blade
+                    if (Collision.isBoxOverlap(
+                            Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size / 2 + stabSize*progress, player.rotation),
+                            new Point2D.Double(stabSize / 2, stabSize * 2*progress),
+                            player.rotation,
+                            new Point2D.Double(entity.pos[0], entity.pos[1]),
+                            new Point2D.Double(entity.size, entity.size))) {
+                        //Damage entity, if dead, add materials
+                        if (entity.brain.damage(damage)) {
+                            for (Map<String, Number> loot : entity.loot) {
+                                player.inventory.incrementItem(loot, true);
+                            }
+                        }
+                        attackFrames.put(attackId, frames+1);
+                        break;
+                    }
+                }
+                //Player tile
+                int sizeTiles = (int) Math.floor(stabSize * 2 / TILE_SIZE) + 1;
+                int[] posIndex = new int[]{
+                    (int) Math.floor(player.pos[0] / TILE_SIZE),
+                    (int) Math.floor(player.pos[1] / TILE_SIZE)
+                };
+                //Check tiles
+                for (int x = posIndex[0] - sizeTiles; x < posIndex[0] + sizeTiles; x++) {
+                    for (int y = posIndex[1] - sizeTiles; y < posIndex[1] + sizeTiles; y++) {
+                        if (x >= 0 && x < world.size[0] && y >= 0 && y < world.size[1]) {
+                            if (world.objGrid[x][y] != null) {
+                                //If collision overlap of tile and blade
+                                if (Collision.isBoxOverlap(
+                                        Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size / 2 + stabSize*progress, player.rotation),
+                                        new Point2D.Double(stabSize / 2, stabSize * 2*progress),
+                                        player.rotation,
+                                        new Point2D.Double((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE),
+                                        new Point2D.Double(HoneySuckle.TILE_SIZE, TILE_SIZE))) {
+                                    WorldObject obj = world.objGrid[x][y];
+                                    //Damage object, and if broken add materials
+                                    if (world.objGrid[x][y].damage(damage * objDamage)) {
+                                        for (Map<String, Number> loot : obj.loot) {
+                                            player.inventory.incrementItem(loot, true);
+                                        }
+                                    }
+                                    attackFrames.put(attackId, frames+1);
+                                    break;
                                 }
                             }
                         }
@@ -157,8 +250,8 @@ public class Attack {
 
             final int attackFrame = attackFrames.get(attackId);
 
-            if (attackFrame < frames || attackFrame >= cooldown) {
-                final double size = numberFromMap(shieldBehavior, "size", 1).doubleValue() * TILE_SIZE;
+            if ((attackFrame < frames || attackFrame >= cooldown) && attackFrame >= 0) {
+                final double shieldSize = numberFromMap(shieldBehavior, "size", size / TILE_SIZE).doubleValue() * TILE_SIZE;
                 final double parry = numberFromMap(shieldBehavior, "parry", 1).doubleValue();
                 final double bounce = numberFromMap(shieldBehavior, "bounce", 1).doubleValue();
 
@@ -173,7 +266,7 @@ public class Attack {
                     //If collision overlap of shield and entity
                     if (Collision.isBoxOverlap(
                             Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
-                            new Point2D.Double(size, size),
+                            new Point2D.Double(shieldSize, shieldSize),
                             player.rotation,
                             new Point2D.Double(entity.pos[0], entity.pos[1]),
                             new Point2D.Double(entity.size, entity.size))) {
@@ -203,7 +296,7 @@ public class Attack {
                     //If collision overlap between shield and proj
                     if (Collision.isBoxOverlap(
                             Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size, player.rotation),
-                            new Point2D.Double(size, size),
+                            new Point2D.Double(shieldSize, shieldSize),
                             player.rotation,
                             new Point2D.Double(projectile.pos[0], projectile.pos[1]),
                             new Point2D.Double(projectile.size, projectile.size))) {
@@ -233,9 +326,9 @@ public class Attack {
 
         String textureId = weapon.texture.get("texture");
         World world = World.worlds.get(World.level);
-        double size = weapon.attributes.getOrDefault("size", 1).doubleValue() * TILE_SIZE;
         String overlayColor = null;
 
+        double screenSize = size;
         double[] screenPos = new double[]{
             GAME_WIDTH / 2.0 + player.pos[0] - world.camera[0],
             GAME_HEIGHT / 2.0 + player.pos[1] - world.camera[1]
@@ -246,8 +339,8 @@ public class Attack {
                 final String attackId = (String) swingBehavior.get("attackId");
                 final int frames = numberFromMap(swingBehavior, "frames", 5).intValue();
                 final int attackFrame = attackFrames.get(attackId);
-                if (attackFrame < frames) {
-                    final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", size / TILE_SIZE).doubleValue();
+                if (attackFrame < frames && attackFrame >= 0) {
+                    final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", screenSize / TILE_SIZE).doubleValue();
                     //Position of slash on screen
                     double[] swingScreenPos = new double[]{
                         GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - swingSize / 2.0,
@@ -255,8 +348,27 @@ public class Attack {
                     };
                     //Render slash
                     g.drawImage(
-                            Rendering.renderGIF("images/gifs/slash.gif", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
+                            Rendering.renderGIF("images/gifs/attacks/slash.gif", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
                             (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
+                    return;
+                }
+            }
+
+            if (animation.contains("_stab_") && stabBehavior != null) {
+                final String attackId = (String) stabBehavior.get("attackId");
+                final int frames = numberFromMap(stabBehavior, "frames", 5).intValue();
+                final int attackFrame = attackFrames.get(attackId);
+                if (attackFrame < frames && attackFrame >= 0) {
+                    final double stabSize = TILE_SIZE * numberFromMap(stabBehavior, "size", screenSize / TILE_SIZE).doubleValue();
+                    //Position of slash on screen
+                    double[] swingScreenPos = new double[]{
+                        GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - stabSize / 4.0,
+                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - stabSize * 2 - player.size / 2.0
+                    };
+                    //Render slash
+                    g.drawImage(
+                            Rendering.renderGIF("images/gifs/attacks/stab.gif", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
+                            (int) swingScreenPos[0], (int) swingScreenPos[1], (int) stabSize / 2, (int) stabSize * 2, null);
                     return;
                 }
             }
@@ -265,7 +377,7 @@ public class Attack {
                 final String attackId = (String) shootBehavior.get("attackId");
                 final int frames = numberFromMap(shootBehavior, "frames", 5).intValue();
                 final int attackFrame = attackFrames.get(attackId);
-                if (attackFrame < frames) {
+                if (attackFrame < frames && attackFrame >= 0) {
                     textureId = textureId + "_shoot";
                 }
             }
@@ -278,38 +390,39 @@ public class Attack {
 
                 final int attackFrame = attackFrames.get(attackId);
 
-                double sizeFactor = parry * frames / attackFrame;
-                if (sizeFactor >= 1) {
-                    size *= sizeFactor;
-                } else {
-                    if (attackFrame >= frames && attackFrame < cooldown) {
-                        overlayColor = "#888888";
+                if (attackFrame > 0) {
+                    double sizeFactor = parry * frames / attackFrame;
+                    if (sizeFactor >= 1) {
+                        screenSize *= sizeFactor;
+                    } else {
+                        if (attackFrame >= frames && attackFrame < cooldown) {
+                            overlayColor = "#888888";
+                        }
                     }
                 }
             }
         }
 
-        BufferedImage textureImage = Rendering.texture(textureId, "#ffffff");
+        BufferedImage textureImage = Rendering.texture(textureId, null);
         if (overlayColor != null) {
             textureImage = Rendering.applyOverlay(textureImage, overlayColor, 192);
         }
         switch (weapon.texture.getOrDefault("type", "front")) {
             case "side" -> {
                 screenPos[0] += player.size / 2.0;
-                screenPos[1] -= size / 2.0 + TILE_SIZE / 4.0;
+                screenPos[1] -= screenSize / 2.0 + TILE_SIZE / 4.0;
 
                 g.drawImage(textureImage,
-                        (int) screenPos[0], (int) screenPos[1], (int) size, (int) size, null);
+                        (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
             }
             case "front" -> {
-                screenPos[0] -= size / 2.0;
-                screenPos[1] -= size + player.size / 2.0;
+                screenPos[0] -= screenSize / 2.0;
+                screenPos[1] -= screenSize + player.size / 2.0;
 
                 g.drawImage(textureImage,
-                        (int) screenPos[0], (int) screenPos[1], (int) size, (int) size, null);
+                        (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
             }
         }
-
     }
 
     private Map<String, Object> registerBehavior(String behaviorType) {
@@ -317,8 +430,7 @@ public class Attack {
         if (behaviorEntry != null) {
             behaviorEntry.putIfAbsent("attackId", "base");
             String attackId = (String) behaviorEntry.get("attackId");
-            attackFrames.put(attackId, 0);
-            attackFrames.put(attackId, 0);
+            attackFrames.put(attackId, -1);
             return behaviorEntry;
         }
         return null;

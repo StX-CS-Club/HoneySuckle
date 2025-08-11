@@ -1,0 +1,27 @@
+{
+  "spear": {
+    "name": "Spear",
+    "id": 9,
+    "tags": [],
+    "stats": {
+      "Type": "Spear",
+      "Damage": "2.5",
+      "Size": "1.5",
+      "Speed": "2"
+    },
+    "texture": {
+      "itemTexture": "weapons/spear/item",
+      "texture": "weapons/spear/spear",
+      "animation": "_stab_",
+      "type": "side"
+    },
+    "behavior": {
+      "stab": {
+        "damage": 0.25,
+        "size": 0.75,
+        "cooldown": 20,
+        "frames": 10
+      }
+    }
+  }
+}

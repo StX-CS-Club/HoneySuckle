@@ -7,10 +7,10 @@
         "texture": "ammo/wooden_arrow"
     },
     "stats": {
-      "Damage": "0.5",
-      "Speed": "0.25",
+      "Damage": "5",
+      "Speed": "2.5",
       "Size": "0.5",
-      "Weight": "0.5"
+      "Weight": "5"
     },
     "attributes": {
       "proj": 4,
@@ -28,10 +28,10 @@
         "texture": "ammo/sharp_arrow"
     },
     "stats": {
-      "Damage": "1",
-      "Speed": "0.33",
+      "Damage": "10",
+      "Speed": "3.3",
       "Size": "0.5",
-      "Weight": "0.5"
+      "Weight": "5"
     },
     "attributes": {
       "proj": 1,
@@ -49,10 +49,10 @@
         "texture": "ammo/shotgun_shell"
     },
     "stats": {
-      "Damage": "0.75",
-      "Speed": "0.5",
+      "Damage": "7.5",
+      "Speed": "5",
       "Size": "0.5",
-      "Weight": "0.75"
+      "Weight": "7.5"
     },
     "attributes": {
       "proj": 5,
