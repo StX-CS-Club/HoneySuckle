@@ -36,7 +36,7 @@ public class Biome {
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            type = "field";
+            type = "wetlands";
         }
         tags = biomeTags.get(type);
         colorMap = biomeColorMap.get(type);
@@ -70,6 +70,8 @@ public class Biome {
 
         List<Entity> entityResult = new ArrayList<>();
 
+        final boolean[][] structureResult = new boolean[world.size[0]][world.size[1]];
+
         // Generates base tiles
         int baseTileId = numberFromMap(generation, "base", 0).intValue();
         for (int x = 0; x < world.size[0]; x++) {
@@ -101,7 +103,7 @@ public class Biome {
 
         final boolean structuresFirst = tags.contains("structuresFirst");
         if (structuresFirst) {
-            generateStructures(world, result, objResult, entityResult);
+            generateStructures(world, result, objResult, entityResult, structureResult);
         }
 
         final boolean watery = tags.contains("watery");
@@ -192,25 +194,27 @@ public class Biome {
         }
 
         if (!structuresFirst) {
-            generateStructures(world, result, objResult, entityResult);
+            generateStructures(world, result, objResult, entityResult, structureResult);
         }
 
         world.grid = result;
         world.objGrid = objResult;
         world.entities = entityResult;
+        world.structureGrid = structureResult;
     }
 
-    private void generateStructures(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult) {
+    private void generateStructures(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, boolean[][] structureResult) {
         // Generates Structures
         final List<Map<String, Object>> structureGenRules = listFromMap(generation, "structures");
         for (Map<String, Object> structureGenRule : structureGenRules) {
             final String structureId = structureStringId.get(numberFromMap(structureGenRule, "id", 0).intValue());
+            final int[] size = intArray(listFromMap(structureGeneration.get(structureId), "size", new Number[2]).toArray(Number[]::new), 0);
             final int[] offsetBr = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
             final int[] offsetBl = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
 
             final int[][] setPositions = int2dArray(array2dFromList(listFromMap(structureGenRule, "pos", new Number[0][])), 0);
             for (int[] setPos : setPositions) {
-                generateStructure(world, result, objResult, entityResult, setPos, structureId);
+                generateStructure(world, result, objResult, entityResult, structureResult, setPos, structureId);
             }
 
             final int[][] grids = int2dArray(array2dFromList(listFromMap(structureGenRule, "grid", new Number[1][4])), 0);
@@ -241,7 +245,10 @@ public class Biome {
                         }
 
                         if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                            generateStructure(world, result, objResult, entityResult, new int[]{x, y}, structureId);
+                            final int[] pos = new int[]{x, y};
+                            if (structureCanGenerate(structureResult, pos, size)) {
+                                generateStructure(world, result, objResult, entityResult, structureResult, pos, structureId);
+                            }
                         }
                     }
                 }
@@ -251,37 +258,44 @@ public class Biome {
 
     }
 
-    private static void generateStructure(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, int[] pos, String id) {
+    private static void generateStructure(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, boolean[][] structureResult, int[] pos, String id) {
         final Map<String, Object> generation = structureGeneration.get(id);
 
-        final int[][] tileMap = int2dArray(array2dFromList(listFromMap(generation, "tileMap", new Number[0][0])), 0);
-        if (tileMap.length > 0) {
-            for (int y = 0; y < tileMap.length; y++) {
-                for (int x = 0; x < tileMap[0].length; x++) {
-                    final int[] tilePos = new int[]{pos[0] + x, pos[1] + y};
-                    if (tilePos[0] < result.length && tilePos[1] < result[0].length) {
-                        result[tilePos[0]][tilePos[1]] = new Tile(tileMap[y][x], tilePos, world);
-                    } else {
-                        break;
+        final int[] size = intArray(listFromMap(generation, "size", new Number[2]).toArray(Number[]::new), 0);
+        for (int x = pos[0]; x < pos[0] + size[0]; x++) {
+            if (x >= 0 && x < structureResult.length) {
+                for (int y = pos[1]; y < pos[1] + size[1]; y++) {
+                    if (y >= 0 && y < structureResult[0].length) {
+                        structureResult[x][y] = true;
                     }
                 }
             }
         }
 
+        final int[][] tileMap = int2dArray(array2dFromList(listFromMap(generation, "tileMap", new Number[0][0])), 0);
+        for (int y = 0; y < tileMap.length; y++) {
+            for (int x = 0; x < tileMap[0].length; x++) {
+                final int[] tilePos = new int[]{pos[0] + x, pos[1] + y};
+                if (tilePos[0] < result.length && tilePos[1] < result[0].length) {
+                    result[tilePos[0]][tilePos[1]] = new Tile(tileMap[y][x], tilePos, world);
+                } else {
+                    break;
+                }
+            }
+        }
+
         final int[][] objMap = int2dArray(array2dFromList(listFromMap(generation, "objMap", new Number[0][0])), 0);
-        if (objMap.length > 0) {
-            for (int y = 0; y < objMap.length; y++) {
-                for (int x = 0; x < objMap[0].length; x++) {
-                    final int[] objPos = new int[]{pos[0] + x, pos[1] + y};
-                    if (objPos[0] < objResult.length && objPos[1] < objResult[0].length) {
-                        if (objMap[y][x] != 0) {
-                            objResult[objPos[0]][objPos[1]] = new WorldObject(objMap[y][x], objPos, world);
-                        } else {
-                            objResult[objPos[0]][objPos[1]] = null;
-                        }
+        for (int y = 0; y < objMap.length; y++) {
+            for (int x = 0; x < objMap[0].length; x++) {
+                final int[] objPos = new int[]{pos[0] + x, pos[1] + y};
+                if (objPos[0] < objResult.length && objPos[1] < objResult[0].length) {
+                    if (objMap[y][x] != 0) {
+                        objResult[objPos[0]][objPos[1]] = new WorldObject(objMap[y][x], objPos, world);
                     } else {
-                        break;
+                        objResult[objPos[0]][objPos[1]] = null;
                     }
+                } else {
+                    break;
                 }
             }
         }
@@ -320,6 +334,21 @@ public class Biome {
                 }
             }
         }
+    }
+
+    private boolean structureCanGenerate(boolean[][] structureGrid, int[] pos, int[] size) {
+        for (int x = pos[0]; x < pos[0] + size[0]; x++) {
+            if (x >= 0 && x < structureGrid.length) {
+                for (int y = pos[1]; y < pos[1] + size[1]; y++) {
+                    if (y >= 0 && y < structureGrid[0].length) {
+                        if (structureGrid[x][y]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private static double conditionalProb(Tile tile, int condition, double prob) {

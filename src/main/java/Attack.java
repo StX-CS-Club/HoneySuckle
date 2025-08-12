@@ -185,7 +185,6 @@ public class Attack {
                 final double objDamage = numberFromMap(stabBehavior, "objDamage", 1).doubleValue();
 
                 final double progress = Math.min(attackFrame / (frames * 0.67), 1.0);
-                System.out.println(progress);
 
                 //Check all entities
                 for (Entity entity : world.renderEntities) {

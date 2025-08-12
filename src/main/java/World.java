@@ -46,7 +46,8 @@ public class World {
     //World Make-up
     public Tile[][] grid;
     public WorldObject[][] objGrid;
-    public List<Entity> entities = new ArrayList<>();
+    public List<Entity> entities;
+    public boolean[][] structureGrid;
     public List<Projectile> projectiles = new ArrayList<>();
 
     //Updating entities
