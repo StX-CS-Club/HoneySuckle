@@ -4,15 +4,10 @@
     "level": 6,
     "tags": ["fog", "dangerousVoid"],
     "colorMap": {
-      "stoneColor": "#888888",
       "voidColor": "#111111",
-      "lavaColor": "#ff8800",
       "fogColor": "#000000",
-      "coalColor": "#4d4d4d",
       "landColor": "#0a1f19",
-      "treeColor": "#173323",
-      "diamondColor": "#4ed1f5",
-      "rockColor": "#ddddee"
+      "treeColor": "#173323"
     },
     "generation": {
       "size": [51, 125],

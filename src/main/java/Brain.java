@@ -66,13 +66,7 @@ public class Brain {
             player.pos[1] - entity.pos[1]
         };
         double playerAbsDistance = Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]);
-        chaseAngle = Math.toDegrees(Math.atan(-playerDistance[0] / playerDistance[1]));
-        if (playerDistance[1] > 0) {
-            chaseAngle += 180;
-        }
-        if (chaseAngle < 0) {
-            chaseAngle += 360;
-        }
+        chaseAngle = getAngle(player.pos);
 
         //Friction
         for (int i = 0; i < 2; i++) {
@@ -122,23 +116,35 @@ public class Brain {
         }
 
         if (!shootAttack.isEmpty()) {
-            double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
-            double panicSpeed = numberFromMap(shootAttack, "panicSpeed", 0).doubleValue();
-            double speed = numberFromMap(shootAttack, "speed", 1).doubleValue();
-            final double panicVel = numberFromMap(shootAttack, "panicVel", panicSpeed).doubleValue() * healthLost;
-            final double vel = numberFromMap(shootAttack, "vel", speed).doubleValue() + panicVel;
-            panicSpeed *= healthLost;
-            speed += panicSpeed;
-            final double cooldown = numberFromMap(shootAttack, "cooldown", 100).doubleValue();
-            final int frames = numberFromMap(shootAttack, "frames", 10).intValue();
             final double range = numberFromMap(shootAttack, "range", 100).doubleValue();
-            final String projectileId = Projectile.projStringId.get(numberFromMap(shootAttack, "proj", 3).intValue());
 
             if (playerAbsDistance <= range * TILE_SIZE) {
+                double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
+                double panicSpeed = numberFromMap(shootAttack, "panicSpeed", 0).doubleValue();
+                double speed = numberFromMap(shootAttack, "speed", 1).doubleValue();
+                panicSpeed *= healthLost;
+                speed += panicSpeed;
+                final double cooldown = numberFromMap(shootAttack, "cooldown", 100).doubleValue();
+                final int frames = numberFromMap(shootAttack, "frames", 10).intValue();
+
                 long ticks = incrementTicks("shoot", 1);
                 if (ticks * speed >= cooldown * FPS / 40.0 / speed) {
-                    Projectile projectile = new Projectile(projectileId, entity.pos, entity.vel, chaseAngle, entity);
-                    projectile.alterVel(entity.pos, entity.vel, chaseAngle, vel, entity);
+                    final String projectileId = Projectile.projStringId.get(numberFromMap(shootAttack, "proj", 3).intValue());
+
+                    final double panicVel = numberFromMap(shootAttack, "panicVel", panicSpeed).doubleValue() * healthLost;
+                    final double vel = numberFromMap(shootAttack, "vel", speed).doubleValue() + panicVel;
+
+                    final double prediction = numberFromMap(shootAttack, "prediction", 0).doubleValue();
+                    double angle = chaseAngle;
+                    if(prediction != 0){
+                        angle = getAngle(new double[]{
+                            player.pos[0] + player.vel[0] * prediction,
+                            player.pos[1] + player.vel[1] * prediction
+                        });
+                    }
+
+                    Projectile projectile = new Projectile(projectileId, entity.pos, entity.vel, angle, entity);
+                    projectile.alterVel(entity.pos, entity.vel, angle, vel, entity);
                     world.projectiles.add(projectile);
 
                     entity.ticks.put("shoot", 0l);
@@ -253,7 +259,7 @@ public class Brain {
             final int rate = (int) Math.floor(FPS / numberFromMap(contactAttack, "rate", 1).doubleValue());
 
             if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
-                long ticks = incrementTicks("contact", 1)-1;
+                long ticks = incrementTicks("contact", 1) - 1;
                 if (ticks % rate == 0) {
                     player.damage(damage, true);
                     entity.vel[0] *= -bounce;
@@ -293,5 +299,21 @@ public class Brain {
             return (Number) map.get(key);
         }
         return defaultValue;
+    }
+
+    private double getAngle(double[] targetPos) {
+        double[] distance = new double[]{
+            targetPos[0] - entity.pos[0],
+            targetPos[1] - entity.pos[1]
+        };
+        double result = Math.toDegrees(Math.atan(-distance[0] / distance[1]));
+        if (distance[1] > 0) {
+            result += 180;
+        }
+        if (result < 0) {
+            result += 360;
+        }
+
+        return result;
     }
 }

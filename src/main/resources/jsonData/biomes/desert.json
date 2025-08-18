@@ -5,11 +5,9 @@
     "tags": ["fog"],
     "colorMap": {
       "landColor": "#ffc436",
-      "sandColor": "#ffd264",
       "voidColor": "#6fbbe9",
       "waterColor": "#6fbbe9",
       "treeColor": "#8cc043",
-      "cactusColor": "#47ab00",
       "diamondColor": "#4ef5f5",
       "fogColor": "#ecba40"
     },

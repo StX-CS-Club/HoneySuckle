@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 /*
  * Tile.java *
@@ -74,13 +75,18 @@ public class Tile {
                 return natColor;
             }
             //If tile has listed base color, set as color
-        } 
+        }
         return texture.getOrDefault("baseColor", null);
     }
 
-    private BufferedImage getTexture(){
+    private BufferedImage getTexture() {
         String textureString = texture.get("texture");
         if (textureString != null) {
+            int textureCount = attributes.getOrDefault("textures", 1).intValue();
+            if (textureCount > 1) {
+                textureString = textureString + "_" + ThreadLocalRandom.current().nextInt(1, textureCount + 1);
+            }
+
             return Rendering.texture(textureString, color);
         }
         return null;

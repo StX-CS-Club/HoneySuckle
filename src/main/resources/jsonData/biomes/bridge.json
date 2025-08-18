@@ -4,7 +4,6 @@
     "level": 9,
     "tags": ["dangerousVoid", "enemyLock"],
     "colorMap": {
-      "brickColor": "#847878",
       "landColor": "#cdc5b3",
       "waterColor": "#242475",
       "voidColor": "#242475"

@@ -3,6 +3,7 @@
     "name": "Block",
     "id": 3,
     "generation": {
+      "size": [3, 3],
       "tileMap": [
         [8, 8, 8],
         [8, 8, 8],
@@ -14,6 +15,7 @@
     "name": "Tile",
     "id": 4,
     "generation": {
+      "size": [3, 3],
       "tileMap": [
         [5, 5, 5],
         [5, 5, 5],
@@ -25,6 +27,7 @@
     "name": "Garden",
     "id": 5,
     "generation": {
+      "size": [3, 3],
       "tileMap": [
         [1, 1, 1],
         [1, 1, 1],
@@ -40,6 +43,7 @@
     "name": "Hop",
     "id": 6,
     "generation": {
+      "size": [3, 3],
       "tileMap": [
         [0, 0],
         [0, 5]
@@ -50,6 +54,7 @@
     "name": "Mud Pile",
     "id": 7,
     "generation": {
+      "size": [3, 3],
       "tileMap": [
         [2, 2, 2],
         [2, 2, 2],
@@ -61,6 +66,7 @@
     "name": "Diamond Quary",
     "id": 8,
     "generation": {
+      "size": [3, 3],
       "tileMap": [
         [6, 6, 6],
         [6, 6, 6],
@@ -76,6 +82,7 @@
     "name": "Chest",
     "id": 10,
     "generation": {
+      "size": [3, 3],
       "tileMap": [
         [5, 5, 5],
         [5, 5, 5],

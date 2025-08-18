@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 /*
  * Item.java *
@@ -213,8 +214,13 @@ public class Inventory {
 
     public void incrementItem(Map<String, Number> itemData, boolean gain) {
         if (Math.random() < itemData.getOrDefault("prob", 1).doubleValue()) {
-            int id = itemData.getOrDefault("id", 0).intValue();
+            final int id = itemData.getOrDefault("id", 0).intValue();
             int count = itemData.getOrDefault("count", 1).intValue();
+
+            final double countProb = itemData.getOrDefault("countProb", 0).doubleValue();
+            while(ThreadLocalRandom.current().nextDouble() <= countProb){
+                count++;
+            }
 
             String stringId = null;
             switch (itemData.getOrDefault("type", 0).intValue()) {
@@ -316,6 +322,7 @@ public class Inventory {
             if (gain) {
                 Splash splash = getSplash(stringId);
                 if (splash == null) {
+                    itemData.put("count", count);
                     splash = new Splash(itemData);
                     splashes.add(splash);
                 } else {

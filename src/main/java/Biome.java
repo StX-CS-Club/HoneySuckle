@@ -36,7 +36,7 @@ public class Biome {
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            type = "wetlands";
+            type = "field";
         }
         tags = biomeTags.get(type);
         colorMap = biomeColorMap.get(type);
@@ -302,10 +302,13 @@ public class Biome {
 
         final List<Map<String, Object>> entities = listFromMap(generation, "entities");
         for (Map<String, Object> entity : entities) {
-            final String entityId = Entity.entityStringId.get(numberFromMap(entity, "id", 0).intValue());
-            final double[] entityPos = doubleArray(listFromMap(entity, "pos", new Number[2]).toArray(Number[]::new), 0);
-            Arrays.setAll(entityPos, i -> (entityPos[i] + pos[i]) * TILE_SIZE);
-            entityResult.add(new Entity(entityId, entityPos, world));
+            final double prob = numberFromMap(entity, "prob", 1).doubleValue();
+            if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                final String entityId = Entity.entityStringId.get(numberFromMap(entity, "id", 0).intValue());
+                final double[] entityPos = doubleArray(listFromMap(entity, "pos", new Number[2]).toArray(Number[]::new), 0);
+                Arrays.setAll(entityPos, i -> (entityPos[i] + pos[i]) * TILE_SIZE);
+                entityResult.add(new Entity(entityId, entityPos, world));
+            }
         }
 
         final List<Map<String, Object>> chests = listFromMap(generation, "chests");

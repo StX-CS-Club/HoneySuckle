@@ -3,7 +3,7 @@
     "name": "Wall",
     "id": 9,
     "texture": {
-      "texture": "tiles/wall"
+      "texture": "objects/wall"
     },
     "tags": ["obstruction", "destructable",  "projObstruction"],
     "attributes": {
@@ -19,7 +19,7 @@
     "name": "Raft",
     "id": 10,
     "texture": {
-      "texture": "tiles/raft"
+      "texture": "objects/raft"
     },
     "tags": ["walkable", "safe"]
   },
@@ -27,7 +27,7 @@
     "name": "Torch",
     "id": 11,
     "texture": {
-      "texture": "tiles/torch",
+      "texture": "objects/torch",
       "glowColor": "#ff8c00"
     },
     "tags": ["destructable"],
@@ -49,7 +49,7 @@
     "texture": {
       "baseColor": "#ffb31c",
       "natColor": "pumpkinColor",
-      "texture": "tiles/pumpkin",
+      "texture": "objects/pumpkin",
       "glowColor": "#ff8000"
     },
     "tags": ["obstruction", "destructable"],
@@ -69,7 +69,7 @@
     "name": "Stone Bridge",
     "id": 13,
     "texture": {
-      "texture": "tiles/bridge"
+      "texture": "objects/bridge"
     },
     "tags": ["walkable", "safe"]
   },
@@ -78,7 +78,7 @@
     "id": 15,
     "texture": {
       "overlayColor": "#ffffff",
-      "texture": "tiles/tunnel"
+      "texture": "objects/tunnel"
     },
     "tags": ["walkable", "safe", "tunnel"]
   }

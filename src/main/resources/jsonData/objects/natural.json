@@ -4,7 +4,8 @@
     "id": 1,
     "texture": {
       "natColor": "treeColor",
-      "texture": "tiles/tree"
+      "baseColor": "#019501",
+      "texture": "objects/tree"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
@@ -25,7 +26,8 @@
     "id": 2,
     "texture": {
       "natColor": "pumpkinColor",
-      "texture": "tiles/pumpkin"
+      "baseColor": "#d88700",
+      "texture": "objects/pumpkin"
     },
     "tags": ["obstruction", "destructable"],
     "attributes": {
@@ -42,7 +44,8 @@
     "id": 3,
     "texture": {
       "natColor": "cactusColor",
-      "texture": "tiles/cactus"
+      "baseColor": "#47ab00",
+      "texture": "objects/cactus"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
@@ -60,7 +63,8 @@
     "id": 4,
     "texture": {
       "natColor": "coalColor",
-      "texture": "tiles/ore"
+      "baseColor": "#4d4d4d",
+      "texture": "objects/ore"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
@@ -77,7 +81,7 @@
     "name": "Death Gate",
     "id": 5,
     "texture": {
-      "texture": "tiles/gate"
+      "texture": "objects/gate"
     },
     "tags": ["obstruction"],
     "attributes": { "deathGateId": 1 }
@@ -86,8 +90,7 @@
     "name": "Crate",
     "id": 6,
     "texture": {
-      "baseColor": "#c75f06",
-      "texture": "tiles/crate"
+      "texture": "objects/crate"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
@@ -105,7 +108,8 @@
     "id": 7,
     "texture": {
       "natColor": "diamondColor",
-      "texture": "tiles/ore_alt"
+      "baseColor": "#4ed1f5",
+      "texture": "objects/ore_alt"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
@@ -123,7 +127,8 @@
     "id": 8,
     "texture": {
       "natColor": "rockColor",
-      "texture": "tiles/rock"
+      "baseColor": "#ddddee",
+      "texture": "objects/rock"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
@@ -145,7 +150,7 @@
     "name": "Scrap",
     "id": 14,
     "texture": {
-      "texture": "tiles/scrap/scrap"
+      "texture": "objects/scrap/scrap"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
@@ -174,12 +179,24 @@
     "name": "Chest",
     "id": 16,
     "texture": {
-      "texture": "tiles/chest/chest",
+      "texture": "objects/chests/chest/chest",
       "anim": "_destroyed_"
     },
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
       "durability": 1.5
+    }
+  },
+  "camp_chest": {
+    "name": "Chest",
+    "id": 17,
+    "texture": {
+      "texture": "objects/chests/camp_chest/camp_chest",
+      "anim": "_destroyed_"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 1.25
     }
   }
 }

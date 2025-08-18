@@ -33,15 +33,16 @@
     "brain": {
       "shoot": {
         "cooldown": 80.0,
+        "prediction": 11,
         "range": 10
       },
       "chase": {
-        "range": 15,
+        "range": 14,
         "speed": 0.1
       },
       "flee": {
-        "range": 5,
-        "hesitateRange": 6,
+        "range": 4,
+        "hesitateRange": 5,
         "speed": 0.09  
       }
     }
