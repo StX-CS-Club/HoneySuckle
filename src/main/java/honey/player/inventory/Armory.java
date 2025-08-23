@@ -1,3 +1,4 @@
+package honey.player.inventory;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -5,6 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 import java.util.Map;
+
+import honey.HoneySuckle;
+import honey.mechanics.InputHandler;
+import honey.player.Player;
+import honey.rendering.Rendering;
 
 /*
  * Armory.java *

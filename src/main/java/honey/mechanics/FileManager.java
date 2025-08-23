@@ -1,10 +1,10 @@
+package honey.mechanics;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -15,7 +15,20 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-class FileManager {
+import honey.player.inventory.Ammo;
+import honey.player.inventory.Armor;
+import honey.player.inventory.Build;
+import honey.player.inventory.Craft;
+import honey.player.inventory.Item;
+import honey.player.inventory.Weapon;
+import honey.world.Biome;
+import honey.world.Brain;
+import honey.world.Entity;
+import honey.world.Projectile;
+import honey.world.Tile;
+import honey.world.WorldObject;
+
+public class FileManager {
 
     //Object used for referencing json files
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -24,11 +37,10 @@ class FileManager {
     };
 
     //Fetches data from json files and maps as hashmaps
-    @SuppressWarnings("unchecked")
     public static void readJsonData() {
         try {
             //Maps object data
-            Map<String, Object> objData = readJsonDirectory(FileManager.class.getResource("jsonData/objects").toURI());
+            Map<String, Object> objData = readJsonDirectory(FileManager.class.getResource("/jsonData/objects").toURI());
             for (String key : objData.keySet()) {
                 Map<String, Object> obj = (Map<String, Object>) objData.get(key);
                 int intKey = (Integer) obj.get("id");
@@ -41,7 +53,7 @@ class FileManager {
             }
 
             //Maps tile data
-            Map<String, Object> tileData = readJsonDirectory(FileManager.class.getResource("jsonData/tiles").toURI());
+            Map<String, Object> tileData = readJsonDirectory(FileManager.class.getResource("/jsonData/tiles").toURI());
             for (String key : tileData.keySet()) {
                 Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
                 int intKey = (Integer) tile.get("id");
@@ -53,7 +65,7 @@ class FileManager {
             }
 
             //Maps blueprint data
-            Map<String, Object> blueprintData = readJsonDirectory(FileManager.class.getResource("jsonData/blueprints").toURI());
+            Map<String, Object> blueprintData = readJsonDirectory(FileManager.class.getResource("/jsonData/blueprints").toURI());
             for (String key : blueprintData.keySet()) {
                 Map<String, Object> blueprint = (Map<String, Object>) blueprintData.get(key);
                 Build.blueprintMats.put(key, (List<Map<String, Number>>) blueprint.getOrDefault("mats", new ArrayList<>()));
@@ -64,7 +76,7 @@ class FileManager {
             }
 
             //Maps recipe data
-            Map<String, Object> recipeData = readJsonDirectory(FileManager.class.getResource("jsonData/recipes").toURI());
+            Map<String, Object> recipeData = readJsonDirectory(FileManager.class.getResource("/jsonData/recipes").toURI());
             for (String key : recipeData.keySet()) {
                 Map<String, Object> recipe = (Map<String, Object>) recipeData.get(key);
                 Craft.recipeMats.put(key, (List<Map<String, Number>>) recipe.getOrDefault("mats", new ArrayList<>()));
@@ -76,7 +88,7 @@ class FileManager {
             }
 
             //Maps item data
-            Map<String, Object> itemData = readJsonDirectory(FileManager.class.getResource("jsonData/items").toURI());
+            Map<String, Object> itemData = readJsonDirectory(FileManager.class.getResource("/jsonData/items").toURI());
             for (String key : itemData.keySet()) {
                 final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
                 Item.itemNames.put(key, (String) item.getOrDefault("name", key));
@@ -91,7 +103,7 @@ class FileManager {
             }
 
             //Maps biome data
-            Map<String, Object> biomeData = readJsonDirectory(FileManager.class.getResource("jsonData/biomes").toURI());
+            Map<String, Object> biomeData = readJsonDirectory(FileManager.class.getResource("/jsonData/biomes").toURI());
             for (String key : biomeData.keySet()) {
                 Map<String, Object> biome = (Map<String, Object>) biomeData.get(key);
                 Biome.biomeColorMap.put(key, (Map<String, String>) biome.getOrDefault("colorMap", new HashMap<>()));
@@ -101,7 +113,7 @@ class FileManager {
             }
 
             //Maps structure data
-            Map<String, Object> structureData = readJsonDirectory(FileManager.class.getResource("jsonData/structures").toURI());
+            Map<String, Object> structureData = readJsonDirectory(FileManager.class.getResource("/jsonData/structures").toURI());
             for (String key : structureData.keySet()) {
                 final Map<String, Object> structure = (Map<String, Object>) structureData.get(key);
                 Biome.structureName.put(key, (String) structure.getOrDefault("name", key));
@@ -113,7 +125,7 @@ class FileManager {
             }
 
             //Maps entity data
-            Map<String, Object> entityData = readJsonDirectory(FileManager.class.getResource("jsonData/entities").toURI());
+            Map<String, Object> entityData = readJsonDirectory(FileManager.class.getResource("/jsonData/entities").toURI());
             for (String key : entityData.keySet()) {
                 Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
                 Entity.entityAttributes.put(key, (Map<String, Number>) entity.getOrDefault("attributes", new HashMap<>()));
@@ -129,7 +141,7 @@ class FileManager {
             }
 
             //Maps weapon data
-            Map<String, Object> weaponData = readJsonDirectory(FileManager.class.getResource("jsonData/weapons").toURI());
+            Map<String, Object> weaponData = readJsonDirectory(FileManager.class.getResource("/jsonData/weapons").toURI());
             for (String key : weaponData.keySet()) {
                 Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
                 Weapon.weaponAttributes.put(key, (Map<String, Number>) weapon.getOrDefault("attributes", new HashMap<>()));
@@ -148,7 +160,7 @@ class FileManager {
             }
 
             //Maps ammo data
-            Map<String, Object> ammoData = readJsonDirectory(FileManager.class.getResource("jsonData/ammo").toURI());
+            Map<String, Object> ammoData = readJsonDirectory(FileManager.class.getResource("/jsonData/ammo").toURI());
             for (String key : ammoData.keySet()) {
                 Map<String, Object> ammo = (Map<String, Object>) ammoData.get(key);
 
@@ -159,7 +171,6 @@ class FileManager {
                 Ammo.ammoTypes.put(key, (List<String>) ammo.getOrDefault("types", new ArrayList<>()));
                 Ammo.ammoRecipeUnlocks.put(key, (List<String>) ammo.getOrDefault("recipeUnlocks", new ArrayList<>()));
                 Ammo.ammoBlueprintUnlocks.put(key, (List<String>) ammo.getOrDefault("blueprintUnlocks", new ArrayList<>()));
-                
 
                 final int id = (int) ammo.get("id");
                 Ammo.ammoIntId.put(key, id);
@@ -167,7 +178,7 @@ class FileManager {
             }
 
             //Maps armor data
-            Map<String, Object> armorData = readJsonDirectory(FileManager.class.getResource("jsonData/armor").toURI());
+            Map<String, Object> armorData = readJsonDirectory(FileManager.class.getResource("/jsonData/armor").toURI());
             for (String key : armorData.keySet()) {
                 Map<String, Object> armor = (Map<String, Object>) armorData.get(key);
                 Armor.armorTextures.put(key, (Map<String, String>) armor.getOrDefault("texture", new HashMap<>()));
@@ -183,7 +194,7 @@ class FileManager {
             }
 
             //Maps Projectile data
-            Map<String, Object> projData = readJsonDirectory(FileManager.class.getResource("jsonData/projectiles").toURI());
+            Map<String, Object> projData = readJsonDirectory(FileManager.class.getResource("/jsonData/projectiles").toURI());
             for (String key : projData.keySet()) {
                 Map<String, Object> proj = (Map<String, Object>) projData.get(key);
                 Projectile.projAttributes.put(key, (Map<String, Number>) proj.getOrDefault("attributes", new HashMap<>()));
@@ -218,7 +229,7 @@ class FileManager {
 
     public static void registerFont() {
         try {
-            final File fontFile = new File(FileManager.class.getResource("fonts/VT323/VT323-Regular.ttf").toURI());
+            final File fontFile = new File(FileManager.class.getResource("/fonts/VT323/VT323-Regular.ttf").toURI());
 
             final Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile);
             final Font sizedFont = font.deriveFont(Font.PLAIN, 24f);

@@ -1,3 +1,4 @@
+package honey.player.inventory;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -7,6 +8,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import honey.HoneySuckle;
+import honey.mechanics.InputHandler;
+import honey.player.Player;
+import honey.rendering.Rendering;
 
 public class Craft {
 

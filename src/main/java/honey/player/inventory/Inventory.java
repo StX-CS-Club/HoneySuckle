@@ -1,3 +1,4 @@
+package honey.player.inventory;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -6,6 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+
+import honey.HoneySuckle;
+import honey.mechanics.InputHandler;
+import honey.player.Player;
+import honey.rendering.Rendering;
+import honey.rendering.Splash;
 
 /*
  * Item.java *

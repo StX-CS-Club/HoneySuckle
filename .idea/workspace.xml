@@ -4,7 +4,34 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb38d07e-1e4b-433a-b539-9bdd0e2bc5c3" name="Changes" comment="" />
+    <list default="true" id="eb38d07e-1e4b-433a-b539-9bdd0e2bc5c3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Ammo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Armor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Armory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Attack.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Biome.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Brain.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Build.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Collision.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Craft.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Entity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/FileManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/HoneySuckle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/InputHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Inventory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Item.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Menu.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Player.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Projectile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Rendering.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Splash.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Tile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Weapon.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/World.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/WorldObject.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

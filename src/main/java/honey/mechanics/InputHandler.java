@@ -1,3 +1,4 @@
+package honey.mechanics;
 
 public class InputHandler {
 

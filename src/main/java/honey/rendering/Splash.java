@@ -1,9 +1,17 @@
 
+package honey.rendering;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+
+import honey.HoneySuckle;
+import honey.player.inventory.Ammo;
+import honey.player.inventory.Armor;
+import honey.player.inventory.Item;
+import honey.player.inventory.Weapon;
 
 public class Splash {
 

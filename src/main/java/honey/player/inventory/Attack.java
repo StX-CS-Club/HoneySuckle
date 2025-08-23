@@ -1,9 +1,20 @@
+package honey.player.inventory;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+
+import honey.HoneySuckle;
+import honey.mechanics.Collision;
+import honey.mechanics.InputHandler;
+import honey.player.Player;
+import honey.rendering.Rendering;
+import honey.world.Entity;
+import honey.world.Projectile;
+import honey.world.World;
+import honey.world.WorldObject;
 
 public class Attack {
 
@@ -347,7 +358,7 @@ public class Attack {
                     };
                     //Render slash
                     g.drawImage(
-                            Rendering.renderGIF("images/gifs/attacks/slash.gif", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
+                            Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
                             (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
                     return;
                 }
@@ -366,7 +377,7 @@ public class Attack {
                     };
                     //Render slash
                     g.drawImage(
-                            Rendering.renderGIF("images/gifs/attacks/stab.gif", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
+                            Rendering.renderGIF("attacks/stab", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
                             (int) swingScreenPos[0], (int) swingScreenPos[1], (int) stabSize / 2, (int) stabSize * 2, null);
                     return;
                 }

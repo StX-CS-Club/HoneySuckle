@@ -1,4 +1,6 @@
 
+package honey.world;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -6,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+
+import honey.HoneySuckle;
+import honey.rendering.Rendering;
 
 /*
  * WorldObject.java *

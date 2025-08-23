@@ -4,7 +4,7 @@ Remove-Item -Recurse -Force target/app-resources -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path target/app-resources/resources | Out-Null
 robocopy src\main\resources target\app-resources\resources /E
 
-jpackage --name HoneySuckle --type exe `
+jpackage --name HoneySuckle `
   --app-version 1.0.0 `
   --input target `
   --main-jar HoneySuckle.jar `

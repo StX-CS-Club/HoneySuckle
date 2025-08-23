@@ -1,3 +1,4 @@
+package honey.rendering;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -23,6 +24,8 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+
+import honey.HoneySuckle;
 
 /*
  * Rendering.java *
@@ -231,7 +234,7 @@ public final class Rendering {
             frames = new ArrayList<>();
             File gifFile;
             try {
-                gifFile = new File(HoneySuckle.class.getResource(path).toURI());
+                gifFile = new File(HoneySuckle.class.getResource("/images/gifs/" + path + ".gif").toURI());
                 ImageInputStream input = ImageIO.createImageInputStream(gifFile);
                 Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
                 if (readers.hasNext()) {

@@ -1,4 +1,6 @@
 
+package honey;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -23,6 +25,15 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import honey.mechanics.FileManager;
+import honey.mechanics.InputHandler;
+import honey.player.Player;
+import honey.rendering.Menu;
+import honey.rendering.Rendering;
+import honey.world.Biome;
+import honey.world.Entity;
+import honey.world.World;
 
 /* 
  * HoneySuckle.java *
@@ -61,7 +72,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         HoneySuckle panel = new HoneySuckle();
 
         //Trys to set window icon as logo
-        URL iconUrl = HoneySuckle.class.getResource("images/HoneySuckleIcon.png");
+        URL iconUrl = HoneySuckle.class.getResource("/images/HoneySuckleIcon.png");
         try {
             Image iconImage = ImageIO.read(iconUrl);
             frame.setIconImage(iconImage);

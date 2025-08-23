@@ -1,3 +1,4 @@
+package honey.player.inventory;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -6,6 +7,10 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import honey.HoneySuckle;
+import honey.rendering.Rendering;
+import honey.player.Player;
 
 /*
  * Armor.java *

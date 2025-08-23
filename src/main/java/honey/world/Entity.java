@@ -1,4 +1,6 @@
 
+package honey.world;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -8,6 +10,9 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import honey.HoneySuckle;
+import honey.rendering.Rendering;
 
 /* 
  * Entity.java *

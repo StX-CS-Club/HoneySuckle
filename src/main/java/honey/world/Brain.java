@@ -1,7 +1,13 @@
 
+package honey.world;
+
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
+
+import honey.HoneySuckle;
+import honey.mechanics.Collision;
+import honey.player.Player;
 
 /* 
  * Brain.java *

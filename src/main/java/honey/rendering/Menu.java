@@ -1,8 +1,12 @@
+package honey.rendering;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+
+import honey.HoneySuckle;
+import honey.mechanics.InputHandler;
 
 public class Menu {
 

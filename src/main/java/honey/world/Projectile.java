@@ -1,4 +1,6 @@
 
+package honey.world;
+
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -7,6 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import honey.HoneySuckle;
+import honey.mechanics.Collision;
+import honey.player.Player;
+import honey.rendering.Rendering;
 
 /*
  * Projectile.java *

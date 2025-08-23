@@ -1,3 +1,4 @@
+package honey.player;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -6,6 +7,21 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+
+import honey.HoneySuckle;
+import honey.mechanics.InputHandler;
+import honey.player.inventory.Ammo;
+import honey.player.inventory.Armor;
+import honey.player.inventory.Armory;
+import honey.player.inventory.Build;
+import honey.player.inventory.Craft;
+import honey.player.inventory.Inventory;
+import honey.player.inventory.Item;
+import honey.player.inventory.Weapon;
+import honey.rendering.Menu;
+import honey.rendering.Rendering;
+import honey.world.Biome;
+import honey.world.World;
 
 /*
  * Player.java *
