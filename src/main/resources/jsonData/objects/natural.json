@@ -155,7 +155,7 @@
     "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
       "durability": 1.25,
-      "textures": 2
+      "variants": 2
     },
     "loot": [
       {
@@ -188,13 +188,13 @@
     }
   },
   "camp_chest": {
-    "name": "Chest",
+    "name": "Camp Chest",
     "id": 17,
     "texture": {
       "texture": "objects/chests/camp_chest/camp_chest",
       "anim": "_destroyed_"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["obstruction", "destructable"],
     "attributes": {
       "durability": 1.25
     }

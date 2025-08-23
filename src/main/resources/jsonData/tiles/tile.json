@@ -110,7 +110,7 @@
       "texture": "tiles/dirt/dirt"
     },
     "attributes": {
-      "textures": 3
+      "variants": 3
     },
     "tags": ["walkable"]
   }

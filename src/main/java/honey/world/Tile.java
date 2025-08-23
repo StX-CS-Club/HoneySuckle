@@ -1,4 +1,3 @@
-
 package honey.world;
 
 import java.awt.Color;
@@ -20,6 +19,7 @@ import honey.rendering.Rendering;
 public class Tile {
 
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    private static final int FPS = HoneySuckle.FPS;
 
     //Static json data
     public static final Map<Integer, List<String>> tileTags = new HashMap<>();
@@ -35,11 +35,16 @@ public class Tile {
     //Specific Tile Properties
     public final List<String> tags;
     public final Map<String, Number> attributes;
+    private final String anim;
     private final Map<String, String> texture;
 
     private final int glowColor;
     private final String color;
     private final BufferedImage staticTexture;
+
+    private final String variant;
+    private final int maxFrames;
+    private int frame = 0;
 
     //Tile Constructor
     public Tile(int id, int[] posIndex, World world) {
@@ -49,6 +54,7 @@ public class Tile {
         tags = tileTags.get(id);
         attributes = tileAttributes.get(id);
         texture = tileTextures.get(id);
+        anim = texture.getOrDefault("anim", "");
 
         String glowColorString = texture.get("glowColor");
         if (glowColorString != null) {
@@ -57,17 +63,26 @@ public class Tile {
             glowColor = 0;
         }
         color = getColor(world);
-        staticTexture = getTexture();
+
+        maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
+
+        variant = getVariant();
+        staticTexture = getTexture(getPostfix());
     }
 
     public void render(Graphics2D g, World world, double[] screenPos) {
         //If tile has texture, load texture with grey-scaling
-        if (staticTexture != null) {
-            g.drawImage(staticTexture, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
+        if (anim.contains("_gif_")) {
+            g.drawImage(getFrame(getPostfix()), (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
+            frame = (frame + 1) % maxFrames;
         } else {
-            //Else, render basic rectangle
-            g.setColor(Color.decode(color));
-            Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE);
+            if (staticTexture != null) {
+                g.drawImage(staticTexture, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
+            } else {
+                //Else, render basic rectangle
+                g.setColor(Color.decode(color));
+                Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE);
+            }
         }
     }
 
@@ -84,17 +99,34 @@ public class Tile {
         return texture.getOrDefault("baseColor", null);
     }
 
-    private BufferedImage getTexture() {
+    private BufferedImage getTexture(String postfix) {
         String textureString = texture.get("texture");
         if (textureString != null) {
-            int textureCount = attributes.getOrDefault("textures", 1).intValue();
-            if (textureCount > 1) {
-                textureString = textureString + "_" + ThreadLocalRandom.current().nextInt(1, textureCount + 1);
-            }
-
-            return Rendering.texture(textureString, color);
+            return Rendering.texture(textureString + postfix, color);
         }
         return null;
+    }
+
+    private BufferedImage getFrame(String postfix) {
+        String textureString = texture.get("gif");
+        if (textureString != null) {
+            return Rendering.renderGIF(textureString + postfix, color, frame / (double) maxFrames);
+        }
+        return null;
+    }
+
+    private String getVariant() {
+        int textureCount = attributes.getOrDefault("variants", 1).intValue();
+        if (textureCount > 1) {
+            return "_" + ThreadLocalRandom.current().nextInt(1, textureCount + 1);
+        }
+        return "";
+    }
+
+    private String getPostfix() {
+        StringBuilder postfix = new StringBuilder(variant);
+
+        return postfix.toString();
     }
 
     public void renderLight(double[] screenPos) {

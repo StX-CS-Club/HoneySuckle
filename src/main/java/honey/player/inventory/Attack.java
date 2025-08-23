@@ -260,7 +260,7 @@ public class Attack {
 
             final int attackFrame = attackFrames.get(attackId);
 
-            if ((attackFrame < frames || attackFrame >= cooldown) && attackFrame >= 0) {
+            if ((attackFrame < frames || attackFrame >= cooldown) && attackFrame >= -1) {
                 final double shieldSize = numberFromMap(shieldBehavior, "size", size / TILE_SIZE).doubleValue() * TILE_SIZE;
                 final double parry = numberFromMap(shieldBehavior, "parry", 1).doubleValue();
                 final double bounce = numberFromMap(shieldBehavior, "bounce", 1).doubleValue();
@@ -312,7 +312,7 @@ public class Attack {
                             new Point2D.Double(projectile.size, projectile.size))) {
                         //If in parry time
                         world.projectiles.remove(projectile);
-                        if (attackFrame >= cooldown) {
+                        if (attackFrame >= cooldown || attackFrame == -1) {
                             //Delete projectile, knock back player
                             player.vel[0] += projectile.vel[0] / 2 * projectile.weight / bounce;
                             player.vel[1] += projectile.vel[1] / 2 * projectile.weight / bounce;

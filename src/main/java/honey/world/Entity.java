@@ -100,47 +100,47 @@ public class Entity {
 
         //If entity has texture, display
         if (staticTextureId != null) {
-            String textureId = staticTextureId;
+            StringBuilder textureId = new StringBuilder(staticTextureId);
             //Add paremeters to stem file name, if applicable
             if (animation != null) {
                 if (animation.contains("_x_")) {
                     if (brain.chaseAngle > 180) {
-                        textureId = textureId + "_left";
+                        textureId.append("_left");
                     } else {
-                        textureId = textureId + "_right";
+                        textureId.append("_right");
                     }
                 }
                 if (animation.contains("_y_")) {
                     if (brain.chaseAngle >= 270 || brain.chaseAngle < 90) {
-                        textureId = textureId + "_up";
+                        textureId.append("_up");
                     } else {
-                        textureId = textureId + "_down";
+                        textureId.append("_down");
                     }
                 }
                 if (animation.contains("_xy_")) {
                     if (brain.chaseAngle >= 315 || brain.chaseAngle < 45) {
-                        textureId = textureId + "_up";
+                        textureId.append("_up");
                     } else if (brain.chaseAngle < 135) {
-                        textureId = textureId + "_right";
+                        textureId.append("_right");
                     } else if (brain.chaseAngle < 225) {
-                        textureId = textureId + "_down";
+                        textureId.append("_down");
                     } else {
-                        textureId = textureId + "_left";
+                        textureId.append("_left");
                     }
                 }
                 if (animation.contains("_chase_")) {
                     if (brain.checkState("chase")) {
-                        textureId = textureId + "_chase";
+                        textureId.append("_chase");
                     }
                 }
                 if (animation.contains("_hesitate_")) {
                     if (brain.checkState("hesitate")) {
-                        textureId = textureId + "_hesitate";
+                        textureId.append("_hesitate");
                     }
                 }
                 if (animation.contains("_shoot_")) {
                     if (brain.checkState("shooting")) {
-                        textureId = textureId + "_shoot";
+                        textureId.append("_shoot");
                     }
                 }
 
@@ -156,7 +156,7 @@ public class Entity {
 
             }
             //Find image
-            BufferedImage textureImage = Rendering.texture(textureId, color);
+            BufferedImage textureImage = Rendering.texture(textureId.toString(), color);
             //Render red overlay when damaged
             if (damageFrames > 0) {
                 textureImage = Rendering.applyOverlay(textureImage, "#ff0000", 128);

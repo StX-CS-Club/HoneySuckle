@@ -10,7 +10,7 @@
       "weight": 0.5
     },
     "texture": {
-      "texture": "projectiles/arrow"
+      "texture": "projectiles/arrow/arrow"
     }
   },
   "fireball": {
@@ -39,7 +39,8 @@
       "parryProj": 1
     },
     "texture": {
-      "texture": "projectiles/arrow"
+      "texture": "projectiles/arrow/arrow",
+      "anim": "_flame_"
     }
   },
   "woodenArrow": {
@@ -53,7 +54,8 @@
       "weight": 0.5
     },
     "texture": {
-      "texture": "projectiles/wooden_arrow"
+      "texture": "projectiles/wooden_arrow/wooden_arrow",
+      "anim": "_flame_"
     }
   },
   "bullet": {

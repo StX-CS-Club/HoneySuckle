@@ -1,4 +1,3 @@
-
 package honey.world;
 
 import java.awt.Graphics2D;
@@ -39,7 +38,7 @@ public class Projectile {
     public final double size;
     private final double baseSpeed;
     public double angle;
-    private final double damage;
+    private double damage;
     public final double weight;
     public final String type;
 
@@ -49,14 +48,18 @@ public class Projectile {
     //Specific projectile attributes
     private final Map<String, String> texture;
     public final Map<String, Number> attributes;
+    private final String anim;
     private final List<String> tags;
 
-    private final BufferedImage staticTexture;
+    private BufferedImage staticTexture;
+
+    private boolean flaming = false;
 
     //Projectile Constructor
     public Projectile(String type, double[] pos, double[] currentVel, double angle, Object source) {
         //Interprets projectile type
         texture = projTextures.get(type);
+        anim = texture.getOrDefault("anim", "");
         attributes = projAttributes.get(type);
         tags = projTags.get(type);
 
@@ -81,7 +84,7 @@ public class Projectile {
         size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
-        staticTexture = getTexture();
+        staticTexture = getTexture(getPostfix());
     }
 
     public Projectile(Map<String, Number> attributes, double[] pos, double[] currentVel, double angle, Object source) {
@@ -89,6 +92,7 @@ public class Projectile {
 
         //Interprets projectile type
         texture = projTextures.get(type);
+        anim = texture.getOrDefault("anim", "");
         tags = projTags.get(type);
 
         Set<String> keys = attributes.keySet();
@@ -120,7 +124,7 @@ public class Projectile {
         size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
-        staticTexture = getTexture();
+        staticTexture = getTexture(getPostfix());
     }
 
     //Change velocity of projectile
@@ -160,12 +164,12 @@ public class Projectile {
                 if (tags.contains("damageTile")) {
                     //If failed to destroy object, remove projectile
                     if (object.damage(damage)) {
-                            if (source instanceof Player) {
-                                final Player player = (Player) source;
-                                for (Map<String, Number> loot : object.loot) {
-                                    player.inventory.incrementItem(loot, true);
-                                }
+                        if (source instanceof Player) {
+                            final Player player = (Player) source;
+                            for (Map<String, Number> loot : object.loot) {
+                                player.inventory.incrementItem(loot, true);
                             }
+                        }
                     } else {
                         if (object.tags.contains("projObstruction")) {
                             world.projectiles.remove(this);
@@ -179,12 +183,23 @@ public class Projectile {
                         return;
                     }
                 }
+
+                if (object.tags.contains("flameProj") && !flaming) {
+                    damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
+                    flaming = true;
+                    staticTexture = getTexture(getPostfix());
+                }
             }
 
             Tile tile = world.grid[posIndex[0]][posIndex[1]];
             if (tile.tags.contains("projObstruction")) {
                 world.projectiles.remove(this);
                 return;
+            }
+            if (tile.tags.contains("flameProj") && !flaming) {
+                damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
+                flaming = true;
+                staticTexture = getTexture(getPostfix());
             }
         }
         //If can hurt entity, check entities to hurt
@@ -256,7 +271,19 @@ public class Projectile {
         g.setTransform(originalTransform);
     }
 
-    private BufferedImage getTexture() {
-        return Rendering.texture(texture.get("texture"), null);
+    private BufferedImage getTexture(String postfix) {
+        return Rendering.texture(texture.get("texture") + postfix, null);
+    }
+
+    private String getPostfix() {
+        StringBuilder postfix = new StringBuilder();
+
+        if (anim.contains("_flame_")) {
+            if (flaming) {
+                postfix.append("_flame");
+            }
+        }
+
+        return postfix.toString();
     }
 }

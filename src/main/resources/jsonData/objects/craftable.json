@@ -81,5 +81,17 @@
       "texture": "objects/tunnel"
     },
     "tags": ["walkable", "safe", "tunnel"]
+  },
+  "campfire": {
+    "name": "Campfire",
+    "id": 18,
+    "texture": {
+      "gif": "objects/campfire",
+      "anim": "_gif_"
+    },
+    "tags": ["obstruction", "destructable", "flameProj"],
+    "attributes": {
+      "durability": 1.25
+    }
   }
 }

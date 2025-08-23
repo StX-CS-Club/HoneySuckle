@@ -1,4 +1,3 @@
-
 package honey.world;
 
 import java.awt.Color;
@@ -20,6 +19,7 @@ import honey.rendering.Rendering;
 public class WorldObject {
 
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    private static final int FPS = HoneySuckle.FPS;
 
     //Static json dats
     public static final Map<Integer, List<String>> objTags = new HashMap<>();
@@ -48,6 +48,10 @@ public class WorldObject {
     private final Color overlayColor;
     private BufferedImage staticTexture;
 
+    private final String variant;
+    private final int maxFrames;
+    private int frame = 0;
+
     //WorldObject Contructor
     public WorldObject(int id, int[] posIndex, World world) {
         this.id = id;
@@ -71,7 +75,12 @@ public class WorldObject {
         }
         color = getColor(world);
         overlayColor = Rendering.decodeColor(texture.get("overlayColor"), 16);
-        staticTexture = getTexture("");
+
+        maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
+
+        variant = getVariant();
+        staticTexture = getTexture(getPostfix());
+
     }
 
     public void setLoot(List<Map<String, Number>> newLoot) {
@@ -96,15 +105,20 @@ public class WorldObject {
             pos[1] += ((double) TILE_SIZE) / 10;
         }
 
-        if (staticTexture != null) {
-            g.drawImage(staticTexture, (int) pos[0], (int) pos[1], size, size, null);
+        if (anim.contains("_gif_")) {
+            g.drawImage(getFrame(getPostfix()), (int) pos[0], (int) pos[1], size, size, null);
+            frame = (frame + 1) % maxFrames;
         } else {
-            //Else render basic rectangle
-            g.setColor(Color.decode(color));
-            Rendering.borderRect(g, 2, Color.black, (int) pos[0], (int) pos[1], size, size);
+            if (staticTexture != null) {
+                g.drawImage(staticTexture, (int) pos[0], (int) pos[1], size, size, null);
+            } else {
+                //Else render basic rectangle
+                g.setColor(Color.decode(color));
+                Rendering.borderRect(g, 2, Color.black, (int) pos[0], (int) pos[1], size, size);
+            }
         }
-        frameDamage -= 0.1;
-        frameDamage = Math.clamp(frameDamage, 0, 1);
+        
+        frameDamage = Math.clamp(frameDamage - 0.1, 0, 1);
     }
 
     private String getColor(World world) {
@@ -127,14 +141,37 @@ public class WorldObject {
     private BufferedImage getTexture(String postfix) {
         String textureString = texture.get("texture");
         if (textureString != null) {
-            int textureCount = attributes.getOrDefault("textures", 1).intValue();
-            if (textureCount > 1) {
-                textureString = textureString + "_" + ThreadLocalRandom.current().nextInt(1, textureCount+1);
-            }
-
-            return Rendering.texture(textureString+postfix, color);
+            return Rendering.texture(textureString + postfix, color);
         }
         return null;
+    }
+
+    private BufferedImage getFrame(String postfix) {
+        String textureString = texture.get("gif");
+        if (textureString != null) {
+            return Rendering.renderGIF(textureString + postfix, color, frame / (double) maxFrames);
+        }
+        return null;
+    }
+
+    private String getVariant() {
+        int textureCount = attributes.getOrDefault("variants", 1).intValue();
+        if (textureCount > 1) {
+            return "_" + ThreadLocalRandom.current().nextInt(1, textureCount + 1);
+        }
+        return "";
+    }
+
+    private String getPostfix() {
+        StringBuilder postfix = new StringBuilder(variant);
+
+        if(anim.contains("_destroyed_")){
+            if(durability <= 0){
+                postfix.append("_destroyed");
+            }
+        }
+
+        return postfix.toString();
     }
 
     public void renderLight(double[] screenPos) {
@@ -173,7 +210,7 @@ public class WorldObject {
 
     private void destroy() {
         if (anim.contains("_destroyed_")) {
-            staticTexture = getTexture("_destroyed");
+            staticTexture = getTexture(getPostfix());
         } else {
             World.worlds.get(World.level).objGrid[posIndex[0]][posIndex[1]] = null;
         }
