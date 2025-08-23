@@ -1,15 +1,15 @@
 mvn -Prelease -DskipTests clean package
 
-Remove-Item -Recurse -Force target/app-resources -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Path target/app-resources/resources | Out-Null
-robocopy src\main\resources target\app-resources\resources /E
-
-jpackage --name HoneySuckle `
+  jpackage `
+  --name HoneySuckle `
+  --type app-image `
   --app-version 1.0.0 `
+  --dest dist `
   --input target `
   --main-jar HoneySuckle.jar `
-  --main-class HoneySuckle `
-  --resource-dir target/app-resources `
+  --main-class honey.HoneySuckle `
+  --icon src/main/resources/images/HoneySuckleIcon.ico `
+  --resource-dir src/main `
   --win-console `
-  --icon target\app-resources\resources\images\HoneySuckleIcon.ico `
-  --type app-image
+  --java-options "-XX:ErrorFile=hs_err_pid%p.log" `
+  --java-options "-XX:HeapDumpPath=."
