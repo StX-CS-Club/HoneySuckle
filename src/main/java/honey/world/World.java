@@ -1,4 +1,3 @@
-
 package honey.world;
 
 import java.awt.Color;
@@ -7,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import honey.HoneySuckle;
+import honey.mechanics.InputHandler;
 import honey.player.Player;
 
 /* 
@@ -22,7 +22,7 @@ public class World {
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int RENDER_DISTANCE = HoneySuckle.RENDER_DISTANCE;
+    private static final int RENDER_DISTANCE = 2;
 
     private static final int[] renderOffset = new int[]{
         (int) GAME_WIDTH / TILE_SIZE / 2 + RENDER_DISTANCE,
@@ -41,6 +41,7 @@ public class World {
         biome.generateWorld(this);
         //Sets camera position
         camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
+        navigator = new Navigator(this);
         //Adds world to static list of worlds
         worlds.add(this);
     }
@@ -52,8 +53,10 @@ public class World {
     public Tile[][] grid;
     public WorldObject[][] objGrid;
     public List<Entity> entities;
-    public boolean[][] structureGrid;
+    public Structure[][] structureGrid;
     public List<Projectile> projectiles = new ArrayList<>();
+
+    public final Navigator navigator;
 
     //Updating entities
     public List<Entity> renderEntities = new ArrayList<>();
@@ -169,6 +172,20 @@ public class World {
         //Allows entities to interact with player
         for (Entity entity : renderEntities) {
             entity.brain.event(player);
+        }
+
+        for (int x = posIndex[0] - 10; x < posIndex[0] + 10; x++) {
+            if (x > -1 && x < size[0]) {
+                for (int y = posIndex[1] - 10; y < posIndex[1] + 10; y++) {
+                    if(y > -1 && y < size[1]){
+                        if(structureGrid[x][y] != null){
+                            if(structureGrid[x][y].withinRange(posIndex)){
+                                navigator.icons.add(structureGrid[x][y]);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -292,7 +309,8 @@ public class World {
     }
 
     //Updates world
-    public void update() {
+    public void update(InputHandler input) {
+        navigator.update(input);
         //Empties renderEntities, then adds nearby entities into renderEntities, and updates them
         renderEntities = new ArrayList<>();
         for (Entity entity : entities) {

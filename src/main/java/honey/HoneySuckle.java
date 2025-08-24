@@ -50,7 +50,6 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public static final int GAME_HEIGHT = 600;
     public static final int TILE_SIZE = 40;
     public static final int HUD_SIZE = 75;
-    public static final int RENDER_DISTANCE = 5;
 
     //Static variable referencing inputs
     private static final InputHandler inputHandler = new InputHandler();
@@ -147,7 +146,8 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             lights = new LinkedHashSet<>();
 
             //Renders World
-            World.worlds.get(World.level).render(g2d);
+            World world = World.worlds.get(World.level);
+            world.render(g2d);
             //Renders Players
             for (Player renderPlayer : Player.players) {
                 renderPlayer.render(g2d);
@@ -171,7 +171,9 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
             if (player.health > 0) {
                 //Renders crafting and weapon ui
-                if (player.inventory.isOpen) {
+                if(world.navigator.isOpen){
+                    world.navigator.renderUi(g2d);
+                } else if (player.inventory.isOpen) {
                     player.inventory.renderUi(g2d);
                 } else {
                     player.build.renderUi(g2d, World.worlds.get(World.level));
@@ -231,7 +233,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
                 updatePlayer.update(inputHandler);
             }
             //Updates current world
-            World.worlds.get(World.level).update();
+            World.worlds.get(World.level).update(inputHandler);
         }
     }
 

@@ -2,8 +2,15 @@
   "camp": {
     "name": "Camp",
     "id": 11,
+    "texture": {
+      "mapTexture": "structures/campfire"
+    },
+    "attributes": {
+      "mapRange": 3
+    },
     "generation": {
       "size": [9, 9],
+      "core": [4, 4],
       "tileMap": [
         [1, 1, 9, 9, 9, 9, 9, 1, 1],
         [1, 9, 9, 9, 9, 9, 9, 9, 1],

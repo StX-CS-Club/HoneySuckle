@@ -25,11 +25,6 @@ public class Biome {
     public static final Map<String, List<String>> biomeTags = new HashMap<>();
     public static final Map<String, Integer> biomeLevel = new HashMap<>();
 
-    public static final Map<String, Integer> structureIntId = new HashMap<>();
-    public static final Map<Integer, String> structureStringId = new HashMap<>();
-    public static final Map<String, String> structureName = new HashMap<>();
-    public static final Map<String, Map<String, Object>> structureGeneration = new HashMap<>();
-
     public final String type;
 
     public final List<String> tags;
@@ -40,7 +35,7 @@ public class Biome {
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            type = "field";
+            type = "wetlands";
         }
         tags = biomeTags.get(type);
         colorMap = biomeColorMap.get(type);
@@ -73,6 +68,8 @@ public class Biome {
         WorldObject[][] objResult = new WorldObject[world.size[0]][world.size[1]];
 
         List<Entity> entityResult = new ArrayList<>();
+
+        world.structureGrid = new Structure[world.size[0]][world.size[1]];
 
         final boolean[][] structureResult = new boolean[world.size[0]][world.size[1]];
 
@@ -204,15 +201,14 @@ public class Biome {
         world.grid = result;
         world.objGrid = objResult;
         world.entities = entityResult;
-        world.structureGrid = structureResult;
     }
 
     private void generateStructures(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, boolean[][] structureResult) {
         // Generates Structures
         final List<Map<String, Object>> structureGenRules = listFromMap(generation, "structures");
         for (Map<String, Object> structureGenRule : structureGenRules) {
-            final String structureId = structureStringId.get(numberFromMap(structureGenRule, "id", 0).intValue());
-            final int[] size = intArray(listFromMap(structureGeneration.get(structureId), "size", new Number[2]).toArray(Number[]::new), 0);
+            final String structureId = Structure.structureStringId.get(numberFromMap(structureGenRule, "id", 0).intValue());
+            final int[] size = intArray(listFromMap(Structure.structureGeneration.get(structureId), "size", new Number[2]).toArray(Number[]::new), 0);
             final int[] offsetBr = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
             final int[] offsetBl = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
 
@@ -263,7 +259,14 @@ public class Biome {
     }
 
     private static void generateStructure(World world, Tile[][] result, WorldObject[][] objResult, List<Entity> entityResult, boolean[][] structureResult, int[] pos, String id) {
-        final Map<String, Object> generation = structureGeneration.get(id);
+        final Map<String, Object> generation = Structure.structureGeneration.get(id);
+
+        final List<Number> core = listFromMap(generation, "core", new Number[0]);
+        if(!core.isEmpty()){
+            final double[] corePos = new double[2];
+            Arrays.setAll(corePos, i -> core.get(i).intValue() + pos[i] + 0.5);
+            world.structureGrid[(int) corePos[0]][(int) corePos[1]] = new Structure(id, corePos);
+        }
 
         final int[] size = intArray(listFromMap(generation, "size", new Number[2]).toArray(Number[]::new), 0);
         for (int x = pos[0]; x < pos[0] + size[0]; x++) {

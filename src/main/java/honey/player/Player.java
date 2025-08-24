@@ -67,6 +67,7 @@ public class Player {
     public double[] vel = new double[2];
     public double[] screenPos = new double[2];
     public double rotation;
+    public double mapRotation = 0;
 
     public Map<String, Number> attributes;
 
@@ -280,6 +281,27 @@ public class Player {
                 rotation += 180;
             } else if (mouseDiff[0] <= 0) {
                 rotation += 360;
+            }
+
+            // vel[0] = vx, vel[1] = vy
+            if (vel[0] != 0 || vel[1] != 0) {
+                double vx = vel[0];
+                double vy = vel[1];
+
+                // 0° = up (-Y), 90° = right (+X), 180° = down (+Y), 270° = left (-X)
+                double target = Math.toDegrees(Math.atan2(vx, -vy)); // note (x, -y) to match your original convention
+                if (target < 0) {
+                    target += 360;                       // normalize to [0, 360)
+                }
+                // Smallest signed difference in [-180, 180)
+                double delta = target - mapRotation;
+                delta = ((delta + 540) % 360) - 180;
+
+                // Ease 25% toward target
+                mapRotation += delta * 0.25;
+
+                // Keep in [0, 360)
+                mapRotation = (mapRotation % 360 + 360) % 360;
             }
         }
     }

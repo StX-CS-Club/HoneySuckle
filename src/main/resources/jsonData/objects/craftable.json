@@ -3,7 +3,8 @@
     "name": "Wall",
     "id": 9,
     "texture": {
-      "texture": "objects/wall"
+      "texture": "objects/wall",
+      "mapColor": "#6b3200"
     },
     "tags": ["obstruction", "destructable",  "projObstruction"],
     "attributes": {
@@ -19,7 +20,8 @@
     "name": "Raft",
     "id": 10,
     "texture": {
-      "texture": "objects/raft"
+      "texture": "objects/raft",
+      "mapColor": "#9e4a00"
     },
     "tags": ["walkable", "safe"]
   },
@@ -28,6 +30,7 @@
     "id": 11,
     "texture": {
       "texture": "objects/torch",
+      "mapColor": "#ffbc12",
       "glowColor": "#ff8c00"
     },
     "tags": ["destructable"],
@@ -48,6 +51,7 @@
     "id": 12,
     "texture": {
       "baseColor": "#ffb31c",
+      "mapColor": "#ffbb33",
       "natColor": "pumpkinColor",
       "texture": "objects/pumpkin",
       "glowColor": "#ff8000"
@@ -69,7 +73,8 @@
     "name": "Stone Bridge",
     "id": 13,
     "texture": {
-      "texture": "objects/bridge"
+      "texture": "objects/bridge",
+      "mapColor": "#616161"
     },
     "tags": ["walkable", "safe"]
   },
@@ -78,6 +83,7 @@
     "id": 15,
     "texture": {
       "overlayColor": "#ffffff",
+      "mapColor": "#5e4431",
       "texture": "objects/tunnel"
     },
     "tags": ["walkable", "safe", "tunnel"]
@@ -87,6 +93,7 @@
     "id": 18,
     "texture": {
       "gif": "objects/campfire",
+      "mapColor": "#ed9e00",
       "anim": "_gif_"
     },
     "tags": ["obstruction", "destructable", "flameProj"],

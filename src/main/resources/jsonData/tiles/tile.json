@@ -66,6 +66,7 @@
     "texture": {
       "natColor": "brickColor",
       "baseColor": "#847878",
+      "mapColor": "#847878",
       "texture": "tiles/brick"
     },
     "tags": ["walkable"]
@@ -97,6 +98,7 @@
     "texture": {
       "natColor": "brickColor",
       "baseColor": "#847878",
+      "mapColor": "#666666",
       "texture": "tiles/brick_wall"
     },
     "tags": ["obstruction", "projObstruction"]

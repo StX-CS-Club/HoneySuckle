@@ -40,6 +40,8 @@ public class Tile {
 
     private final int glowColor;
     private final String color;
+    public final Color mapColor;
+    public boolean rendered = false;
     private final BufferedImage staticTexture;
 
     private final String variant;
@@ -63,6 +65,7 @@ public class Tile {
             glowColor = 0;
         }
         color = getColor(world);
+        mapColor = Color.decode(getMapColor(world));
 
         maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
 
@@ -71,6 +74,7 @@ public class Tile {
     }
 
     public void render(Graphics2D g, World world, double[] screenPos) {
+        rendered = true;
         //If tile has texture, load texture with grey-scaling
         if (anim.contains("_gif_")) {
             g.drawImage(getFrame(getPostfix()), (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
@@ -97,6 +101,23 @@ public class Tile {
             //If tile has listed base color, set as color
         }
         return texture.getOrDefault("baseColor", null);
+    }
+
+    private String getMapColor(World world) {
+        final String mColor = texture.get("mapColor");
+        if(mColor != null){
+            return mColor;
+        }
+        //If tile has biome specific color, find color from biome
+        String natColorId = texture.get("natColor");
+        if (natColorId != null) {
+            String natColor = world.biome.colorMap.get(natColorId);
+            if (natColor != null) {
+                return natColor;
+            }
+            //If tile has listed base color, set as color
+        }
+        return texture.getOrDefault("baseColor", "#ffffff");
     }
 
     private BufferedImage getTexture(String postfix) {

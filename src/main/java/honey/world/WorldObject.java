@@ -46,6 +46,8 @@ public class WorldObject {
     private final int glowColor;
     private final String color;
     private final Color overlayColor;
+    public final Color mapColor;
+    public boolean rendered = false;
     private BufferedImage staticTexture;
 
     private final String variant;
@@ -75,6 +77,7 @@ public class WorldObject {
         }
         color = getColor(world);
         overlayColor = Rendering.decodeColor(texture.get("overlayColor"), 16);
+        mapColor = Color.decode(getMapColor(world));
 
         maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
 
@@ -90,6 +93,7 @@ public class WorldObject {
 
     //Render WorldObject
     public void render(Graphics2D g, World world, double[] screenPos) {
+        rendered = true;
         //If object has texture, render it
         int size = TILE_SIZE;
         double[] pos = screenPos.clone();
@@ -136,6 +140,23 @@ public class WorldObject {
             return baseColor;
         }
         return "#ffffff";
+    }
+
+    private String getMapColor(World world) {
+        final String mColor = texture.get("mapColor");
+        if(mColor != null){
+            return mColor;
+        }
+        //If tile has biome specific color, find color from biome
+        String natColorId = texture.get("natColor");
+        if (natColorId != null) {
+            String natColor = world.biome.colorMap.get(natColorId);
+            if (natColor != null) {
+                return natColor;
+            }
+            //If tile has listed base color, set as color
+        }
+        return texture.getOrDefault("baseColor", "#ffffff");
     }
 
     private BufferedImage getTexture(String postfix) {

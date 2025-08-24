@@ -2,8 +2,15 @@
   "bunker": {
     "name": "Bunker",
     "id": 9,
+    "texture": {
+      "mapTexture": "structures/bunker"
+    },
+    "attributes": {
+      "mapRange": 4
+    },
     "generation": {
       "size": [7, 7],
+      "core": [3, 3],
       "tileMap": [
         [8, 8, 8, 8, 8, 8, 8],
         [8, 5, 5, 5, 5, 5, 8],

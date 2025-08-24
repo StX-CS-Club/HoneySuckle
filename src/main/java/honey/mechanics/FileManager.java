@@ -25,6 +25,7 @@ import honey.world.Biome;
 import honey.world.Brain;
 import honey.world.Entity;
 import honey.world.Projectile;
+import honey.world.Structure;
 import honey.world.Tile;
 import honey.world.WorldObject;
 
@@ -116,12 +117,14 @@ public class FileManager {
             Map<String, Object> structureData = readJsonDirectory(FileManager.class.getResource("/jsonData/structures").toURI());
             for (String key : structureData.keySet()) {
                 final Map<String, Object> structure = (Map<String, Object>) structureData.get(key);
-                Biome.structureName.put(key, (String) structure.getOrDefault("name", key));
-                Biome.structureGeneration.put(key, (Map<String, Object>) structure.getOrDefault("generation", new HashMap<>()));
+                Structure.structureName.put(key, (String) structure.getOrDefault("name", key));
+                Structure.structureGeneration.put(key, (Map<String, Object>) structure.getOrDefault("generation", new HashMap<>()));
+                Structure.structureTextures.put(key, (Map<String, String>) structure.getOrDefault("texture", new HashMap<>()));
+                Structure.structureAttributes.put(key, (Map<String, Number>) structure.getOrDefault("attributes", new HashMap<>()));
 
                 final int id = (int) structure.get("id");
-                Biome.structureIntId.put(key, id);
-                Biome.structureStringId.put(id, key);
+                Structure.structureIntId.put(key, id);
+                Structure.structureStringId.put(id, key);
             }
 
             //Maps entity data

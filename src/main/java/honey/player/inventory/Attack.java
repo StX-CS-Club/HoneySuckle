@@ -288,7 +288,7 @@ public class Attack {
                             parryCoef = 1;
                         }
                         int frameDifference = (frames - attackFrame);
-                        if (frameDifference < 0) {
+                        if (frameDifference < 0 || attackFrame == -1) {
                             frameDifference = 0;
                         }
                         //Bonus of parry
