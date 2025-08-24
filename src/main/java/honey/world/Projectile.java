@@ -29,12 +29,15 @@ public class Projectile {
     public static final Map<String, List<String>> projTags = new HashMap<>();
     public static final Map<String, Map<String, Number>> projAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> projTextures = new HashMap<>();
+    public static final Map<String, List<Map<String, Number>>> projSplinters = new HashMap<>();
     public static final Map<String, Integer> projIntId = new HashMap<>();
     public static final Map<Integer, String> projStringId = new HashMap<>();
 
     //Projectile properties
     public double[] pos;
     public double[] vel;
+    private int hits;
+    private int frames;
     public final double size;
     private final double baseSpeed;
     public double angle;
@@ -50,6 +53,8 @@ public class Projectile {
     public final Map<String, Number> attributes;
     private final String anim;
     private final List<String> tags;
+    private final List<Map<String, Number>> splinters;
+    private final int glowColor;
 
     private BufferedImage staticTexture;
 
@@ -60,8 +65,16 @@ public class Projectile {
         //Interprets projectile type
         texture = projTextures.get(type);
         anim = texture.getOrDefault("anim", "");
+        String glowColorString = texture.get("glowColor");
+        if (glowColorString != null) {
+            glowColor = Integer.parseInt(glowColorString.substring(1), 16);
+        } else {
+            glowColor = 0;
+        }
+
         attributes = projAttributes.get(type);
         tags = projTags.get(type);
+        splinters = projSplinters.get(type);
 
         baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * TILE_SIZE;
 
@@ -74,6 +87,9 @@ public class Projectile {
 
         vel[0] += currentVel[0];
         vel[1] += currentVel[1];
+
+        hits = attributes.getOrDefault("hits", 1).intValue();
+        frames = attributes.getOrDefault("frames", -1).intValue();
 
         //Assign values to properties
         this.pos = pos;
@@ -93,7 +109,15 @@ public class Projectile {
         //Interprets projectile type
         texture = projTextures.get(type);
         anim = texture.getOrDefault("anim", "");
+        String glowColorString = texture.get("glowColor");
+        if (glowColorString != null) {
+            glowColor = Integer.parseInt(glowColorString.substring(1), 16);
+        } else {
+            glowColor = 0;
+        }
+
         tags = projTags.get(type);
+        splinters = projSplinters.get(type);
 
         Set<String> keys = attributes.keySet();
         Map<String, Number> defaultAttributes = projAttributes.get(type);
@@ -115,6 +139,9 @@ public class Projectile {
 
         vel[0] += currentVel[0];
         vel[1] += currentVel[1];
+
+        hits = attributes.getOrDefault("hits", 1).intValue();
+        frames = attributes.getOrDefault("frames", -1).intValue();
 
         //Assign values to properties
         this.pos = pos;
@@ -144,8 +171,10 @@ public class Projectile {
     //Update Projectile
     public void update() {
         //Move Projectile
-        pos[0] += vel[0];
-        pos[1] += vel[1];
+        if (!tags.contains("stationary")) {
+            pos[0] += vel[0];
+            pos[1] += vel[1];
+        }
         //Current world data
         World world = World.worlds.get(World.level);
         int[] posIndex = new int[]{
@@ -153,60 +182,84 @@ public class Projectile {
             (int) Math.floor(pos[1] / TILE_SIZE)
         };
 
+        frames--;
+        if (frames == 0) {
+            hits = 1;
+            destroy(world);
+        }
+
         //If projectile is outa here, remove it
         if (posIndex[0] < 0 || posIndex[0] >= world.size[0] || posIndex[1] < 0 || posIndex[1] >= world.size[1]) {
-            world.projectiles.remove(this);
+            destroy(world);
         } else {
             //World object of projectile
-            WorldObject object = world.objGrid[posIndex[0]][posIndex[1]];
-            if (object != null) {
-                //If can damage tile, apply damage
-                if (tags.contains("damageTile")) {
-                    //If failed to destroy object, remove projectile
-                    if (object.damage(damage)) {
-                        if (source instanceof Player) {
-                            final Player player = (Player) source;
-                            for (Map<String, Number> loot : object.loot) {
-                                player.inventory.incrementItem(loot, true);
+            for (int x = (int) Math.floor(posIndex[0] - size); x < posIndex[0] + size; x++) {
+                if (x > -1 && x < world.size[0]) {
+                    for (int y = (int) Math.floor(posIndex[1] - size); y < posIndex[1] + size; y++) {
+                        if (y > -1 && y < world.size[1]) {
+                            if (Collision.isBoxOverlap(
+                                    new Point2D.Double(pos[0], pos[1]),
+                                    new Point2D.Double(size, size),
+                                    angle,
+                                    new Point2D.Double(TILE_SIZE * (x + 0.5), TILE_SIZE * (y + 0.5)),
+                                    new Point2D.Double(TILE_SIZE * 0.5, TILE_SIZE * 0.5))) {
+                                WorldObject object = world.objGrid[x][y];
+                                if (object != null) {
+                                    //If can damage tile, apply damage
+                                    if (tags.contains("damageTile")) {
+                                        //If failed to destroy object, remove projectile
+                                        if (object.damage(damage)) {
+                                            if (source instanceof Player) {
+                                                final Player player = (Player) source;
+                                                for (Map<String, Number> loot : object.loot) {
+                                                    player.inventory.incrementItem(loot, true);
+                                                }
+                                            }
+                                        } else {
+                                            if (object.tags.contains("projObstruction")) {
+                                                if (destroy(world)) {
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        //If object blocks projectile, remove it
+                                        if (object.tags.contains("projObstruction")) {
+                                            if (destroy(world)) {
+                                                return;
+                                            }
+                                        }
+                                    }
+
+                                    if (object.tags.contains("flameProj") && !flaming) {
+                                        damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
+                                        flaming = true;
+                                        staticTexture = getTexture(getPostfix());
+                                    }
+                                }
+
+                                Tile tile = world.grid[posIndex[0]][posIndex[1]];
+                                if (tile.tags.contains("projObstruction")) {
+                                    if (destroy(world)) {
+                                        return;
+                                    }
+                                }
+                                if (tile.tags.contains("flameProj") && !flaming) {
+                                    damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
+                                    flaming = true;
+                                    staticTexture = getTexture(getPostfix());
+                                }
                             }
                         }
-                    } else {
-                        if (object.tags.contains("projObstruction")) {
-                            world.projectiles.remove(this);
-                            return;
-                        }
-                    }
-                } else {
-                    //If object blocks projectile, remove it
-                    if (object.tags.contains("projObstruction")) {
-                        world.projectiles.remove(this);
-                        return;
                     }
                 }
-
-                if (object.tags.contains("flameProj") && !flaming) {
-                    damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
-                    flaming = true;
-                    staticTexture = getTexture(getPostfix());
-                }
-            }
-
-            Tile tile = world.grid[posIndex[0]][posIndex[1]];
-            if (tile.tags.contains("projObstruction")) {
-                world.projectiles.remove(this);
-                return;
-            }
-            if (tile.tags.contains("flameProj") && !flaming) {
-                damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
-                flaming = true;
-                staticTexture = getTexture(getPostfix());
             }
         }
         //If can hurt entity, check entities to hurt
         if (tags.contains("hurtEntity")) {
             for (Entity entity : world.renderEntities) {
                 //If can hurt source or is not source...
-                if (source != entity || tags.contains("hurtSelf")) {
+                if (source != entity || tags.contains("hurtSource")) {
                     //Check collision
                     if (Collision.isBoxOverlap(
                             new Point2D.Double(pos[0], pos[1]),
@@ -223,8 +276,9 @@ public class Projectile {
                                 }
                             }
                         }
-                        world.projectiles.remove(this);
-                        return;
+                        if (destroy(world)) {
+                            return;
+                        }
                     }
                 }
             }
@@ -233,7 +287,7 @@ public class Projectile {
         if (tags.contains("hurtPlayer")) {
             for (Player player : Player.players) {
                 //If can hurt source or is not source...
-                if (source != player || tags.contains("hurtSelf")) {
+                if (source != player || tags.contains("hurtSource")) {
                     if (Collision.isBoxOverlap(
                             new Point2D.Double(pos[0], pos[1]),
                             new Point2D.Double(size, size),
@@ -242,8 +296,9 @@ public class Projectile {
                             new Point2D.Double(player.size, player.size))) {
                         //damage player, and remove self
                         player.damage(damage, true);
-                        world.projectiles.remove(this);
-                        return;
+                        if (destroy(world)) {
+                            return;
+                        }
                     }
                 }
             }
@@ -251,15 +306,9 @@ public class Projectile {
     }
 
     //Render projectile
-    public void render(Graphics2D g, double[] camera) {
+    public void render(Graphics2D g, double[] screenPos) {
         //Original rotation
         AffineTransform originalTransform = g.getTransform();
-
-        //Position of proj on screen
-        double[] screenPos = new double[]{
-            GAME_WIDTH / 2.0 + pos[0] - camera[0],
-            GAME_HEIGHT / 2.0 + pos[1] - camera[1]
-        };
 
         //Rotate based off angle
         g.rotate(Math.toRadians(angle), screenPos[0], screenPos[1]);
@@ -269,6 +318,17 @@ public class Projectile {
 
         //Reset rotation
         g.setTransform(originalTransform);
+    }
+
+    public void renderLight(double[] screenPos) {
+        HoneySuckle.lights.add(Map.of(
+                "posX", screenPos[0] + TILE_SIZE / 2,
+                "posY", screenPos[1] + TILE_SIZE / 2,
+                "radius", attributes.getOrDefault("lightRadius", 0),
+                "color", glowColor,
+                "glow", attributes.getOrDefault("glow", 0),
+                "glowRadius", attributes.getOrDefault("glowRadius", 0)
+        ));
     }
 
     private BufferedImage getTexture(String postfix) {
@@ -285,5 +345,18 @@ public class Projectile {
         }
 
         return postfix.toString();
+    }
+
+    private boolean destroy(World world) {
+        hits--;
+        if (hits == 0) {
+            world.projectiles.remove(this);
+
+            for (Map<String, Number> splinter : splinters) {
+                world.projectiles.add(new Projectile(splinter, pos, vel, angle, source));
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -74,7 +74,6 @@ public class Tile {
     }
 
     public void render(Graphics2D g, World world, double[] screenPos) {
-        rendered = true;
         //If tile has texture, load texture with grey-scaling
         if (anim.contains("_gif_")) {
             g.drawImage(getFrame(getPostfix()), (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
@@ -154,10 +153,10 @@ public class Tile {
         HoneySuckle.lights.add(Map.of(
                 "posX", screenPos[0] + TILE_SIZE / 2,
                 "posY", screenPos[1] + TILE_SIZE / 2,
-                "radius", attributes.get("lightRadius"),
+                "radius", attributes.getOrDefault("lightRadius", 0),
                 "color", glowColor,
                 "glow", attributes.getOrDefault("glow", 0),
-                "glowRadius", attributes.get("glowRadius")
+                "glowRadius", attributes.getOrDefault("glowRadius", 0)
         ));
     }
 }

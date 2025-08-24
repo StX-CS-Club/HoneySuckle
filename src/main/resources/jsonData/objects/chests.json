@@ -1,0 +1,41 @@
+{
+  "chest": {
+    "name": "Chest",
+    "id": 16,
+    "texture": {
+      "texture": "objects/chests/chest/chest",
+      "anim": "_destroyed_",
+      "mapColor": "#b06e28"
+    },
+    "tags": ["obstruction", "destructable", "projObstruction"],
+    "attributes": {
+      "durability": 1.5
+    }
+  },
+  "camp_chest": {
+    "name": "Camp Chest",
+    "id": 17,
+    "texture": {
+      "texture": "objects/chests/camp_chest/camp_chest",
+      "anim": "_destroyed_",
+      "mapColor": "#915c23"
+    },
+    "tags": ["obstruction", "destructable"],
+    "attributes": {
+      "durability": 1.25
+    }
+  },
+  "pumpkin_chest": {
+    "name": "Pumpkin Chest",
+    "id": 19,
+    "texture": {
+      "texture": "objects/chests/pumpkin_chest/pumpkin_chest",
+      "anim": "_destroyed_",
+      "mapColor": "#9e480b"
+    },
+    "tags": ["obstruction", "destructable"],
+    "attributes": {
+      "durability": 1.75
+    }
+  }
+}

@@ -202,6 +202,7 @@ public class FileManager {
                 Map<String, Object> proj = (Map<String, Object>) projData.get(key);
                 Projectile.projAttributes.put(key, (Map<String, Number>) proj.getOrDefault("attributes", new HashMap<>()));
                 Projectile.projTextures.put(key, (Map<String, String>) proj.getOrDefault("texture", new HashMap<>()));
+                Projectile.projSplinters.put(key, (List<Map<String, Number>>) proj.getOrDefault("splinters", new ArrayList<>()));
                 Projectile.projTags.put(key, (List<String>) proj.getOrDefault("tags", new ArrayList<>()));
 
                 final int id = (int) proj.get("id");

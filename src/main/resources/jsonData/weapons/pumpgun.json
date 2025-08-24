@@ -1,0 +1,26 @@
+{
+  "pumpgun": {
+    "name": "Pumpgun",
+    "id": 10,
+    "tags": ["loadAmmo"],
+    "ammo": ["pumpkin"],
+    "stats": {
+      "Type": "Gun",
+      "Damage": "1",
+      "Speed": "1"
+    },
+    "texture": {
+      "itemTexture": "weapons/pumpgun/item",
+      "texture": "weapons/pumpgun/pumpgun",
+      "animation": "_shoot_",
+      "type": "side"
+    },
+    "behavior": {
+      "shoot": {
+        "cooldown": 40,
+        "frames": 5,
+        "damage": 1
+      }
+    }
+  }
+}

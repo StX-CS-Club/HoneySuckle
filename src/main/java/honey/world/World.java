@@ -3,6 +3,7 @@ package honey.world;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import honey.HoneySuckle;
@@ -174,12 +175,32 @@ public class World {
             entity.brain.event(player);
         }
 
+        // Expands map
+        int[] mapRange = renderOffset.clone();
+        if (biome.tags.contains("fog")) {
+            int lightRadius = player.attributes.getOrDefault("lightRadius", 4).intValue();
+            Arrays.fill(mapRange, lightRadius);
+        }
+        for (int x = posIndex[0] - mapRange[0]; x < posIndex[0] + mapRange[0]; x++) {
+            if (x > -1 && x < size[0]) {
+                for (int y = posIndex[1] - mapRange[1]; y < posIndex[1] + mapRange[1]; y++) {
+                    if (y > -1 && y < size[1]) {
+                        grid[x][y].rendered = true;
+
+                        if (objGrid[x][y] != null) {
+                            objGrid[x][y].rendered = true;
+                        }
+                    }
+                }
+            }
+        }
+
         for (int x = posIndex[0] - 10; x < posIndex[0] + 10; x++) {
             if (x > -1 && x < size[0]) {
                 for (int y = posIndex[1] - 10; y < posIndex[1] + 10; y++) {
-                    if(y > -1 && y < size[1]){
-                        if(structureGrid[x][y] != null){
-                            if(structureGrid[x][y].withinRange(posIndex)){
+                    if (y > -1 && y < size[1]) {
+                        if (structureGrid[x][y] != null) {
+                            if (structureGrid[x][y].withinRange(posIndex)) {
                                 navigator.icons.add(structureGrid[x][y]);
                             }
                         }
@@ -286,13 +307,15 @@ public class World {
                     }
                     //If tile/object provides light, add light to HoneySuckle.lights
                     if (fog) {
+                        if (grid[x][y].attributes.containsKey("lightRadius") || grid[x][y].attributes.containsKey("glowRadius")) {
+                            grid[x][y].renderLight(screenPos);
+                            grid[x][y].rendered = true;
+                        }
                         if (objGrid[x][y] != null) {
                             if (objGrid[x][y].attributes.containsKey("lightRadius") || objGrid[x][y].attributes.containsKey("glowRadius")) {
                                 objGrid[x][y].renderLight(screenPos);
+                                objGrid[x][y].rendered = true;
                             }
-                        }
-                        if (grid[x][y].attributes.containsKey("lightRadius") || grid[x][y].attributes.containsKey("glowRadius")) {
-                            grid[x][y].renderLight(screenPos);
                         }
                     }
                 }
@@ -303,8 +326,18 @@ public class World {
             entity.render(g, camera);
         }
         //Renders projectiles
-        for (Projectile projectile : renderProjectiles) {
-            projectile.render(g, camera);
+        for (Projectile proj : renderProjectiles) {
+            double[] screenPos = new double[]{
+                GAME_WIDTH / 2.0 + proj.pos[0] - camera[0],
+                GAME_HEIGHT / 2.0 + proj.pos[1] - camera[1]
+            };
+
+            proj.render(g, screenPos);
+            if (fog) {
+                if (proj.attributes.containsKey("lightRadius") || proj.attributes.containsKey("glowRadius")) {
+                    proj.renderLight(screenPos);
+                }
+            }
         }
     }
 

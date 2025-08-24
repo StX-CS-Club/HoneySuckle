@@ -1,4 +1,3 @@
-
 package honey.world;
 
 import java.util.ArrayList;
@@ -262,10 +261,12 @@ public class Biome {
         final Map<String, Object> generation = Structure.structureGeneration.get(id);
 
         final List<Number> core = listFromMap(generation, "core", new Number[0]);
-        if(!core.isEmpty()){
+        if (!core.isEmpty()) {
             final double[] corePos = new double[2];
             Arrays.setAll(corePos, i -> core.get(i).intValue() + pos[i] + 0.5);
-            world.structureGrid[(int) corePos[0]][(int) corePos[1]] = new Structure(id, corePos);
+            if (corePos[0] < world.size[0] && corePos[1] < world.size[1]) {
+                world.structureGrid[(int) corePos[0]][(int) corePos[1]] = new Structure(id, corePos);
+            }
         }
 
         final int[] size = intArray(listFromMap(generation, "size", new Number[2]).toArray(Number[]::new), 0);

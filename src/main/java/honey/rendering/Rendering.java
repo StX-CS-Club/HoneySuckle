@@ -141,29 +141,37 @@ public final class Rendering {
         for (Map<String, Number> light : lights) {
             final Point2D center = new Point2D.Float(light.get("posX").floatValue() / LIGHT_SCALE, light.get("posY").floatValue() / LIGHT_SCALE);
             final int radius = (int) Math.floor(light.get("radius").doubleValue() * TILE_SIZE / LIGHT_SCALE);
-            final Ellipse2D circle = new Ellipse2D.Double(
-                    center.getX() - radius,
-                    center.getY() - radius,
-                    radius * 2, radius * 2);
-            light2d.setPaint(new RadialGradientPaint(
-                    center,
-                    radius,
-                    new float[]{0f, 1f},
-                    new Color[]{Color.white, new Color(0, 0, 0, 0)}
-            ));
-            light2d.fill(circle);
+            if (radius != 0) {
+                final Ellipse2D circle = new Ellipse2D.Double(
+                        center.getX() - radius,
+                        center.getY() - radius,
+                        radius * 2, radius * 2);
+                light2d.setPaint(new RadialGradientPaint(
+                        center,
+                        radius,
+                        new float[]{0f, 1f},
+                        new Color[]{Color.white, new Color(0, 0, 0, 0)}
+                ));
+                light2d.fill(circle);
+            }
             if (light.get("glow") != null && light.get("color") != null) {
                 Color glowColor = new Color(light.get("color").intValue());
                 int glowValue = light.get("glow").intValue();
                 final int glowRadius = (int) Math.floor(light.get("glowRadius").doubleValue() * TILE_SIZE / LIGHT_SCALE);
-                glow2d.setPaint(new RadialGradientPaint(
-                        center,
-                        glowRadius,
-                        new float[]{0f, 1f},
-                        new Color[]{new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowValue),
-                            new Color(0, 0, 0, 0)}
-                ));
-                glow2d.fill(circle);
+                if (glowRadius != 0) {
+                final Ellipse2D circle = new Ellipse2D.Double(
+                        center.getX() - radius,
+                        center.getY() - radius,
+                        radius * 2, radius * 2);
+                    glow2d.setPaint(new RadialGradientPaint(
+                            center,
+                            glowRadius,
+                            new float[]{0f, 1f},
+                            new Color[]{new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), glowValue),
+                                new Color(0, 0, 0, 0)}
+                    ));
+                    glow2d.fill(circle);
+                }
             }
         }
         //Input light map into translator and render

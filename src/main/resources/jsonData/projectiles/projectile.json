@@ -71,5 +71,36 @@
     "texture": {
       "texture": "projectiles/bullet"
     }
+  },
+  "pumpkannon_ball": {
+    "name": "Pumpkannon Ball",
+    "id": 6,
+    "tags": ["hurtEntity", "hurtPlayer", "damageTile"],
+    "texture": {
+      "texture": "projectiles/pumpkannon_ball"
+    },
+    "attributes": {
+      "frames": 20
+    },
+    "splinters": [
+      {
+        "proj": 7
+      }
+    ]
+  },
+  "explosion": {
+    "name": "Explosion",
+    "id": 7,
+    "tags": ["hurtEntity", "hurtPlayer", "hurtSource", "damageTile", "stationary"],
+    "attributes": {
+      "hits": 5,
+      "damage": 0.25,
+      "size": 1.5,
+      "frames": 5,
+      "lightRadius": 3
+    },
+    "texture": {
+      "texture": "projectiles/explosion"
+    }
   }
 }

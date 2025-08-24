@@ -6,7 +6,7 @@
       "texture": "objects/wall",
       "mapColor": "#6b3200"
     },
-    "tags": ["obstruction", "destructable",  "projObstruction"],
+    "tags": ["obstruction", "destructable", "projObstruction"],
     "attributes": {
       "durability": 2.0
     },
@@ -94,11 +94,22 @@
     "texture": {
       "gif": "objects/campfire",
       "mapColor": "#ed9e00",
-      "anim": "_gif_"
+      "anim": "_gif_",
+      "glowColor": "#ff8000"
     },
     "tags": ["obstruction", "destructable", "flameProj"],
     "attributes": {
-      "durability": 1.25
-    }
+      "durability": 1.25,
+      "lightRadius": 5.0,
+      "glow": 16.0,
+      "glowRadius": 3.0
+    },
+    "loot": [
+      {
+        "id": 2,
+        "countProb": 0.25,
+        "count": 0
+      }
+    ]
   }
 }
