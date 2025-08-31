@@ -17,6 +17,7 @@ import honey.player.inventory.Build;
 import honey.player.inventory.Craft;
 import honey.player.inventory.Inventory;
 import honey.player.inventory.Item;
+import honey.player.inventory.KeyItem;
 import honey.player.inventory.Weapon;
 import honey.rendering.Menu;
 import honey.rendering.Rendering;
@@ -51,9 +52,10 @@ public class Player {
         inventory = new Inventory(
                 this,
                 Arrays.asList(armory.weapons),
-                Arrays.asList(new Armor[]{armory.armor}),
-                Arrays.asList(new Item[]{new Item("wood", 4)}),
-                Arrays.asList(new Ammo("woodenArrow", 10)));
+                Arrays.asList(armory.armor),
+                Arrays.asList(new Item("wood", 4)),
+                Arrays.asList(new Ammo("woodenArrow", 10)),
+                Arrays.asList(new KeyItem("map", 1)));
         armory.weapons[1].setAmmo(inventory.ammo);
 
         attributes = armory.getAttributes();

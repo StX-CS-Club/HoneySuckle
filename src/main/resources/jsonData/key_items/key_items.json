@@ -1,0 +1,12 @@
+{
+    "map": {
+        "id": 1,
+        "name": "Blank Map",
+        "texture": {
+            "texture": "key_items/map"
+        },
+        "utilities": {
+            "map": {}
+        }
+    }
+}

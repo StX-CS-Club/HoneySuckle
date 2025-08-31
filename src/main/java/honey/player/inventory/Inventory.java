@@ -29,6 +29,7 @@ public class Inventory {
     public final List<Armor> armors = new ArrayList<>();
     public final List<Item> items = new ArrayList<>();
     public final List<Ammo> ammo = new ArrayList<>();
+    public final List<KeyItem> keyItems = new ArrayList<>();
 
     private final List<Splash> splashes = new ArrayList<>();
 
@@ -39,7 +40,7 @@ public class Inventory {
 
     public boolean isOpen = false;
     private int page = 1;
-    private final String[] iconColors = new String[5];
+    private final String[] iconColors = new String[6];
 
     private double itemScroll = 0;
 
@@ -47,13 +48,17 @@ public class Inventory {
     private int ammoHover = -1;
     public Ammo ammoSelect;
 
+    private double keyScroll = 0;
+    private int keyHover = -1;
+
     //Inventory Constructor
     public Inventory(
             Player player,
             List<Weapon> weapons,
             List<Armor> armors,
             List<Item> items,
-            List<Ammo> ammo) {
+            List<Ammo> ammo,
+            List<KeyItem> keyItems) {
         this.player = player;
         //If specified, adds shit to inventory
         if (weapons != null) {
@@ -68,11 +73,18 @@ public class Inventory {
         if (ammo != null) {
             this.ammo.addAll(ammo);
         }
+        if (keyItems != null) {
+            this.keyItems.addAll(keyItems);
+        }
 
         Arrays.fill(iconColors, "#888888");
     }
 
     public void update(InputHandler input) {
+        for (KeyItem keyItem : keyItems) {
+            keyItem.update();
+        }
+
         if (input.keyPressed(69)) {
             isOpen = !isOpen;
             player.armory.weaponSelect = null;
@@ -88,8 +100,8 @@ public class Inventory {
         if (isOpen) {
             if (input.clickPressed(1)) {
                 if (Math.abs(GAME_HEIGHT * 9 / 10 - input.mousePos[1]) <= 25) {
-                    for (int i = 0; i < 5; i++) {
-                        if (Math.abs(GAME_WIDTH / 2 - 120 + i * 60 - input.mousePos[0]) <= 25) {
+                    for (int i = 0; i < 6; i++) {
+                        if (Math.abs(GAME_WIDTH / 2 - 150 + i * 60 - input.mousePos[0]) <= 25) {
                             setPage(i);
                             break;
                         }
@@ -139,6 +151,23 @@ public class Inventory {
                 }
                 case 4 -> {
                     player.armory.updateArmorMenu(input);
+                }
+                case 5 -> {
+                    if (!keyItems.isEmpty()) {
+                        keyScroll = Math.clamp(keyScroll + input.mouseScroll, 0, keyItems.size() - 1);
+                        keyHover = -1;
+                        if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
+                            double keyHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50)) + keyScroll * 110;
+                            if (keyHighlight % 110 <= 100) {
+                                keyHover = (int) Math.floor(keyHighlight / 110);
+                            }
+                        }
+                        if (input.clickPressed(1)) {
+                            if (keyHover > -1 && keyHover < keyItems.size()) {
+                                keyItems.get(keyHover).use();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -209,13 +238,24 @@ public class Inventory {
                 case 4 -> {
                     player.armory.renderArmorMenu(g);
                 }
+                case 5 -> {
+                    for (int i = 0; i < keyItems.size(); i++) {
+                        final int offset = 110 * i - ((int) Math.floor(keyScroll * 110));
+                        if (keyHover == i) {
+                            keyItems.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1.1);
+                        } else {
+                            keyItems.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1);
+                        }
+                    }
+                }
             }
 
-            g.drawImage(Rendering.texture("hud/icons/craft", iconColors[0]), GAME_WIDTH / 2 - 145, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/items", iconColors[1]), GAME_WIDTH / 2 - 85, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/weapons", iconColors[2]), GAME_WIDTH / 2 - 25, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/ammo", iconColors[3]), GAME_WIDTH / 2 + 35, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/armors", iconColors[4]), GAME_WIDTH / 2 + 95, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/icons/craft", iconColors[0]), GAME_WIDTH / 2 - 175, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/icons/items", iconColors[1]), GAME_WIDTH / 2 - 115, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/icons/weapons", iconColors[2]), GAME_WIDTH / 2 - 55, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/icons/ammo", iconColors[3]), GAME_WIDTH / 2 + 5, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/icons/armors", iconColors[4]), GAME_WIDTH / 2 + 65, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("hud/icons/key_items", iconColors[5]), GAME_WIDTH / 2 + 125, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
         }
     }
 
@@ -225,12 +265,14 @@ public class Inventory {
             int count = itemData.getOrDefault("count", 1).intValue();
 
             final double countProb = itemData.getOrDefault("countProb", 0).doubleValue();
-            while(ThreadLocalRandom.current().nextDouble() <= countProb){
+            while (ThreadLocalRandom.current().nextDouble() <= countProb) {
                 count++;
             }
 
+            final int type = itemData.getOrDefault("type", 0).intValue();
+
             String stringId = null;
-            switch (itemData.getOrDefault("type", 0).intValue()) {
+            switch (type) {
                 case 0 -> {
                     stringId = Item.itemStringId.get(id);
 
@@ -238,7 +280,7 @@ public class Inventory {
 
                     if (!gain) {
                         count *= -1;
-                    } else { 
+                    } else {
                         unlockRecipes(Item.itemBlueprintUnlocks.get(stringId), Item.itemRecipeUnlocks.get(stringId));
                     }
 
@@ -324,10 +366,29 @@ public class Inventory {
                         invAmmo.count += count;
                     }
                 }
+                case 4 -> {
+                    stringId = KeyItem.keyStringId.get(id);
+
+                    KeyItem keyItem = getKeyItem(stringId);
+
+                    if (!gain) {
+                        count *= -1;
+                    } else {
+                        unlockRecipes(KeyItem.keyBlueprintUnlocks.get(stringId), KeyItem.keyRecipeUnlocks.get(stringId));
+                    }
+
+                    if (keyItem == null) {
+                        keyItem = new KeyItem(stringId, count);
+                        keyItems.add(keyItem);
+                        iconColors[5] = "#00ffaa";
+                    } else {
+                        keyItem.count += count;
+                    }
+                }
             }
 
             if (gain) {
-                Splash splash = getSplash(stringId);
+                Splash splash = getSplash(type+":"+stringId);
                 if (splash == null) {
                     itemData.put("count", count);
                     splash = new Splash(itemData);
@@ -406,6 +467,16 @@ public class Inventory {
         for (Ammo invAmmo : ammo) {
             if (invAmmo.type.equals(ammoId)) {
                 return invAmmo;
+            }
+        }
+        return null;
+    }
+    
+
+    private KeyItem getKeyItem(String keyId) {
+        for (KeyItem keyItem : keyItems) {
+            if (keyItem.id.equals(keyId)) {
+                return keyItem;
             }
         }
         return null;

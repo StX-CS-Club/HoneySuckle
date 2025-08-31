@@ -181,27 +181,31 @@ public class World {
             int lightRadius = player.attributes.getOrDefault("lightRadius", 4).intValue();
             Arrays.fill(mapRange, lightRadius);
         }
-        for (int x = posIndex[0] - mapRange[0]; x < posIndex[0] + mapRange[0]; x++) {
-            if (x > -1 && x < size[0]) {
-                for (int y = posIndex[1] - mapRange[1]; y < posIndex[1] + mapRange[1]; y++) {
-                    if (y > -1 && y < size[1]) {
-                        grid[x][y].rendered = true;
+        if (navigator.started) {
+            for (int x = posIndex[0] - mapRange[0]; x < posIndex[0] + mapRange[0]; x++) {
+                if (x > -1 && x < size[0]) {
+                    for (int y = posIndex[1] - mapRange[1]; y < posIndex[1] + mapRange[1]; y++) {
+                        if (y > -1 && y < size[1]) {
+                            grid[x][y].rendered = true;
 
-                        if (objGrid[x][y] != null) {
-                            objGrid[x][y].rendered = true;
+                            if (objGrid[x][y] != null) {
+                                objGrid[x][y].rendered = true;
+                            }
                         }
                     }
                 }
             }
         }
 
-        for (int x = posIndex[0] - 10; x < posIndex[0] + 10; x++) {
-            if (x > -1 && x < size[0]) {
-                for (int y = posIndex[1] - 10; y < posIndex[1] + 10; y++) {
-                    if (y > -1 && y < size[1]) {
-                        if (structureGrid[x][y] != null) {
-                            if (structureGrid[x][y].withinRange(posIndex)) {
-                                navigator.icons.add(structureGrid[x][y]);
+        if (navigator.started) {
+            for (int x = posIndex[0] - 10; x < posIndex[0] + 10; x++) {
+                if (x > -1 && x < size[0]) {
+                    for (int y = posIndex[1] - 10; y < posIndex[1] + 10; y++) {
+                        if (y > -1 && y < size[1]) {
+                            if (structureGrid[x][y] != null) {
+                                if (structureGrid[x][y].withinRange(posIndex)) {
+                                    navigator.icons.add(structureGrid[x][y]);
+                                }
                             }
                         }
                     }
@@ -309,12 +313,17 @@ public class World {
                     if (fog) {
                         if (grid[x][y].attributes.containsKey("lightRadius") || grid[x][y].attributes.containsKey("glowRadius")) {
                             grid[x][y].renderLight(screenPos);
-                            grid[x][y].rendered = true;
+                            if (navigator.started) {
+                                grid[x][y].rendered = true;
+                            }
                         }
                         if (objGrid[x][y] != null) {
                             if (objGrid[x][y].attributes.containsKey("lightRadius") || objGrid[x][y].attributes.containsKey("glowRadius")) {
                                 objGrid[x][y].renderLight(screenPos);
-                                objGrid[x][y].rendered = true;
+
+                                if (navigator.started) {
+                                    objGrid[x][y].rendered = true;
+                                }
                             }
                         }
                     }

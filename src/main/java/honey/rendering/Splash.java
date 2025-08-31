@@ -11,6 +11,7 @@ import honey.HoneySuckle;
 import honey.player.inventory.Ammo;
 import honey.player.inventory.Armor;
 import honey.player.inventory.Item;
+import honey.player.inventory.KeyItem;
 import honey.player.inventory.Weapon;
 
 public class Splash {
@@ -35,37 +36,49 @@ public class Splash {
 
     public Splash(Map<String, Number> itemData) {
         final int intId = itemData.get("id").intValue();
+        final int type = itemData.getOrDefault("type", 0).intValue();
         count = itemData.getOrDefault("count", 1).intValue();
-        switch (itemData.getOrDefault("type", 0).intValue()) {
+        switch (type) {
             case 0 -> {
-                id = Item.itemStringId.get(intId);
-                attributes = Item.itemAttributes.get(id);
-                texture = Item.itemTextures.get(id);
-                name = Item.itemNames.get(id);
+                final String stringId = Item.itemStringId.get(intId);
+                attributes = Item.itemAttributes.get(stringId);
+                texture = Item.itemTextures.get(stringId);
+                name = Item.itemNames.get(stringId);
+                id = type+":"+stringId;
             }
             case 1 -> {
-                this.id = Weapon.weaponStringId.get(intId);
-                attributes = Weapon.weaponAttributes.get(id);
-                texture = Weapon.weaponTextures.get(id);
-                name = Weapon.weaponNames.get(id);
+                final String stringId = Weapon.weaponStringId.get(intId);
+                attributes = Weapon.weaponAttributes.get(stringId);
+                texture = Weapon.weaponTextures.get(stringId);
+                name = Weapon.weaponNames.get(stringId);
+                id = type+":"+stringId;
             }
             case 2 -> {
-                this.id = Armor.armorStringId.get(intId);
-                attributes = Armor.armorAttributes.get(id);
-                texture = Armor.armorTextures.get(id);
-                name = Armor.armorNames.get(id);
+                final String stringId = Armor.armorStringId.get(intId);
+                attributes = Armor.armorAttributes.get(stringId);
+                texture = Armor.armorTextures.get(stringId);
+                name = Armor.armorNames.get(stringId);
+                id = type+":"+stringId;
             }
             case 3 -> {
-                this.id = Ammo.ammoStringId.get(intId);
-                attributes = Ammo.ammoAttributes.get(id);
-                texture = Ammo.ammoTextures.get(id);
-                name = Ammo.ammoNames.get(id);
+                final String stringId = Ammo.ammoStringId.get(intId);
+                attributes = Ammo.ammoAttributes.get(stringId);
+                texture = Ammo.ammoTextures.get(stringId);
+                name = Ammo.ammoNames.get(stringId);
+                id = type+":"+stringId;
+            }
+            case 4 -> {
+                final String stringId = KeyItem.keyStringId.get(intId);
+                attributes = KeyItem.keyAttributes.get(stringId);
+                texture = KeyItem.keyTextures.get(stringId);
+                name = KeyItem.keyNames.get(stringId);
+                id = type+":"+stringId;
             }
             default -> {
                 attributes = new HashMap<>();
                 texture = new HashMap<>();
                 name = "";
-                this.id = null;
+                id = null;
             }
         }
         maxFrames = attributes.getOrDefault("splashFrames", FPS).intValue();

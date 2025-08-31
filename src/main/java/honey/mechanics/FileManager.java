@@ -20,6 +20,7 @@ import honey.player.inventory.Armor;
 import honey.player.inventory.Build;
 import honey.player.inventory.Craft;
 import honey.player.inventory.Item;
+import honey.player.inventory.KeyItem;
 import honey.player.inventory.Weapon;
 import honey.world.Biome;
 import honey.world.Brain;
@@ -101,6 +102,23 @@ public class FileManager {
                 final int id = (int) item.get("id");
                 Item.itemIntId.put(key, id);
                 Item.itemStringId.put(id, key);
+            }
+            
+
+            //Maps item data
+            Map<String, Object> keyData = readJsonDirectory(FileManager.class.getResource("/jsonData/key_items").toURI());
+            for (String key : keyData.keySet()) {
+                final Map<String, Object> keyItem = (Map<String, Object>) keyData.get(key);
+                KeyItem.keyNames.put(key, (String) keyItem.getOrDefault("name", key));
+                KeyItem.keyTextures.put(key, (Map<String, String>) keyItem.getOrDefault("texture", new HashMap<>()));
+                KeyItem.keyUtilities.put(key, (Map<String, Map<String, Object>>) keyItem.getOrDefault("utilities", new HashMap<>()));
+                KeyItem.keyBlueprintUnlocks.put(key, (List<String>) keyItem.getOrDefault("blueprintUnlocks", new ArrayList<>()));
+                KeyItem.keyRecipeUnlocks.put(key, (List<String>) keyItem.getOrDefault("recipeUnlocks", new ArrayList<>()));
+                KeyItem.keyAttributes.put(key, (Map<String, Number>) keyItem.getOrDefault("attributes", new HashMap<>()));
+
+                final int id = (int) keyItem.get("id");
+                KeyItem.keyIntId.put(key, id);
+                KeyItem.keyStringId.put(id, key);
             }
 
             //Maps biome data

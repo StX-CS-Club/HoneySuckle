@@ -201,8 +201,8 @@ public class Attack {
                 for (Entity entity : world.renderEntities) {
                     //If collision overlap of entity and blade
                     if (Collision.isBoxOverlap(
-                            Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size / 2 + stabSize*progress, player.rotation),
-                            new Point2D.Double(stabSize / 2, stabSize * 2*progress),
+                            Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size / 2 + stabSize * progress, player.rotation),
+                            new Point2D.Double(stabSize / 2, stabSize * 2 * progress),
                             player.rotation,
                             new Point2D.Double(entity.pos[0], entity.pos[1]),
                             new Point2D.Double(entity.size, entity.size))) {
@@ -212,7 +212,7 @@ public class Attack {
                                 player.inventory.incrementItem(loot, true);
                             }
                         }
-                        attackFrames.put(attackId, frames+1);
+                        attackFrames.put(attackId, frames + 1);
                         break;
                     }
                 }
@@ -229,8 +229,8 @@ public class Attack {
                             if (world.objGrid[x][y] != null) {
                                 //If collision overlap of tile and blade
                                 if (Collision.isBoxOverlap(
-                                        Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size / 2 + stabSize*progress, player.rotation),
-                                        new Point2D.Double(stabSize / 2, stabSize * 2*progress),
+                                        Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size / 2 + stabSize * progress, player.rotation),
+                                        new Point2D.Double(stabSize / 2, stabSize * 2 * progress),
                                         player.rotation,
                                         new Point2D.Double((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE),
                                         new Point2D.Double(HoneySuckle.TILE_SIZE, TILE_SIZE))) {
@@ -241,7 +241,7 @@ public class Attack {
                                             player.inventory.incrementItem(loot, true);
                                         }
                                     }
-                                    attackFrames.put(attackId, frames+1);
+                                    attackFrames.put(attackId, frames + 1);
                                     break;
                                 }
                             }
@@ -441,9 +441,8 @@ public class Attack {
             behaviorEntry.putIfAbsent("attackId", "base");
             String attackId = (String) behaviorEntry.get("attackId");
             attackFrames.put(attackId, -1);
-            return behaviorEntry;
         }
-        return null;
+        return behaviorEntry;
     }
 
     private static Number numberFromMap(Map<String, Object> map, String key, Number defaultValue) {
