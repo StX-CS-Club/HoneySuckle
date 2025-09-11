@@ -164,7 +164,7 @@ public class Inventory {
                         }
                         if (input.clickPressed(1)) {
                             if (keyHover > -1 && keyHover < keyItems.size()) {
-                                keyItems.get(keyHover).use();
+                                keyItems.get(keyHover).use(player);
                             }
                         }
                     }

@@ -15,6 +15,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import honey.player.Effect;
 import honey.player.inventory.Ammo;
 import honey.player.inventory.Armor;
 import honey.player.inventory.Build;
@@ -226,6 +227,20 @@ public class FileManager {
                 final int id = (int) proj.get("id");
                 Projectile.projIntId.put(key, id);
                 Projectile.projStringId.put(id, key);
+            }
+
+            //Maps Effect data
+            Map<String, Object> effectData = readJsonDirectory(FileManager.class.getResource("/jsonData/effects").toURI());
+            for (String key : effectData.keySet()) {
+                Map<String, Object> effect = (Map<String, Object>) effectData.get(key);
+                Effect.effectNames.put(key, (String) effect.getOrDefault("name", key));
+                Effect.effectTextures.put(key, (Map<String, String>) effect.getOrDefault("texture", new HashMap<>()));
+                Effect.effectModifiers.put(key, (Map<String, Number>) effect.getOrDefault("modifiers", new HashMap<>()));
+                Effect.effectTags.put(key, (List<String>) effect.getOrDefault("tags", new ArrayList<>()));
+
+                final int id = (int) effect.get("id");
+                Effect.effectIntId.put(key, id);
+                Effect.effectStringId.put(id, key);
             }
         } catch (IOException e) {
             System.out.println("FileManager ERROR: Failed to import json files.");

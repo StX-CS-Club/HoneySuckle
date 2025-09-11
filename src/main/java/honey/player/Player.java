@@ -55,7 +55,7 @@ public class Player {
                 Arrays.asList(armory.armor),
                 Arrays.asList(new Item("wood", 4)),
                 Arrays.asList(new Ammo("woodenArrow", 10)),
-                Arrays.asList(new KeyItem("map", 1)));
+                Arrays.asList(new KeyItem("swift_potion", 3)));
         armory.weapons[1].setAmmo(inventory.ammo);
 
         attributes = armory.getAttributes();

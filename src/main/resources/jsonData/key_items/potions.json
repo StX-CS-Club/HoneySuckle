@@ -1,0 +1,21 @@
+{
+    "swift_potion": {
+        "id": 2,
+        "name": "Swift Potion",
+        "texture": {
+            "texture": "key_items/potions/swift_potion"
+        },
+        "utilities": {
+            "potion": {
+                "cooldown": 1200,
+                "useFrames": 3,
+                "effects": [
+                    {
+                        "effect": "speed",
+                        "duration": 20
+                    }
+                ] 
+            }
+        }
+    }
+}

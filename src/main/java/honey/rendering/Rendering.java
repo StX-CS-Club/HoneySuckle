@@ -377,4 +377,8 @@ public final class Rendering {
         final Color color = Color.decode(colorId);
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
+
+    public static void imageFactor(BufferedImage image, Graphics2D g, int x, int y, int w, int h, double factor){
+        g.drawImage(image, (int) (x - w * (factor - 1) / 2), (int) (y - h * (factor - 1) / 2), (int) (w * factor), (int) (h * factor), null);
+    }
 }

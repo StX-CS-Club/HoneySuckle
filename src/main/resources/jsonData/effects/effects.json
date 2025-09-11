@@ -1,0 +1,9 @@
+{
+    "speed": {
+        "id": 1,
+        "name": "Speed",
+        "modifiers": {
+            "speed": 1.5
+        }
+    }
+}
