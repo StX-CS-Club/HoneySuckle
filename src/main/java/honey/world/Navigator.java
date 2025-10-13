@@ -55,7 +55,7 @@ public class Navigator {
     }
 
     public void update(InputHandler input) {
-        isOpen = input.keyDown(16) || input.clickDown(4) || input.clickDown(5);
+        isOpen = input.keyDown(16) || input.clickDown(5);
     }
 
     public void renderUi(Graphics2D g) {
@@ -63,11 +63,11 @@ public class Navigator {
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         if (started) {
-            g.drawImage(Rendering.texture("hud/scroll/map_end", null), scrollPosX[0], scrollPosY, MAP_WIDTH, mapHeight, null);
+            g.drawImage(Rendering.texture("ui/scroll/map_end", null), scrollPosX[0], scrollPosY, MAP_WIDTH, mapHeight, null);
             for (int i = 0; i < mapCount; i++) {
-                g.drawImage(Rendering.texture("hud/scroll/map_middle", null), scrollPosX[0] + i * MAP_WIDTH + MAP_WIDTH, scrollPosY, MAP_WIDTH, mapHeight, null);
+                g.drawImage(Rendering.texture("ui/scroll/map_middle", null), scrollPosX[0] + i * MAP_WIDTH + MAP_WIDTH, scrollPosY, MAP_WIDTH, mapHeight, null);
             }
-            g.drawImage(Rendering.texture("hud/scroll/map_end", null), scrollPosX[1], scrollPosY, MAP_WIDTH, mapHeight, null);
+            g.drawImage(Rendering.texture("ui/scroll/map_end", null), scrollPosX[1], scrollPosY, MAP_WIDTH, mapHeight, null);
             BufferedImage mapImage = new BufferedImage(size[0], size[1], BufferedImage.TYPE_INT_ARGB);
             for (int x = 0; x < size[0]; x++) {
                 for (int y = 0; y < size[1]; y++) {
@@ -104,12 +104,12 @@ public class Navigator {
 
                 g.rotate(Math.toRadians(player.mapRotation), playerMapPos[0], playerMapPos[1]);
 
-                g.drawImage(Rendering.texture("hud/map/player", null), playerMapPos[0] - 8, playerMapPos[1] - 8, 16, 16, null);
+                g.drawImage(Rendering.texture("ui/map/player", null), playerMapPos[0] - 8, playerMapPos[1] - 8, 16, 16, null);
 
                 g.setTransform(originalTransform);
             }
         } else {
-            g.drawImage(Rendering.texture("hud/symbols/denied", "#999999"), GAME_WIDTH / 2 - 32, GAME_HEIGHT / 2 - 32, 64, 64, null);
+            g.drawImage(Rendering.texture("ui/symbols/denied", "#999999"), GAME_WIDTH / 2 - 32, GAME_HEIGHT / 2 - 32, 64, 64, null);
         }
     }
 }

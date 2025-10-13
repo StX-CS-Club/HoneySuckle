@@ -12,7 +12,44 @@
                 "effects": [
                     {
                         "effect": "speed",
-                        "duration": 20
+                        "duration": 30
+                    }
+                ] 
+            }
+        }
+    },
+    "defense_potion": {
+        "id": 3,
+        "name": "Defense Potion",
+        "texture": {
+            "texture": "key_items/potions/defense_potion"
+        },
+        "utilities": {
+            "potion": {
+                "cooldown": 1200,
+                "useFrames": 3,
+                "effects": [
+                    {
+                        "effect": "defense",
+                        "duration": 30
+                    }
+                ] 
+            }
+        }
+    },
+    "regen_potion": {
+        "id": 4,
+        "name": "Regen Potion",
+        "texture": {
+            "texture": "key_items/potions/regen_potion"
+        },
+        "utilities": {
+            "potion": {
+                "cooldown": 1200,
+                "useFrames": 3,
+                "effects": [
+                    {
+                        "effect": "regen"
                     }
                 ] 
             }

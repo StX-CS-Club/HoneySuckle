@@ -328,11 +328,11 @@ public final class Rendering {
         BufferedImage result = new BufferedImage(length * 4 + 8, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = result.createGraphics();
 
-        g.drawImage(Rendering.texture("hud/scroll/scroll_end", null), 0, 0, 4, 32, null);
+        g.drawImage(Rendering.texture("ui/scroll/scroll_end", null), 0, 0, 4, 32, null);
         for (int i = 0; i < length; i++) {
-            g.drawImage(Rendering.texture("hud/scroll/scroll_middle", null), 4 + i * 4, 0, 4, 32, null);
+            g.drawImage(Rendering.texture("ui/scroll/scroll_middle", null), 4 + i * 4, 0, 4, 32, null);
         }
-        g.drawImage(Rendering.texture("hud/scroll/scroll_end", null), 4 + length * 4, 0, 4, 32, null);
+        g.drawImage(Rendering.texture("ui/scroll/scroll_end", null), 4 + length * 4, 0, 4, 32, null);
 
         return result;
     }

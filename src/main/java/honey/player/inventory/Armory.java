@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import honey.HoneySuckle;
 import honey.mechanics.InputHandler;
+import honey.player.Effect;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
@@ -27,6 +30,10 @@ public class Armory {
     public int weaponIndex = 0;
     public Weapon[] weapons = new Weapon[3];
     public Armor armor;
+
+    public KeyItem hotKey = null;
+
+    public List<Effect> effects = new ArrayList<>();
 
     private double weaponScroll = 0;
     private int weaponHover = -2;
@@ -63,6 +70,12 @@ public class Armory {
                 break;
             }
         }
+
+        if(hotKey != null){
+            if(inputHandler.clickPressed(4) || inputHandler.keyPressed(81) || inputHandler.keyPressed(18)){
+                hotKey.use(player);
+            }
+        }
     }
 
     public void updateWeapons() {
@@ -81,6 +94,17 @@ public class Armory {
         //If armor exists, update it
         if (armor != null) {
             armor.update(player);
+        }
+    }
+
+    public void updateEffects() {
+        for(int i = effects.size() - 1; i > -1; i--){
+            Effect effect = effects.get(i);
+
+            effect.update();
+            if(!effect.active){
+                effects.remove(effect);
+            }
         }
     }
 
@@ -159,11 +183,17 @@ public class Armory {
 
     //If armor exists, returns armor attributes
     public Map<String, Number> getAttributes() {
+        Map<String, Number> result = new HashMap<>();
         if (armor != null) {
-            return armor.attributes;
+            result.putAll(armor.attributes);
         }
+
+        for(Effect effect : effects){
+            effect.modify(result);
+        }
+
         //Default "Naked" attributes
-        return new HashMap<>();
+        return result;
     }
 
     //Updates selected weapon from scroll wheel
@@ -293,7 +323,7 @@ public class Armory {
                 if (iWeapon.ammo != null) {
                     String ammoTexture = iWeapon.ammo.texture.get("texture");
                     if (ammoTexture != null) {
-                        g.drawImage(Rendering.texture("hud/slots/ammo", iWeapon.ammo.texture.get("rarityColor")), GAME_WIDTH / 2 - 126 + i * 110, GAME_HEIGHT / 2 - 66, 32, 32, null);
+                        g.drawImage(Rendering.texture("ui/slots/ammo", iWeapon.ammo.texture.get("rarityColor")), GAME_WIDTH / 2 - 126 + i * 110, GAME_HEIGHT / 2 - 66, 32, 32, null);
                         g.drawImage(Rendering.texture(ammoTexture, null), GAME_WIDTH / 2 - 122 + i * 110, GAME_HEIGHT / 2 - 62, 24, 24, null);
                     }
                 }
@@ -322,7 +352,7 @@ public class Armory {
             if (iWeapon != null) {
                 iWeapon.renderUiTile(g, GAME_WIDTH / 2 - 160 + i * 110, GAME_HEIGHT / 2 - 50, factor, weapons);
             } else {
-                g.drawImage(Rendering.texture("hud/slots/weapon", null), (int) (GAME_WIDTH / 2 - 50 * factor + (i - 1) * 110), (int) (GAME_HEIGHT / 2 - 50 * factor), (int) (100 * factor), (int) (100 * factor), null);
+                g.drawImage(Rendering.texture("ui/slots/weapon", null), (int) (GAME_WIDTH / 2 - 50 * factor + (i - 1) * 110), (int) (GAME_HEIGHT / 2 - 50 * factor), (int) (100 * factor), (int) (100 * factor), null);
                 g.setColor(Color.WHITE);
                 g.setFont(new Font("VT323 Regular", Font.PLAIN, 28));
                 Rendering.centeredText(g, Integer.toString(i + 1), (int) (GAME_WIDTH / 2 + 45 + (i - 1) * 110), (int) (GAME_HEIGHT / 2 + 50));
@@ -333,11 +363,11 @@ public class Armory {
     //Render Armory UI
     public void renderUi(Graphics2D g) {
         //Size of slot
-        double xMargin = 0;
+        double xMargin1 = 0;
 
         //If player in bottom left corner, display in right corner
         if (player.screenPos[0] < HUD_SIZE * 3 + TILE_SIZE && player.screenPos[1] > GAME_HEIGHT - HUD_SIZE * 25 / 12 - TILE_SIZE) {
-            xMargin = GAME_WIDTH - HUD_SIZE * 3;
+            xMargin1 = GAME_WIDTH - HUD_SIZE * 3;
         }
 
         //Go through each slot
@@ -349,23 +379,37 @@ public class Armory {
             }
 
             //Render slot
-            g.drawImage(Rendering.texture("hud/slot", color), (int) (HUD_SIZE * i + xMargin), GAME_HEIGHT - HUD_SIZE, HUD_SIZE, HUD_SIZE, null);
+            g.drawImage(Rendering.texture("ui/hud/slot", color), (int) (HUD_SIZE * i + xMargin1), GAME_HEIGHT - HUD_SIZE, HUD_SIZE, HUD_SIZE, null);
             if (weapons[i] != null) {
                 //Render Weapon Item
                 Map<String, String> texture = weapons[i].texture;
                 if (texture.get("itemTexture") != null) {
-                    g.drawImage(Rendering.texture(texture.get("itemTexture"), null), (int) (HUD_SIZE * i + HUD_SIZE / 8 + xMargin), GAME_HEIGHT - HUD_SIZE * 7 / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
+                    g.drawImage(Rendering.texture(texture.get("itemTexture"), null), (int) (HUD_SIZE * i + HUD_SIZE / 8 + xMargin1), GAME_HEIGHT - HUD_SIZE * 7 / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
                 }
 
                 if (weapons[i].ammo != null) {
-                    g.drawImage(Rendering.texture("hud/counter", null), (int) (HUD_SIZE * i + xMargin), GAME_HEIGHT - HUD_SIZE * 5 / 16, HUD_SIZE / 2, HUD_SIZE / 4, null);
+                    g.drawImage(Rendering.texture("ui/hud/counter", null), (int) (HUD_SIZE * i + xMargin1), GAME_HEIGHT - HUD_SIZE * 5 / 16, HUD_SIZE / 2, HUD_SIZE / 4, null);
                     if (weapons[i].ammo.count > 0) {
                         g.setColor(Color.BLACK);
                     } else {
                         g.setColor(Color.RED);
                     }
-                    Rendering.centeredText(g, Integer.toString(weapons[i].ammo.count), (int) (HUD_SIZE * i + xMargin + HUD_SIZE / 4), GAME_HEIGHT - HUD_SIZE * 1 / 8, HUD_SIZE / 2, 20);
+                    Rendering.centeredText(g, Integer.toString(weapons[i].ammo.count), (int) (HUD_SIZE * i + xMargin1 + HUD_SIZE / 4), GAME_HEIGHT - HUD_SIZE * 1 / 8, HUD_SIZE / 2, 20);
                 }
+            }
+        }
+
+        int offset = HUD_SIZE / 8;
+
+        if(hotKey != null){
+            hotKey.renderHotTile(g, GAME_WIDTH - HUD_SIZE - offset, HUD_SIZE / 8, 1.0);
+
+            offset += HUD_SIZE * 9 / 8;
+        }
+
+        for(Effect effect : effects){
+            if(effect.renderUi(g, GAME_WIDTH - HUD_SIZE / 2 - offset, HUD_SIZE / 8)){
+                offset += HUD_SIZE * 5 / 8;
             }
         }
     }

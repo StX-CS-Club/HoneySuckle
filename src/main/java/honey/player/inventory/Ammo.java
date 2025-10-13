@@ -63,7 +63,7 @@ public class Ammo {
 
     public void renderUiTile(Graphics2D g, int x, int y, double factor) {
         final String color = texture.get("rarityColor");
-        g.drawImage(Rendering.texture("hud/slots/ammo", color), (int) (x - 50 * (factor - 1)), (int) (y - 50 * (factor - 1)), (int) (100 * factor), (int) (100 * factor), null);
+        g.drawImage(Rendering.texture("ui/slots/ammo", color), (int) (x - 50 * (factor - 1)), (int) (y - 50 * (factor - 1)), (int) (100 * factor), (int) (100 * factor), null);
 
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {

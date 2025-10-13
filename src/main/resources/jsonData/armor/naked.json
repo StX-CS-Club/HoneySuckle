@@ -1,0 +1,12 @@
+{
+  "naked": {
+    "name": "Naked",
+    "id": 0,
+    "attributes": {
+      "defense": 1.0,
+      "regen": 0.001,
+      "speed": 0.1,
+      "maxHealth": 1.0
+    }
+  }
+}

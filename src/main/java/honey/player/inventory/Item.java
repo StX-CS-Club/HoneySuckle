@@ -41,7 +41,7 @@ public class Item {
             color = "#f5d39d";
         }
 
-        g.drawImage(Rendering.texture("hud/slots/item", color), x, y, 100, 100, null);
+        g.drawImage(Rendering.texture("ui/slots/item", color), x, y, 100, 100, null);
 
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {

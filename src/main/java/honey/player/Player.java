@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,8 @@ public class Player {
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
+    public static final Map<String, Number> playerDefaultAttributes = new HashMap<>();
+
     //Static list of all players
     public static List<Player> players = new ArrayList<>();
 
@@ -55,7 +58,7 @@ public class Player {
                 Arrays.asList(armory.armor),
                 Arrays.asList(new Item("wood", 4)),
                 Arrays.asList(new Ammo("woodenArrow", 10)),
-                Arrays.asList(new KeyItem("swift_potion", 3)));
+                Arrays.asList(new KeyItem("map", 1)));
         armory.weapons[1].setAmmo(inventory.ammo);
 
         attributes = armory.getAttributes();
@@ -132,7 +135,7 @@ public class Player {
         }
 
         if (inventory.ideaFrames >= 0) {
-            g.drawImage(Rendering.texture("hud/idea", inventory.ideaColor), (int) screenPos[0] - 15, (int) screenPos[1] - 15 - size, 30, 30, null);
+            g.drawImage(Rendering.texture("ui/hud/idea", inventory.ideaColor), (int) screenPos[0] - 15, (int) screenPos[1] - 15 - size, 30, 30, null);
             inventory.ideaFrames--;
         }
     }
@@ -252,6 +255,7 @@ public class Player {
             world.playerEvent(this);
             //Update armor
             armory.updateArmor();
+            armory.updateEffects();
 
             //Regenerate health
             double regen = attributes.getOrDefault("regen", 0.001).doubleValue();

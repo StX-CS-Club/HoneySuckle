@@ -166,6 +166,15 @@ public class Inventory {
                             if (keyHover > -1 && keyHover < keyItems.size()) {
                                 keyItems.get(keyHover).use(player);
                             }
+                        } else if(input.clickPressed(3)){
+                            if (keyHover > -1 && keyHover < keyItems.size()) {
+                                KeyItem keyItem = keyItems.get(keyHover);
+                                if(player.armory.hotKey == keyItem){
+                                    player.armory.hotKey = null;
+                                } else {
+                                    player.armory.hotKey = keyItem;
+                                }
+                            }
                         }
                     }
                 }
@@ -215,7 +224,7 @@ public class Inventory {
 
                     // Displays empty slot when items left to be collected
                     if (items.size() < Item.itemNames.size()) {
-                        g.drawImage(Rendering.texture("hud/slots/item", null), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
+                        g.drawImage(Rendering.texture("ui/slots/item", null), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
                     }
                 }
                 case 2 -> {
@@ -241,21 +250,26 @@ public class Inventory {
                 case 5 -> {
                     for (int i = 0; i < keyItems.size(); i++) {
                         final int offset = 110 * i - ((int) Math.floor(keyScroll * 110));
+                        final KeyItem keyItem = keyItems.get(i);
                         if (keyHover == i) {
-                            keyItems.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1.1);
+                            keyItem.renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1.1);
                         } else {
-                            keyItems.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1);
+                            keyItem.renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1);
+                        }
+
+                        if(keyItem == player.armory.hotKey){
+                            g.drawImage(Rendering.texture("ui/symbols/hotkey", "#ffffff"), GAME_WIDTH / 2 - 12 + offset, GAME_HEIGHT / 2 - 85, 24, 24, null);
                         }
                     }
                 }
             }
 
-            g.drawImage(Rendering.texture("hud/icons/craft", iconColors[0]), GAME_WIDTH / 2 - 175, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/items", iconColors[1]), GAME_WIDTH / 2 - 115, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/weapons", iconColors[2]), GAME_WIDTH / 2 - 55, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/ammo", iconColors[3]), GAME_WIDTH / 2 + 5, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/armors", iconColors[4]), GAME_WIDTH / 2 + 65, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("hud/icons/key_items", iconColors[5]), GAME_WIDTH / 2 + 125, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/craft", iconColors[0]), GAME_WIDTH / 2 - 175, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/items", iconColors[1]), GAME_WIDTH / 2 - 115, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/weapons", iconColors[2]), GAME_WIDTH / 2 - 55, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/ammo", iconColors[3]), GAME_WIDTH / 2 + 5, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/armors", iconColors[4]), GAME_WIDTH / 2 + 65, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/key_items", iconColors[5]), GAME_WIDTH / 2 + 125, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
         }
     }
 

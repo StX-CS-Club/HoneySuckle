@@ -107,7 +107,7 @@ public class Weapon {
         final String weaponTexture = texture.get("itemTexture");
         final String color = texture.get("rarityColor");
 
-        g.drawImage(Rendering.texture("hud/slots/weapon", color), (int) (x - 50 * (factor - 1)), (int) (y - 50 * (factor - 1)), (int) (100 * factor), (int) (100 * factor), null);
+        g.drawImage(Rendering.texture("ui/slots/weapon", color), (int) (x - 50 * (factor - 1)), (int) (y - 50 * (factor - 1)), (int) (100 * factor), (int) (100 * factor), null);
 
         if (weaponTexture != null) {
             g.drawImage(Rendering.texture(weaponTexture, "#e8f1ff"), x + 0xc, y + 12, 75, 75, null);

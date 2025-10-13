@@ -2,19 +2,22 @@ package honey.player.inventory;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import honey.HoneySuckle;
+import honey.mechanics.MapReader;
+import honey.player.Effect;
 import honey.player.Player;
 import honey.rendering.Rendering;
 import honey.world.World;
 
 public class KeyItem {
 
-    private static final int FPS = HoneySuckle.FPS;
-
+    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+    
     //Static json data
     public static final Map<String, String> keyNames = new HashMap<>();
     public static final Map<String, Map<String, String>> keyTextures = new HashMap<>();
@@ -64,7 +67,7 @@ public class KeyItem {
             color = "#f5d39d";
         }
 
-        Rendering.imageFactor(Rendering.texture("hud/slots/key_item", color), g, x, y, 100, 100, factor);
+        Rendering.imageFactor(Rendering.texture("ui/slots/key_item", color), g, x, y, 100, 100, factor);
 
         boolean ready = utilAnimFrames.isEmpty();
         if (!ready) {
@@ -73,7 +76,6 @@ public class KeyItem {
                 final int animFrames = utilAnimFrames.get(key);
                 if (animFrames > 0) {
                     final int size = (int) Math.ceil(utilFrames.get(key) / (double) animFrames * 100);
-                    System.out.println(size);
                     if (size > 0 && size <= 100) {
                         g.fillRect(x, y + size, 100, 100 - size);
                     } else {
@@ -105,6 +107,41 @@ public class KeyItem {
         Rendering.centeredText(g, label, x + 50, y + 115, 100, 24);
     }
 
+    public void renderHotTile(Graphics2D g, int x, int y, double factor) {
+        String color = null;
+        if (count > 0) {
+            color = "#f5d39d";
+        }
+
+        Rendering.imageFactor(Rendering.texture("ui/hud/hotslot", color), g, x, y, HUD_SIZE, HUD_SIZE, factor);
+
+        boolean ready = utilAnimFrames.isEmpty();
+        if (!ready) {
+            g.setColor(new Color(128, 128, 128, 128 / utilAnimFrames.size()));
+            for (String key : utilAnimFrames.keySet()) {
+                final int animFrames = utilAnimFrames.get(key);
+                if (animFrames > 0) {
+                    final int size = (int) Math.ceil(utilFrames.get(key) / (double) animFrames * HUD_SIZE);
+                    if (size > 0 && size <= HUD_SIZE) {
+                        g.fillRect(x, y + size, HUD_SIZE, HUD_SIZE - size);
+                    } else {
+                        ready = true;
+                    }
+                }
+            }
+        }
+
+        final String itemTexture = texture.get("texture");
+        if (itemTexture != null) {
+            if (useFrames > 0) {
+                Rendering.imageFactor(Rendering.texture(itemTexture, null), g, x + HUD_SIZE / 8, y + HUD_SIZE / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, 0.8);
+                useFrames--;
+            } else {
+                g.drawImage(Rendering.texture(itemTexture, null), x + HUD_SIZE / 8, y + HUD_SIZE / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
+            }
+        }
+    }
+
     public void update() {
         for (String key : utilFrames.keySet()) {
             long frame = utilFrames.get(key);
@@ -131,7 +168,6 @@ public class KeyItem {
     public void use(Player player) {
         final World world = World.worlds.get(World.level);
         final Map<String, Integer> staticUtilUses = Map.copyOf(utilUses);
-        final Map<String, Long> staticUtilFrames = Map.copyOf(utilFrames);
 
         if (count > 0) {
             if (mapUtility != null) {
@@ -141,21 +177,27 @@ public class KeyItem {
                 if (uses != 0 && !world.navigator.started) {
                     world.navigator.started = true;
                     utilUses.put(utilId, uses - 1);
-                    useFrames = numberFromMap(potionUtility, "useFrames", 1).intValue();
+                    useFrames = MapReader.getNumberOrDefault(mapUtility, "useFrames", 1).intValue();
                 }
             }
 
             if (potionUtility != null) {
+                System.out.println("Yo");
                 final String utilId = (String) potionUtility.get("utilId");
                 int uses = staticUtilUses.get(utilId);
-                long frames = staticUtilFrames.get(utilId);
+                long frames = utilFrames.get(utilId);
 
-                final int cooldown = numberFromMap(potionUtility, "cooldown", 0).intValue();
+                final int cooldown = MapReader.getNumberOrDefault(potionUtility, "cooldown", 0).intValue();
 
                 if (uses != 0 && (frames >= cooldown || frames == -1l)) {
                     utilUses.put(utilId, uses - 1);
                     utilFrames.put(utilId, 0l);
-                    useFrames = numberFromMap(potionUtility, "useFrames", 1).intValue();
+                    useFrames = MapReader.getNumberOrDefault(potionUtility, "useFrames", 1).intValue();
+
+                    final List<Map<String, Object>> effects = MapReader.getOrDefault(potionUtility, "effects", new ArrayList<>());
+                    for (Map<String, Object> effect : effects) {
+                        player.armory.effects.add(new Effect(effect));
+                    }
                 }
             }
         }
@@ -167,7 +209,7 @@ public class KeyItem {
             utilEntry.putIfAbsent("utilId", "base");
             String utilId = (String) utilEntry.get("utilId");
 
-            final int uses = numberFromMap(utilEntry, "uses", 1).intValue();
+            final int uses = MapReader.getNumberOrDefault(utilEntry, "uses", 1).intValue();
             if (uses == -1) {
                 defaultUtilUses.put(utilId, -1);
             } else {
@@ -175,9 +217,9 @@ public class KeyItem {
                 defaultUtilUses.put(utilId, Math.max(uses, currentUses));
             }
 
-            final int cooldown = numberFromMap(utilEntry, "cooldown", 0).intValue();
+            final int cooldown = MapReader.getNumberOrDefault(utilEntry, "cooldown", 0).intValue();
 
-            final int animFrames = numberFromMap(utilEntry, "animFrames", cooldown).intValue();
+            final int animFrames = MapReader.getNumberOrDefault(utilEntry, "animFrames", cooldown).intValue();
             final int currentAnimFrames = utilAnimFrames.getOrDefault(utilId, 0);
             if (currentAnimFrames == 0) {
                 utilAnimFrames.put(utilId, animFrames);
@@ -192,12 +234,5 @@ public class KeyItem {
 
     private void setUtil() {
         utilUses.putAll(defaultUtilUses);
-    }
-
-    private static Number numberFromMap(Map<String, Object> map, String key, Number defaultValue) {
-        if (map.get(key) instanceof Number) {
-            return (Number) map.get(key);
-        }
-        return defaultValue;
     }
 }

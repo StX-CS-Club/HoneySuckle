@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import honey.player.Effect;
+import honey.player.Player;
 import honey.player.inventory.Ammo;
 import honey.player.inventory.Armor;
 import honey.player.inventory.Build;
@@ -214,6 +215,7 @@ public class FileManager {
                 Armor.armorIntId.put(key, id);
                 Armor.armorStringId.put(id, key);
             }
+            Player.playerDefaultAttributes.putAll(Armor.armorAttributes.get("naked"));
 
             //Maps Projectile data
             Map<String, Object> projData = readJsonDirectory(FileManager.class.getResource("/jsonData/projectiles").toURI());

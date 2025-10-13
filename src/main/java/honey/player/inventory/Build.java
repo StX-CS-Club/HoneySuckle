@@ -115,7 +115,7 @@ public class Build {
             textureColor = "#00ff00";
         }
         //Render blueprint Scroll
-        g.drawImage(Rendering.texture("hud/blueprint", textureColor), (int) (xMargin + HUD_SIZE / 12.0), (int) (GAME_HEIGHT - HUD_SIZE * 25.0 / 12), HUD_SIZE, HUD_SIZE, null);
+        g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), (int) (xMargin + HUD_SIZE / 12.0), (int) (GAME_HEIGHT - HUD_SIZE * 25.0 / 12), HUD_SIZE, HUD_SIZE, null);
 
         //Render blueprint Item
         String blueprintKey = (String) blueprints.toArray()[blueprintIndex];

@@ -93,9 +93,9 @@ public class Craft {
             }
 
             if (hover == i) {
-                g.drawImage(Rendering.texture("hud/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 55 + offset), (int) (GAME_HEIGHT / 2 - 55), 110, 110, null);
+                g.drawImage(Rendering.texture("ui/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 55 + offset), (int) (GAME_HEIGHT / 2 - 55), 110, 110, null);
             } else {
-                g.drawImage(Rendering.texture("hud/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 100, 100, null);
+                g.drawImage(Rendering.texture("ui/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 100, 100, null);
             }
 
             final String recipeTexture = texture.get("texture");

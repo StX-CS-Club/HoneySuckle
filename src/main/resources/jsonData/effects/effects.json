@@ -3,7 +3,30 @@
         "id": 1,
         "name": "Speed",
         "modifiers": {
-            "speed": 1.5
+            "speed": 0.33
+        },
+        "texture": {
+            "texture": "ui/effects/speed"
+        }
+    },
+    "defense": {
+        "id": 2,
+        "name": "Defense",
+        "modifiers": {
+            "defense": 0.5
+        },
+        "texture": {
+            "texture": "ui/effects/defense"
+        }
+    },
+    "regen": {
+        "id": 3,
+        "name": "Regeneration",
+        "modifiers": {
+            "regen": 1.5
+        },
+        "texture": {
+            "texture": "ui/effects/regen"
         }
     }
 }

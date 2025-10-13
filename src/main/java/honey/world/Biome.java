@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
+import honey.mechanics.MapReader;
 
 /*
  * Biome.java *
@@ -73,7 +74,7 @@ public class Biome {
         final boolean[][] structureResult = new boolean[world.size[0]][world.size[1]];
 
         // Generates base tiles
-        int baseTileId = numberFromMap(generation, "base", 0).intValue();
+        int baseTileId = MapReader.getNumberOrDefault(generation, "base", 0).intValue();
         for (int x = 0; x < world.size[0]; x++) {
             for (int y = 0; y < world.size[1]; y++) {
                 result[x][y] = new Tile(baseTileId, new int[]{x, y}, world);
@@ -121,7 +122,7 @@ public class Biome {
                                     break;
                                 }
 
-                                double prob = numberFromMap(tileGenRule, "prob", 0).doubleValue();
+                                double prob = MapReader.getNumberOrDefault(tileGenRule, "prob", 0).doubleValue();
 
                                 final Number[][] tileProbs = array2dFromList(listFromMap(tileGenRule, "tileProb", new Number[0][]));
                                 for (Number[] tileProb : tileProbs) {
@@ -146,14 +147,14 @@ public class Biome {
                                 }
 
                                 if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                                    result[pos[0]][y] = new Tile(numberFromMap(tileGenRule, "id", 1).intValue(), pos, world);
+                                    result[pos[0]][y] = new Tile(MapReader.getNumberOrDefault(tileGenRule, "id", 1).intValue(), pos, world);
                                     break;
                                 }
                             }
 
                             // Generates objects
                             for (Map<String, Object> objGenRule : objGenRules) {
-                                double prob = numberFromMap(objGenRule, "prob", 0).doubleValue();
+                                double prob = MapReader.getNumberOrDefault(objGenRule, "prob", 0).doubleValue();
 
                                 final Number[][] tileProbs = array2dFromList(listFromMap(objGenRule, "tileProb", new Number[0][]));
                                 for (Number[] tileProb : tileProbs) {
@@ -161,7 +162,7 @@ public class Biome {
                                 }
 
                                 if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                                    objResult[pos[0]][y] = new WorldObject(numberFromMap(objGenRule, "id", 1).intValue(), pos, world);
+                                    objResult[pos[0]][y] = new WorldObject(MapReader.getNumberOrDefault(objGenRule, "id", 1).intValue(), pos, world);
                                     break;
                                 }
                             }
@@ -169,17 +170,17 @@ public class Biome {
                             // Generates Entities
                             if (checkId(objResult[pos[0]][y], 0)) {
                                 for (Map<String, Object> entityGenRule : entityGenRules) {
-                                    double prob = numberFromMap(entityGenRule, "prob", 0).doubleValue();
+                                    double prob = MapReader.getNumberOrDefault(entityGenRule, "prob", 0).doubleValue();
 
                                     final Number[][] tileProbs = array2dFromList(listFromMap(entityGenRule, "tileProb", new Number[0][]));
                                     for (Number[] tileProb : tileProbs) {
                                         prob += conditionalProb(result[pos[0]][y], tileProb[0].intValue(), tileProb[1].doubleValue());
                                     }
 
-                                    prob *= Math.pow(World.level, numberFromMap(entityGenRule, "levelProbPower", 0).doubleValue());
+                                    prob *= Math.pow(World.level, MapReader.getNumberOrDefault(entityGenRule, "levelProbPower", 0).doubleValue());
 
                                     if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                                        final String entityId = Entity.entityStringId.get(numberFromMap(entityGenRule, "id", 0).intValue());
+                                        final String entityId = Entity.entityStringId.get(MapReader.getNumberOrDefault(entityGenRule, "id", 0).intValue());
                                         entityResult.add(new Entity(entityId, new double[]{
                                             (pos[0] + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE
                                         }, world));
@@ -206,7 +207,7 @@ public class Biome {
         // Generates Structures
         final List<Map<String, Object>> structureGenRules = listFromMap(generation, "structures");
         for (Map<String, Object> structureGenRule : structureGenRules) {
-            final String structureId = Structure.structureStringId.get(numberFromMap(structureGenRule, "id", 0).intValue());
+            final String structureId = Structure.structureStringId.get(MapReader.getNumberOrDefault(structureGenRule, "id", 0).intValue());
             final int[] size = intArray(listFromMap(Structure.structureGeneration.get(structureId), "size", new Number[2]).toArray(Number[]::new), 0);
             final int[] offsetBr = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
             final int[] offsetBl = intArray(listFromMap(structureGenRule, "offsetBR", new Number[2]).toArray(Number[]::new), 0);
@@ -218,7 +219,7 @@ public class Biome {
 
             final int[][] grids = int2dArray(array2dFromList(listFromMap(structureGenRule, "grid", new Number[1][4])), 0);
 
-            final double baseProb = numberFromMap(structureGenRule, "prob", 0).doubleValue();
+            final double baseProb = MapReader.getNumberOrDefault(structureGenRule, "prob", 0).doubleValue();
             final Number[][] tileProbs = array2dFromList(listFromMap(structureGenRule, "tileProb", new Number[0][]));
             final Number[][] rangeProbs = array2dFromList(listFromMap(structureGenRule, "rangeProb", new Number[0][]));
             for (int[] grid : grids) {
@@ -310,9 +311,9 @@ public class Biome {
 
         final List<Map<String, Object>> entities = listFromMap(generation, "entities");
         for (Map<String, Object> entity : entities) {
-            final double prob = numberFromMap(entity, "prob", 1).doubleValue();
+            final double prob = MapReader.getNumberOrDefault(entity, "prob", 1).doubleValue();
             if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                final String entityId = Entity.entityStringId.get(numberFromMap(entity, "id", 0).intValue());
+                final String entityId = Entity.entityStringId.get(MapReader.getNumberOrDefault(entity, "id", 0).intValue());
                 final double[] entityPos = doubleArray(listFromMap(entity, "pos", new Number[2]).toArray(Number[]::new), 0);
                 Arrays.setAll(entityPos, i -> (entityPos[i] + pos[i]) * TILE_SIZE);
                 entityResult.add(new Entity(entityId, entityPos, world));
@@ -321,19 +322,19 @@ public class Biome {
 
         final List<Map<String, Object>> chests = listFromMap(generation, "chests");
         for (Map<String, Object> chestData : chests) {
-            final double prob = numberFromMap(chestData, "prob", 1).doubleValue();
+            final double prob = MapReader.getNumberOrDefault(chestData, "prob", 1).doubleValue();
             if (ThreadLocalRandom.current().nextDouble() <= prob) {
                 final int[] chestPos = intArray(listFromMap(chestData, "pos", new Number[2]).toArray(Number[]::new), 0);
                 Arrays.setAll(chestPos, i -> chestPos[i] + pos[i]);
                 if (chestPos[0] > -1 && chestPos[0] < objResult.length && chestPos[1] > -1 && chestPos[1] < objResult[0].length) {
-                    final WorldObject chest = new WorldObject(numberFromMap(chestData, "id", 16).intValue(), chestPos, world);
+                    final WorldObject chest = new WorldObject(MapReader.getNumberOrDefault(chestData, "id", 16).intValue(), chestPos, world);
 
                     final List<Map<String, Object>> lootEntries = listFromMap(chestData, "lootEntries");
                     final double chestSeed = ThreadLocalRandom.current().nextDouble();
                     final double defaultProb = 1.0 / lootEntries.size();
                     double chestProgress = 0;
                     for (Map<String, Object> lootEntry : lootEntries) {
-                        final double lootProb = numberFromMap(lootEntry, "prob", defaultProb).doubleValue() + chestProgress;
+                        final double lootProb = MapReader.getNumberOrDefault(lootEntry, "prob", defaultProb).doubleValue() + chestProgress;
                         if (lootProb >= chestSeed) {
                             chest.setLoot(listFromMap(lootEntry, "loot"));
                             break;
@@ -429,14 +430,6 @@ public class Biome {
             }
         }
         return new ArrayList<>();
-    }
-
-    private static Number numberFromMap(Map<String, Object> map, String key, Number defaultValue) {
-        Object value = map.get(key);
-        if (value instanceof Number) {
-            return (Number) value;
-        }
-        return defaultValue;
     }
 
     private static Number[][] array2dFromList(List<List<Number>> list) {
