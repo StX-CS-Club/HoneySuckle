@@ -1,13 +1,15 @@
-package honey.player;
+package honey.player.armory;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import honey.HoneySuckle;
 import honey.mechanics.MapReader;
+import honey.player.Player;
 import honey.rendering.Rendering;
 
 public class Effect {
@@ -30,6 +32,8 @@ public class Effect {
     private final Map<String, Number> modifiers;
     private final List<String> tags;
 
+    private final BufferedImage staticTexture;
+
     private long frame = 0;
     public boolean active = true;
 
@@ -41,6 +45,8 @@ public class Effect {
         texture = effectTextures.get(type);
         modifiers = effectModifiers.get(type);
         tags = effectTags.get(type);
+        
+        staticTexture = getTexture();
     }
 
     public Effect(Map<String, Object> effect) {
@@ -55,6 +61,8 @@ public class Effect {
 
         duration = modifiers.getOrDefault("duration", 10).longValue() * FPS;
         amplifier = modifiers.getOrDefault("amplifier", 1).doubleValue();
+        
+        staticTexture = getTexture();
     }
 
     public Effect(String type, Map<String, Number> modifiers) {
@@ -67,6 +75,8 @@ public class Effect {
         this.type = type;
         duration = modifiers.getOrDefault("duration", 10).longValue() * FPS;
         amplifier = modifiers.getOrDefault("amplifier", 1).doubleValue();
+
+        staticTexture = getTexture();
     }
 
     public void update() {
@@ -86,10 +96,21 @@ public class Effect {
         }
     }
 
-    public boolean renderUi(Graphics2D g, int x, int y) {
-        String textureString = texture.get("texture");
+    private BufferedImage getTexture() {
+        final String textureString = texture.get("texture");
         if (textureString != null) {
-            g.drawImage(Rendering.texture(textureString, "#ffffff"), x, y, HUD_SIZE / 2, HUD_SIZE / 2, null);
+            return Rendering.texture(textureString, null);
+        }
+        return null;
+    }
+
+    public boolean hasRender(){
+        return staticTexture != null;
+    }
+
+    public void renderUi(Graphics2D g, int x, int y) {
+        if (staticTexture != null) {
+            g.drawImage(staticTexture, x, y, HUD_SIZE / 2, HUD_SIZE / 2, null);
 
             if (duration > 0) {
                 g.setColor(new Color(255, 255, 255, 96));
@@ -97,10 +118,6 @@ public class Effect {
                 int size = (int) Math.round(frame / (double) duration * HUD_SIZE / 2.0);
                 g.fillRect(x, y + size, HUD_SIZE / 2, HUD_SIZE / 2 - size);
             }
-
-            return true;
         }
-
-        return false;
     }
 }

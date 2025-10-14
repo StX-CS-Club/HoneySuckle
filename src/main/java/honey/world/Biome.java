@@ -35,7 +35,7 @@ public class Biome {
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            type = "wetlands";
+            type = "field";
         }
         tags = biomeTags.get(type);
         colorMap = biomeColorMap.get(type);
@@ -331,7 +331,7 @@ public class Biome {
 
                     final List<Map<String, Object>> lootEntries = listFromMap(chestData, "lootEntries");
                     final double chestSeed = ThreadLocalRandom.current().nextDouble();
-                    final double defaultProb = 1.0 / lootEntries.size();
+                    final double defaultProb = defaultProb(lootEntries);
                     double chestProgress = 0;
                     for (Map<String, Object> lootEntry : lootEntries) {
                         final double lootProb = MapReader.getNumberOrDefault(lootEntry, "prob", defaultProb).doubleValue() + chestProgress;
@@ -346,6 +346,20 @@ public class Biome {
                 }
             }
         }
+    }
+
+    private static double defaultProb(List<Map<String, Object>> maps){
+        int count = maps.size();
+        double probSum = 0;
+        for(Map<String, Object> map : maps){
+            int prob = MapReader.getNumberOrDefault(map, "prob", 0).intValue();
+            if(prob != 0){
+                probSum += prob;
+                count--;
+            }
+        }
+
+        return (1 - probSum) / (double) count;
     }
 
     private boolean structureCanGenerate(boolean[][] structureGrid, int[] pos, int[] size) {

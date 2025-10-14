@@ -1,4 +1,4 @@
-package honey.player.inventory;
+package honey.player.armory;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;

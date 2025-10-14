@@ -12,6 +12,9 @@ import java.util.Set;
 import honey.HoneySuckle;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
+import honey.player.armory.Ammo;
+import honey.player.armory.Armor;
+import honey.player.armory.Weapon;
 import honey.rendering.Rendering;
 
 public class Craft {

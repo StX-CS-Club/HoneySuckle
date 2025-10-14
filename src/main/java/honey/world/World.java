@@ -118,6 +118,16 @@ public class World {
                 }
             }
         }
+        
+        for (int i = 0; i < 2; i++) {
+            if (newPos[i] < margin) {
+                newPos[i] = margin;
+            }
+            if (newPos[i] > size[i] * TILE_SIZE - margin) {
+                newPos[i] = size[i] * TILE_SIZE - margin;
+            }
+        }
+
         //Returns bounded pos
         return newPos;
     }

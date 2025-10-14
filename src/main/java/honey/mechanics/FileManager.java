@@ -15,15 +15,15 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import honey.player.Effect;
 import honey.player.Player;
-import honey.player.inventory.Ammo;
-import honey.player.inventory.Armor;
-import honey.player.inventory.Build;
+import honey.player.armory.Ammo;
+import honey.player.armory.Armor;
+import honey.player.armory.Effect;
+import honey.player.armory.Weapon;
+import honey.player.build.Blueprint;
 import honey.player.inventory.Craft;
 import honey.player.inventory.Item;
 import honey.player.inventory.KeyItem;
-import honey.player.inventory.Weapon;
 import honey.world.Biome;
 import honey.world.Brain;
 import honey.world.Entity;
@@ -72,11 +72,11 @@ public class FileManager {
             Map<String, Object> blueprintData = readJsonDirectory(FileManager.class.getResource("/jsonData/blueprints").toURI());
             for (String key : blueprintData.keySet()) {
                 Map<String, Object> blueprint = (Map<String, Object>) blueprintData.get(key);
-                Build.blueprintMats.put(key, (List<Map<String, Number>>) blueprint.getOrDefault("mats", new ArrayList<>()));
-                Build.blueprintParams.put(key, (Map<String, List<Number>>) blueprint.getOrDefault("params", new HashMap<>()));
-                Build.blueprintTextures.put(key, (Map<String, String>) blueprint.getOrDefault("texture", new HashMap<>()));
-                Build.blueprintProducts.put(key, (Integer) blueprint.getOrDefault("product", 0));
-                Build.blueprintTags.put(key, (List<String>) blueprint.getOrDefault("tags", new ArrayList<>()));
+                Blueprint.blueprintMats.put(key, (List<Map<String, Number>>) blueprint.getOrDefault("mats", new ArrayList<>()));
+                Blueprint.blueprintParams.put(key, (Map<String, List<Number>>) blueprint.getOrDefault("params", new HashMap<>()));
+                Blueprint.blueprintTextures.put(key, (Map<String, String>) blueprint.getOrDefault("texture", new HashMap<>()));
+                Blueprint.blueprintProducts.put(key, (Integer) blueprint.getOrDefault("product", 0));
+                Blueprint.blueprintTags.put(key, (List<String>) blueprint.getOrDefault("tags", new ArrayList<>()));
             }
 
             //Maps recipe data

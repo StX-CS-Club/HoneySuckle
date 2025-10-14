@@ -1,4 +1,4 @@
-package honey.player.inventory;
+package honey.player.armory;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import honey.HoneySuckle;
-import honey.rendering.Rendering;
 import honey.player.Player;
+import honey.rendering.Rendering;
 
 /*
  * Armor.java *

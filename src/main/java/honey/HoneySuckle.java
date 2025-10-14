@@ -177,7 +177,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
                     player.inventory.renderUi(g2d);
                 } else {
                     player.build.renderUi(g2d, World.worlds.get(World.level));
-                    player.armory.renderUi(g2d);
+                    player.armory.renderUi(g2d, !healthBars.isEmpty());
                 }
             }
         }

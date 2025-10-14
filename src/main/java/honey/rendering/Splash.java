@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import honey.HoneySuckle;
-import honey.player.inventory.Ammo;
-import honey.player.inventory.Armor;
+import honey.player.armory.Ammo;
+import honey.player.armory.Armor;
+import honey.player.armory.Weapon;
 import honey.player.inventory.Item;
 import honey.player.inventory.KeyItem;
-import honey.player.inventory.Weapon;
 
 public class Splash {
 

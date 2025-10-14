@@ -9,8 +9,8 @@ import java.util.Map;
 
 import honey.HoneySuckle;
 import honey.mechanics.MapReader;
-import honey.player.Effect;
 import honey.player.Player;
+import honey.player.armory.Effect;
 import honey.rendering.Rendering;
 import honey.world.World;
 
@@ -182,7 +182,6 @@ public class KeyItem {
             }
 
             if (potionUtility != null) {
-                System.out.println("Yo");
                 final String utilId = (String) potionUtility.get("utilId");
                 int uses = staticUtilUses.get(utilId);
                 long frames = utilFrames.get(utilId);

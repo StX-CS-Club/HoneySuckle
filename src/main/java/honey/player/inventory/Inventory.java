@@ -11,6 +11,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import honey.HoneySuckle;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
+import honey.player.armory.Ammo;
+import honey.player.armory.Armor;
+import honey.player.armory.Weapon;
 import honey.rendering.Rendering;
 import honey.rendering.Splash;
 
@@ -452,7 +455,7 @@ public class Inventory {
     public void unlockRecipes(List<String> blueprintUnlocks, List<String> recipeUnlocks) {
         for (String blueprint : blueprintUnlocks) {
             if (!player.build.blueprints.contains(blueprint)) {
-                player.build.blueprints.add(blueprint);
+                player.build.addBlueprint(blueprint);
                 ideaFrames = 80;
                 ideaColor = "#ddff00";
             }
