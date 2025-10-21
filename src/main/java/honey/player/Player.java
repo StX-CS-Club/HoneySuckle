@@ -36,6 +36,8 @@ public class Player {
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
+    private static final int CAMERA_DELAY = 6;
+
     public static final Map<String, Number> playerDefaultAttributes = new HashMap<>();
 
     //Static list of all players
@@ -228,28 +230,27 @@ public class Player {
                 vel[0] += incriment;
             }
 
-            //Reset camera
-            World.worlds.get(World.level).camera[0] = pos[0];
-            World.worlds.get(World.level).camera[1] = pos[1];
-
-            double[] newCamera = World.worlds.get(World.level).camera;
-            int[] worldSize = World.worlds.get(World.level).size;
-
-            if (newCamera[0] - GAME_WIDTH / 2.0 < 0) {
-                World.worlds.get(World.level).camera[0] = GAME_WIDTH / 2.0;
-            }
-            if (newCamera[0] + GAME_WIDTH / 2.0 > worldSize[0] * TILE_SIZE) {
-                World.worlds.get(World.level).camera[0] = worldSize[0] * TILE_SIZE - GAME_WIDTH / 2.0;
-            }
-            if (newCamera[1] - GAME_HEIGHT / 2 < 0.0) {
-                World.worlds.get(World.level).camera[1] = GAME_HEIGHT / 2.0;
-            }
-            if (newCamera[1] + GAME_HEIGHT / 2.0 > worldSize[1] * TILE_SIZE) {
-                World.worlds.get(World.level).camera[1] = worldSize[1] * TILE_SIZE - GAME_HEIGHT / 2.0;
-            }
-
             //Bound player to world
             pos = world.bound(pos, vel, List.of(), size / 2.0);
+
+            //Reset camera
+            camera[0] = camera[0] - (camera[0] - pos[0]) / CAMERA_DELAY;
+            camera[1] = camera[1] - (camera[1] - pos[1]) / CAMERA_DELAY;
+
+            int[] worldSize = World.worlds.get(World.level).size;
+
+            if (camera[0] - GAME_WIDTH / 2.0 < 0) {
+                camera[0] = GAME_WIDTH / 2.0;
+            }
+            if (camera[0] + GAME_WIDTH / 2.0 > worldSize[0] * TILE_SIZE) {
+                camera[0] = worldSize[0] * TILE_SIZE - GAME_WIDTH / 2.0;
+            }
+            if (camera[1] - GAME_HEIGHT / 2 < 0.0) {
+                camera[1] = GAME_HEIGHT / 2.0;
+            }
+            if (camera[1] + GAME_HEIGHT / 2.0 > worldSize[1] * TILE_SIZE) {
+                camera[1] = worldSize[1] * TILE_SIZE - GAME_HEIGHT / 2.0;
+            }
 
             //World interact with player
             world.playerEvent(this);

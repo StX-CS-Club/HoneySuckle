@@ -35,7 +35,7 @@ public class Biome {
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
-            type = "field";
+            type = "wetlands";
         }
         tags = biomeTags.get(type);
         colorMap = biomeColorMap.get(type);
