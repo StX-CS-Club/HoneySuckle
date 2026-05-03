@@ -10,7 +10,8 @@
       "treeColor": "#042e00",
       "fogColor": "#000000",
       "coalColor": "#271b1b",
-      "archerColor": "#ee2222"
+      "archerColor": "#ee2222",
+      "edgeColor": "#403428"
     },
     "generation": {
       "size": [101, 150],

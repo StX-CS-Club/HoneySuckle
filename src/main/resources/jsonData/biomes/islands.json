@@ -6,7 +6,8 @@
       "landColor": "#0fc854",
       "voidColor": "#0080ff",
       "waterColor": "#0080ff",
-      "treeColor": "#0a953e"
+      "treeColor": "#0a953e",
+      "edgeColor": "#c4925c"
     },
     "generation": {
       "size": [75, 50],

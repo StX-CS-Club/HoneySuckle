@@ -9,7 +9,8 @@
       "treeColor": "#006b00",
       "coalColor": "#5d4646",
       "archerColor": "#019194",
-      "brickColor": "#94a892"
+      "brickColor": "#94a892",
+      "edgeColor": "#8a6742"
     },
     "generation": {
       "size": [101, 100],

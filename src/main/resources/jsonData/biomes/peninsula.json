@@ -7,7 +7,8 @@
       "voidColor": "#4382ff",
       "waterColor": "#4382ff",
       "treeColor": "#7eab47",
-      "coalColor": "#665555"
+      "coalColor": "#665555",
+      "edgeColor": "#ab9e90"
     },
     "generation": {
       "size": [25, 75],

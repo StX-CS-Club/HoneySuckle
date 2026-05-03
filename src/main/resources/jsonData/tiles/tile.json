@@ -8,7 +8,8 @@
       "texture": "tiles/water"
     },
     "attributes": {
-      "damageness": 0.01
+      "damageness": 0.01,
+      "dip": 2
     }
   },
   "land": {
@@ -17,7 +18,10 @@
     "texture": {
       "natColor": "landColor",
       "baseColor": "#0fc80f",
-      "texture": "tiles/land"
+      "texture": "tiles/land/land",
+      "natColorEdge": "edgeColor",
+      "baseColorEdge": "#99662f",
+      "textureEdge": "tiles/land/land_edge"
     },
     "tags": ["walkable"]
   },
@@ -27,10 +31,14 @@
     "texture": {
       "natColor": "mudColor",
       "baseColor": "#6b4700",
-      "texture": "tiles/mud"
+      "texture": "tiles/mud/mud",
+      "natColorEdge": "mudColor",
+      "baseColorEdge": "#6b4700",
+      "textureEdge": "tiles/mud/mud_edge"
     },
     "attributes": {
-      "acel": 0.33
+      "acel": 0.33,
+      "dip": 1
     },
     "tags": ["walkable"]
   },
@@ -40,7 +48,10 @@
     "texture": {
       "natColor": "sandColor",
       "baseColor": "#ffd264",
-      "texture": "tiles/sand"
+      "texture": "tiles/sand/sand",
+      "natColorEdge": "sandColor",
+      "baseColorEdge": "#c4925c",
+      "textureEdge": "tiles/sand/sand_edge"
     },
     "attributes": {
       "acel": 0.25
@@ -53,7 +64,10 @@
     "texture": {
       "natColor": "iceColor",
       "baseColor": "#cbeeff",
-      "texture": "tiles/ice"
+      "texture": "tiles/ice/ice",
+      "natColorEdge": "iceColor",
+      "baseColorEdge": "#cbeeff",
+      "textureEdge": "tiles/ice/ice_edge"
     },
     "attributes": {
       "acel": 1.625
@@ -67,7 +81,10 @@
       "natColor": "brickColor",
       "baseColor": "#847878",
       "mapColor": "#847878",
-      "texture": "tiles/brick"
+      "texture": "tiles/brick/brick",
+      "natColorEdge": "brickColor",
+      "baseColorEdge": "#645858",
+      "textureEdge": "tiles/brick/brick_edge"
     },
     "tags": ["walkable"]
   },
@@ -77,7 +94,10 @@
     "texture": {
       "natColor": "stoneColor",
       "baseColor": "#888888",
-      "texture": "tiles/stone"
+      "texture": "tiles/stone/stone",
+      "natColorEdge": "stoneColor",
+      "baseColorEdge": "#666666",
+      "textureEdge": "tiles/stone/stone_edge"
     },
     "tags": ["walkable"]
   },
@@ -90,7 +110,14 @@
       "texture": "tiles/lava",
       "glowColor": "#ee6600"
     },
-    "attributes": { "acel": 0.75, "damageness": 0.05, "lightRadius": 4.0, "glow": 16.0, "glowRadius": 4.0 }
+    "attributes": {
+      "acel": 0.75,
+      "damageness": 0.05,
+      "lightRadius": 4.0,
+      "glow": 16.0,
+      "glowRadius": 4.0,
+      "dip": 2
+    }
   },
   "brick_wall": {
     "name": "Brick Wall",
@@ -99,7 +126,7 @@
       "natColor": "brickColor",
       "baseColor": "#847878",
       "mapColor": "#666666",
-      "texture": "tiles/brick_wall"
+      "texture": "tiles/brick/brick_wall"
     },
     "tags": ["obstruction", "projObstruction"]
   },
@@ -109,7 +136,10 @@
     "texture": {
       "natColor": "dirtColor",
       "baseColor": "#754a1c",
-      "texture": "tiles/dirt/dirt"
+      "texture": "tiles/dirt/dirt",
+      "natColorEdge": "edgeColor",
+      "baseColorEdge": "#99662f",
+      "textureEdge": "tiles/land/land_edge"
     },
     "attributes": {
       "variants": 3
