@@ -39,7 +39,7 @@ public class KeyItem {
     private final Map<String, Integer> defaultUtilUses = new HashMap<>();
 
     private final Map<String, Integer> utilUses = new HashMap<>();
-    private final Map<String, Long> utilFrames = new HashMap<>();
+    private final Map<String, long[]> utilFrames = new HashMap<>();
     private final Map<String, Integer> utilAnimFrames = new HashMap<>();
     private int useFrames = 0;
 
@@ -75,7 +75,7 @@ public class KeyItem {
             for (String key : utilAnimFrames.keySet()) {
                 final int animFrames = utilAnimFrames.get(key);
                 if (animFrames > 0) {
-                    final int size = (int) Math.ceil(utilFrames.get(key) / (double) animFrames * 100);
+                    final int size = (int) Math.ceil(utilFrames.get(key)[0] / (double) animFrames * 100);
                     if (size > 0 && size <= 100) {
                         g.fillRect(x, y + size, 100, 100 - size);
                     } else {
@@ -115,17 +115,14 @@ public class KeyItem {
 
         Rendering.imageFactor(Rendering.texture("ui/hud/hotslot", color), g, x, y, HUD_SIZE, HUD_SIZE, factor);
 
-        boolean ready = utilAnimFrames.isEmpty();
-        if (!ready) {
+        if (!utilAnimFrames.isEmpty()) {
             g.setColor(new Color(128, 128, 128, 128 / utilAnimFrames.size()));
             for (String key : utilAnimFrames.keySet()) {
                 final int animFrames = utilAnimFrames.get(key);
                 if (animFrames > 0) {
-                    final int size = (int) Math.ceil(utilFrames.get(key) / (double) animFrames * HUD_SIZE);
+                    final int size = (int) Math.ceil(utilFrames.get(key)[0] / (double) animFrames * HUD_SIZE);
                     if (size > 0 && size <= HUD_SIZE) {
                         g.fillRect(x, y + size, HUD_SIZE, HUD_SIZE - size);
-                    } else {
-                        ready = true;
                     }
                 }
             }
@@ -144,9 +141,9 @@ public class KeyItem {
 
     public void update() {
         for (String key : utilFrames.keySet()) {
-            long frame = utilFrames.get(key);
+            long frame = utilFrames.get(key)[0];
             if (frame != -1) {
-                utilFrames.put(key, frame + 1l);
+                utilFrames.get(key)[0]++;
             }
         }
 
@@ -183,14 +180,14 @@ public class KeyItem {
 
             if (potionUtility != null) {
                 final String utilId = (String) potionUtility.get("utilId");
-                int uses = staticUtilUses.get(utilId);
-                long frames = utilFrames.get(utilId);
+                final int uses = staticUtilUses.get(utilId);
+                final long frames = utilFrames.get(utilId)[0];
 
                 final int cooldown = MapReader.getNumberOrDefault(potionUtility, "cooldown", 0).intValue();
 
                 if (uses != 0 && (frames >= cooldown || frames == -1l)) {
                     utilUses.put(utilId, uses - 1);
-                    utilFrames.put(utilId, 0l);
+                    utilFrames.get(utilId)[0] = 0;
                     useFrames = MapReader.getNumberOrDefault(potionUtility, "useFrames", 1).intValue();
 
                     final List<Map<String, Object>> effects = MapReader.getOrDefault(potionUtility, "effects", new ArrayList<>());
@@ -226,7 +223,7 @@ public class KeyItem {
                 utilAnimFrames.put(utilId, Math.min(animFrames, currentAnimFrames));
             }
 
-            utilFrames.put(utilId, -1l);
+            utilFrames.put(utilId, new long[]{-1});
         }
         return utilEntry;
     }

@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +61,9 @@ public class Projectile {
 
     private boolean flaming = false;
 
+    private final Set<Entity> hitEntities = new HashSet<>();
+    private final double circumradius;
+
     //Projectile Constructor
     public Projectile(String type, double[] pos, double[] currentVel, double angle, Object source) {
         //Interprets projectile type
@@ -92,12 +96,13 @@ public class Projectile {
         frames = attributes.getOrDefault("frames", -1).intValue();
 
         //Assign values to properties
-        this.pos = pos;
+        this.pos = pos.clone();
         this.type = type;
         this.angle = angle;
         this.source = source;
         weight = attributes.getOrDefault("weight", 1.0).doubleValue();
         size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
+        circumradius = size / 2.0 * Math.sqrt(2);
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
         staticTexture = getTexture(getPostfix());
@@ -144,11 +149,12 @@ public class Projectile {
         frames = attributes.getOrDefault("frames", -1).intValue();
 
         //Assign values to properties
-        this.pos = pos;
+        this.pos = pos.clone();
         this.angle = angle;
         this.source = source;
         weight = attributes.getOrDefault("weight", 1.0).doubleValue();
         size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
+        circumradius = size / 2.0 * Math.sqrt(2);
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
         staticTexture = getTexture(getPostfix());
@@ -255,29 +261,41 @@ public class Projectile {
                 }
             }
         }
-        //If can hurt entity, check entities to hurt
+        //If can hurt entity, query collision grid for nearby candidates
         if (tags.contains("hurtEntity")) {
-            for (Entity entity : world.renderEntities) {
-                //If can hurt source or is not source...
-                if (source != entity || tags.contains("hurtSource")) {
-                    //Check collision
-                    if (Collision.isBoxOverlap(
-                            new Point2D.Double(pos[0], pos[1]),
-                            new Point2D.Double(size, size),
-                            angle,
-                            new Point2D.Double(entity.pos[0], entity.pos[1]),
-                            new Point2D.Double(entity.size, entity.size))) {
-                        //damage entity, and remove self
-                        if (entity.brain.damage(damage)) {
-                            if (source instanceof Player) {
-                                final Player player = (Player) source;
-                                for (Map<String, Number> loot : entity.loot) {
-                                    player.inventory.incrementItem(loot, true);
+            final int px0 = Math.max(0, (int) Math.floor((pos[0] - circumradius) / TILE_SIZE));
+            final int px1 = Math.min(world.size[0] - 1, (int) Math.floor((pos[0] + circumradius) / TILE_SIZE));
+            final int py0 = Math.max(0, (int) Math.floor((pos[1] - circumradius) / TILE_SIZE));
+            final int py1 = Math.min(world.size[1] - 1, (int) Math.floor((pos[1] + circumradius) / TILE_SIZE));
+            for (int bx = px0; bx <= px1; bx++) {
+                for (int by = py0; by <= py1; by++) {
+                    final List<Entity> bucket = world.entityGrid.get(bx * world.size[1] + by);
+                    if (bucket == null) continue;
+                    for (Entity entity : bucket) {
+                        if (hitEntities.contains(entity)) continue;
+                        //If can hurt source or is not source...
+                        if (source != entity || tags.contains("hurtSource")) {
+                            //Check collision
+                            if (Collision.isBoxOverlap(
+                                    new Point2D.Double(pos[0], pos[1]),
+                                    new Point2D.Double(size, size),
+                                    angle,
+                                    new Point2D.Double(entity.pos[0], entity.pos[1]),
+                                    new Point2D.Double(entity.size, entity.size))) {
+                                hitEntities.add(entity);
+                                //damage entity, and remove self
+                                if (entity.brain.damage(damage)) {
+                                    if (source instanceof Player) {
+                                        final Player player = (Player) source;
+                                        for (Map<String, Number> loot : entity.loot) {
+                                            player.inventory.incrementItem(loot, true);
+                                        }
+                                    }
+                                }
+                                if (destroy(world)) {
+                                    return;
                                 }
                             }
-                        }
-                        if (destroy(world)) {
-                            return;
                         }
                     }
                 }

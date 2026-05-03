@@ -84,7 +84,7 @@ public class Splash {
         maxFrames = attributes.getOrDefault("splashFrames", FPS).intValue();
         animFrames = Math.min(FPS, maxFrames) / 2;
 
-        splashColor = Color.decode(texture.getOrDefault("splashColor", "#ffffff"));
+        splashColor = Rendering.decodeColor(texture.getOrDefault("splashColor", "#ffffff"));
         label = name + " x" + count;
         drawSplash();
     }

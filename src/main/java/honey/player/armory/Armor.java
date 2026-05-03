@@ -82,7 +82,7 @@ public class Armor {
         int scrollLength = stats.size() + 3;
         g.drawImage(Rendering.rotateImage(Rendering.scroll(scrollLength), 90), 25, (int) (GAME_HEIGHT - scrollLength * 32) / 2, 256, scrollLength * 32, null);
 
-        g.setColor(Color.decode(texture.getOrDefault("rarityColor", "#333333")));
+        g.setColor(Rendering.decodeColor(texture.getOrDefault("rarityColor", "#333333")));
 
         Rendering.centeredText(g, name, 153, (int) (GAME_HEIGHT - scrollLength * 32) / 2 + 48, 192, 32);
 

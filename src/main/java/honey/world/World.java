@@ -1,14 +1,16 @@
 package honey.world;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import honey.HoneySuckle;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
+import honey.rendering.Rendering;
 
 /* 
  * World.java *
@@ -47,6 +49,14 @@ public class World {
         worlds.add(this);
     }
 
+    public World(String biomeId) {
+        biome = new Biome(biomeId);
+        biome.generateWorld(this);
+        camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
+        navigator = new Navigator(this);
+        worlds.add(this);
+    }
+
     //Camera position for rendering
     public double[] camera = new double[2];
 
@@ -63,73 +73,67 @@ public class World {
     public List<Entity> renderEntities = new ArrayList<>();
     public List<Projectile> renderProjectiles = new ArrayList<>();
 
+    //Spatial grid for entity collision queries (keyed by bx * size[1] + by)
+    public final Map<Integer, List<Entity>> entityGrid = new HashMap<>();
+
     //World attributes
     public int[] size = new int[2];
     public int[] start = new int[2];
     public final Biome biome;
 
-    //Bounds movement to boundaries of world
-    public double[] bound(double[] pos, double[] delta, List<String> tags, double margin) {
-        //Ensures position is within world
-        double[] newPos = new double[]{pos[0] + delta[0], pos[1] + delta[1]};
-        if (margin <= 0) {
-            margin = 0.01;
-        }
-        for (int i = 0; i < 2; i++) {
-            if (newPos[i] < margin) {
-                newPos[i] = margin;
-            }
-            if (newPos[i] > size[i] * TILE_SIZE - margin) {
-                newPos[i] = size[i] * TILE_SIZE - margin;
-            }
-        }
-        //AKA Tile
-        int[] posIndex = new int[]{(int) (Math.floor(pos[0] / TILE_SIZE)), (int) (Math.floor(pos[1] / TILE_SIZE))};
-        int[] newPosIndex = new int[]{(int) (Math.floor(newPos[0] / TILE_SIZE)), (int) (Math.floor(newPos[1] / TILE_SIZE))};
+    //Bounds movement to boundaries of world, mutates pos in place
+    public void bound(double[] pos, double[] delta, List<String> tags, double margin) {
+        if (margin <= 0) margin = 0.01;
+
+        //Save original tile position before applying delta
+        final double origX = pos[0];
+        final double origY = pos[1];
+        final int posX = (int) Math.floor(origX / TILE_SIZE);
+        final int posY = (int) Math.floor(origY / TILE_SIZE);
+
+        //Apply delta in place and clamp to world bounds
+        pos[0] += delta[0];
+        pos[1] += delta[1];
+        if (pos[0] < margin) pos[0] = margin;
+        if (pos[0] > size[0] * TILE_SIZE - margin) pos[0] = size[0] * TILE_SIZE - margin;
+        if (pos[1] < margin) pos[1] = margin;
+        if (pos[1] > size[1] * TILE_SIZE - margin) pos[1] = size[1] * TILE_SIZE - margin;
 
         //Ensures you can walk on next tile
-        if (checkTag(posIndex[0], posIndex[1], "walkable") && !checkTag(posIndex[0], posIndex[1], "slippery") && !tags.contains("flying")) {
-            if (newPosIndex[0] >= 0 && newPosIndex[0] < size[0]) {
-                if (!checkTag(newPosIndex[0], posIndex[1], "walkable")) {
-                    newPos[0] = pos[0];
-                }
+        final int newPosX = (int) Math.floor(pos[0] / TILE_SIZE);
+        final int newPosY = (int) Math.floor(pos[1] / TILE_SIZE);
+        if (checkTag(posX, posY, "walkable") && !checkTag(posX, posY, "slippery") && !tags.contains("flying")) {
+            if (newPosX >= 0 && newPosX < size[0] && !checkTag(newPosX, posY, "walkable")) pos[0] = origX;
+            if (newPosY >= 0 && newPosY < size[1] && !checkTag(posX, newPosY, "walkable")) pos[1] = origY;
+        }
+
+        //Ensures not touching any obstructions (unrolled per edge)
+        final int mx0 = (int) Math.floor((pos[0] - margin) / TILE_SIZE);
+        final int mx1 = (int) Math.floor((pos[0] + margin) / TILE_SIZE);
+        final int my0 = (int) Math.floor((pos[1] - margin) / TILE_SIZE);
+        final int my1 = (int) Math.floor((pos[1] + margin) / TILE_SIZE);
+        if (delta[0] != 0) {
+            if (mx0 >= 0 && mx0 < size[0] && checkTag(mx0, posY, "obstruction") && !checkTag(mx0, posY, "tunnel")) {
+                pos[0] = (mx0 + 1) * TILE_SIZE + margin;
             }
-            if (newPosIndex[1] >= 0 && newPosIndex[1] < size[1]) {
-                if (!checkTag(posIndex[0], newPosIndex[1], "walkable")) {
-                    newPos[1] = pos[1];
-                }
+            if (mx1 >= 0 && mx1 < size[0] && checkTag(mx1, posY, "obstruction") && !checkTag(mx1, posY, "tunnel")) {
+                pos[0] = mx1 * TILE_SIZE - margin;
+            }
+        }
+        if (delta[1] != 0) {
+            if (my0 >= 0 && my0 < size[1] && checkTag(posX, my0, "obstruction") && !checkTag(posX, my0, "tunnel")) {
+                pos[1] = (my0 + 1) * TILE_SIZE + margin;
+            }
+            if (my1 >= 0 && my1 < size[1] && checkTag(posX, my1, "obstruction") && !checkTag(posX, my1, "tunnel")) {
+                pos[1] = my1 * TILE_SIZE - margin;
             }
         }
 
-        //AKA Tiles touched
-        int[][] marginIndex = new int[][]{
-            {(int) (Math.floor((newPos[0] - margin) / TILE_SIZE)), (int) (Math.floor((newPos[0] + margin) / TILE_SIZE))},
-            {(int) (Math.floor((newPos[1] - margin) / TILE_SIZE)), (int) (Math.floor((newPos[1] + margin) / TILE_SIZE))}};
-        //Ensures not touching any obstructions
-        for (int i = 0; i < 2; i++) {
-            if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0] && delta[0] != 0) {
-                if (checkTag(marginIndex[0][i], posIndex[1], "obstruction") && !checkTag(marginIndex[0][i], posIndex[1], "tunnel")) {
-                    newPos[0] = (marginIndex[0][i] + 0.5) * TILE_SIZE + (0.5 * TILE_SIZE + margin) * Math.pow(-1, i);
-                }
-            }
-            if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1] && delta[1] != 0) {
-                if (checkTag(posIndex[0], marginIndex[1][i], "obstruction") && !checkTag(posIndex[0], marginIndex[1][i], "tunnel")) {
-                    newPos[1] = (marginIndex[1][i] + 0.5) * TILE_SIZE + (0.5 * TILE_SIZE + margin) * Math.pow(-1, i);
-                }
-            }
-        }
-        
-        for (int i = 0; i < 2; i++) {
-            if (newPos[i] < margin) {
-                newPos[i] = margin;
-            }
-            if (newPos[i] > size[i] * TILE_SIZE - margin) {
-                newPos[i] = size[i] * TILE_SIZE - margin;
-            }
-        }
-
-        //Returns bounded pos
-        return newPos;
+        //Final clamp
+        if (pos[0] < margin) pos[0] = margin;
+        if (pos[0] > size[0] * TILE_SIZE - margin) pos[0] = size[0] * TILE_SIZE - margin;
+        if (pos[1] < margin) pos[1] = margin;
+        if (pos[1] > size[1] * TILE_SIZE - margin) pos[1] = size[1] * TILE_SIZE - margin;
     }
 
     //Events based on player pos
@@ -296,7 +300,7 @@ public class World {
     //Render World
     public void render(Graphics2D g) {
         //Fills background as voidColor
-        g.setColor(Color.decode(biome.colorMap.get("voidColor")));
+        g.setColor(Rendering.decodeColor(biome.colorMap.get("voidColor")));
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         //Center tile on screen
@@ -364,7 +368,7 @@ public class World {
     public void update(InputHandler input) {
         navigator.update(input);
         //Empties renderEntities, then adds nearby entities into renderEntities, and updates them
-        renderEntities = new ArrayList<>();
+        renderEntities.clear();
         for (Entity entity : entities) {
             if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4 && Math.abs(entity.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
                 renderEntities.add(entity);
@@ -373,8 +377,21 @@ public class World {
         for (Entity entity : renderEntities) {
             entity.update();
         }
+        //Rebuilds entity collision grid from updated renderEntities positions
+        entityGrid.clear();
+        for (Entity entity : renderEntities) {
+            final int x0 = Math.max(0, (int) Math.floor((entity.pos[0] - entity.size / 2.0) / TILE_SIZE));
+            final int x1 = Math.min(size[0] - 1, (int) Math.floor((entity.pos[0] + entity.size / 2.0) / TILE_SIZE));
+            final int y0 = Math.max(0, (int) Math.floor((entity.pos[1] - entity.size / 2.0) / TILE_SIZE));
+            final int y1 = Math.min(size[1] - 1, (int) Math.floor((entity.pos[1] + entity.size / 2.0) / TILE_SIZE));
+            for (int bx = x0; bx <= x1; bx++) {
+                for (int by = y0; by <= y1; by++) {
+                    entityGrid.computeIfAbsent(bx * size[1] + by, k -> new ArrayList<>()).add(entity);
+                }
+            }
+        }
         //Empties renderProjectiles, then adds nearby projectiles into renderProjectiles, and updates them
-        renderProjectiles = new ArrayList<>();
+        renderProjectiles.clear();
         for (Projectile projectile : projectiles) {
             if (Projectile.projTags.get(projectile.type).contains("alwaysRender") || Math.abs(projectile.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4 && Math.abs(projectile.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
                 renderProjectiles.add(projectile);

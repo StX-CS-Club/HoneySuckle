@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import honey.player.Player;
 import honey.player.armory.Ammo;
+import honey.rendering.Rendering;
 import honey.player.armory.Armor;
 import honey.player.armory.Effect;
 import honey.player.armory.Weapon;
@@ -41,6 +42,7 @@ public class FileManager {
     };
 
     //Fetches data from json files and maps as hashmaps
+    @SuppressWarnings("unchecked")
     public static void readJsonData() {
         try {
             //Maps object data
@@ -261,6 +263,115 @@ public class FileManager {
                 if (file.toURI().toString().contains(".json")) {
                     result.putAll(objectMapper.readValue(file, mapType));
                 }
+            }
+        }
+        return result;
+    }
+
+    public static void preloadImages() {
+        // Entities: all animation variants, respecting natColor per biome
+        for (Map<String, String> tex : Entity.entityTextures.values()) {
+            String base = tex.get("texture");
+            if (base == null) continue;
+            String anim = tex.getOrDefault("anim", "");
+            String natColorId = tex.get("natColor");
+            if (natColorId != null) {
+                for (Map<String, String> biomeColors : Biome.biomeColorMap.values()) {
+                    String color = biomeColors.get(natColorId);
+                    if (color != null) {
+                        for (String suffix : animImageSuffixes(anim)) {
+                            Rendering.texture(base + suffix, color);
+                        }
+                    }
+                }
+            } else {
+                String color = tex.get("baseColor");
+                for (String suffix : animImageSuffixes(anim)) {
+                    Rendering.texture(base + suffix, color);
+                }
+            }
+        }
+
+        // Projectiles
+        for (Map<String, String> tex : Projectile.projTextures.values()) {
+            String base = tex.get("texture");
+            if (base != null) Rendering.texture(base, null);
+        }
+
+        // Weapons: item icon + attack GIFs per swing color
+        for (Map<String, String> tex : Weapon.weaponTextures.values()) {
+            String itemTex = tex.get("itemTexture");
+            if (itemTex != null) Rendering.texture(itemTex, "#e8f1ff");
+            String swingColor = tex.get("swingColor");
+            if (swingColor != null) {
+                Rendering.renderGIF("attacks/slash", swingColor, 0.0);
+                Rendering.renderGIF("attacks/stab", swingColor, 0.0);
+            }
+        }
+
+        // Armor front/back textures
+        for (Map<String, String> tex : Armor.armorTextures.values()) {
+            String front = tex.get("front");
+            String back = tex.get("back");
+            if (front != null) Rendering.texture(front, null);
+            if (back != null) Rendering.texture(back, null);
+        }
+
+        // Items, ammo, key items, effects
+        for (Map<String, String> tex : Item.itemTextures.values()) {
+            String t = tex.get("texture");
+            if (t != null) Rendering.texture(t, null);
+        }
+        for (Map<String, String> tex : Ammo.ammoTextures.values()) {
+            String t = tex.get("itemTexture");
+            if (t != null) Rendering.texture(t, null);
+        }
+        for (Map<String, String> tex : KeyItem.keyTextures.values()) {
+            String t = tex.get("texture");
+            if (t != null) Rendering.texture(t, null);
+        }
+        for (Map<String, String> tex : Effect.effectTextures.values()) {
+            String t = tex.get("texture");
+            if (t != null) Rendering.texture(t, null);
+        }
+    }
+
+    // Returns all possible image filename suffix combinations for a given animation string,
+    // matching the order Entity.render() appends them (direction, then each state in sequence).
+    // Uses a power set of states so multi-state combos like _chase_shoot are included.
+    private static List<String> animImageSuffixes(String anim) {
+        List<String> dirs;
+        if (anim.contains("_xy_")) {
+            dirs = List.of("_up", "_right", "_down", "_left");
+        } else if (anim.contains("_x_")) {
+            dirs = List.of("_left", "_right");
+        } else if (anim.contains("_y_")) {
+            dirs = List.of("_up", "_down");
+        } else {
+            dirs = List.of("");
+        }
+
+        // States in the same order Entity.render() appends them
+        final List<String> states = new ArrayList<>();
+        if (anim.contains("_chase_"))    states.add("_chase");
+        if (anim.contains("_hesitate_")) states.add("_hesitate");
+        if (anim.contains("_shoot_"))    states.add("_shoot");
+
+        // Power set of state combos (2^n entries, including the empty "no state" combo)
+        final int n = states.size();
+        final List<String> stateCombos = new ArrayList<>(1 << n);
+        for (int mask = 0; mask < (1 << n); mask++) {
+            final StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) != 0) sb.append(states.get(i));
+            }
+            stateCombos.add(sb.toString());
+        }
+
+        final List<String> result = new ArrayList<>(dirs.size() * stateCombos.size());
+        for (String dir : dirs) {
+            for (String stateCombo : stateCombos) {
+                result.add(dir + stateCombo);
             }
         }
         return result;

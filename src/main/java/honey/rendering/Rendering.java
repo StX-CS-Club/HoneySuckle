@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +44,15 @@ public final class Rendering {
     //Save data -> Save CPU
     public static final Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
     public static final Map<String, Map<String, List<BufferedImage>>> gifFrames = new HashMap<>();
+    private static final Map<String, Color> colorCache = new HashMap<>();
+    // outer key: texturePath:textureColor, inner key: overlayColor:alpha
+    private static final Map<String, Map<String, BufferedImage>> overlayCache = new HashMap<>();
+
+    //Reusable light map images — cleared each frame instead of reallocated
+    private static final BufferedImage lightImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
+    private static final Graphics2D light2d = lightImage.createGraphics();
+    private static final BufferedImage glowImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
+    private static final Graphics2D glow2d = glowImage.createGraphics();
 
     //Fonts
     public static final Map<String, Font> fonts = new HashMap<>();
@@ -88,14 +98,14 @@ public final class Rendering {
         //Result image
         BufferedImage result;
         try {
-            //Gray scale texture
-            result = replaceGradient(ImageIO.read(HoneySuckle.class.getResource("/images/sprites/" + texture + ".png")), color);
+            final URL url = HoneySuckle.class.getResource("/images/sprites/" + texture + ".png");
+            if (url == null) return null;
+            result = replaceGradient(ImageIO.read(url), color);
             textures.get(texture).put(color, result);
             return result;
         } catch (IOException e) {
             System.out.println("HoneySuckle ERROR: Could not find sprite: " + texture);
         }
-        //If error, return null
         return null;
     }
 
@@ -107,21 +117,25 @@ public final class Rendering {
             return result;
         }
         //Shade to replace with
-        Color shade = Color.decode(color);
+        Color shade = decodeColor(color);
+        int shadeR = shade.getRed();
+        int shadeG = shade.getGreen();
+        int shadeB = shade.getBlue();
         //Go through ALL pixels of image
         for (int x = 0; x < result.getWidth(); x++) {
             for (int y = 0; y < result.getHeight(); y++) {
-                //Individual pixel
-                Color px = new Color(image.getRGB(x, y), true);
+                int argb = image.getRGB(x, y);
+                int a = (argb >>> 24) & 0xFF;
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >>  8) & 0xFF;
+                int b =  argb        & 0xFF;
                 //If shade of grey...
-                if (px.getRed() == px.getGreen() && px.getRed() == px.getBlue() && px.getRed() != 0) {
+                if (r == g && r == b && r != 0) {
                     //Set grey as percentage of shade
-                    double ratio = (px.getRed()) / 255.0;
-                    result.setRGB(x, y, new Color(
-                            (int) (shade.getRed() * ratio),
-                            (int) (shade.getGreen() * ratio),
-                            (int) (shade.getBlue() * ratio)
-                    ).getRGB());
+                    int nr = r * shadeR / 255;
+                    int ng = r * shadeG / 255;
+                    int nb = r * shadeB / 255;
+                    result.setRGB(x, y, (a << 24) | (nr << 16) | (ng << 8) | nb);
                 }
             }
         }
@@ -130,12 +144,14 @@ public final class Rendering {
 
     //Render Light
     public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Number>> lights) {
-        //Create empty light map
-        BufferedImage lightImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D light2d = lightImage.createGraphics();
+        //Clear reusable light map images
+        light2d.setComposite(AlphaComposite.Clear);
+        light2d.fillRect(0, 0, GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE);
+        light2d.setComposite(AlphaComposite.SrcOver);
 
-        BufferedImage glowImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D glow2d = glowImage.createGraphics();
+        glow2d.setComposite(AlphaComposite.Clear);
+        glow2d.fillRect(0, 0, GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE);
+        glow2d.setComposite(AlphaComposite.SrcOver);
 
         //Render all lights on light map as radial gradients
         for (Map<String, Number> light : lights) {
@@ -188,12 +204,15 @@ public final class Rendering {
 
         BufferedImage transparent = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
+        int br = blendColor.getRed();
+        int bg = blendColor.getGreen();
+        int bb = blendColor.getBlue();
         //Go through all light map pixels...
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 //Replace light map black px with light color opacity
-                Color color = new Color(original.getRGB(x, y), true);
-                transparent.setRGB(x, y, new Color(blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue(), 255 - color.getAlpha()).getRGB());
+                int alpha = (original.getRGB(x, y) >>> 24) & 0xFF;
+                transparent.setRGB(x, y, ((255 - alpha) << 24) | (br << 16) | (bg << 8) | bb);
             }
         }
         //Draw light mask
@@ -267,28 +286,32 @@ public final class Rendering {
         return frames.get((int) Math.floor(frame * frames.size()));
     }
 
-    //Apply opacity overlay to image
-    public static BufferedImage applyOverlay(BufferedImage image, String color, int alpha) {
-        //Width of image
-        int width = image.getWidth();
-        int height = image.getHeight();
+    //Apply opacity overlay to image, cached by base image identity and overlay parameters
+    public static BufferedImage applyOverlay(String texturePath, String textureColor, String overlayColor, int alpha) {
+        final String imageKey = texturePath + ":" + textureColor;
+        final String overlayKey = overlayColor + ":" + alpha;
 
-        //Create overlay image
-        BufferedImage overlayedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = overlayedImage.createGraphics();
+        final Map<String, BufferedImage> imageOverlays = overlayCache.computeIfAbsent(imageKey, k -> new HashMap<>());
+        final BufferedImage cached = imageOverlays.get(overlayKey);
+        if (cached != null) return cached;
 
-        //Draw base image
-        g.drawImage(image, 0, 0, null);
+        final BufferedImage source = texture(texturePath, textureColor);
+        if (source == null) return null;
 
-        //Apply opacity overlay
+        final int width = source.getWidth();
+        final int height = source.getHeight();
+
+        final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = result.createGraphics();
+        g.drawImage(source, 0, 0, null);
         g.setComposite(AlphaComposite.SrcAtop);
-        Color c = Color.decode(color);
-        g.setColor(new Color(c.getRed(), c.getBlue(), c.getGreen(), alpha));
+        final Color c = decodeColor(overlayColor);
+        g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
         g.fillRect(0, 0, width, height);
-
-        //Dispose of Graphics, return image
         g.dispose();
-        return overlayedImage;
+
+        imageOverlays.put(overlayKey, result);
+        return result;
     }
 
     //Render rectange with border
@@ -370,12 +393,19 @@ public final class Rendering {
         return rotated;
     }
 
+    public static Color decodeColor(String colorId) {
+        if (colorId == null) {
+            return null;
+        }
+        return colorCache.computeIfAbsent(colorId, Color::decode);
+    }
+
     public static Color decodeColor(String colorId, int alpha) {
         if (colorId == null) {
             return null;
         }
-        final Color color = Color.decode(colorId);
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+        final Color c = decodeColor(colorId);
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
     }
 
     public static void imageFactor(BufferedImage image, Graphics2D g, int x, int y, int w, int h, double factor){

@@ -46,10 +46,10 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     //Static variables referenced throughout code
     public static final int FPS = 30;
-    public static final int GAME_WIDTH = 800;
-    public static final int GAME_HEIGHT = 600;
-    public static final int TILE_SIZE = 40;
-    public static final int HUD_SIZE = 75;
+    public static final int GAME_WIDTH = 640;
+    public static final int GAME_HEIGHT = 480;
+    public static final int TILE_SIZE = 32;
+    public static final int HUD_SIZE = 60;
 
     //Static variable referencing inputs
     private static final InputHandler inputHandler = new InputHandler();
@@ -110,6 +110,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         FileManager.readJsonData();
         FileManager.registerFont();
+        FileManager.preloadImages();
     }
 
     public static void stop() {
@@ -143,7 +144,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         if (play) {
             //Resets lights every frame
-            lights = new LinkedHashSet<>();
+            lights.clear();
 
             //Renders World
             World world = World.worlds.get(World.level);
@@ -156,7 +157,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             Biome biome = World.worlds.get(World.level).biome;
             //Renders fog, is present
             if (biome.tags.contains("fog")) {
-                Color fogColor = Color.decode(biome.colorMap.get("fogColor"));
+                Color fogColor = Rendering.decodeColor(biome.colorMap.get("fogColor"));
                 Rendering.renderLight(g2d, fogColor, lights);
             }
 

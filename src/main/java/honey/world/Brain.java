@@ -1,12 +1,10 @@
 
 package honey.world;
 
-import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
 import honey.HoneySuckle;
-import honey.mechanics.Collision;
 import honey.player.Player;
 
 /* 
@@ -50,21 +48,23 @@ public class Brain {
         death = registerBrain("death");
     }
 
+    private static double distSq(double[] a, double[] b) {
+        double dx = a[0] - b[0];
+        double dy = a[1] - b[1];
+        return dx * dx + dy * dy;
+    }
+
     //Update Entity based on type
     public void update() {
-        //Point2d of entity
-        Point2D.Double entityPoint = Collision.arrayToPoint(entity.pos);
-
-        //Main player and player Point2D
+        //Find closest player using squared distance (no sqrt, no Point2D allocation)
         Player player = HoneySuckle.player;
-        Point2D.Double playerPoint = Collision.arrayToPoint(player.pos);
+        double bestDistSq = distSq(entity.pos, player.pos);
 
-        //Goes through all players, and determines the closest player
         for (Player testPlayer : Player.players) {
-            Point2D.Double testPoint = Collision.arrayToPoint(testPlayer.pos);
-            if (entityPoint.distance(testPoint) < entityPoint.distance(playerPoint)) {
+            double testDistSq = distSq(entity.pos, testPlayer.pos);
+            if (testDistSq < bestDistSq) {
                 player = testPlayer;
-                playerPoint = Collision.arrayToPoint(player.pos);
+                bestDistSq = testDistSq;
             }
         }
         double[] playerDistance = new double[]{
@@ -108,7 +108,7 @@ public class Brain {
                     entity.vel[1] += playerDistance[1] * coefficient;
 
                     ticks = 0;
-                    entity.ticks.put("lunge", 0l);
+                    entity.ticks.put("lunge", new long[]{0});
                 }
                 if (ticks >= cooldown - hesitationTime) {
                     hesitate = true;
@@ -153,7 +153,7 @@ public class Brain {
                     projectile.alterVel(entity.pos, entity.vel, angle, vel, entity);
                     world.projectiles.add(projectile);
 
-                    entity.ticks.put("shoot", 0l);
+                    entity.ticks.put("shoot", new long[]{0});
                     ticks = 0;
                 }
 
@@ -201,7 +201,7 @@ public class Brain {
         }
 
         //Update velocity and events based on pos
-        entity.pos = world.bound(entity.pos, entity.vel, entity.tags, entity.size / 2.0);
+        world.bound(entity.pos, entity.vel, entity.tags, entity.size / 2.0);
         world.entityEvent(entity);
     }
 
@@ -272,7 +272,7 @@ public class Brain {
                     entity.vel[1] *= -bounce;
                 }
             } else {
-                entity.ticks.put("contact", 0l);
+                entity.ticks.put("contact", new long[]{0});
             }
 
         }
@@ -286,15 +286,15 @@ public class Brain {
     }
 
     private long incrementTicks(String key, int amount) {
-        long ticks = entity.ticks.get(key);
-        entity.ticks.put(key, ticks + amount);
+        final long ticks = entity.ticks.get(key)[0];
+        entity.ticks.put(key, new long[]{ticks + amount});
         return ticks + amount;
     }
 
     private Map<String, Object> registerBrain(String brainType) {
         Map<String, Object> brain = brainMap.get(brainType);
         if (brain != null) {
-            entity.ticks.put(brainType, 0l);
+            entity.ticks.put(brainType, new long[]{0});
             return brain;
         }
         return new HashMap<>();

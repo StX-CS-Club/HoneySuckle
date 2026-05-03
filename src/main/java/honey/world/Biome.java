@@ -42,6 +42,13 @@ public class Biome {
         generation = biomeGeneration.get(type);
     }
 
+    public Biome(String biomeId) {
+        type = biomeId;
+        tags = biomeTags.get(type);
+        colorMap = biomeColorMap.get(type);
+        generation = biomeGeneration.get(type);
+    }
+
     public static String randomizeBiome(String lastBiome, int level) {
         final List<String> biomes = new ArrayList<>();
         for (String biomeId : biomeLevel.keySet()) {

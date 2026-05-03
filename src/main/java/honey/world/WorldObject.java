@@ -77,7 +77,7 @@ public class WorldObject {
         }
         color = getColor(world);
         overlayColor = Rendering.decodeColor(texture.get("overlayColor"), 16);
-        mapColor = Color.decode(getMapColor(world));
+        mapColor = Rendering.decodeColor(getMapColor(world));
 
         maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
 
@@ -116,7 +116,7 @@ public class WorldObject {
                 g.drawImage(staticTexture, (int) pos[0], (int) pos[1], size, size, null);
             } else {
                 //Else render basic rectangle
-                g.setColor(Color.decode(color));
+                g.setColor(Rendering.decodeColor(color));
                 Rendering.borderRect(g, 2, Color.black, (int) pos[0], (int) pos[1], size, size);
             }
         }

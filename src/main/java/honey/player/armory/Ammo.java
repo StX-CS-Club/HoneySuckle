@@ -85,7 +85,7 @@ public class Ammo {
     public void renderScroll(Graphics2D g) {
         g.drawImage(Rendering.scroll(14), GAME_WIDTH / 2 - 192, 40, 384, 192, null);
 
-        g.setColor(Color.decode(texture.getOrDefault("rarityColor", "#333333")));
+        g.setColor(Rendering.decodeColor(texture.getOrDefault("rarityColor", "#333333")));
         g.setFont(new Font("VT323 Regular", Font.PLAIN, 32));
 
         Rendering.centeredText(g, name, GAME_WIDTH / 2, 88);

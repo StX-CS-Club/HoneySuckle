@@ -56,14 +56,14 @@ public class Entity {
     private final String color;
     private final String staticTextureId;
     private final String animation;
-    private final Map<String, Long> animFrames = new HashMap<>();
+    private final Map<String, long[]> animFrames = new HashMap<>();
 
     //Position variables
     public double[] pos = new double[2];
     public double[] vel = new double[2];
 
     //Update ticks
-    public final Map<String, Long> ticks = new HashMap<>();
+    public final Map<String, long[]> ticks = new HashMap<>();
 
     //Entity Constructor
     public Entity(String type, double[] pos, World world) {
@@ -75,7 +75,7 @@ public class Entity {
         texture = entityTextures.get(type);
         name = entityNames.get(type);
 
-        ticks.put("base", 0l);
+        ticks.put("base", new long[]{0});
 
         //Interprets basic attributes
         health = attributes.getOrDefault("health", 1).doubleValue();
@@ -155,19 +155,18 @@ public class Entity {
                 }
 
             }
-            //Find image
-            BufferedImage textureImage = Rendering.texture(textureId.toString(), color);
-            //Render red overlay when damaged
-            if (damageFrames > 0) {
-                textureImage = Rendering.applyOverlay(textureImage, "#ff0000", 128);
-            }
+            //Find image, with red damage overlay when hit
+            final String textureIdStr = textureId.toString();
+            final BufferedImage textureImage = damageFrames > 0
+                    ? Rendering.applyOverlay(textureIdStr, color, "#ff0000", 128)
+                    : Rendering.texture(textureIdStr, color);
             damageFrames--;
 
             //Draw Texture
             g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1], null);
         } else {//If entity has specified baseColor, set as color
             //Else render simple rectangle
-            g.setColor(Color.decode(color));
+            g.setColor(Rendering.decodeColor(color));
             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1]);
         }
     }
@@ -184,7 +183,7 @@ public class Entity {
 
             final double barWidth = (GAME_WIDTH / 2) * (health / attributes.get("health").doubleValue());
 
-            g.setColor(Color.decode(texture.getOrDefault("healthBarColor", "#c4021f")));
+            g.setColor(Rendering.decodeColor(texture.getOrDefault("healthBarColor", "#c4021f")));
             g.fillRect(GAME_WIDTH / 4, 25 + index * 35, (int) Math.ceil(barWidth), 10);
 
             final String symbol = texture.getOrDefault("healthBarSymbol", "=");
@@ -220,18 +219,18 @@ public class Entity {
     //Update Entity
     public void update() {
         //Progress ticks
-        ticks.put("base", ticks.get("base") + 1);
+        ticks.get("base")[0]++;
         //Update entity through Brain
         brain.update();
     }
 
     private long incrementFrames(String key, int amount) {
-        if (animFrames.keySet().contains(key)) {
-            long frames = animFrames.get(key);
-            animFrames.put(key, frames + amount);
-            return frames + amount;
+        final long[] frames = animFrames.get(key);
+        if (frames != null) {
+            frames[0] += amount;
+            return frames[0];
         }
-        animFrames.put(key, (long) amount);
+        animFrames.put(key, new long[]{amount});
         return amount;
     }
 }

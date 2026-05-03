@@ -231,7 +231,7 @@ public class Player {
             }
 
             //Bound player to world
-            pos = world.bound(pos, vel, List.of(), size / 2.0);
+            world.bound(pos, vel, List.of(), size / 2.0);
 
             //Reset camera
             camera[0] = camera[0] - (camera[0] - pos[0]) / CAMERA_DELAY;

@@ -65,7 +65,7 @@ public class Tile {
             glowColor = 0;
         }
         color = getColor(world);
-        mapColor = Color.decode(getMapColor(world));
+        mapColor = Rendering.decodeColor(getMapColor(world));
 
         maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
 
@@ -83,7 +83,7 @@ public class Tile {
                 g.drawImage(staticTexture, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE, null);
             } else {
                 //Else, render basic rectangle
-                g.setColor(Color.decode(color));
+                g.setColor(Rendering.decodeColor(color));
                 Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], TILE_SIZE, TILE_SIZE);
             }
         }
