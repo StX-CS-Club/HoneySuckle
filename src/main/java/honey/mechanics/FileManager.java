@@ -334,6 +334,21 @@ public class FileManager {
             String t = tex.get("texture");
             if (t != null) Rendering.texture(t, null);
         }
+
+        // Tiles: edge textures only, respecting natColorEdge per biome
+        for (Map<String, String> tex : Tile.tileTextures.values()) {
+            final String edgeTex = tex.get("textureEdge");
+            if (edgeTex == null) continue;
+            final String natColorEdgeId = tex.get("natColorEdge");
+            if (natColorEdgeId != null) {
+                for (Map<String, String> biomeColors : Biome.biomeColorMap.values()) {
+                    final String color = biomeColors.get(natColorEdgeId);
+                    if (color != null) Rendering.texture(edgeTex, color);
+                }
+            } else {
+                Rendering.texture(edgeTex, tex.get("baseColorEdge"));
+            }
+        }
     }
 
     // Returns all possible image filename suffix combinations for a given animation string,

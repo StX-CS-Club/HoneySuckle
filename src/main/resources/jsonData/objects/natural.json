@@ -7,9 +7,11 @@
       "baseColor": "#019501",
       "texture": "objects/tree"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 1.0
+      "durability": 1.0,
+      "collision": 0.75,
+      "projCollision": 0.5
     },
     "loot": [
       {
@@ -29,9 +31,10 @@
       "baseColor": "#d88700",
       "texture": "objects/pumpkin"
     },
-    "tags": ["obstruction", "destructable"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 0.75
+      "durability": 0.5,
+      "collision": 0.5
     },
     "loot": [
       {
@@ -47,10 +50,12 @@
       "baseColor": "#47ab00",
       "texture": "objects/cactus"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "hurtness": 2.0,
-      "durability": 0.75
+      "hurtness": 1.0,
+      "durability": 0.75,
+      "collision": 0.8,
+      "projCollision": 0.5
     },
     "loot": [
       {
@@ -66,9 +71,11 @@
       "baseColor": "#4d4d4d",
       "texture": "objects/ore"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 2.0
+      "durability": 2.0,
+      "collision": 0.9,
+      "projCollision": 0.9
     },
     "loot": [
       {
@@ -84,8 +91,8 @@
       "texture": "objects/gate",
       "mapColor": "#44004a"
     },
-    "tags": ["obstruction"],
-    "attributes": { "deathGateId": 1 }
+    "tags": [],
+    "attributes": { "deathGateId": 1, "collision": 1.0 }
   },
   "crate": {
     "name": "Crate",
@@ -94,9 +101,11 @@
       "texture": "objects/crate",
       "mapColor": "#7a5935"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 0.1
+      "durability": 0.1,
+      "collision": 1.0,
+      "projCollision": 1.0
     },
     "loot": [
       {
@@ -113,9 +122,11 @@
       "baseColor": "#4ed1f5",
       "texture": "objects/ore_alt"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 5.0
+      "durability": 5.0,
+      "collision": 0.9,
+      "projCollision": 0.9
     },
     "loot": [
       {
@@ -132,9 +143,11 @@
       "baseColor": "#ddddee",
       "texture": "objects/rock"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 1.5
+      "durability": 1.5,
+      "collision": 0.9,
+      "projCollision": 0.9
     },
     "loot": [
       {
@@ -155,10 +168,12 @@
       "texture": "objects/scrap/scrap",
       "mapColor": "#706050"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
       "durability": 1.25,
-      "variants": 2
+      "variants": 2,
+      "collision": 0.6,
+      "projCollision": 0.6
     },
     "loot": [
       {

@@ -26,41 +26,42 @@ public class World {
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
     private static final int RENDER_DISTANCE = 2;
+    private static final double TILE_EPSILON = 0.001;
 
-    private static final int[] renderOffset = new int[]{
-        (int) GAME_WIDTH / TILE_SIZE / 2 + RENDER_DISTANCE,
-        (int) GAME_HEIGHT / TILE_SIZE / 2 + RENDER_DISTANCE
+    private static final int[] renderOffset = new int[] {
+            (int) GAME_WIDTH / TILE_SIZE / 2 + RENDER_DISTANCE,
+            (int) GAME_HEIGHT / TILE_SIZE / 2 + RENDER_DISTANCE
     };
 
-    //Static variables
+    // Static variables
     public static List<World> worlds = new ArrayList<>();
     public static int level = 0;
 
-    //World Constructor
+    // World Constructor
     public World() {
-        //Pseudo-Randomized Biome
+        // Pseudo-Randomized Biome
         biome = new Biome();
-        //Generates the world based on the biome
+        // Generates the world based on the biome
         biome.generateWorld(this);
-        //Sets camera position
-        camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
+        // Sets camera position
+        camera = new double[] { (start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0 };
         navigator = new Navigator(this);
-        //Adds world to static list of worlds
+        // Adds world to static list of worlds
         worlds.add(this);
     }
 
     public World(String biomeId) {
         biome = new Biome(biomeId);
         biome.generateWorld(this);
-        camera = new double[]{(start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0};
+        camera = new double[] { (start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0 };
         navigator = new Navigator(this);
         worlds.add(this);
     }
 
-    //Camera position for rendering
+    // Camera position for rendering
     public double[] camera = new double[2];
 
-    //World Make-up
+    // World Make-up
     public Tile[][] grid;
     public WorldObject[][] objGrid;
     public List<Entity> entities;
@@ -69,122 +70,199 @@ public class World {
 
     public final Navigator navigator;
 
-    //Updating entities
+    // Updating entities
     public List<Entity> renderEntities = new ArrayList<>();
     public List<Projectile> renderProjectiles = new ArrayList<>();
 
-    //Spatial grid for entity collision queries (keyed by bx * size[1] + by)
+    // Spatial grid for entity collision queries (keyed by bx * size[1] + by)
     public final Map<Integer, List<Entity>> entityGrid = new HashMap<>();
 
-    //World attributes
+    // World attributes
     public int[] size = new int[2];
     public int[] start = new int[2];
     public final Biome biome;
 
-    //Bounds movement to boundaries of world, mutates pos in place
+    // Bounds movement to boundaries of world, mutates pos in place
     public void bound(double[] pos, double[] delta, List<String> tags, double margin) {
-        if (margin <= 0) margin = 0.01;
-
-        //Save original tile position before applying delta
+        if (margin <= 0)
+            margin = 0.01;
+        
         final double origX = pos[0];
         final double origY = pos[1];
         final int posX = (int) Math.floor(origX / TILE_SIZE);
         final int posY = (int) Math.floor(origY / TILE_SIZE);
-
-        //Apply delta in place and clamp to world bounds
-        pos[0] += delta[0];
-        pos[1] += delta[1];
-        if (pos[0] < margin) pos[0] = margin;
-        if (pos[0] > size[0] * TILE_SIZE - margin) pos[0] = size[0] * TILE_SIZE - margin;
-        if (pos[1] < margin) pos[1] = margin;
-        if (pos[1] > size[1] * TILE_SIZE - margin) pos[1] = size[1] * TILE_SIZE - margin;
-
-        //Ensures you can walk on next tile
-        final int newPosX = (int) Math.floor(pos[0] / TILE_SIZE);
-        final int newPosY = (int) Math.floor(pos[1] / TILE_SIZE);
-        if (checkTag(posX, posY, "walkable") && !checkTag(posX, posY, "slippery") && !tags.contains("flying")) {
-            if (newPosX >= 0 && newPosX < size[0] && !checkTag(newPosX, posY, "walkable")) pos[0] = origX;
-            if (newPosY >= 0 && newPosY < size[1] && !checkTag(posX, newPosY, "walkable")) pos[1] = origY;
-        }
-
-        //Ensures not touching any obstructions (unrolled per edge)
-        final int mx0 = (int) Math.floor((pos[0] - margin) / TILE_SIZE);
-        final int mx1 = (int) Math.floor((pos[0] + margin) / TILE_SIZE);
-        final int my0 = (int) Math.floor((pos[1] - margin) / TILE_SIZE);
-        final int my1 = (int) Math.floor((pos[1] + margin) / TILE_SIZE);
+        final boolean onWalkable = checkTag(posX, posY, "walkable") && !checkTag(posX, posY, "slippery")
+                && !tags.contains("flying");
+        // X phase: apply X delta, resolve collisions against original Y span
         if (delta[0] != 0) {
-            if (mx0 >= 0 && mx0 < size[0] && checkTag(mx0, posY, "obstruction") && !checkTag(mx0, posY, "tunnel")) {
-                pos[0] = (mx0 + 1) * TILE_SIZE + margin;
-            }
-            if (mx1 >= 0 && mx1 < size[0] && checkTag(mx1, posY, "obstruction") && !checkTag(mx1, posY, "tunnel")) {
-                pos[0] = mx1 * TILE_SIZE - margin;
-            }
-        }
-        if (delta[1] != 0) {
-            if (my0 >= 0 && my0 < size[1] && checkTag(posX, my0, "obstruction") && !checkTag(posX, my0, "tunnel")) {
-                pos[1] = (my0 + 1) * TILE_SIZE + margin;
-            }
-            if (my1 >= 0 && my1 < size[1] && checkTag(posX, my1, "obstruction") && !checkTag(posX, my1, "tunnel")) {
-                pos[1] = my1 * TILE_SIZE - margin;
-            }
-        }
+            pos[0] += delta[0];
+            if (pos[0] < margin)
+                pos[0] = margin;
+            if (pos[0] > size[0] * TILE_SIZE - margin)
+                pos[0] = size[0] * TILE_SIZE - margin;
 
-        //Final clamp
-        if (pos[0] < margin) pos[0] = margin;
-        if (pos[0] > size[0] * TILE_SIZE - margin) pos[0] = size[0] * TILE_SIZE - margin;
-        if (pos[1] < margin) pos[1] = margin;
-        if (pos[1] > size[1] * TILE_SIZE - margin) pos[1] = size[1] * TILE_SIZE - margin;
+            final int newPosX = (int) Math.floor(pos[0] / TILE_SIZE);
+            if (onWalkable && newPosX >= 0 && newPosX < size[0] && !checkTag(newPosX, posY, "walkable")) {
+                pos[0] = origX;
+            }
+            final int txMin = (int) Math.floor((pos[0] - margin) / TILE_SIZE);
+            final int txMax = (int) Math.floor((pos[0] + margin) / TILE_SIZE);
+            final int tyMin = (int) Math.floor((origY - margin + TILE_EPSILON) / TILE_SIZE);
+            final int tyMax = (int) Math.floor((origY + margin - TILE_EPSILON) / TILE_SIZE);
+            if (delta[0] < 0) {
+                double snapRight = Double.NEGATIVE_INFINITY;
+                for (int tx = txMin; tx <= txMax; tx++) {
+                    for (int ty = tyMin; ty <= tyMax; ty++) {
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                            continue;
+                        final double c = getAttribute(tx, ty, "collision");
+                        if (c <= 0) continue;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        if (pos[0] - margin < tileRight && pos[0] + margin > tileLeft
+                                && origY - margin + TILE_EPSILON < tileBottom
+                                && origY + margin - TILE_EPSILON > tileTop)
+                            snapRight = Math.max(snapRight, tileRight);
+                    }
+                }
+                if (snapRight != Double.NEGATIVE_INFINITY)
+                    pos[0] = snapRight + margin;
+            } else {
+                double snapLeft = Double.POSITIVE_INFINITY;
+                for (int tx = txMin; tx <= txMax; tx++) {
+                    for (int ty = tyMin; ty <= tyMax; ty++) {
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                            continue;
+                        final double c = getAttribute(tx, ty, "collision");
+                        if (c <= 0) continue;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        if (pos[0] - margin < tileRight && pos[0] + margin > tileLeft
+                                && origY - margin + TILE_EPSILON < tileBottom
+                                && origY + margin - TILE_EPSILON > tileTop)
+                            snapLeft = Math.min(snapLeft, tileLeft);
+                    }
+                }
+                if (snapLeft != Double.POSITIVE_INFINITY)
+                    pos[0] = snapLeft - margin;
+            }
+        }
+        // Y phase: apply Y delta, resolve collisions against updated X span
+        pos[1] += delta[1];
+        if (pos[1] < margin)
+            pos[1] = margin;
+        if (pos[1] > size[1] * TILE_SIZE - margin)
+            pos[1] = size[1] * TILE_SIZE - margin;
+        if (delta[1] != 0) {
+            final int curPosX = (int) Math.floor(pos[0] / TILE_SIZE);
+            final int newPosY = (int) Math.floor(pos[1] / TILE_SIZE);
+            if (onWalkable && newPosY >= 0 && newPosY < size[1] && !checkTag(curPosX, newPosY, "walkable")) {
+                pos[1] = origY;
+            }
+            final int txMin = (int) Math.floor((pos[0] - margin + TILE_EPSILON) / TILE_SIZE);
+            final int txMax = (int) Math.floor((pos[0] + margin - TILE_EPSILON) / TILE_SIZE);
+            final int tyMin = (int) Math.floor((pos[1] - margin) / TILE_SIZE);
+            final int tyMax = (int) Math.floor((pos[1] + margin) / TILE_SIZE);
+            if (delta[1] < 0) {
+                double snapBottom = Double.NEGATIVE_INFINITY;
+                for (int tx = txMin; tx <= txMax; tx++) {
+                    for (int ty = tyMin; ty <= tyMax; ty++) {
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                            continue;
+                        final double c = getAttribute(tx, ty, "collision");
+                        if (c <= 0) continue;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        if (pos[0] - margin + TILE_EPSILON < tileRight && pos[0] + margin - TILE_EPSILON > tileLeft
+                                && pos[1] - margin < tileBottom && pos[1] + margin > tileTop)
+                            snapBottom = Math.max(snapBottom, tileBottom);
+                    }
+                }
+                if (snapBottom != Double.NEGATIVE_INFINITY)
+                    pos[1] = snapBottom + margin;
+            } else {
+                double snapTop = Double.POSITIVE_INFINITY;
+                for (int tx = txMin; tx <= txMax; tx++) {
+                    for (int ty = tyMin; ty <= tyMax; ty++) {
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                            continue;
+                        final double c = getAttribute(tx, ty, "collision");
+                        if (c <= 0) continue;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        if (pos[0] - margin + TILE_EPSILON < tileRight && pos[0] + margin - TILE_EPSILON > tileLeft
+                                && pos[1] - margin < tileBottom && pos[1] + margin > tileTop)
+                            snapTop = Math.min(snapTop, tileTop);
+                    }
+                }
+                if (snapTop != Double.POSITIVE_INFINITY)
+                    pos[1] = snapTop - margin;
+            }
+        } // Final clamp
+        if (pos[0] < margin)
+            pos[0] = margin;
+        if (pos[0] > size[0] * TILE_SIZE - margin)
+            pos[0] = size[0] * TILE_SIZE - margin;
+        if (pos[1] < margin)
+            pos[1] = margin;
+        if (pos[1] > size[1] * TILE_SIZE - margin)
+            pos[1] = size[1] * TILE_SIZE - margin;
     }
 
-    //Events based on player pos
+    // Events based on player pos
     public void playerEvent(Player player) {
-        //Checks if player is at end of world, then progresses
+        // Checks if player is at end of world, then progresses
         if (player.pos[1] <= player.size / 2.0) {
             if (!biome.tags.contains("enemyLock") || entities.isEmpty()) {
                 level++;
                 World world = new World();
-                player.pos = new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.size[1] - 0.5)};
+                player.pos = new double[] { TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.size[1] - 0.5) };
                 return;
             }
         }
-        //Player Tile
-        int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / TILE_SIZE), (int) Math.floor(player.pos[1] / TILE_SIZE)};
+        // Player Tile
+        int[] posIndex = new int[] { (int) Math.floor(player.pos[0] / TILE_SIZE),
+                (int) Math.floor(player.pos[1] / TILE_SIZE) };
 
-        //Player margin from center
+        // Player margin from center
         double margin = player.size / 2.0 + 1;
-        //Player touching tiles
-        int[][] marginIndex = new int[][]{
-            {(int) (Math.floor((player.pos[0] - margin) / TILE_SIZE)), (int) (Math.floor((player.pos[0] + margin) / TILE_SIZE))},
-            {(int) (Math.floor((player.pos[1] - margin) / TILE_SIZE)), (int) (Math.floor((player.pos[1] + margin) / TILE_SIZE))}
+        // Player touching tiles
+        int[][] marginIndex = new int[][] {
+                { (int) (Math.floor((player.pos[0] - margin) / TILE_SIZE)),
+                        (int) (Math.floor((player.pos[0] + margin) / TILE_SIZE)) },
+                { (int) (Math.floor((player.pos[1] - margin) / TILE_SIZE)),
+                        (int) (Math.floor((player.pos[1] + margin) / TILE_SIZE)) }
         };
 
-        //Checks if on damage tile
+        // Checks if on damage tile
         if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
             player.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS, false);
             if (biome.tags.contains("dangerousVoid")) {
                 player.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS, false);
             }
         }
-        //Checks if on acel tile
+        // Checks if on acel tile
         if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
             player.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
             player.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
         }
-        for (int i = 0; i < 2; i++) {
-            if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
-                //Checks if touching hurty tile
-                if (checkAttribute(marginIndex[0][i], posIndex[1], "hurtness")) {
-                    player.damage(0.01 * getAttribute(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS, true);
-                }
-            }
-            if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
-                if (checkAttribute(posIndex[0], marginIndex[1][i], "hurtness")) {
-                    player.damage(0.01 * getAttribute(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS, true);
+        for (int tx = marginIndex[0][0]; tx <= marginIndex[0][1]; tx++) {
+            for (int ty = marginIndex[1][0]; ty <= marginIndex[1][1]; ty++) {
+                if (tx >= 0 && tx < size[0] && ty >= 0 && ty < size[1] && checkAttribute(tx, ty, "hurtness")) {
+                    player.damage(0.01 * getAttribute(tx, ty, "hurtness") * 30.0 / FPS, false);
                 }
             }
         }
 
-        //Allows entities to interact with player
+        // Allows entities to interact with player
         for (Entity entity : renderEntities) {
             entity.brain.event(player);
         }
@@ -228,20 +306,23 @@ public class World {
         }
     }
 
-    //Events based on entity
+    // Events based on entity
     public void entityEvent(Entity entity) {
-        //Entity tile
-        int[] posIndex = new int[]{(int) Math.floor(entity.pos[0] / TILE_SIZE), (int) Math.floor(entity.pos[1] / TILE_SIZE)};
+        // Entity tile
+        int[] posIndex = new int[] { (int) Math.floor(entity.pos[0] / TILE_SIZE),
+                (int) Math.floor(entity.pos[1] / TILE_SIZE) };
 
-        //Entity margin from center
+        // Entity margin from center
         double margin = entity.size / 2.0 + 1;
-        //Entity touching tiles
-        int[][] marginIndex = new int[][]{
-            {(int) (Math.floor((entity.pos[0] - margin) / TILE_SIZE)), (int) (Math.floor((entity.pos[0] + margin) / TILE_SIZE))},
-            {(int) (Math.floor((entity.pos[1] - margin) / TILE_SIZE)), (int) (Math.floor((entity.pos[1] + margin) / TILE_SIZE))}
+        // Entity touching tiles
+        int[][] marginIndex = new int[][] {
+                { (int) (Math.floor((entity.pos[0] - margin) / TILE_SIZE)),
+                        (int) (Math.floor((entity.pos[0] + margin) / TILE_SIZE)) },
+                { (int) (Math.floor((entity.pos[1] - margin) / TILE_SIZE)),
+                        (int) (Math.floor((entity.pos[1] + margin) / TILE_SIZE)) }
         };
 
-        //Checks if on damage tile
+        // Checks if on damage tile
         if (!entity.tags.contains("flying")) {
             if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
                 entity.brain.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
@@ -249,30 +330,23 @@ public class World {
                     entity.brain.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
                 }
             }
-            //Checks if on acel tile
+            // Checks if on acel tile
             if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
                 entity.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
                 entity.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
             }
         }
 
-        for (int i = 0; i < 2; i++) {
-            if (marginIndex[0][i] >= 0 && marginIndex[0][i] < size[0]) {
-                //Checks if touching hurty tile
-                if (checkAttribute(marginIndex[0][i], posIndex[1], "hurts")) {
-                    entity.brain.damage(0.01 * getAttribute(marginIndex[0][i], posIndex[1], "hurtness") * 30.0 / FPS);
-                }
-            }
-            //Again...
-            if (marginIndex[1][i] >= 0 && marginIndex[1][i] < size[1]) {
-                if (checkAttribute(posIndex[0], marginIndex[1][i], "hurts")) {
-                    entity.brain.damage(0.01 * getAttribute(posIndex[0], marginIndex[1][i], "hurtness") * 30.0 / FPS);
+        for (int tx = marginIndex[0][0]; tx <= marginIndex[0][1]; tx++) {
+            for (int ty = marginIndex[1][0]; ty <= marginIndex[1][1]; ty++) {
+                if (tx >= 0 && tx < size[0] && ty >= 0 && ty < size[1] && checkAttribute(tx, ty, "hurtness")) {
+                    entity.brain.damage(0.01 * getAttribute(tx, ty, "hurtness") * 30.0 / FPS);
                 }
             }
         }
     }
 
-    //Checks if tile or obj has given tag
+    // Checks if tile or obj has given tag
     public boolean checkTag(int x, int y, String tag) {
         if (objGrid[x][y] == null) {
             return grid[x][y].tags.contains(tag);
@@ -280,7 +354,7 @@ public class World {
         return grid[x][y].tags.contains(tag) || objGrid[x][y].tags.contains(tag);
     }
 
-    //Gives sum of tile and obj value
+    // Gives sum of tile and obj value
     public double getAttribute(int x, int y, String value) {
         double result = 0;
         result += grid[x][y].attributes.getOrDefault(value, 0).doubleValue();
@@ -297,42 +371,45 @@ public class World {
         return grid[x][y].attributes.containsKey(value);
     }
 
-    //Render World
+    // Render World
     public void render(Graphics2D g) {
-        //Fills background as voidColor
+        // Fills background as voidColor
         g.setColor(Rendering.decodeColor(biome.colorMap.get("voidColor")));
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-        //Center tile on screen
-        int[] cameraTile = new int[]{(int) Math.floor(camera[0] / TILE_SIZE), (int) Math.floor(camera[1] / TILE_SIZE)};
+        // Center tile on screen
+        int[] cameraTile = new int[] { (int) Math.floor(camera[0] / TILE_SIZE),
+                (int) Math.floor(camera[1] / TILE_SIZE) };
 
         final boolean fog = biome.tags.contains("fog");
 
-        //Runs through all nearby (on screen) tiles to render
+        // Runs through all nearby (on screen) tiles to render
         for (int y = cameraTile[1] - renderOffset[1]; y < cameraTile[1] + renderOffset[1]; y++) {
             for (int x = cameraTile[0] - renderOffset[0]; x < cameraTile[0] + renderOffset[0]; x++) {
                 if (y >= 0 && y < grid[0].length && x >= 0 && x < grid.length) {
-                    //Position of tile on screen
-                    double[] screenPos = new double[]{
-                        (x * TILE_SIZE - camera[0] + GAME_WIDTH / 2.0),
-                        (y * TILE_SIZE - camera[1] + GAME_HEIGHT / 2.0)
+                    // Position of tile on screen
+                    double[] screenPos = new double[] {
+                            (x * TILE_SIZE - camera[0] + GAME_WIDTH / 2.0),
+                            (y * TILE_SIZE - camera[1] + GAME_HEIGHT / 2.0)
                     };
-                    //Render tile
+                    // Render tile
                     grid[x][y].render(g, this, screenPos);
-                    //If object on grid, render object
+                    // If object on grid, render object
                     if (objGrid[x][y] != null) {
                         objGrid[x][y].render(g, this, screenPos);
                     }
-                    //If tile/object provides light, add light to HoneySuckle.lights
+                    // If tile/object provides light, add light to HoneySuckle.lights
                     if (fog) {
-                        if (grid[x][y].attributes.containsKey("lightRadius") || grid[x][y].attributes.containsKey("glowRadius")) {
+                        if (grid[x][y].attributes.containsKey("lightRadius")
+                                || grid[x][y].attributes.containsKey("glowRadius")) {
                             grid[x][y].renderLight(screenPos);
                             if (navigator.started) {
                                 grid[x][y].rendered = true;
                             }
                         }
                         if (objGrid[x][y] != null) {
-                            if (objGrid[x][y].attributes.containsKey("lightRadius") || objGrid[x][y].attributes.containsKey("glowRadius")) {
+                            if (objGrid[x][y].attributes.containsKey("lightRadius")
+                                    || objGrid[x][y].attributes.containsKey("glowRadius")) {
                                 objGrid[x][y].renderLight(screenPos);
 
                                 if (navigator.started) {
@@ -344,15 +421,15 @@ public class World {
                 }
             }
         }
-        //Renders entities
+        // Renders entities
         for (Entity entity : renderEntities) {
             entity.render(g, camera);
         }
-        //Renders projectiles
+        // Renders projectiles
         for (Projectile proj : renderProjectiles) {
-            double[] screenPos = new double[]{
-                GAME_WIDTH / 2.0 + proj.pos[0] - camera[0],
-                GAME_HEIGHT / 2.0 + proj.pos[1] - camera[1]
+            double[] screenPos = new double[] {
+                    GAME_WIDTH / 2.0 + proj.pos[0] - camera[0],
+                    GAME_HEIGHT / 2.0 + proj.pos[1] - camera[1]
             };
 
             proj.render(g, screenPos);
@@ -364,20 +441,22 @@ public class World {
         }
     }
 
-    //Updates world
+    // Updates world
     public void update(InputHandler input) {
         navigator.update(input);
-        //Empties renderEntities, then adds nearby entities into renderEntities, and updates them
+        // Empties renderEntities, then adds nearby entities into renderEntities, and
+        // updates them
         renderEntities.clear();
         for (Entity entity : entities) {
-            if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4 && Math.abs(entity.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
+            if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4
+                    && Math.abs(entity.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
                 renderEntities.add(entity);
             }
         }
         for (Entity entity : renderEntities) {
             entity.update();
         }
-        //Rebuilds entity collision grid from updated renderEntities positions
+        // Rebuilds entity collision grid from updated renderEntities positions
         entityGrid.clear();
         for (Entity entity : renderEntities) {
             final int x0 = Math.max(0, (int) Math.floor((entity.pos[0] - entity.size / 2.0) / TILE_SIZE));
@@ -390,10 +469,13 @@ public class World {
                 }
             }
         }
-        //Empties renderProjectiles, then adds nearby projectiles into renderProjectiles, and updates them
+        // Empties renderProjectiles, then adds nearby projectiles into
+        // renderProjectiles, and updates them
         renderProjectiles.clear();
         for (Projectile projectile : projectiles) {
-            if (Projectile.projTags.get(projectile.type).contains("alwaysRender") || Math.abs(projectile.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4 && Math.abs(projectile.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
+            if (Projectile.projTags.get(projectile.type).contains("alwaysRender")
+                    || Math.abs(projectile.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4
+                            && Math.abs(projectile.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
                 renderProjectiles.add(projectile);
             }
         }

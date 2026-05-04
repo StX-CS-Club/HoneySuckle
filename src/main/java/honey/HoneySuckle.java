@@ -49,7 +49,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public static final int GAME_WIDTH = 640;
     public static final int GAME_HEIGHT = 480;
     public static final int TILE_SIZE = 32;
-    public static final int HUD_SIZE = 60;
+    public static final int HUD_SIZE = 64;
 
     //Static variable referencing inputs
     private static final InputHandler inputHandler = new InputHandler();
@@ -124,7 +124,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     public static void start() {
         //Creates world 1
-        World world = new World();
+        World world = new World("field");
         //Creates main player in reference to world 1
         player = new Player(new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.start[1] + 0.5)},
                 (int) (TILE_SIZE * 0.75), Arrays.asList("leader"));
@@ -137,10 +137,10 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         super.paintComponent(g);
 
         //Converts Graphics to Graphics2D for more methods
-        BufferedImage internalFrame = new BufferedImage(
+        final BufferedImage internalFrame = new BufferedImage(
                 GAME_WIDTH, GAME_HEIGHT, BufferedImage.TYPE_INT_ARGB
         );
-        Graphics2D g2d = (Graphics2D) internalFrame.getGraphics();
+        final Graphics2D g2d = (Graphics2D) internalFrame.getGraphics();
 
         if (play) {
             //Resets lights every frame

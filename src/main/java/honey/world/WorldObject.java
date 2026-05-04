@@ -45,6 +45,7 @@ public class WorldObject {
 
     private final int glowColor;
     private final String color;
+    private final Color colorDecoded;
     private final Color overlayColor;
     public final Color mapColor;
     public boolean rendered = false;
@@ -76,6 +77,7 @@ public class WorldObject {
             glowColor = 0;
         }
         color = getColor(world);
+        colorDecoded = Rendering.decodeColor(color);
         overlayColor = Rendering.decodeColor(texture.get("overlayColor"), 16);
         mapColor = Rendering.decodeColor(getMapColor(world));
 
@@ -95,32 +97,36 @@ public class WorldObject {
     public void render(Graphics2D g, World world, double[] screenPos) {
         //If object has texture, render it
         int size = TILE_SIZE;
-        double[] pos = screenPos.clone();
+        int posX = (int) screenPos[0];
+        int posY = (int) screenPos[1];
 
         if (overlayColor != null) {
             g.setColor(overlayColor);
-            g.fillRect((int) pos[0], (int) pos[1], size, size);
+            g.fillRect(posX, posY, size, size);
         }
 
         if (frameDamage != 0 && ThreadLocalRandom.current().nextBoolean()) {
             size *= .8;
-            pos[0] += ((double) TILE_SIZE) / 10;
-            pos[1] += ((double) TILE_SIZE) / 10;
+            posX += TILE_SIZE / 10.0;
+            posY += TILE_SIZE / 10.0;
+        }
+
+        if (tags.contains("sink")) {
+            posY += world.grid[posIndex[0]][posIndex[1]].dipPixels;
         }
 
         if (anim.contains("_gif_")) {
-            g.drawImage(getFrame(getPostfix()), (int) pos[0], (int) pos[1], size, size, null);
+            g.drawImage(getFrame(getPostfix()), posX, posY, size, size, null);
             frame = (frame + 1) % maxFrames;
         } else {
             if (staticTexture != null) {
-                g.drawImage(staticTexture, (int) pos[0], (int) pos[1], size, size, null);
+                g.drawImage(staticTexture, posX, posY, size, size, null);
             } else {
-                //Else render basic rectangle
-                g.setColor(Rendering.decodeColor(color));
-                Rendering.borderRect(g, 2, Color.black, (int) pos[0], (int) pos[1], size, size);
+                g.setColor(colorDecoded);
+                Rendering.borderRect(g, 2, Color.black, posX, posY, size, size);
             }
         }
-        
+
         frameDamage = Math.clamp(frameDamage - 0.1, 0, 1);
     }
 

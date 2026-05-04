@@ -454,7 +454,7 @@ public class Inventory {
 
     public void unlockRecipes(List<String> blueprintUnlocks, List<String> recipeUnlocks) {
         for (String blueprint : blueprintUnlocks) {
-            if (!player.build.blueprints.contains(blueprint)) {
+            if (!player.build.hasBlueprint(blueprint)) {
                 player.build.addBlueprint(blueprint);
                 ideaFrames = 80;
                 ideaColor = "#ddff00";

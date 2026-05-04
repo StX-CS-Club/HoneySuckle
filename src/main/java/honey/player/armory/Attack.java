@@ -216,7 +216,7 @@ public class Attack {
                                 player.inventory.incrementItem(loot, true);
                             }
                         }
-                        attackFrames.get(attackId)[0]++;
+                        attackFrames.get(attackId)[0] = -1;
                         break;
                     }
                 }
@@ -245,7 +245,7 @@ public class Attack {
                                             player.inventory.incrementItem(loot, true);
                                         }
                                     }
-                                    attackFrames.get(attackId)[0]++;
+                                    attackFrames.get(attackId)[0] = -1;
                                     break;
                                 }
                             }

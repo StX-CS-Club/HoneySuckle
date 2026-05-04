@@ -9,8 +9,6 @@
             "glowColor": String HEX color of object's glow
         },
         "tags": List of following String tags of object:[
-            "obstruction", - Include to block entities from going through object
-            "projObstruction", - Include to block projectiles from going through object
             "walkable", - Include to allow entity to walk on object
             "destructable", - Include to allow object to be damaged
             "safe", - Include to negate effects of tile below
@@ -19,6 +17,8 @@
         "attributes": {
             "durability": Number durability of object (default 1),
             "hurtness": Number of damage dealt on contact (default 0),
+            "collision": Number 0-1 proportion of tile used as entity collision box (default 0),
+            "projCollision": Number 0-1 proportion of tile used as projectile collision box (default 0),
             "deathGateId": int ID of death gate functionality,
             "lightRadius": Number of tiles object's light spreads (default 0),
             "glow": 8-Bit opacity of object's glow (default 0),

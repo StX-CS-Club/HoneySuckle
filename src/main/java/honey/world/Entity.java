@@ -54,6 +54,7 @@ public class Entity {
     public int damageFrames = 0;
     private int healthBarFrames = 0;
     private final String color;
+    private final Color colorDecoded;
     private final String staticTextureId;
     private final String animation;
     private final Map<String, long[]> animFrames = new HashMap<>();
@@ -85,6 +86,7 @@ public class Entity {
 
         brain = new Brain(this, world);
         color = getColor(world);
+        colorDecoded = Rendering.decodeColor(color);
         staticTextureId = texture.get("texture");
         animation = texture.get("anim");
     }
@@ -164,9 +166,8 @@ public class Entity {
 
             //Draw Texture
             g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1], null);
-        } else {//If entity has specified baseColor, set as color
-            //Else render simple rectangle
-            g.setColor(Rendering.decodeColor(color));
+        } else {
+            g.setColor(colorDecoded);
             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1]);
         }
     }

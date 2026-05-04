@@ -211,32 +211,35 @@ public class Projectile {
                                     new Point2D.Double(TILE_SIZE * 0.5, TILE_SIZE * 0.5))) {
                                 WorldObject object = world.objGrid[x][y];
                                 if (object != null) {
-                                    //If can damage tile, apply damage
-                                    if (tags.contains("damageTile")) {
-                                        //If failed to destroy object, remove projectile
-                                        if (object.damage(damage)) {
-                                            if (source instanceof Player) {
-                                                final Player player = (Player) source;
-                                                for (Map<String, Number> loot : object.loot) {
-                                                    player.inventory.incrementItem(loot, true);
+                                    final double oc = object.attributes.getOrDefault("projCollision", 0).doubleValue();
+                                    if (oc > 0 && Collision.isBoxOverlap(
+                                            new Point2D.Double(pos[0], pos[1]),
+                                            new Point2D.Double(size, size),
+                                            angle,
+                                            new Point2D.Double(TILE_SIZE * (x + 0.5), TILE_SIZE * (y + 0.5)),
+                                            new Point2D.Double(TILE_SIZE * oc * 0.5, TILE_SIZE * oc * 0.5))) {
+                                        //If can damage tile, apply damage
+                                        if (tags.contains("damageTile")) {
+                                            //If failed to destroy object, remove projectile
+                                            if (object.damage(damage)) {
+                                                if (source instanceof Player) {
+                                                    final Player player = (Player) source;
+                                                    for (Map<String, Number> loot : object.loot) {
+                                                        player.inventory.incrementItem(loot, true);
+                                                    }
                                                 }
-                                            }
-                                        } else {
-                                            if (object.tags.contains("projObstruction")) {
+                                            } else {
                                                 if (destroy(world)) {
                                                     return;
                                                 }
                                             }
-                                        }
-                                    } else {
-                                        //If object blocks projectile, remove it
-                                        if (object.tags.contains("projObstruction")) {
+                                        } else {
+                                            //If object blocks projectile, remove it
                                             if (destroy(world)) {
                                                 return;
                                             }
                                         }
                                     }
-
                                     if (object.tags.contains("flameProj") && !flaming) {
                                         damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
                                         flaming = true;
@@ -245,7 +248,7 @@ public class Projectile {
                                 }
 
                                 Tile tile = world.grid[posIndex[0]][posIndex[1]];
-                                if (tile.tags.contains("projObstruction")) {
+                                if (tile.attributes.getOrDefault("projCollision", 0).doubleValue() > 0) {
                                     if (destroy(world)) {
                                         return;
                                     }

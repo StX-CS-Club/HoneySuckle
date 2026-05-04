@@ -17,7 +17,7 @@
         {
           "id": 1,
           "sideProb": [[1, 0.095]],
-          "bottomProb": [[1, 0.90375]]
+          "bottomProb": [[1, 0.91]]
         }
       ],
       "objects": [

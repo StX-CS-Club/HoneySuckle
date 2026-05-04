@@ -316,10 +316,12 @@ public final class Rendering {
 
     //Render rectange with border
     public static void borderRect(Graphics2D g, int border, Color color, int x, int y, int width, int height) {
-        //Fill base rect
         g.fillRect(x, y, width, height);
+        borderOutline(g, border, color, x, y, width, height);
+    }
 
-        //Stroke outline of rect
+    //Draw only the outline of a rectangle (no fill)
+    public static void borderOutline(Graphics2D g, int border, Color color, int x, int y, int width, int height) {
         g.setStroke(new BasicStroke(border));
         g.setColor(color);
         g.drawRect(x, y, width, height);

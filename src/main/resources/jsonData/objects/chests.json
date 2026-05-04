@@ -7,9 +7,11 @@
       "anim": "_destroyed_",
       "mapColor": "#b06e28"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 1.5
+      "durability": 1.5,
+      "collision": 1.0,
+      "projCollision": 1.0
     }
   },
   "camp_chest": {
@@ -20,9 +22,10 @@
       "anim": "_destroyed_",
       "mapColor": "#915c23"
     },
-    "tags": ["obstruction", "destructable"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 1.25
+      "durability": 1.25,
+      "collision": 1.0
     }
   },
   "pumpkin_chest": {
@@ -33,9 +36,10 @@
       "anim": "_destroyed_",
       "mapColor": "#9e480b"
     },
-    "tags": ["obstruction", "destructable"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 1.75
+      "durability": 1.75,
+      "collision": 1.0
     }
   }
 }

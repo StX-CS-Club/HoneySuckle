@@ -9,7 +9,7 @@
     },
     "attributes": {
       "damageness": 0.01,
-      "dip": 2
+      "dip": 3
     }
   },
   "land": {
@@ -126,9 +126,15 @@
       "natColor": "brickColor",
       "baseColor": "#847878",
       "mapColor": "#666666",
-      "texture": "tiles/brick/brick_wall"
+      "texture": "tiles/brick/brick_wall",
+      "natColorEdge": "brickColor",
+      "baseColorEdge": "#847878",
+      "textureEdge": "tiles/brick/brick_wall"
     },
-    "tags": ["obstruction", "projObstruction"]
+    "attributes": {
+      "collision": 1.0,
+      "projCollision": 1.0
+    }
   },
   "dirt": {
     "name": "Dirt",
@@ -145,5 +151,18 @@
       "variants": 3
     },
     "tags": ["walkable"]
+  },
+  "shallow_water": {
+    "name": "Shallow Water",
+    "id": 10,
+    "texture": {
+      "natColor": "waterColor",
+      "baseColor": "#0080ff",
+      "texture": "tiles/water"
+    },
+    "attributes": {
+      "damageness": 0.01,
+      "dip": 8
+    }
   }
 }

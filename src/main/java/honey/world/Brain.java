@@ -125,11 +125,9 @@ public class Brain {
             final double range = numberFromMap(shootAttack, "range", 100).doubleValue();
 
             if (playerAbsDistance <= range * TILE_SIZE) {
-                double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
-                double panicSpeed = numberFromMap(shootAttack, "panicSpeed", 0).doubleValue();
-                double speed = numberFromMap(shootAttack, "speed", 1).doubleValue();
-                panicSpeed *= healthLost;
-                speed += panicSpeed;
+                final double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
+                final double panicSpeed = numberFromMap(shootAttack, "panicSpeed", 0).doubleValue();
+                final double speed = numberFromMap(shootAttack, "speed", 1).doubleValue() + panicSpeed * healthLost;
                 final double cooldown = numberFromMap(shootAttack, "cooldown", 100).doubleValue();
                 final int frames = numberFromMap(shootAttack, "frames", 10).intValue();
 

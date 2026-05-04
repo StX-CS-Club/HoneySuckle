@@ -6,9 +6,11 @@
       "texture": "objects/wall",
       "mapColor": "#6b3200"
     },
-    "tags": ["obstruction", "destructable", "projObstruction"],
+    "tags": ["destructable"],
     "attributes": {
-      "durability": 2.0
+      "durability": 2.0,
+      "collision": 1.0,
+      "projCollision": 1.0
     },
     "loot": [
       {
@@ -23,7 +25,7 @@
       "texture": "objects/raft",
       "mapColor": "#9e4a00"
     },
-    "tags": ["walkable", "safe"]
+    "tags": ["walkable", "safe", "sink"]
   },
   "torch": {
     "name": "Torch",
@@ -56,12 +58,13 @@
       "texture": "objects/pumpkin",
       "glowColor": "#ff8000"
     },
-    "tags": ["obstruction", "destructable"],
+    "tags": ["destructable"],
     "attributes": {
       "lightRadius": 15.0,
       "durability": 0.5,
       "glow": 32.0,
-      "glowRadius": 15.0
+      "glowRadius": 15.0,
+      "collision": 0.5
     },
     "loot": [
       {
@@ -97,12 +100,13 @@
       "anim": "_gif_",
       "glowColor": "#ff8000"
     },
-    "tags": ["obstruction", "destructable", "flameProj"],
+    "tags": ["destructable", "flameProj"],
     "attributes": {
       "durability": 1.25,
       "lightRadius": 5.0,
       "glow": 16.0,
-      "glowRadius": 3.0
+      "glowRadius": 3.0,
+      "collision": 0.75
     },
     "loot": [
       {
