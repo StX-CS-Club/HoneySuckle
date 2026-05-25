@@ -2,7 +2,7 @@
   "islands": {
     "name": "Islands",
     "level": 2,
-    "colorMap": {
+    "textureMap": {
       "landColor": "#0fc854",
       "voidColor": "#0080ff",
       "waterColor": "#0080ff",

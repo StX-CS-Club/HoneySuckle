@@ -124,7 +124,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     public static void start() {
         //Creates world 1
-        World world = new World("field");
+        World world = new World("hive");
         //Creates main player in reference to world 1
         player = new Player(new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.start[1] + 0.5)},
                 (int) (TILE_SIZE * 0.75), Arrays.asList("leader"));
@@ -157,9 +157,11 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             Biome biome = World.worlds.get(World.level).biome;
             //Renders fog, is present
             if (biome.tags.contains("fog")) {
-                Color fogColor = Rendering.decodeColor(biome.colorMap.get("fogColor"));
+                Color fogColor = Rendering.decodeColor(biome.textureMap.get("fogColor"));
                 Rendering.renderLight(g2d, fogColor, lights);
             }
+            
+            biome.renderOverlay(g2d);
 
             //Creates red overlay when at low health
             Rendering.colorFade(g2d, Color.red, 1 - player.health);

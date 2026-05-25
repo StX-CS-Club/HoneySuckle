@@ -129,8 +129,9 @@ public class FileManager {
             Map<String, Object> biomeData = readJsonDirectory(FileManager.class.getResource("/jsonData/biomes").toURI());
             for (String key : biomeData.keySet()) {
                 Map<String, Object> biome = (Map<String, Object>) biomeData.get(key);
-                Biome.biomeColorMap.put(key, (Map<String, String>) biome.getOrDefault("colorMap", new HashMap<>()));
+                Biome.biometextureMap.put(key, (Map<String, String>) biome.getOrDefault("textureMap", new HashMap<>()));
                 Biome.biomeTags.put(key, (List<String>) biome.getOrDefault("tags", new ArrayList<>()));
+                Biome.biomeAttributes.put(key, (Map<String, Number>) biome.getOrDefault("attributes", new HashMap<>()));
                 Biome.biomeGeneration.put(key, (Map<String, Object>) biome.getOrDefault("generation", new HashMap<>()));
                 Biome.biomeLevel.put(key, (Integer) biome.getOrDefault("level", 1));
             }
@@ -276,7 +277,7 @@ public class FileManager {
             String anim = tex.getOrDefault("anim", "");
             String natColorId = tex.get("natColor");
             if (natColorId != null) {
-                for (Map<String, String> biomeColors : Biome.biomeColorMap.values()) {
+                for (Map<String, String> biomeColors : Biome.biometextureMap.values()) {
                     String color = biomeColors.get(natColorId);
                     if (color != null) {
                         for (String suffix : animImageSuffixes(anim)) {
@@ -341,7 +342,7 @@ public class FileManager {
             if (edgeTex == null) continue;
             final String natColorEdgeId = tex.get("natColorEdge");
             if (natColorEdgeId != null) {
-                for (Map<String, String> biomeColors : Biome.biomeColorMap.values()) {
+                for (Map<String, String> biomeColors : Biome.biometextureMap.values()) {
                     final String color = biomeColors.get(natColorEdgeId);
                     if (color != null) Rendering.texture(edgeTex, color);
                 }

@@ -2,7 +2,7 @@
   "field": {
     "name": "Field",
     "level": 1,
-    "colorMap": {
+    "textureMap": {
       "landColor": "#00a800",
       "voidColor": "#004aff",
       "waterColor": "#004aff",

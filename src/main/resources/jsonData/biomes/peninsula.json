@@ -2,7 +2,7 @@
   "peninsula": {
     "name": "Peninsula",
     "level": 4,
-    "colorMap": {
+    "textureMap": {
       "landColor": "#94ca53",
       "voidColor": "#4382ff",
       "waterColor": "#4382ff",

@@ -10,7 +10,8 @@
     "attributes": {
       "durability": 2.0,
       "collision": 1.0,
-      "projCollision": 1.0
+      "projCollision": 1.0,
+      "flightCollision": 1.0
     },
     "loot": [
       {

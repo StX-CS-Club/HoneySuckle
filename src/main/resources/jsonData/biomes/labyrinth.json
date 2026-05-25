@@ -3,7 +3,7 @@
     "name": "Labyrinth",
     "level": 14,
     "tags": ["dangerousVoid", "structuresFirst"],
-    "colorMap": {
+    "textureMap": {
       "brickColor": "#847878",
       "landColor": "#2c944d",
       "treeColor": "#087029",

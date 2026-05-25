@@ -3,7 +3,7 @@
     "name": "Desert",
     "level": 5,
     "tags": ["fog"],
-    "colorMap": {
+    "textureMap": {
       "landColor": "#ffc436",
       "voidColor": "#6fbbe9",
       "waterColor": "#6fbbe9",

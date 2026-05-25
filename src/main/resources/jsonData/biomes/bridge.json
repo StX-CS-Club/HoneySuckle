@@ -3,7 +3,7 @@
     "name": "Bridge",
     "level": 9,
     "tags": ["dangerousVoid", "enemyLock"],
-    "colorMap": {
+    "textureMap": {
       "landColor": "#cdc5b3",
       "waterColor": "#242475",
       "voidColor": "#242475"

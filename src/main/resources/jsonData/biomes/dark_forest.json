@@ -3,7 +3,7 @@
     "name": "Dark Forest",
     "level": 5,
     "tags": ["fog"],
-    "colorMap": {
+    "textureMap": {
       "landColor": "#2a562a",
       "voidColor": "#001139",
       "waterColor": "#001139",

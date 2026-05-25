@@ -222,12 +222,7 @@ public class Projectile {
                                         if (tags.contains("damageTile")) {
                                             //If failed to destroy object, remove projectile
                                             if (object.damage(damage)) {
-                                                if (source instanceof Player) {
-                                                    final Player player = (Player) source;
-                                                    for (Map<String, Number> loot : object.loot) {
-                                                        player.inventory.incrementItem(loot, true);
-                                                    }
-                                                }
+                                                world.processLoot(object.loot, new double[]{TILE_SIZE * (x + 0.5), TILE_SIZE * (y + 0.5)}, source instanceof Player ? (Player) source : null);
                                             } else {
                                                 if (destroy(world)) {
                                                     return;
@@ -288,12 +283,7 @@ public class Projectile {
                                 hitEntities.add(entity);
                                 //damage entity, and remove self
                                 if (entity.brain.damage(damage)) {
-                                    if (source instanceof Player) {
-                                        final Player player = (Player) source;
-                                        for (Map<String, Number> loot : entity.loot) {
-                                            player.inventory.incrementItem(loot, true);
-                                        }
-                                    }
+                                    world.processLoot(entity.loot, entity.pos.clone(), source instanceof Player ? (Player) source : null);
                                 }
                                 if (destroy(world)) {
                                     return;

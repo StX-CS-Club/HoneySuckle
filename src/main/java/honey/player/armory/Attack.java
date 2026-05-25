@@ -148,9 +148,7 @@ public class Attack {
                             new Point2D.Double(entity.size, entity.size))) {
                         //Damage entity, if dead, add materials
                         if (entity.brain.damage(damage)) {
-                            for (Map<String, Number> loot : entity.loot) {
-                                player.inventory.incrementItem(loot, true);
-                            }
+                            world.processLoot(entity.loot, entity.pos.clone(), player);
                         }
                     }
                 }
@@ -175,9 +173,7 @@ public class Attack {
                                     WorldObject obj = world.objGrid[x][y];
                                     //Damage object, and if broken add materials
                                     if (world.objGrid[x][y].damage(damage * objDamage)) {
-                                        for (Map<String, Number> loot : obj.loot) {
-                                            player.inventory.incrementItem(loot, true);
-                                        }
+                                        world.processLoot(obj.loot, new double[]{(x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE}, player);
                                     }
                                 }
                             }
@@ -212,9 +208,7 @@ public class Attack {
                             new Point2D.Double(entity.size, entity.size))) {
                         //Damage entity, if dead, add materials
                         if (entity.brain.damage(damage)) {
-                            for (Map<String, Number> loot : entity.loot) {
-                                player.inventory.incrementItem(loot, true);
-                            }
+                            world.processLoot(entity.loot, entity.pos.clone(), player);
                         }
                         attackFrames.get(attackId)[0] = -1;
                         break;
@@ -241,9 +235,7 @@ public class Attack {
                                     WorldObject obj = world.objGrid[x][y];
                                     //Damage object, and if broken add materials
                                     if (world.objGrid[x][y].damage(damage * objDamage)) {
-                                        for (Map<String, Number> loot : obj.loot) {
-                                            player.inventory.incrementItem(loot, true);
-                                        }
+                                        world.processLoot(obj.loot, new double[]{(x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE}, player);
                                     }
                                     attackFrames.get(attackId)[0] = -1;
                                     break;

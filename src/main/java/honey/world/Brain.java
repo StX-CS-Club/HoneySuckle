@@ -29,8 +29,11 @@ public class Brain {
     private final Map<String, Object> contactAttack;
     private final Map<String, Object> flee;
     private final Map<String, Object> chase;
+    private final Map<String, Object> track;
 
     public double chaseAngle = 180;
+    public double trackAngle = 180;
+    public double immunity = 0;
 
     public final Map<String, Object> death;
 
@@ -44,6 +47,7 @@ public class Brain {
         contactAttack = registerBrain("contact");
         flee = registerBrain("flee");
         chase = registerBrain("chase");
+        track = registerBrain("track");
 
         death = registerBrain("death");
     }
@@ -73,6 +77,11 @@ public class Brain {
         };
         double playerAbsDistance = Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]);
         chaseAngle = getAngle(player.pos);
+        if (track.isEmpty()) {
+            trackAngle = chaseAngle;
+        }
+
+        immunity = Math.max(immunity - entity.attributes.getOrDefault("immunityDegen", 0.15).doubleValue(), 0);
 
         //Friction
         for (int i = 0; i < 2; i++) {
@@ -192,6 +201,36 @@ public class Brain {
             }
         }
 
+        if (!track.isEmpty()) {
+            final double range = numberFromMap(track, "range", 10).doubleValue();
+            final double speed = numberFromMap(track, "speed", 0.1).doubleValue();
+            final double hesitateRange = numberFromMap(track, "hesitateRange", 0).doubleValue();
+            final double turnRate = numberFromMap(track, "turnRate", 3).doubleValue();
+
+            if (hesitateRange > 0 && playerAbsDistance <= hesitateRange * TILE_SIZE) {
+                hesitate = true;
+            }
+
+            if (playerAbsDistance <= range * TILE_SIZE) {
+                // Turn toward chaseAngle at max turnRate degrees per tick
+                double diff = chaseAngle - trackAngle;
+                while (diff > 180) diff -= 360;
+                while (diff < -180) diff += 360;
+                trackAngle += Math.abs(diff) <= turnRate ? diff : Math.signum(diff) * turnRate;
+                trackAngle = ((trackAngle % 360) + 360) % 360;
+
+                if (!hesitate) {
+                    entity.vel[0] += TILE_SIZE * speed * -Math.cos(Math.toRadians(trackAngle + 90));
+                    entity.vel[1] += TILE_SIZE * speed * Math.sin(Math.toRadians(trackAngle - 90));
+                    states.put("chase", true);
+                } else {
+                    states.put("chase", false);
+                }
+            } else {
+                states.put("chase", false);
+            }
+        }
+
         if (hesitate) {
             states.put("hesitate", true);
         } else {
@@ -205,7 +244,7 @@ public class Brain {
 
     //Damage Entity; returns true if dead
     public boolean damage(double damage) {
-        //Subtract damage 
+        damage /= Math.pow(entity.attributes.getOrDefault("immunity", 2).doubleValue(), immunity);
         entity.health -= damage;
         //Add damageFrames
         if (entity.damageFrames < -5) {

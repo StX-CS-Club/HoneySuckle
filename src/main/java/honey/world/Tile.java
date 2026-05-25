@@ -135,7 +135,7 @@ public class Tile {
     private String getColor(World world) {
         final String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            final String natColor = world.biome.colorMap.get(natColorId);
+            final String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) return natColor;
         }
         return texture.getOrDefault("baseColor", null);
@@ -144,7 +144,7 @@ public class Tile {
     private String getEdgeColor(World world) {
         final String natColorId = texture.get("natColorEdge");
         if (natColorId != null) {
-            final String natColor = world.biome.colorMap.get(natColorId);
+            final String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) return natColor;
         }
         final String baseColorEdge = texture.get("baseColorEdge");
@@ -159,7 +159,7 @@ public class Tile {
         }
         String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.colorMap.get(natColorId);
+            String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }

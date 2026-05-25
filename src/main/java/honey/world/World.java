@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
 import honey.mechanics.InputHandler;
@@ -40,9 +41,9 @@ public class World {
     // World Constructor
     public World() {
         // Pseudo-Randomized Biome
-        biome = new Biome();
+        biome = new Biome(this);
         // Generates the world based on the biome
-        biome.generateWorld(this);
+        biome.generateWorld();
         // Sets camera position
         camera = new double[] { (start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0 };
         navigator = new Navigator(this);
@@ -51,8 +52,8 @@ public class World {
     }
 
     public World(String biomeId) {
-        biome = new Biome(biomeId);
-        biome.generateWorld(this);
+        biome = new Biome(this, biomeId);
+        biome.generateWorld();
         camera = new double[] { (start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0 };
         navigator = new Navigator(this);
         worlds.add(this);
@@ -82,17 +83,55 @@ public class World {
     public int[] start = new int[2];
     public final Biome biome;
 
+    // Processes a loot list: type 7 spawns entities at spawnPos, all others go to inventory
+    public void processLoot(List<Map<String, Number>> loot, double[] spawnPos, Player player) {
+        for (Map<String, Number> entry : loot) {
+            if (entry.getOrDefault("type", 0).intValue() == 7) {
+                final double prob = entry.getOrDefault("prob", 1).doubleValue();
+                if (Math.random() >= prob) continue;
+                int count = entry.getOrDefault("count", 1).intValue();
+                final double countProb = entry.getOrDefault("countProb", 0).doubleValue();
+                while (ThreadLocalRandom.current().nextDouble() <= countProb) count++;
+                final String entityType = Entity.entityStringId.get(entry.getOrDefault("id", 0).intValue());
+                if (entityType != null) {
+                    final double burst = entry.getOrDefault("burst", 0).doubleValue();
+                    for (int i = 0; i < count; i++) {
+                        final double angle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
+                        final double scatter = TILE_SIZE * 0.3;
+                        final double[] pos = {
+                            spawnPos[0] + Math.cos(angle) * scatter,
+                            spawnPos[1] + Math.sin(angle) * scatter
+                        };
+                        final Entity spawned = new Entity(entityType, pos, this);
+                        if (burst > 0) {
+                            final double burstAngle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
+                            spawned.vel[0] = Math.cos(burstAngle) * burst * TILE_SIZE;
+                            spawned.vel[1] = Math.sin(burstAngle) * burst * TILE_SIZE;
+                        }
+                        spawned.brain.immunity = 3.0;
+                        entities.add(spawned);
+                    }
+                }
+            } else if (player != null) {
+                player.inventory.incrementItem(entry, true);
+            }
+        }
+    }
+
     // Bounds movement to boundaries of world, mutates pos in place
     public void bound(double[] pos, double[] delta, List<String> tags, double margin) {
         if (margin <= 0)
             margin = 0.01;
-        
+
+        final boolean flying = tags.contains("flying");
+        final String collAttr = flying ? "flightCollision" : "collision";
+
         final double origX = pos[0];
         final double origY = pos[1];
         final int posX = (int) Math.floor(origX / TILE_SIZE);
         final int posY = (int) Math.floor(origY / TILE_SIZE);
         final boolean onWalkable = checkTag(posX, posY, "walkable") && !checkTag(posX, posY, "slippery")
-                && !tags.contains("flying");
+                && !flying;
         // X phase: apply X delta, resolve collisions against original Y span
         if (delta[0] != 0) {
             pos[0] += delta[0];
@@ -115,7 +154,7 @@ public class World {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
                         if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
                             continue;
-                        final double c = getAttribute(tx, ty, "collision");
+                        final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
@@ -135,7 +174,7 @@ public class World {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
                         if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
                             continue;
-                        final double c = getAttribute(tx, ty, "collision");
+                        final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
@@ -173,7 +212,7 @@ public class World {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
                         if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
                             continue;
-                        final double c = getAttribute(tx, ty, "collision");
+                        final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
@@ -192,7 +231,7 @@ public class World {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
                         if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
                             continue;
-                        final double c = getAttribute(tx, ty, "collision");
+                        final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
@@ -374,7 +413,7 @@ public class World {
     // Render World
     public void render(Graphics2D g) {
         // Fills background as voidColor
-        g.setColor(Rendering.decodeColor(biome.colorMap.get("voidColor")));
+        g.setColor(Rendering.decodeColor(biome.textureMap.get("voidColor")));
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         // Center tile on screen

@@ -2,7 +2,7 @@
   "wetlands": {
     "name": "Wetlands",
     "level": 0,
-    "colorMap": {
+    "textureMap": {
       "voidColor": "#0080ff",
       "coalColor": "#666677",
       "rockColor": "#d9cbba"

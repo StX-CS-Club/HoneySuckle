@@ -133,6 +133,7 @@
     },
     "attributes": {
       "collision": 1.0,
+      "flightCollision": 1.0,
       "projCollision": 1.0
     }
   },
@@ -164,5 +165,36 @@
       "damageness": 0.01,
       "dip": 8
     }
+  },
+  "honeycomb": {
+    "name": "Honeycomb",
+    "id": 11,
+    "texture": {
+      "texture": "tiles/honeycomb/honeycomb",
+      "textureEdge": "tiles/honeycomb/honeycomb_edge",
+      "baseColor": "#ffee00"
+    },
+    "attributes": {
+      "acel": 0.95
+    },
+    "tags": ["walkable"]
+  },
+  "honey": {
+    "name": "Honey",
+    "id": 12,
+    "texture": {
+      "natColor": "honeyColor",
+      "baseColor": "#ffcc00",
+      "texture": "tiles/honey",
+      "glowColor": "#ffcc00"
+    },
+    "attributes": {
+      "acel": 0.4,
+      "damageness": 0.0033,
+      "glow": 1.0,
+      "glowRadius": 2.0,
+      "dip": 2
+    },
+    "tags": ["walkable"]
   }
 }

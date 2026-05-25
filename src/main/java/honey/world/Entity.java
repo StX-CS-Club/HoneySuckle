@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ public class Entity {
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    private static final int FPS = HoneySuckle.FPS;
 
     //Satic data imported from json files
     public static final Map<String, Map<String, Number>> entityAttributes = new HashMap<>();
@@ -56,8 +58,11 @@ public class Entity {
     private final String color;
     private final Color colorDecoded;
     private final String staticTextureId;
+    private final String animTextureId;
     private final String animation;
     private final Map<String, long[]> animFrames = new HashMap<>();
+    private final int maxFrames;
+    private int frame = 0;
 
     //Position variables
     public double[] pos = new double[2];
@@ -88,7 +93,9 @@ public class Entity {
         color = getColor(world);
         colorDecoded = Rendering.decodeColor(color);
         staticTextureId = texture.get("texture");
+        animTextureId = texture.get("gif");
         animation = texture.get("anim");
+        maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
     }
 
     //Render Entity
@@ -101,30 +108,31 @@ public class Entity {
         double[] screenSize = new double[]{size, size};
 
         //If entity has texture, display
-        if (staticTextureId != null) {
-            StringBuilder textureId = new StringBuilder(staticTextureId);
-            //Add paremeters to stem file name, if applicable
+        if (staticTextureId != null || animTextureId != null) {
+            String baseId = animTextureId != null ? animTextureId : staticTextureId;
+            StringBuilder textureId = new StringBuilder(baseId);
+            //Add parameters to stem file name, if applicable
             if (animation != null) {
                 if (animation.contains("_x_")) {
-                    if (brain.chaseAngle > 180) {
+                    if (brain.trackAngle > 180) {
                         textureId.append("_left");
                     } else {
                         textureId.append("_right");
                     }
                 }
                 if (animation.contains("_y_")) {
-                    if (brain.chaseAngle >= 270 || brain.chaseAngle < 90) {
+                    if (brain.trackAngle >= 270 || brain.trackAngle < 90) {
                         textureId.append("_up");
                     } else {
                         textureId.append("_down");
                     }
                 }
                 if (animation.contains("_xy_")) {
-                    if (brain.chaseAngle >= 315 || brain.chaseAngle < 45) {
+                    if (brain.trackAngle >= 315 || brain.trackAngle < 45) {
                         textureId.append("_up");
-                    } else if (brain.chaseAngle < 135) {
+                    } else if (brain.trackAngle < 135) {
                         textureId.append("_right");
-                    } else if (brain.chaseAngle < 225) {
+                    } else if (brain.trackAngle < 225) {
                         textureId.append("_down");
                     } else {
                         textureId.append("_left");
@@ -145,7 +153,6 @@ public class Entity {
                         textureId.append("_shoot");
                     }
                 }
-
                 if (animation.contains("_lunge_")) {
                     if (brain.checkState("lunging")) {
                         screenPos[1] += screenSize[1] * .375;
@@ -155,17 +162,35 @@ public class Entity {
                 if (animation.contains("_hover_")) {
                     screenPos[1] += Math.sin(incrementFrames("hover", 1) / 10.0)*size/8;
                 }
-
             }
-            //Find image, with red damage overlay when hit
+
+            //Rotate to face locked target
+            AffineTransform originalTransform = null;
+            if (animation != null && animation.contains("_face_")) {
+                double cx = screenPos[0] + screenSize[0] / 2.0;
+                double cy = screenPos[1] + screenSize[1] / 2.0;
+                originalTransform = g.getTransform();
+                g.rotate(Math.toRadians(brain.trackAngle), cx, cy);
+            }
+
+            //Draw animated sprite sheet or static texture
             final String textureIdStr = textureId.toString();
-            final BufferedImage textureImage = damageFrames > 0
-                    ? Rendering.applyOverlay(textureIdStr, color, "#ff0000", 128)
-                    : Rendering.texture(textureIdStr, color);
+            final BufferedImage textureImage;
+            if (animTextureId != null && animation != null && animation.contains("_gif_")) {
+                textureImage = Rendering.renderGIF(textureIdStr, color, frame / (double) maxFrames);
+                frame = (frame + 1) % maxFrames;
+            } else {
+                textureImage = damageFrames > 0
+                        ? Rendering.applyOverlay(textureIdStr, color, "#ff0000", 128)
+                        : Rendering.texture(textureIdStr, color);
+            }
             damageFrames--;
 
-            //Draw Texture
             g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1], null);
+
+            if (originalTransform != null) {
+                g.setTransform(originalTransform);
+            }
         } else {
             g.setColor(colorDecoded);
             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1]);
@@ -204,7 +229,7 @@ public class Entity {
         //If entity has biome specific color, get color from biome
         String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.colorMap.get(natColorId);
+            String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }

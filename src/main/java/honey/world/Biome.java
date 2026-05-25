@@ -1,5 +1,8 @@
 package honey.world;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
 import honey.mechanics.MapReader;
+import honey.rendering.Rendering;
 
 /*
  * Biome.java *
@@ -18,35 +22,70 @@ import honey.mechanics.MapReader;
 public class Biome {
 
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
 
     // Static data from json
-    public static final Map<String, Map<String, String>> biomeColorMap = new HashMap<>();
+    public static final Map<String, Map<String, String>> biometextureMap = new HashMap<>();
     public static final Map<String, Map<String, Object>> biomeGeneration = new HashMap<>();
     public static final Map<String, List<String>> biomeTags = new HashMap<>();
+    public static final Map<String, Map<String, Number>> biomeAttributes = new HashMap<>();
     public static final Map<String, Integer> biomeLevel = new HashMap<>();
 
+    private final World world;
     public final String type;
+    public final BufferedImage overlayTexture;
 
     public final List<String> tags;
-    public final Map<String, String> colorMap;
+    public final Map<String, Number> attributes;
+    public final Map<String, String> textureMap;
     private final Map<String, Object> generation;
 
-    public Biome() {
+    public Biome(World world) {
+        this.world = world;
         if (World.level > 0) {
             type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
         } else {
             type = "wetlands";
         }
         tags = biomeTags.get(type);
-        colorMap = biomeColorMap.get(type);
+        attributes = biomeAttributes.get(type);
+        textureMap = biometextureMap.get(type);
         generation = biomeGeneration.get(type);
+        overlayTexture = getOverlayTexture();
     }
 
-    public Biome(String biomeId) {
+    public Biome(World world, String biomeId) {
+        this.world = world;
         type = biomeId;
         tags = biomeTags.get(type);
-        colorMap = biomeColorMap.get(type);
+        attributes = biomeAttributes.get(type);
+        textureMap = biometextureMap.get(type);
         generation = biomeGeneration.get(type);
+        overlayTexture = getOverlayTexture();
+    }
+
+    public void renderOverlay(Graphics2D g) {
+        if (overlayTexture != null) {
+            final double opacitySpeed = attributes.getOrDefault("overlaySpeed", 0).doubleValue();
+            final double oX = GAME_WIDTH - ((world.camera[0] * opacitySpeed) % (GAME_WIDTH));
+            final double oY = GAME_HEIGHT - ((world.camera[1] * opacitySpeed) % (GAME_HEIGHT));
+
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, attributes.getOrDefault("overlayOpacity", 0.1).floatValue()));
+            g.drawImage(overlayTexture, (int) oX, (int) oY, GAME_WIDTH, GAME_HEIGHT, null);
+            g.drawImage(overlayTexture, (int) oX - GAME_WIDTH, (int) oY, GAME_WIDTH, GAME_HEIGHT, null);
+            g.drawImage(overlayTexture, (int) oX, (int) oY - GAME_HEIGHT, GAME_WIDTH, GAME_HEIGHT, null);
+            g.drawImage(overlayTexture, (int) oX - GAME_WIDTH, (int) oY - GAME_HEIGHT, GAME_WIDTH, GAME_HEIGHT, null);
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+        }
+    }
+
+    private BufferedImage getOverlayTexture() {
+        final String texture = textureMap.get("overlayTexture");
+        if (texture != null) {
+            return Rendering.texture(texture);
+        }
+        return null;
     }
 
     public static String randomizeBiome(String lastBiome, int level) {
@@ -65,7 +104,7 @@ public class Biome {
     }
 
     // Generates biome based on given type
-    public void generateWorld(World world) {
+    public void generateWorld() {
         // Interprets size and start values
         world.size = intArray(listFromMap(generation, "size", new Number[] { 51, 100 }).toArray(Number[]::new), 101);
         world.start = intArray(listFromMap(generation, "start", new Number[] { world.size[0] / 2, world.size[1] - 1 })

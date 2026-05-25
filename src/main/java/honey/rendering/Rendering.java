@@ -17,14 +17,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import honey.HoneySuckle;
 
@@ -81,6 +78,10 @@ public final class Rendering {
         }
         //If error, return null
         return null;
+    }
+
+    public static BufferedImage texture(String texture) {
+        return texture(texture, null);
     }
 
     //Render sprite
@@ -240,9 +241,8 @@ public final class Rendering {
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
     }
 
-    //Render frames of gif
+    //Render frame from horizontal PNG sprite sheet under animations/
     public static BufferedImage renderGIF(String path, String color, double frame) {
-        //If already rendered, return
         Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
         if (gifMap != null) {
             List<BufferedImage> frames = gifMap.get(color);
@@ -253,36 +253,25 @@ public final class Rendering {
             gifFrames.put(path, new HashMap<>());
         }
 
-        //Current frames of gif
-        List<BufferedImage> frames = gifFrames.get(path).get(color);
-        //If frames not found...
-        if (frames == null) {
-            //Break down frames of gif into list of frames
-            frames = new ArrayList<>();
-            File gifFile;
-            try {
-                gifFile = new File(HoneySuckle.class.getResource("/images/gifs/" + path + ".gif").toURI());
-                ImageInputStream input = ImageIO.createImageInputStream(gifFile);
-                Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
-                if (readers.hasNext()) {
-                    ImageReader reader = readers.next();
-                    reader.setInput(input);
-
-                    int numFrames = reader.getNumImages(true);
-                    for (int i = 0; i < numFrames; i++) {
-                        BufferedImage gifFrame = replaceGradient(reader.read(i), color);
-                        frames.add(gifFrame);
-                    }
-                    reader.dispose();
-                }
-                gifFrames.get(path).put(color, frames);
-            } catch (URISyntaxException e) {
-                System.out.println("HoneySuckle ERROR: Could not find gif: " + path);
-            } catch (IOException e) {
-                System.out.println("HoneySuckle ERROR: Failed to interpret GIF at: " + path);
+        List<BufferedImage> frames = new ArrayList<>();
+        try {
+            final URL url = HoneySuckle.class.getResource("/images/animations/" + path + ".png");
+            if (url == null) {
+                System.out.println("HoneySuckle ERROR: Could not find animation: " + path);
+                return null;
             }
+            BufferedImage sheet = ImageIO.read(url);
+            int frameSize = sheet.getHeight();
+            int numFrames = sheet.getWidth() / frameSize;
+            for (int i = 0; i < numFrames; i++) {
+                BufferedImage slice = sheet.getSubimage(i * frameSize, 0, frameSize, frameSize);
+                frames.add(replaceGradient(slice, color));
+            }
+            gifFrames.get(path).put(color, frames);
+        } catch (IOException e) {
+            System.out.println("HoneySuckle ERROR: Failed to load animation: " + path);
+            return null;
         }
-        //Return appropriate frame
         return frames.get((int) Math.floor(frame * frames.size()));
     }
 

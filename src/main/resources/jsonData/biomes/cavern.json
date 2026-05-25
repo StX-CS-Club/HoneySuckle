@@ -3,7 +3,7 @@
     "name": "Cavern",
     "level": 6,
     "tags": ["fog", "dangerousVoid"],
-    "colorMap": {
+    "textureMap": {
       "voidColor": "#111111",
       "fogColor": "#000000",
       "landColor": "#0a1f19",

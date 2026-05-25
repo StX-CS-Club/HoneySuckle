@@ -3,7 +3,7 @@
     "name": "Tundra",
     "level": 5,
     "tags": ["dangerousVoid"],
-    "colorMap": {
+    "textureMap": {
       "landColor": "#dffffb",
       "voidColor": "#92c4ff",
       "waterColor": "#92c4ff",

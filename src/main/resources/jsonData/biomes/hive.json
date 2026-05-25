@@ -1,0 +1,51 @@
+{
+    "hive": {
+        "name": "Hive",
+        "level": 10,
+        "textureMap": {
+            "landColor": "#daf52c",
+            "voidColor": "#ffd500",
+            "honeyColor": "#ffcc00",
+            "edgeColor": "#99722f",
+            "overlayTexture": "overlays/hive"
+        },
+        "attributes": {
+            "overlayOpacity": 0.33,
+            "overlaySpeed": 1.5
+        },
+        "generation": {
+            "size": [101, 110],
+            "startMap": [[1, 1, 1]],
+            "base": 11,
+            "tiles": [
+                {
+                    "id": 1,
+                    "sideProb": [[1, 0.2]],
+                    "bottomProb": [[1, 0.67]]
+                },
+                {
+                    "id": 12,
+                    "sideProb": [[11, 0.1], [12, 0.4]],
+                    "bottomProb": [[11, 0.01], [12, 0.35]],
+                    "rangeProb": [[0, 45, 0.2], [55, 101, 0.2]]
+                }
+            ],
+            "objects": [
+                {
+                    "id": 1,
+                    "tileProb": [[1, 0.25]]
+                },
+                {
+                    "id": 20,
+                    "tileProb": [[11, 0.05]]
+                }
+            ],
+            "entities": [
+                {
+                    "id": 5,
+                    "tileProb": [[11, 0.01]]
+                }
+            ]
+        }
+    }
+}

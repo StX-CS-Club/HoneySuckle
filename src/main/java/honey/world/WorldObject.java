@@ -134,7 +134,7 @@ public class WorldObject {
         //If tile has biome specific color, find color from biome
         String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.colorMap.get(natColorId);
+            String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }
@@ -155,7 +155,7 @@ public class WorldObject {
         //If tile has biome specific color, find color from biome
         String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.colorMap.get(natColorId);
+            String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }

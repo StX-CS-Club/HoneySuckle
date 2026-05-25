@@ -192,5 +192,29 @@
         "prob": 0.5
       }
     ]
+  },
+  "beehive": {
+    "name": "Beehive",
+    "id": 20,
+    "texture": {
+      "gif": "objects/beehive",
+      "mapColor": "#d9a441",
+      "anim": "_gif_"
+    },
+    "tags": ["destructable"],
+    "attributes": {
+      "durability": 0.75,
+      "collision": 0.8,
+      "projCollision": 0.8
+    },
+    "loot": [
+      {
+        "id": 5,
+        "type": 7,
+        "count": 0,
+        "countProb": 0.5,
+        "burst": 1.5
+      }
+    ]
   }
 }

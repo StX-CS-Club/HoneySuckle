@@ -2,7 +2,7 @@
     [String ID: snake_case String ID to identify biome]: {
         "name": String to represent biome's name in text,
         "level": Minimum level the biome can spawn at (default 1),
-        "colorMap": {
+        "textureMap": {
             "voidColor": String HEX color of the biome's background color,
             "fogColor": String HEX color of the biome's fog (required fog tag),
             [NatColor String ID]: String HEX color of the biome's given natColor
