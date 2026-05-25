@@ -11,7 +11,8 @@
     "attributes": {
       "size": 0.5,
       "health": 0.5,
-      "weight": 0.2
+      "weight": 0.2,
+      "animFrames": 5
     },
     "brain": {
       "track": {

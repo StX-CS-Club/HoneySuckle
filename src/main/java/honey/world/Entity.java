@@ -1,4 +1,3 @@
-
 package honey.world;
 
 import java.awt.AlphaComposite;
@@ -160,7 +159,7 @@ public class Entity {
                     }
                 }
                 if (animation.contains("_hover_")) {
-                    screenPos[1] += Math.sin(incrementFrames("hover", 1) / 10.0)*size/8;
+                    screenPos[1] += Math.sin(incrementFrames("hover", 1) / 10.0) * size / 8;
                 }
             }
 
@@ -177,7 +176,12 @@ public class Entity {
             final String textureIdStr = textureId.toString();
             final BufferedImage textureImage;
             if (animTextureId != null && animation != null && animation.contains("_gif_")) {
-                textureImage = Rendering.renderGIF(textureIdStr, color, frame / (double) maxFrames);
+                final int gifFrame = (int) Math.floor(frame / (double) maxFrames * Rendering.frameCount(textureIdStr));
+                final BufferedImage frameImage = Rendering.renderGIF(textureIdStr, color, gifFrame);
+                final String gifKey = Rendering.imageKey(Rendering.imageKey(textureIdStr, color), String.valueOf(gifFrame));
+                textureImage = damageFrames > 0
+                        ? Rendering.applyOverlay(frameImage, gifKey, "#ff0000", 128)
+                        : frameImage;
                 frame = (frame + 1) % maxFrames;
             } else {
                 textureImage = damageFrames > 0

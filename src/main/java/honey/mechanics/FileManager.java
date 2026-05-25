@@ -270,70 +270,106 @@ public class FileManager {
     }
 
     public static void preloadImages() {
-        // Entities: all animation variants, respecting natColor per biome
+        // Entities: static and gif variants, respecting natColor per biome
         for (Map<String, String> tex : Entity.entityTextures.values()) {
-            String base = tex.get("texture");
-            if (base == null) continue;
-            String anim = tex.getOrDefault("anim", "");
-            String natColorId = tex.get("natColor");
+            final String staticBase = tex.get("texture");
+            final String gifBase = tex.get("gif");
+            if (staticBase == null && gifBase == null) continue;
+            final String anim = tex.getOrDefault("anim", "");
+            final String natColorId = tex.get("natColor");
             if (natColorId != null) {
                 for (Map<String, String> biomeColors : Biome.biometextureMap.values()) {
-                    String color = biomeColors.get(natColorId);
+                    final String color = biomeColors.get(natColorId);
                     if (color != null) {
-                        for (String suffix : animImageSuffixes(anim)) {
-                            Rendering.texture(base + suffix, color);
+                        for (String suffix : entitySuffixes(anim)) {
+                            if (staticBase != null) Rendering.registerImage(staticBase + suffix, color);
+                            if (gifBase != null) Rendering.registerGIF(gifBase + suffix, color);
                         }
                     }
                 }
             } else {
-                String color = tex.get("baseColor");
-                for (String suffix : animImageSuffixes(anim)) {
-                    Rendering.texture(base + suffix, color);
+                final String color = tex.get("baseColor");
+                for (String suffix : entitySuffixes(anim)) {
+                    if (staticBase != null) Rendering.registerImage(staticBase + suffix, color);
+                    if (gifBase != null) Rendering.registerGIF(gifBase + suffix, color);
+                }
+            }
+        }
+
+        // Objects: static and gif variants, respecting natColor per biome
+        for (Map.Entry<Integer, Map<String, String>> entry : WorldObject.objTextures.entrySet()) {
+            final Map<String, String> tex = entry.getValue();
+            final String staticBase = tex.get("texture");
+            final String gifBase = tex.get("gif");
+            if (staticBase == null && gifBase == null) continue;
+            final Map<String, Number> attrs = WorldObject.objAttributes.get(entry.getKey());
+            final String natColorId = tex.get("natColor");
+            if (natColorId != null) {
+                for (Map<String, String> biomeColors : Biome.biometextureMap.values()) {
+                    final String color = biomeColors.get(natColorId);
+                    if (color != null) {
+                        for (String postfix : objSuffixes(tex, attrs)) {
+                            if (staticBase != null) Rendering.registerImage(staticBase + postfix, color);
+                            if (gifBase != null) Rendering.registerGIF(gifBase + postfix, color);
+                        }
+                    }
+                }
+            } else {
+                final String color = tex.get("baseColor");
+                for (String postfix : objSuffixes(tex, attrs)) {
+                    if (staticBase != null) Rendering.registerImage(staticBase + postfix, color);
+                    if (gifBase != null) Rendering.registerGIF(gifBase + postfix, color);
                 }
             }
         }
 
         // Projectiles
         for (Map<String, String> tex : Projectile.projTextures.values()) {
-            String base = tex.get("texture");
-            if (base != null) Rendering.texture(base, null);
+            final String base = tex.get("texture");
+            if (base != null) Rendering.registerImage(base, null);
         }
 
         // Weapons: item icon + attack GIFs per swing color
         for (Map<String, String> tex : Weapon.weaponTextures.values()) {
-            String itemTex = tex.get("itemTexture");
-            if (itemTex != null) Rendering.texture(itemTex, "#e8f1ff");
-            String swingColor = tex.get("swingColor");
+            final String itemTex = tex.get("itemTexture");
+            if (itemTex != null) Rendering.registerImage(itemTex, "#e8f1ff");
+            final String swingColor = tex.get("swingColor");
             if (swingColor != null) {
-                Rendering.renderGIF("attacks/slash", swingColor, 0.0);
-                Rendering.renderGIF("attacks/stab", swingColor, 0.0);
+                Rendering.registerGIF("attacks/slash", swingColor);
+                Rendering.registerGIF("attacks/stab", swingColor);
             }
         }
 
         // Armor front/back textures
         for (Map<String, String> tex : Armor.armorTextures.values()) {
-            String front = tex.get("front");
-            String back = tex.get("back");
-            if (front != null) Rendering.texture(front, null);
-            if (back != null) Rendering.texture(back, null);
+            final String front = tex.get("front");
+            final String back = tex.get("back");
+            if (front != null) Rendering.registerImage(front, null);
+            if (back != null) Rendering.registerImage(back, null);
         }
 
         // Items, ammo, key items, effects
         for (Map<String, String> tex : Item.itemTextures.values()) {
-            String t = tex.get("texture");
-            if (t != null) Rendering.texture(t, null);
+            final String t = tex.get("texture");
+            if (t != null) Rendering.registerImage(t, null);
         }
         for (Map<String, String> tex : Ammo.ammoTextures.values()) {
-            String t = tex.get("itemTexture");
-            if (t != null) Rendering.texture(t, null);
+            final String t = tex.get("itemTexture");
+            if (t != null) Rendering.registerImage(t, null);
         }
         for (Map<String, String> tex : KeyItem.keyTextures.values()) {
-            String t = tex.get("texture");
-            if (t != null) Rendering.texture(t, null);
+            final String t = tex.get("texture");
+            if (t != null) Rendering.registerImage(t, null);
         }
         for (Map<String, String> tex : Effect.effectTextures.values()) {
-            String t = tex.get("texture");
-            if (t != null) Rendering.texture(t, null);
+            final String t = tex.get("texture");
+            if (t != null) Rendering.registerImage(t, null);
+        }
+
+        // Biome overlays
+        for (Map<String, String> texMap : Biome.biometextureMap.values()) {
+            final String overlay = texMap.get("overlayTexture");
+            if (overlay != null) Rendering.registerImage(overlay, null);
         }
 
         // Tiles: edge textures only, respecting natColorEdge per biome
@@ -344,18 +380,31 @@ public class FileManager {
             if (natColorEdgeId != null) {
                 for (Map<String, String> biomeColors : Biome.biometextureMap.values()) {
                     final String color = biomeColors.get(natColorEdgeId);
-                    if (color != null) Rendering.texture(edgeTex, color);
+                    if (color != null) Rendering.registerImage(edgeTex, color);
                 }
             } else {
-                Rendering.texture(edgeTex, tex.get("baseColorEdge"));
+                Rendering.registerImage(edgeTex, tex.get("baseColorEdge"));
             }
         }
+    }
+
+    private static List<String> objSuffixes(Map<String, String> tex, Map<String, Number> attrs) {
+        final String anim = tex.getOrDefault("anim", "");
+        final int variants = attrs.getOrDefault("variants", 1).intValue();
+
+        final List<String> result = new ArrayList<>();
+        for (int v = variants > 1 ? 1 : 0; variants > 1 ? v <= variants : v < 1; v++) {
+            final String variantSuffix = variants > 1 ? "_" + v : "";
+            result.add(variantSuffix);
+            if (anim.contains("_destroyed_")) result.add(variantSuffix + "_destroyed");
+        }
+        return result;
     }
 
     // Returns all possible image filename suffix combinations for a given animation string,
     // matching the order Entity.render() appends them (direction, then each state in sequence).
     // Uses a power set of states so multi-state combos like _chase_shoot are included.
-    private static List<String> animImageSuffixes(String anim) {
+    private static List<String> entitySuffixes(String anim) {
         List<String> dirs;
         if (anim.contains("_xy_")) {
             dirs = List.of("_up", "_right", "_down", "_left");

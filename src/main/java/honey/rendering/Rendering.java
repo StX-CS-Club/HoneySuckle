@@ -11,9 +11,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,30 +52,84 @@ public final class Rendering {
     //Fonts
     public static final Map<String, Font> fonts = new HashMap<>();
 
+    public static String imageKey(String primary, String secondary) {
+        return primary + ":" + secondary;
+    }
+
+    public static int frameCount(String path) {
+        Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
+        if (gifMap != null && !gifMap.isEmpty()) {
+            return gifMap.values().iterator().next().size();
+        }
+
+        registerGIF(path, null);
+        gifMap = gifFrames.get(path);
+        if (gifMap != null && !gifMap.isEmpty()) {
+            return gifMap.values().iterator().next().size();
+        }
+        return 0;
+    }
+
+    public static void registerImage(String texture, String color) {
+        final String path = "sprites/" + texture;
+        if (textures.computeIfAbsent(path, k -> new HashMap<>()).containsKey(color)) return;
+        final URL url = HoneySuckle.class.getResource("/images/" + path + ".png");
+        if (url == null) return;
+        try {
+            final BufferedImage base = ImageIO.read(url);
+            textures.get(path).put(null, base);
+            textures.get(path).put(color, replaceGradient(base, color));
+        } catch (IOException e) { }
+    }
+
+    public static void registerGIF(String path, String color) {
+        if (gifFrames.computeIfAbsent(path, k -> new HashMap<>()).containsKey(color)) return;
+        final URL url = HoneySuckle.class.getResource("/images/animations/" + path + ".png");
+        if (url == null) return;
+        try {
+            final BufferedImage sheet = ImageIO.read(url);
+            final int frameSize = sheet.getHeight();
+            final int numFrames = sheet.getWidth() / frameSize;
+            final List<BufferedImage> frames = new ArrayList<>();
+            final BufferedImage colored = replaceGradient(sheet, color);
+            for (int i = 0; i < numFrames; i++) {
+                frames.add(colored.getSubimage(i * frameSize, 0, frameSize, frameSize));
+            }
+            gifFrames.get(path).put(color, frames);
+        } catch (IOException e) { }
+    }
+
     //Render sprite
     public static BufferedImage image(String texture) {
+        return image(texture, null);
+    }
+
+    public static BufferedImage image(String texture, String color) {
         //If already rendered, return
-        Map<String, BufferedImage> textureMap = textures.get(texture);
+        final Map<String, BufferedImage> textureMap = textures.get(texture);
         if (textureMap != null) {
-            BufferedImage result = textureMap.get(null);
+            final BufferedImage result = textureMap.get(color);
             if (result != null) {
                 return result;
             }
         } else {
             textures.put(texture, new HashMap<>());
         }
-        //Result image
-        BufferedImage result;
-        try {
-            //Gray scale texture
-            result = ImageIO.read(HoneySuckle.class.getResource("/images/" + texture + ".png"));
-            textures.get(texture).put(null, result);
-            return result;
-        } catch (IOException e) {
-            System.out.println("HoneySuckle ERROR: Could not find sprite: " + texture);
+
+        BufferedImage baseImage = textures.get(texture).get(null);
+        if (baseImage == null) {
+            try {
+                baseImage = ImageIO.read(HoneySuckle.class.getResource("/images/" + texture + ".png"));
+                textures.get(texture).put(null, baseImage);
+            } catch (IOException e) {
+                System.out.println("HoneySuckle ERROR: Could not find sprite: " + texture);
+                return null;
+            }
         }
-        //If error, return null
-        return null;
+        //Gray scale texture
+        final BufferedImage result = replaceGradient(baseImage, color);
+        textures.get(texture).put(color, result);
+        return result;
     }
 
     public static BufferedImage texture(String texture) {
@@ -86,56 +138,35 @@ public final class Rendering {
 
     //Render sprite
     public static BufferedImage texture(String texture, String color) {
-        //If already rendered, return
-        Map<String, BufferedImage> textureMap = textures.get(texture);
-        if (textureMap != null) {
-            BufferedImage result = textureMap.get(color);
-            if (result != null) {
-                return result;
-            }
-        } else {
-            textures.put(texture, new HashMap<>());
-        }
-        //Result image
-        BufferedImage result;
-        try {
-            final URL url = HoneySuckle.class.getResource("/images/sprites/" + texture + ".png");
-            if (url == null) return null;
-            result = replaceGradient(ImageIO.read(url), color);
-            textures.get(texture).put(color, result);
-            return result;
-        } catch (IOException e) {
-            System.out.println("HoneySuckle ERROR: Could not find sprite: " + texture);
-        }
-        return null;
+        return image("sprites/" + texture, color);
     }
 
     //Grey scale image
     public static BufferedImage replaceGradient(BufferedImage image, String color) {
-        BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         result.getGraphics().drawImage(image, 0, 0, null);
         if (color == null) {
             return result;
         }
         //Shade to replace with
-        Color shade = decodeColor(color);
-        int shadeR = shade.getRed();
-        int shadeG = shade.getGreen();
-        int shadeB = shade.getBlue();
+        final Color shade = decodeColor(color);
+        final int shadeR = shade.getRed();
+        final int shadeG = shade.getGreen();
+        final int shadeB = shade.getBlue();
         //Go through ALL pixels of image
         for (int x = 0; x < result.getWidth(); x++) {
             for (int y = 0; y < result.getHeight(); y++) {
-                int argb = image.getRGB(x, y);
-                int a = (argb >>> 24) & 0xFF;
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >>  8) & 0xFF;
-                int b =  argb        & 0xFF;
+                final int argb = image.getRGB(x, y);
+                final int a = (argb >>> 24) & 0xFF;
+                final int r = (argb >> 16) & 0xFF;
+                final int g = (argb >> 8) & 0xFF;
+                final int b = argb & 0xFF;
                 //If shade of grey...
                 if (r == g && r == b && r != 0) {
                     //Set grey as percentage of shade
-                    int nr = r * shadeR / 255;
-                    int ng = r * shadeG / 255;
-                    int nb = r * shadeB / 255;
+                    final int nr = r * shadeR / 255;
+                    final int ng = r * shadeG / 255;
+                    final int nb = r * shadeB / 255;
                     result.setRGB(x, y, (a << 24) | (nr << 16) | (ng << 8) | nb);
                 }
             }
@@ -172,14 +203,14 @@ public final class Rendering {
                 light2d.fill(circle);
             }
             if (light.get("glow") != null && light.get("color") != null) {
-                Color glowColor = new Color(light.get("color").intValue());
-                int glowValue = light.get("glow").intValue();
+                final Color glowColor = new Color(light.get("color").intValue());
+                final int glowValue = light.get("glow").intValue();
                 final int glowRadius = (int) Math.floor(light.get("glowRadius").doubleValue() * TILE_SIZE / LIGHT_SCALE);
                 if (glowRadius != 0) {
-                final Ellipse2D circle = new Ellipse2D.Double(
-                        center.getX() - radius,
-                        center.getY() - radius,
-                        radius * 2, radius * 2);
+                    final Ellipse2D circle = new Ellipse2D.Double(
+                            center.getX() - radius,
+                            center.getY() - radius,
+                            radius * 2, radius * 2);
                     glow2d.setPaint(new RadialGradientPaint(
                             center,
                             glowRadius,
@@ -200,19 +231,19 @@ public final class Rendering {
     public static void drawLight(Graphics2D g, BufferedImage original, Color blendColor) {
 
         //Light map data
-        int width = original.getWidth();
-        int height = original.getHeight();
+        final int width = original.getWidth();
+        final int height = original.getHeight();
 
-        BufferedImage transparent = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage transparent = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-        int br = blendColor.getRed();
-        int bg = blendColor.getGreen();
-        int bb = blendColor.getBlue();
+        final int br = blendColor.getRed();
+        final int bg = blendColor.getGreen();
+        final int bb = blendColor.getBlue();
         //Go through all light map pixels...
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 //Replace light map black px with light color opacity
-                int alpha = (original.getRGB(x, y) >>> 24) & 0xFF;
+                final int alpha = (original.getRGB(x, y) >>> 24) & 0xFF;
                 transparent.setRGB(x, y, ((255 - alpha) << 24) | (br << 16) | (bg << 8) | bb);
             }
         }
@@ -243,9 +274,9 @@ public final class Rendering {
 
     //Render frame from horizontal PNG sprite sheet under animations/
     public static BufferedImage renderGIF(String path, String color, double frame) {
-        Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
+        final Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
         if (gifMap != null) {
-            List<BufferedImage> frames = gifMap.get(color);
+            final List<BufferedImage> frames = gifMap.get(color);
             if (frames != null) {
                 return frames.get((int) Math.floor(frame * frames.size()));
             }
@@ -253,39 +284,85 @@ public final class Rendering {
             gifFrames.put(path, new HashMap<>());
         }
 
-        List<BufferedImage> frames = new ArrayList<>();
-        try {
-            final URL url = HoneySuckle.class.getResource("/images/animations/" + path + ".png");
-            if (url == null) {
-                System.out.println("HoneySuckle ERROR: Could not find animation: " + path);
-                return null;
-            }
-            BufferedImage sheet = ImageIO.read(url);
-            int frameSize = sheet.getHeight();
-            int numFrames = sheet.getWidth() / frameSize;
-            for (int i = 0; i < numFrames; i++) {
-                BufferedImage slice = sheet.getSubimage(i * frameSize, 0, frameSize, frameSize);
-                frames.add(replaceGradient(slice, color));
-            }
-            gifFrames.get(path).put(color, frames);
-        } catch (IOException e) {
-            System.out.println("HoneySuckle ERROR: Failed to load animation: " + path);
-            return null;
+        final List<BufferedImage> frames = new ArrayList<>();
+        final BufferedImage sheet = image("animations/" + path, color);
+        final int frameSize = sheet.getHeight();
+        final int numFrames = sheet.getWidth() / frameSize;
+        for (int i = 0; i < numFrames; i++) {
+            final BufferedImage slice = sheet.getSubimage(i * frameSize, 0, frameSize, frameSize);
+            frames.add(replaceGradient(slice, color));
         }
+        gifFrames.get(path).put(color, frames);
         return frames.get((int) Math.floor(frame * frames.size()));
+    }
+
+    public static BufferedImage renderGIF(String path, String color, int frame) {
+        final Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
+        if (gifMap != null) {
+            final List<BufferedImage> frames = gifMap.get(color);
+            if (frames != null) {
+                return frames.get(Math.min(frame, frames.size() - 1));
+            }
+        } else {
+            gifFrames.put(path, new HashMap<>());
+        }
+
+        final List<BufferedImage> frames = new ArrayList<>();
+        final BufferedImage sheet = image("animations/" + path, color);
+        final int frameSize = sheet.getHeight();
+        final int numFrames = sheet.getWidth() / frameSize;
+        for (int i = 0; i < numFrames; i++) {
+            final BufferedImage slice = sheet.getSubimage(i * frameSize, 0, frameSize, frameSize);
+            frames.add(replaceGradient(slice, color));
+        }
+        gifFrames.get(path).put(color, frames);
+        return frames.get(Math.min(frame, frames.size() - 1));
     }
 
     //Apply opacity overlay to image, cached by base image identity and overlay parameters
     public static BufferedImage applyOverlay(String texturePath, String textureColor, String overlayColor, int alpha) {
-        final String imageKey = texturePath + ":" + textureColor;
-        final String overlayKey = overlayColor + ":" + alpha;
+        final String imageKey = imageKey(texturePath, textureColor);
+        final String overlayKey = imageKey(overlayColor, String.valueOf(alpha));
 
         final Map<String, BufferedImage> imageOverlays = overlayCache.computeIfAbsent(imageKey, k -> new HashMap<>());
         final BufferedImage cached = imageOverlays.get(overlayKey);
-        if (cached != null) return cached;
+        if (cached != null) {
+            return cached;
+        }
 
         final BufferedImage source = texture(texturePath, textureColor);
-        if (source == null) return null;
+        if (source == null) {
+            return null;
+        }
+
+        final int width = source.getWidth();
+        final int height = source.getHeight();
+
+        final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = result.createGraphics();
+        g.drawImage(source, 0, 0, null);
+        g.setComposite(AlphaComposite.SrcAtop);
+        final Color c = decodeColor(overlayColor);
+        g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
+        g.fillRect(0, 0, width, height);
+        g.dispose();
+
+        imageOverlays.put(overlayKey, result);
+        return result;
+    }
+
+    public static BufferedImage applyOverlay(BufferedImage source, String imageKey, String overlayColor, int alpha) {
+        final String overlayKey = imageKey(overlayColor, String.valueOf(alpha));
+
+        final Map<String, BufferedImage> imageOverlays = overlayCache.computeIfAbsent(imageKey, k -> new HashMap<>());
+        final BufferedImage cached = imageOverlays.get(overlayKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        if (source == null) {
+            return null;
+        }
 
         final int width = source.getWidth();
         final int height = source.getHeight();
@@ -317,7 +394,7 @@ public final class Rendering {
     }
 
     public static void centeredText(Graphics2D g, String text, int x, int y) {
-        int fontOffset = g.getFontMetrics().stringWidth(text) / 2;
+        final int fontOffset = g.getFontMetrics().stringWidth(text) / 2;
 
         g.drawString(text, x - fontOffset, y);
     }
@@ -328,7 +405,7 @@ public final class Rendering {
         // Sets the font size to fit within box
         for (int f = maxFontSize; f > 0; f--) {
             g.setFont(new Font("VT323 Regular", Font.PLAIN, f));
-            int fontSize = g.getFontMetrics().stringWidth(text);
+            final int fontSize = g.getFontMetrics().stringWidth(text);
             if (fontSize < width) {
                 fontOffset = fontSize / 2;
                 break;
@@ -339,8 +416,8 @@ public final class Rendering {
     }
 
     public static BufferedImage scroll(int length) {
-        BufferedImage result = new BufferedImage(length * 4 + 8, 32, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = result.createGraphics();
+        final BufferedImage result = new BufferedImage(length * 4 + 8, 32, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = result.createGraphics();
 
         g.drawImage(Rendering.texture("ui/scroll/scroll_end", null), 0, 0, 4, 32, null);
         for (int i = 0; i < length; i++) {
@@ -353,20 +430,20 @@ public final class Rendering {
 
     public static BufferedImage rotateImage(BufferedImage image, double degrees) {
         // Convert angle to radians
-        double angle = Math.toRadians(degrees);
+        final double angle = Math.toRadians(degrees);
 
-        int w = image.getWidth();
-        int h = image.getHeight();
+        final int w = image.getWidth();
+        final int h = image.getHeight();
 
         // Calculate new dimensions after rotation
-        double sin = Math.abs(Math.sin(angle));
-        double cos = Math.abs(Math.cos(angle));
-        int newW = (int) Math.floor(w * cos + h * sin);
-        int newH = (int) Math.floor(h * cos + w * sin);
+        final double sin = Math.abs(Math.sin(angle));
+        final double cos = Math.abs(Math.cos(angle));
+        final int newW = (int) Math.floor(w * cos + h * sin);
+        final int newH = (int) Math.floor(h * cos + w * sin);
 
         // Create a new image with the new dimensions and an alpha channel
-        BufferedImage rotated = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = rotated.createGraphics();
+        final BufferedImage rotated = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = rotated.createGraphics();
 
         // Maintain image quality
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -399,7 +476,7 @@ public final class Rendering {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
     }
 
-    public static void imageFactor(BufferedImage image, Graphics2D g, int x, int y, int w, int h, double factor){
+    public static void imageFactor(BufferedImage image, Graphics2D g, int x, int y, int w, int h, double factor) {
         g.drawImage(image, (int) (x - w * (factor - 1) / 2), (int) (y - h * (factor - 1) / 2), (int) (w * factor), (int) (h * factor), null);
     }
 }
