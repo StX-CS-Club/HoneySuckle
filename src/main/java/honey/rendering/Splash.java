@@ -34,10 +34,10 @@ public class Splash {
 
     private final int[] size = new int[2];
 
-    public Splash(Map<String, Number> itemData) {
+    public Splash(Map<String, Number> itemData, int count) {
         final int intId = itemData.get("id").intValue();
         final int type = itemData.getOrDefault("type", 0).intValue();
-        count = itemData.getOrDefault("count", 1).intValue();
+        this.count = count;
         switch (type) {
             case 0 -> {
                 final String stringId = Item.itemStringId.get(intId);

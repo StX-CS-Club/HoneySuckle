@@ -147,17 +147,17 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             lights.clear();
 
             //Renders World
-            World world = World.worlds.get(World.level);
+            final World world = World.worlds.get(World.level);
             world.render(g2d);
             //Renders Players
             for (Player renderPlayer : Player.players) {
                 renderPlayer.render(g2d);
             }
 
-            Biome biome = World.worlds.get(World.level).biome;
+            final Biome biome = World.worlds.get(World.level).biome;
             //Renders fog, is present
             if (biome.tags.contains("fog")) {
-                Color fogColor = Rendering.decodeColor(biome.textureMap.get("fogColor"));
+                final Color fogColor = Rendering.decodeColor(biome.textureMap.get("fogColor"));
                 Rendering.renderLight(g2d, fogColor, lights);
             }
             

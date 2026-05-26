@@ -169,10 +169,10 @@ public class Inventory {
                             if (keyHover > -1 && keyHover < keyItems.size()) {
                                 keyItems.get(keyHover).use(player);
                             }
-                        } else if(input.clickPressed(3)){
+                        } else if (input.clickPressed(3)) {
                             if (keyHover > -1 && keyHover < keyItems.size()) {
                                 KeyItem keyItem = keyItems.get(keyHover);
-                                if(player.armory.hotKey == keyItem){
+                                if (player.armory.hotKey == keyItem) {
                                     player.armory.hotKey = null;
                                 } else {
                                     player.armory.hotKey = keyItem;
@@ -260,7 +260,7 @@ public class Inventory {
                             keyItem.renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1);
                         }
 
-                        if(keyItem == player.armory.hotKey){
+                        if (keyItem == player.armory.hotKey) {
                             g.drawImage(Rendering.texture("ui/symbols/hotkey", "#ffffff"), GAME_WIDTH / 2 - 12 + offset, GAME_HEIGHT / 2 - 85, 24, 24, null);
                         }
                     }
@@ -284,6 +284,12 @@ public class Inventory {
             final double countProb = itemData.getOrDefault("countProb", 0).doubleValue();
             while (ThreadLocalRandom.current().nextDouble() <= countProb) {
                 count++;
+                System.out.println(countProb);
+                System.out.println("Count increased to " + count);
+            }
+
+            if (count == 0) {
+                return;
             }
 
             final int type = itemData.getOrDefault("type", 0).intValue();
@@ -405,10 +411,9 @@ public class Inventory {
             }
 
             if (gain) {
-                Splash splash = getSplash(type+":"+stringId);
+                Splash splash = getSplash(type + ":" + stringId);
                 if (splash == null) {
-                    itemData.put("count", count);
-                    splash = new Splash(itemData);
+                    splash = new Splash(itemData, count);
                     splashes.add(splash);
                 } else {
                     splash.count += count;
@@ -488,7 +493,6 @@ public class Inventory {
         }
         return null;
     }
-    
 
     private KeyItem getKeyItem(String keyId) {
         for (KeyItem keyItem : keyItems) {

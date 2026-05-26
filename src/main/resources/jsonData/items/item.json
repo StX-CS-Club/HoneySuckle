@@ -83,5 +83,13 @@
         "texture": {
             "texture": "items/gunpowder"
         }
+    },
+    "honeycomb": {
+        "id": 11,
+        "name": "Honeycomb",
+        "recipeUnlocks": ["honeycombHelm"],
+        "texture": {
+            "texture": "items/honeycomb"
+        }
     }
 }

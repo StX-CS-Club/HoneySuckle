@@ -61,5 +61,19 @@
         "count": 2
       }
     ]
+  },
+  "honeycombHelm": {
+    "name": "Honeycomb Helm",
+    "type": "armor",
+    "products": [{ "id": 6, "type": 2 }],
+    "texture": {
+      "texture": "armor/honeycomb_helm/item"
+    },
+    "mats": [
+      {
+        "id": 11,
+        "count": 10
+      }
+    ]
   }
 }

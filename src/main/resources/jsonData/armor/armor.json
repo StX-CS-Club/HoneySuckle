@@ -116,5 +116,31 @@
         "Speed": "1.1",
         "Health": "1.5"
     }
+  },
+  "honeycombHelm": {
+    "name": "Honeycomb Helm",
+    "id": 6,
+    "texture": {
+      "texture": "armor/honeycomb_helm/top",
+      "frontTexture": "armor/honeycomb_helm/front",
+      "backTexture": "armor/honeycomb_helm/back",
+      "itemTexture": "armor/honeycomb_helm/item",
+      "rarityColor": "#57a5ff"
+    },
+    "attributes": {
+      "defense": 1.1,
+      "regen": 0.00175,
+      "speed": 0.11,
+      "maxHealth": 1.5,
+      "immunity": 2.25,
+      "immunityDegen": 0.14
+    },
+    "stats": {
+        "Defense": "1.1",
+        "Regen": "1.75",
+        "Speed": "1.1",
+        "Health": "1.5",
+        "Immunity": "2.25"
+    }
   }
 }
