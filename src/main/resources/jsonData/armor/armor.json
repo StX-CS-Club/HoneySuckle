@@ -81,14 +81,14 @@
     "attributes": {
       "defense": 0.75,
       "regen": 0.0025,
-      "speed": 0.08,
+      "speed": 0.09,
       "maxHealth": 1.0,
       "lightRadius": 9
     },
     "stats": {
         "Defense": "0.75",
         "Regen": "2.5",
-        "Speed": "0.8",
+        "Speed": "0.9",
         "Health": "1",
         "Light": "9"
     }

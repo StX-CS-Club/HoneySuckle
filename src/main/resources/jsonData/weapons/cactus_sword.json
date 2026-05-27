@@ -5,9 +5,9 @@
     "tags": ["constClick"],
     "stats": {
       "Type": "Sword",
-      "Damage": "9",
+      "Damage": "7",
       "Size": "1.1",
-      "Speed": "2"
+      "Speed": "1.75"
     },
     "texture": {
       "swingColor": "#00db33",
@@ -19,8 +19,8 @@
     },
     "behavior": {
       "swing": {
-        "damage": 0.09,
-        "cooldown": 20,
+        "damage": 0.07,
+        "cooldown": 22,
         "frames": 10,
         "size": 1.1
       }

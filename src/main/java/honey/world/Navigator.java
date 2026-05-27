@@ -23,6 +23,7 @@ public class Navigator {
 
     private final World world;
     private final int[] size;
+    private final int mapPixel;
     private final int mapHeight;
     private final int mapCount;
 
@@ -40,9 +41,14 @@ public class Navigator {
         this.world = world;
         size = world.size;
 
-        mapHeight = (int) Math.ceil((size[1] * MAP_PIXEL) * 16 / 14.0) + 1;
+        mapPixel = Math.max(1, Math.min(MAP_PIXEL, Math.min(
+            (GAME_WIDTH - 2 * MAP_WIDTH) / size[0],
+            GAME_HEIGHT / size[1]
+        )));
 
-        mapCount = (int) Math.ceil(size[0] * MAP_PIXEL / (double) MAP_WIDTH);
+        mapHeight = (int) Math.ceil((size[1] * mapPixel) * 16 / 14.0) + 1;
+
+        mapCount = (int) Math.ceil(size[0] * mapPixel / (double) MAP_WIDTH);
 
         scrollPosY = GAME_HEIGHT / 2 - mapHeight / 2;
         scrollPosX = new int[]{
@@ -50,8 +56,8 @@ public class Navigator {
             GAME_WIDTH / 2 + mapCount * MAP_WIDTH / 2,};
 
         mapPos = new int[]{
-            GAME_WIDTH / 2 - size[0] * MAP_PIXEL / 2,
-            GAME_HEIGHT / 2 - size[1] * MAP_PIXEL / 2,};
+            GAME_WIDTH / 2 - size[0] * mapPixel / 2,
+            GAME_HEIGHT / 2 - size[1] * mapPixel / 2,};
     }
 
     public void update(InputHandler input) {
@@ -85,11 +91,11 @@ public class Navigator {
                 }
             }
 
-            g.drawImage(mapImage, mapPos[0], mapPos[1], MAP_PIXEL * size[0], MAP_PIXEL * size[1], null);
+            g.drawImage(mapImage, mapPos[0], mapPos[1], mapPixel * size[0], mapPixel * size[1], null);
 
             for (Structure icon : icons) {
                 if (icon.mapTexture != null) {
-                    g.drawImage(icon.mapTexture, (int) (mapPos[0] + icon.pos[0] * MAP_PIXEL - 8), (int) (mapPos[1] + icon.pos[1] * MAP_PIXEL - 8), 16, 16, null);
+                    g.drawImage(icon.mapTexture, (int) (mapPos[0] + icon.pos[0] * mapPixel - 8), (int) (mapPos[1] + icon.pos[1] * mapPixel - 8), 16, 16, null);
                 }
             }
 
@@ -98,8 +104,8 @@ public class Navigator {
                 AffineTransform originalTransform = g.getTransform();
 
                 final int[] playerMapPos = new int[]{
-                    (int) (mapPos[0] + player.pos[0] / TILE_SIZE * MAP_PIXEL),
-                    (int) (mapPos[1] + player.pos[1] / TILE_SIZE * MAP_PIXEL)
+                    (int) (mapPos[0] + player.pos[0] / TILE_SIZE * mapPixel),
+                    (int) (mapPos[1] + player.pos[1] / TILE_SIZE * mapPixel)
                 };
 
                 g.rotate(Math.toRadians(player.mapRotation), playerMapPos[0], playerMapPos[1]);

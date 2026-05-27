@@ -75,8 +75,12 @@
               "loot": [
                 {
                   "id": 2,
+                  "type": 3
+                },
+                {
+                  "id": 2,
                   "type": 3,
-                  "countProb": 0.7,
+                  "countProb": 0.75,
                   "count": 0
                 }
               ]

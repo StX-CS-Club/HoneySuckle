@@ -14,7 +14,7 @@
             "overlaySpeed": 1.5
         },
         "generation": {
-            "size": [101, 110],
+            "size": [101, 125],
             "startMap": [[1, 1, 1]],
             "base": 11,
             "tiles": [

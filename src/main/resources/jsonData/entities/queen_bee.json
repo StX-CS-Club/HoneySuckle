@@ -30,17 +30,18 @@
         "range": 25.0,
         "speed": 1.0,
         "frames": 10,
-        "cooldown": 60.0,
-        "proj": 8
+        "cooldown": 55,
+        "proj": 8,
+        "prediction": 5
       },
       "summon": {
         "tickId": "shoot",
         "range": 25,
         "frames": 10,
-        "cooldown": 70,
+        "cooldown": 65,
         "entity": 5,
         "count": 1,
-        "speed": 0.5,
+        "speed": 1.0,
         "countProb": 0.5
       }
     }

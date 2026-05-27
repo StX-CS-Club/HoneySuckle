@@ -16,6 +16,10 @@
     "loot": [
       {
         "id": 6
+      },
+      {
+        "id": 6,
+        "prob": 0.25
       }
     ],
     "tags": ["alwaysRender", "boss"],
