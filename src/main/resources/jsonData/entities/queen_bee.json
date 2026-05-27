@@ -1,0 +1,48 @@
+{
+  "queen_bee": {
+    "id": 6,
+    "name": "Queen Bee",
+    "texture": {
+      "baseColor": "#B49000",
+      "gif": "entities/queen_bee/queen_bee",
+      "anim": "_gif_hover_x_shoot_summon_"
+    },
+    "attributes": {
+      "animFrames": 5,
+      "size": 3.0,
+      "health": 20.0,
+      "weight": 1.0,
+      "healthBarDistance": 40,
+      "frameSize": 32
+    },
+    "tags": ["flying", "alwaysRender", "boss"],
+    "loot": [{ "id": 11, "countProb": 0.5 }, { "id": 12 }],
+    "brain": {
+      "chase": {
+        "range": 30.0,
+        "speed": 0.15,
+        "hesitateRange": 5
+      },
+      "shoot": {
+        "tickId": "shoot",
+        "resetOnFail": false,
+        "prob": 0.67,
+        "range": 25.0,
+        "speed": 1.0,
+        "frames": 10,
+        "cooldown": 60.0,
+        "proj": 8
+      },
+      "summon": {
+        "tickId": "shoot",
+        "range": 25,
+        "frames": 10,
+        "cooldown": 70,
+        "entity": 5,
+        "count": 1,
+        "speed": 0.5,
+        "countProb": 0.5
+      }
+    }
+  }
+}

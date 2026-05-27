@@ -21,6 +21,7 @@ public class Craft {
 
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
     private static final Color DARK_GREEN = new Color(0, 160, 0);
 
     //Static json data
@@ -122,9 +123,14 @@ public class Craft {
             List<Map<String, Number>> mats = recipeMats.get(recipe);
 
             // Render Scroll
-            int scrollWidth = Math.ceilDiv(Math.max(textSize, mats.size() * 60), 16);
+            final int scale = (int) Math.floor(2.5 * HUD_SIZE / 32);
+            int scrollWidth = Math.ceilDiv(Math.max(textSize, mats.size() * 60), 4 * scale);
+            final int renderedW = (scrollWidth * 4 + 8) * scale;
+            final int renderedH = 32 * scale;
+            final int scrollTop = 20;
+            final int scrollX = (GAME_WIDTH - renderedW) / 2;
 
-            g.drawImage(Rendering.scroll(scrollWidth), (int) (GAME_WIDTH - scrollWidth * 16) / 2 - 16, 40, scrollWidth * 16 + 32, 128, null);
+            g.drawImage(Rendering.scroll(scrollWidth), scrollX, scrollTop, renderedW, renderedH, null);
 
             // Render Title
             if (hasMaterials(player, recipe)) {
@@ -133,7 +139,7 @@ public class Craft {
                 g.setColor(Color.RED);
             }
 
-            g.drawString(name, (int) (GAME_WIDTH - textSize) / 2, 80);
+            g.drawString(name, (int) (GAME_WIDTH - textSize) / 2, scrollTop + 10 * scale);
 
             for (int i = 0; i < mats.size(); i++) {
                 Map<String, Number> material = mats.get(i);
@@ -160,7 +166,7 @@ public class Craft {
                 int x = (int) (GAME_WIDTH - mats.size() * 60) / 2 + i * 60;
 
                 if (texture != null) {
-                    g.drawImage(Rendering.texture(texture, null), x + 5, 90, 50, 50, null);
+                    g.drawImage(Rendering.texture(texture, null), x + 5, scrollTop + scale * 50 / 4, 50, 50, null);
                 }
 
                 String label = "x" + count;
@@ -170,7 +176,7 @@ public class Craft {
                 } else {
                     g.setColor(Color.RED);
                 }
-                Rendering.centeredText(g, label, x + 30, 150);
+                Rendering.centeredText(g, label, x + 30, scrollTop + scale * 110 / 4);
             }
         }
     }

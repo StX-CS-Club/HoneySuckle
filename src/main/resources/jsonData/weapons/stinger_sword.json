@@ -1,0 +1,29 @@
+{
+  "stinger_sword": {
+    "name": "Stinger Sword",
+    "id": 11,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Sword",
+      "Damage": "7.5",
+      "Size": "0.9",
+      "Speed": "3"
+    },
+    "texture": {
+      "itemTexture": "weapons/stinger_sword/item",
+      "texture": "weapons/stinger_sword/stinger_sword",
+      "animation": "_swing_",
+      "type": "side",
+      "swingColor": "#4E6EFF",
+      "rarityColor": "#57a5ff"
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.09375,
+        "cooldown": 13,
+        "frames": 8,
+        "size": 0.9
+      }
+    }
+  }
+}

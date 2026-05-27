@@ -20,6 +20,7 @@ import honey.rendering.Rendering;
 public class Armor {
 
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
 
     //Static json data
     public static final Map<String, Map<String, String>> armorTextures = new HashMap<>();
@@ -79,18 +80,23 @@ public class Armor {
     }
 
     public void renderScroll(Graphics2D g) {
-        int scrollLength = stats.size() + 3;
-        g.drawImage(Rendering.rotateImage(Rendering.scroll(scrollLength), 90), 25, (int) (GAME_HEIGHT - scrollLength * 32) / 2, 256, scrollLength * 32, null);
+        final int scale = (int) Math.floor(3.5 * HUD_SIZE / 32);
+        final int scrollLength = stats.size() + 3;
+        final int renderedW = 32 * scale;
+        final int renderedH = scrollLength * 4 * scale;
+        final int scrollY = (GAME_HEIGHT - renderedH) / 2;
+        final int scrollCenterX = 25 + renderedW / 2;
+        g.drawImage(Rendering.rotateImage(Rendering.scroll(scrollLength), 90), 25, scrollY, renderedW, renderedH, null);
 
         g.setColor(Rendering.decodeColor(texture.getOrDefault("rarityColor", "#333333")));
 
-        Rendering.centeredText(g, name, 153, (int) (GAME_HEIGHT - scrollLength * 32) / 2 + 48, 192, 32);
+        Rendering.centeredText(g, name, scrollCenterX, scrollY + 6 * scale, renderedW, 32);
 
         g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
         g.setColor(Color.BLACK);
         String[] statKeys = stats.keySet().toArray(String[]::new);
         for (int i = 0; i < statKeys.length; i++) {
-            Rendering.centeredText(g, statKeys[i] + ": " + stats.get(statKeys[i]), 153, (int) (GAME_HEIGHT - scrollLength * 32) / 2 + 80 + 32 * i);
+            Rendering.centeredText(g, statKeys[i] + ": " + stats.get(statKeys[i]), scrollCenterX, scrollY + 10 * scale + 4 * scale * i);
         }
     }
 

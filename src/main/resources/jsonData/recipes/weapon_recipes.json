@@ -65,35 +65,22 @@
       }
     ]
   },
-  "woodenArrow": {
-    "name": "Wooden Arrow",
-    "type": "ammo",
-    "products": [{ "id": 1, "type": 3}],
+  "stingerSword": {
+    "name": "Stinger Sword",
+    "type": "weapon",
+    "products": [{"id": 11, "type": 1}],
     "texture": {
-      "texture": "ammo/wooden_arrow"
+      "texture": "weapons/stinger_sword/item"
     },
-    "mats": [
-      {
-        "id": 1
-      }
-    ]
+    "mats": [{ "id": 12 }, { "id": 1, "count": 5 }, { "id": 11, "count": 3 }]
   },
-  "shotgunShell": {
-    "name": "Shotgun Shells",
-    "type": "ammo",
-    "products": [{ "id": 3, "type": 3, "count": 5}],
+  "stingerSpear": {
+    "name": "Stinger Spear",
+    "type": "weapon",
+    "products": [{"id": 12, "type": 1}],
     "texture": {
-      "texture": "ammo/shotgun_shell"
+      "texture": "weapons/stinger_spear/item"
     },
-    "mats": [
-      {
-        "id": 10,
-        "count": 2
-      },
-      {
-        "id": 9,
-        "count": 3
-      }
-    ]
+    "mats": [{ "id": 12 }, { "id": 1, "count": 5 }, { "id": 11, "count": 3 }]
   }
 }

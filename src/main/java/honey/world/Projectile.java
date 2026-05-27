@@ -259,8 +259,8 @@ public class Projectile {
                 }
             }
         }
-        //If can hurt entity, query collision grid for nearby candidates
-        if (tags.contains("hurtEntity")) {
+        //If can hurt entity or boss, query collision grid for nearby candidates
+        if (tags.contains("hurtEntity") || tags.contains("hurtBoss")) {
             final int px0 = Math.max(0, (int) Math.floor((pos[0] - circumradius) / TILE_SIZE));
             final int px1 = Math.min(world.size[0] - 1, (int) Math.floor((pos[0] + circumradius) / TILE_SIZE));
             final int py0 = Math.max(0, (int) Math.floor((pos[1] - circumradius) / TILE_SIZE));
@@ -271,6 +271,7 @@ public class Projectile {
                     if (bucket == null) continue;
                     for (Entity entity : bucket) {
                         if (hitEntities.contains(entity)) continue;
+                        if (!tags.contains("hurtEntity") && !entity.tags.contains("boss")) continue;
                         //If can hurt source or is not source...
                         if (source != entity || tags.contains("hurtSource")) {
                             //Check collision

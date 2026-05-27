@@ -175,7 +175,8 @@ public class WorldObject {
     private BufferedImage getFrame(String postfix) {
         String textureString = texture.get("gif");
         if (textureString != null) {
-            return Rendering.renderGIF(textureString + postfix, color, frame / (double) maxFrames);
+            final int frameSize = attributes.getOrDefault("frameSize", 16).intValue();
+            return Rendering.renderGIF(textureString + postfix, color, frame / (double) maxFrames, frameSize, frameSize);
         }
         return null;
     }

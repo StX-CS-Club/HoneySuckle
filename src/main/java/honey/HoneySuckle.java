@@ -124,7 +124,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     public static void start() {
         //Creates world 1
-        World world = new World("hive");
+        World world = new World();
         //Creates main player in reference to world 1
         player = new Player(new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.start[1] + 0.5)},
                 (int) (TILE_SIZE * 0.75), Arrays.asList("leader"));

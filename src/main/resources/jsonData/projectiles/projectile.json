@@ -102,5 +102,18 @@
     "texture": {
       "texture": "projectiles/explosion"
     }
+  },
+  "bee_glob": {
+    "name": "Bee Glob",
+    "id": 8,
+    "tags": ["hurtBoss", "hurtPlayer", "damageTile"],
+    "attributes": {
+      "damage": 0.5,
+      "speed": 0.3,
+      "size": 0.75
+    },
+    "texture": {
+      "texture": "projectiles/bee_glob"
+    }
   }
 }

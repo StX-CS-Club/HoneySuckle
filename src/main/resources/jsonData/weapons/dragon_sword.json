@@ -9,7 +9,7 @@
     },
     "behavior": {
       "swing": {
-        "damage": 0.2,
+        "damage": 0.1,
         "cooldown": 20,
         "frames": 10,
         "size": 1.5
@@ -17,7 +17,7 @@
     },
     "stats": {
       "Type": "Sword",
-      "Damage": "20",
+      "Damage": "10",
       "Size": "1.5",
       "Speed": "2"
     },

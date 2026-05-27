@@ -1,0 +1,28 @@
+{
+  "stinger_spear": {
+    "name": "Stinger Spear",
+    "id": 12,
+    "stats": {
+      "Type": "Spear",
+      "Damage": "4",
+      "Size": "1.5",
+      "Speed": "4"
+    },
+    "texture": {
+      "itemTexture": "weapons/stinger_spear/item",
+      "texture": "weapons/stinger_spear/stinger_spear",
+      "animation": "_stab_",
+      "type": "side",
+      "stabColor": "#4E6EFF",
+      "rarityColor": "#57a5ff"
+    },
+    "behavior": {
+      "stab": {
+        "damage": 0.4,
+        "size": 0.75,
+        "cooldown": 10,
+        "frames": 5
+      }
+    }
+  }
+}

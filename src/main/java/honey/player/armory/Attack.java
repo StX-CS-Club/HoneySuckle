@@ -21,6 +21,9 @@ public class Attack {
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    private static final int SLASH_FRAME_SIZE = Weapon.SLASH_FRAME_SIZE;
+    private static final int STAB_FRAME_WIDTH = Weapon.STAB_FRAME_WIDTH;
+    private static final int STAB_FRAME_HEIGHT = Weapon.STAB_FRAME_HEIGHT;
 
     private final Map<String, long[]> attackFrames = new HashMap<>();
 
@@ -159,8 +162,8 @@ public class Attack {
                     (int) Math.floor(player.pos[1] / TILE_SIZE)
                 };
                 //Check tiles
-                for (int x = posIndex[0] - sizeTiles; x < posIndex[0] + sizeTiles; x++) {
-                    for (int y = posIndex[1] - sizeTiles; y < posIndex[1] + sizeTiles; y++) {
+                for (int x = posIndex[0] - sizeTiles; x <= posIndex[0] + sizeTiles; x++) {
+                    for (int y = posIndex[1] - sizeTiles; y <= posIndex[1] + sizeTiles; y++) {
                         if (x >= 0 && x < world.size[0] && y >= 0 && y < world.size[1]) {
                             if (world.objGrid[x][y] != null) {
                                 //If collision overlap of tile and blade
@@ -221,8 +224,8 @@ public class Attack {
                     (int) Math.floor(player.pos[1] / TILE_SIZE)
                 };
                 //Check tiles
-                for (int x = posIndex[0] - sizeTiles; x < posIndex[0] + sizeTiles; x++) {
-                    for (int y = posIndex[1] - sizeTiles; y < posIndex[1] + sizeTiles; y++) {
+                for (int x = posIndex[0] - sizeTiles; x <= posIndex[0] + sizeTiles; x++) {
+                    for (int y = posIndex[1] - sizeTiles; y <= posIndex[1] + sizeTiles; y++) {
                         if (x >= 0 && x < world.size[0] && y >= 0 && y < world.size[1]) {
                             if (world.objGrid[x][y] != null) {
                                 //If collision overlap of tile and blade
@@ -356,7 +359,7 @@ public class Attack {
                     };
                     //Render slash
                     g.drawImage(
-                            Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
+                            Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, SLASH_FRAME_SIZE, SLASH_FRAME_SIZE),
                             (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
                     return;
                 }
@@ -375,7 +378,7 @@ public class Attack {
                     };
                     //Render slash
                     g.drawImage(
-                            Rendering.renderGIF("attacks/stab", weapon.texture.get("swingColor"), ((double) attackFrame) / frames),
+                            Rendering.renderGIF("attacks/stab", weapon.texture.get("stabColor"), ((double) attackFrame) / frames, STAB_FRAME_WIDTH, STAB_FRAME_HEIGHT),
                             (int) swingScreenPos[0], (int) swingScreenPos[1], (int) stabSize / 2, (int) stabSize * 2, null);
                     return;
                 }

@@ -152,6 +152,11 @@ public class Entity {
                         textureId.append("_shoot");
                     }
                 }
+                if (animation.contains("_summon_")) {
+                    if (brain.checkState("summoning")) {
+                        textureId.append("_summon");
+                    }
+                }
                 if (animation.contains("_lunge_")) {
                     if (brain.checkState("lunging")) {
                         screenPos[1] += screenSize[1] * .375;
@@ -176,8 +181,9 @@ public class Entity {
             final String textureIdStr = textureId.toString();
             final BufferedImage textureImage;
             if (animTextureId != null && animation != null && animation.contains("_gif_")) {
-                final int gifFrame = (int) Math.floor(frame / (double) maxFrames * Rendering.frameCount(textureIdStr));
-                final BufferedImage frameImage = Rendering.renderGIF(textureIdStr, color, gifFrame);
+                final int frameSize = attributes.getOrDefault("frameSize", 16).intValue();
+                final int gifFrame = (int) Math.floor(frame / (double) maxFrames * Rendering.frameCount(textureIdStr, frameSize, frameSize));
+                final BufferedImage frameImage = Rendering.renderGIF(textureIdStr, color, gifFrame, frameSize, frameSize);
                 final String gifKey = Rendering.imageKey(Rendering.imageKey(textureIdStr, color), String.valueOf(gifFrame));
                 textureImage = damageFrames > 0
                         ? Rendering.applyOverlay(frameImage, gifKey, "#ff0000", 128)

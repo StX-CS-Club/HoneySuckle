@@ -271,11 +271,13 @@ public class FileManager {
 
     public static void preloadImages() {
         // Entities: static and gif variants, respecting natColor per biome
-        for (Map<String, String> tex : Entity.entityTextures.values()) {
+        for (String entityKey : Entity.entityTextures.keySet()) {
+            final Map<String, String> tex = Entity.entityTextures.get(entityKey);
             final String staticBase = tex.get("texture");
             final String gifBase = tex.get("gif");
             if (staticBase == null && gifBase == null) continue;
             final String anim = tex.getOrDefault("anim", "");
+            final int frameSize = Entity.entityAttributes.get(entityKey).getOrDefault("frameSize", 16).intValue();
             final String natColorId = tex.get("natColor");
             if (natColorId != null) {
                 for (Map<String, String> biomeColors : Biome.biometextureMap.values()) {
@@ -283,7 +285,7 @@ public class FileManager {
                     if (color != null) {
                         for (String suffix : entitySuffixes(anim)) {
                             if (staticBase != null) Rendering.registerImage(staticBase + suffix, color);
-                            if (gifBase != null) Rendering.registerGIF(gifBase + suffix, color);
+                            if (gifBase != null) Rendering.registerGIF(gifBase + suffix, color, frameSize, frameSize);
                         }
                     }
                 }
@@ -291,34 +293,36 @@ public class FileManager {
                 final String color = tex.get("baseColor");
                 for (String suffix : entitySuffixes(anim)) {
                     if (staticBase != null) Rendering.registerImage(staticBase + suffix, color);
-                    if (gifBase != null) Rendering.registerGIF(gifBase + suffix, color);
+                    if (gifBase != null) Rendering.registerGIF(gifBase + suffix, color, frameSize, frameSize);
                 }
             }
         }
 
         // Objects: static and gif variants, respecting natColor per biome
-        for (Map.Entry<Integer, Map<String, String>> entry : WorldObject.objTextures.entrySet()) {
-            final Map<String, String> tex = entry.getValue();
+        for (int objKey : WorldObject.objTextures.keySet()) {
+            final Map<String, String> tex = WorldObject.objTextures.get(objKey);
             final String staticBase = tex.get("texture");
             final String gifBase = tex.get("gif");
             if (staticBase == null && gifBase == null) continue;
-            final Map<String, Number> attrs = WorldObject.objAttributes.get(entry.getKey());
+            final Map<String, Number> attrs = WorldObject.objAttributes.get(objKey);
             final String natColorId = tex.get("natColor");
             if (natColorId != null) {
                 for (Map<String, String> biomeColors : Biome.biometextureMap.values()) {
                     final String color = biomeColors.get(natColorId);
                     if (color != null) {
+                        final int frameSize = attrs.getOrDefault("frameSize", 16).intValue();
                         for (String postfix : objSuffixes(tex, attrs)) {
                             if (staticBase != null) Rendering.registerImage(staticBase + postfix, color);
-                            if (gifBase != null) Rendering.registerGIF(gifBase + postfix, color);
+                            if (gifBase != null) Rendering.registerGIF(gifBase + postfix, color, frameSize, frameSize);
                         }
                     }
                 }
             } else {
                 final String color = tex.get("baseColor");
+                final int frameSize = attrs.getOrDefault("frameSize", 16).intValue();
                 for (String postfix : objSuffixes(tex, attrs)) {
                     if (staticBase != null) Rendering.registerImage(staticBase + postfix, color);
-                    if (gifBase != null) Rendering.registerGIF(gifBase + postfix, color);
+                    if (gifBase != null) Rendering.registerGIF(gifBase + postfix, color, frameSize, frameSize);
                 }
             }
         }
@@ -329,15 +333,16 @@ public class FileManager {
             if (base != null) Rendering.registerImage(base, null);
         }
 
-        // Weapons: item icon + attack GIFs per swing color
-        for (Map<String, String> tex : Weapon.weaponTextures.values()) {
+        // Weapons: item icon + attack GIFs per swing/stab color
+        for (String weaponKey : Weapon.weaponTextures.keySet()) {
+            final Map<String, String> tex = Weapon.weaponTextures.get(weaponKey);
+            final Map<String, Number> wAttrs = Weapon.weaponAttributes.get(weaponKey);
             final String itemTex = tex.get("itemTexture");
             if (itemTex != null) Rendering.registerImage(itemTex, "#e8f1ff");
             final String swingColor = tex.get("swingColor");
-            if (swingColor != null) {
-                Rendering.registerGIF("attacks/slash", swingColor);
-                Rendering.registerGIF("attacks/stab", swingColor);
-            }
+            if (swingColor != null) Rendering.registerGIF("attacks/slash", swingColor, Weapon.SLASH_FRAME_SIZE, Weapon.SLASH_FRAME_SIZE);
+            final String stabColor = tex.get("stabColor");
+            if (stabColor != null) Rendering.registerGIF("attacks/stab", stabColor, Weapon.STAB_FRAME_WIDTH, Weapon.STAB_FRAME_HEIGHT);
         }
 
         // Armor front/back textures
@@ -421,6 +426,7 @@ public class FileManager {
         if (anim.contains("_chase_"))    states.add("_chase");
         if (anim.contains("_hesitate_")) states.add("_hesitate");
         if (anim.contains("_shoot_"))    states.add("_shoot");
+        if (anim.contains("_summon_"))   states.add("_summon");
 
         // Power set of state combos (2^n entries, including the empty "no state" combo)
         final int n = states.size();

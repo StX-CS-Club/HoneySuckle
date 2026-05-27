@@ -87,9 +87,16 @@
     "honeycomb": {
         "id": 11,
         "name": "Honeycomb",
-        "recipeUnlocks": ["honeycombHelm"],
+        "recipeUnlocks": ["honeycombHelm", "stingerSword", "stingerSpear"],
         "texture": {
             "texture": "items/honeycomb"
+        }
+    },
+    "stinger": {
+        "id": 12,
+        "name": "Stinger",
+        "texture": {
+            "texture": "items/stinger"
         }
     }
 }

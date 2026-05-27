@@ -289,9 +289,10 @@ public class World {
             }
         }
         // Checks if on acel tile
-        if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
-            player.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
-            player.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
+        final double acel = getAttribute(posIndex[0], posIndex[1], "acel");
+        if (!checkTag(posIndex[0], posIndex[1], "safe") && acel != 0) {
+            player.vel[0] *= acel;
+            player.vel[1] *= acel;
         }
         for (int tx = marginIndex[0][0]; tx <= marginIndex[0][1]; tx++) {
             for (int ty = marginIndex[1][0]; ty <= marginIndex[1][1]; ty++) {
@@ -370,10 +371,15 @@ public class World {
                 }
             }
             // Checks if on acel tile
-            if (!checkTag(posIndex[0], posIndex[1], "safe") && getAttribute(posIndex[0], posIndex[1], "acel") != 0) {
-                entity.vel[0] *= getAttribute(posIndex[0], posIndex[1], "acel");
-                entity.vel[1] *= getAttribute(posIndex[0], posIndex[1], "acel");
+            final double acel = getAttribute(posIndex[0], posIndex[1], "acel");
+            if (!checkTag(posIndex[0], posIndex[1], "safe") && acel != 0) {
+                entity.vel[0] *= acel;
+                entity.vel[1] *= acel;
             }
+        } else {
+            final double airResistance = biome.attributes.getOrDefault("airResistance", 1).doubleValue();
+            entity.vel[0] *= airResistance;
+            entity.vel[1] *= airResistance;
         }
 
         for (int tx = marginIndex[0][0]; tx <= marginIndex[0][1]; tx++) {

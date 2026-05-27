@@ -2,7 +2,10 @@
 package honey.world;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
 import honey.player.Player;
@@ -27,6 +30,7 @@ public class Brain {
     private final Map<String, Object> lungeAttack;
     private final Map<String, Object> shootAttack;
     private final Map<String, Object> contactAttack;
+    private final Map<String, Object> summonBehavior;
     private final Map<String, Object> flee;
     private final Map<String, Object> chase;
     private final Map<String, Object> track;
@@ -45,6 +49,7 @@ public class Brain {
         lungeAttack = registerBrain("lunge");
         shootAttack = registerBrain("shoot");
         contactAttack = registerBrain("contact");
+        summonBehavior = registerBrain("summon");
         flee = registerBrain("flee");
         chase = registerBrain("chase");
         track = registerBrain("track");
@@ -60,6 +65,7 @@ public class Brain {
 
     //Update Entity based on type
     public void update() {
+        final Set<String> tickedThisFrame = new HashSet<>();
         //Find closest player using squared distance (no sqrt, no Point2D allocation)
         Player player = HoneySuckle.player;
         double bestDistSq = distSq(entity.pos, player.pos);
@@ -102,28 +108,40 @@ public class Brain {
 
         boolean hesitate = false;
         if (!lungeAttack.isEmpty()) {
+            final String behaviorId = stringFromMap(lungeAttack, "tickId", "lunge");
             final int cooldown = numberFromMap(lungeAttack, "cooldown", 40).intValue();
             final int hesitationTime = numberFromMap(lungeAttack, "hesitationTime", 0).intValue();
             final int frames = numberFromMap(lungeAttack, "frames", hesitationTime).intValue();
+            final double prob = numberFromMap(lungeAttack, "prob", 1).doubleValue();
+            final boolean resetOnFail = booleanFromMap(lungeAttack, "resetOnFail", true);
             final double range = numberFromMap(lungeAttack, "range", 10).doubleValue();
             final double length = numberFromMap(lungeAttack, "length", 1).doubleValue();
 
             if (playerAbsDistance <= range * TILE_SIZE) {
-                long ticks = incrementTicks("lunge", 1);
+                long ticks = tickedThisFrame.add(behaviorId) ? incrementTicks(behaviorId, 1) : entity.ticks.get(behaviorId)[0];
                 if (ticks >= cooldown) {
-                    //If within range of view, do a little hop
-                    double coefficient = TILE_SIZE * length / Math.max(1, playerAbsDistance);
-                    entity.vel[0] += playerDistance[0] * coefficient;
-                    entity.vel[1] += playerDistance[1] * coefficient;
-
+                    if (checkState("lunging")) {
+                        //If within range of view, do a little hop
+                        double coefficient = TILE_SIZE * length / Math.max(1, playerAbsDistance);
+                        entity.vel[0] += playerDistance[0] * coefficient;
+                        entity.vel[1] += playerDistance[1] * coefficient;
+                    }
                     ticks = 0;
-                    entity.ticks.put("lunge", new long[]{0});
+                    entity.ticks.put(behaviorId, new long[]{0});
+                    states.put("lunging", false);
                 }
                 if (ticks >= cooldown - hesitationTime) {
                     hesitate = true;
                 }
                 if (ticks >= cooldown - frames) {
-                    states.put("lunging", true);
+                    if (ticks == cooldown - frames) {
+                        if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                            states.put("lunging", true);
+                        } else if (resetOnFail) {
+                            entity.ticks.put(behaviorId, new long[]{0});
+                            ticks = 0;
+                        }
+                    }
                 } else {
                     states.put("lunging", false);
                 }
@@ -131,17 +149,21 @@ public class Brain {
         }
 
         if (!shootAttack.isEmpty()) {
+            final String behaviorId = stringFromMap(shootAttack, "tickId", "shoot");
             final double range = numberFromMap(shootAttack, "range", 100).doubleValue();
 
             if (playerAbsDistance <= range * TILE_SIZE) {
                 final double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
                 final double panicSpeed = numberFromMap(shootAttack, "panicSpeed", 0).doubleValue();
                 final double speed = numberFromMap(shootAttack, "speed", 1).doubleValue() + panicSpeed * healthLost;
-                final double cooldown = numberFromMap(shootAttack, "cooldown", 100).doubleValue();
+                final int cooldown = (int) Math.round(numberFromMap(shootAttack, "cooldown", 100).doubleValue() * FPS / 40.0 / speed);
+                final double prob = numberFromMap(shootAttack, "prob", 1).doubleValue();
+                final boolean resetOnFail = booleanFromMap(shootAttack, "resetOnFail", true);
                 final int frames = numberFromMap(shootAttack, "frames", 10).intValue();
 
-                long ticks = incrementTicks("shoot", 1);
-                if (ticks * speed >= cooldown * FPS / 40.0 / speed) {
+                long ticks = tickedThisFrame.add(behaviorId) ? incrementTicks(behaviorId, 1) : entity.ticks.get(behaviorId)[0];
+
+                if (checkState("shooting") && ticks >= cooldown) {
                     final String projectileId = Projectile.projStringId.get(numberFromMap(shootAttack, "proj", 3).intValue());
 
                     final double panicVel = numberFromMap(shootAttack, "panicVel", panicSpeed).doubleValue() * healthLost;
@@ -149,7 +171,7 @@ public class Brain {
 
                     final double prediction = numberFromMap(shootAttack, "prediction", 0).doubleValue();
                     double angle = chaseAngle;
-                    if(prediction != 0){
+                    if (prediction != 0) {
                         angle = getAngle(new double[]{
                             player.pos[0] + player.vel[0] * prediction,
                             player.pos[1] + player.vel[1] * prediction
@@ -160,14 +182,70 @@ public class Brain {
                     projectile.alterVel(entity.pos, entity.vel, angle, vel, entity);
                     world.projectiles.add(projectile);
 
-                    entity.ticks.put("shoot", new long[]{0});
+                    entity.ticks.put(behaviorId, new long[]{0});
+                    states.put("shooting", false);
                     ticks = 0;
                 }
 
-                if (ticks * speed >= cooldown * FPS / 40.0 / speed - frames) {
-                    states.put("shooting", true);
+                if (ticks >= cooldown - frames) {
+                    if (ticks == cooldown - frames) {
+                        if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                            states.put("shooting", true);
+                        } else if (resetOnFail) {
+                            entity.ticks.put(behaviorId, new long[]{0});
+                            ticks = 0;
+                        }
+                    }
                 } else {
                     states.put("shooting", false);
+                }
+            }
+        }
+
+        if (!summonBehavior.isEmpty()) {
+            final String behaviorId = stringFromMap(summonBehavior, "tickId", "summon");
+            final double range = numberFromMap(summonBehavior, "range", 10).doubleValue();
+
+            if (playerAbsDistance <= range * TILE_SIZE) {
+                final int cooldown = numberFromMap(summonBehavior, "cooldown", 200).intValue();
+                final int frames = numberFromMap(summonBehavior, "frames", 10).intValue();
+                final double prob = numberFromMap(summonBehavior, "prob", 1).doubleValue();
+                final boolean resetOnFail = booleanFromMap(summonBehavior, "resetOnFail", true);
+                final int count = numberFromMap(summonBehavior, "count", 1).intValue();
+                final double countProb = numberFromMap(summonBehavior, "countProb", 0).doubleValue();
+                final double speed = numberFromMap(summonBehavior, "speed", 0.1).doubleValue();
+                final String entityType = Entity.entityStringId.get(numberFromMap(summonBehavior, "entity", 0).intValue());
+
+                long ticks = tickedThisFrame.add(behaviorId) ? incrementTicks(behaviorId, 1) : entity.ticks.get(behaviorId)[0];
+
+                if (checkState("summoning") && ticks >= cooldown && entityType != null) {
+                    int total = count;
+                    if (ThreadLocalRandom.current().nextDouble() <= countProb) {
+                        total++;
+                    }
+                    for (int i = 0; i < total; i++) {
+                        final double angle = ThreadLocalRandom.current().nextDouble() * 360;
+                        final Entity summon = new Entity(entityType, entity.pos, world);
+                        summon.vel[0] = TILE_SIZE * speed * -Math.cos(Math.toRadians(angle + 90));
+                        summon.vel[1] = TILE_SIZE * speed * Math.sin(Math.toRadians(angle - 90));
+                        world.entities.add(summon);
+                    }
+                    entity.ticks.put(behaviorId, new long[]{0});
+                    states.put("summoning", false);
+                    ticks = 0;
+                }
+
+                if (ticks >= cooldown - frames) {
+                    if (ticks == cooldown - frames) {
+                        if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                            states.put("summoning", true);
+                        } else if (resetOnFail) {
+                            entity.ticks.put(behaviorId, new long[]{0});
+                            ticks = 0;
+                        }
+                    }
+                } else {
+                    states.put("summoning", false);
                 }
             }
         }
@@ -296,20 +374,22 @@ public class Brain {
         };
 
         if (!contactAttack.isEmpty()) {
+            final String behaviorId = stringFromMap(contactAttack, "tickId", "contact");
             final double damage = numberFromMap(contactAttack, "damage", 0).doubleValue();
             final double bounce = numberFromMap(contactAttack, "bounce", 0).doubleValue();
             final double range = numberFromMap(contactAttack, "range", Math.ceil(entity.size / TILE_SIZE)).doubleValue();
             final int rate = (int) Math.floor(FPS / numberFromMap(contactAttack, "rate", 1).doubleValue());
+            final double prob = numberFromMap(contactAttack, "prob", 1).doubleValue();
 
             if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
-                long ticks = incrementTicks("contact", 1) - 1;
-                if (ticks % rate == 0) {
+                long ticks = incrementTicks(behaviorId, 1) - 1;
+                if (ticks % rate == 0 && ThreadLocalRandom.current().nextDouble() <= prob) {
                     player.damage(damage, true);
                     entity.vel[0] *= -bounce;
                     entity.vel[1] *= -bounce;
                 }
             } else {
-                entity.ticks.put("contact", new long[]{0});
+                entity.ticks.put(behaviorId, new long[]{0});
             }
 
         }
@@ -331,7 +411,10 @@ public class Brain {
     private Map<String, Object> registerBrain(String brainType) {
         Map<String, Object> brain = brainMap.get(brainType);
         if (brain != null) {
-            entity.ticks.put(brainType, new long[]{0});
+            String behaviorId = stringFromMap(brain, "tickId", brainType);
+            if (!entity.ticks.containsKey(behaviorId)) {
+                entity.ticks.put(behaviorId, new long[]{0});
+            }
             return brain;
         }
         return new HashMap<>();
@@ -341,6 +424,16 @@ public class Brain {
         if (map.get(key) instanceof Number) {
             return (Number) map.get(key);
         }
+        return defaultValue;
+    }
+
+    private static String stringFromMap(Map<String, Object> map, String key, String defaultValue) {
+        return map.getOrDefault(key, defaultValue).toString();
+    }
+
+    private static boolean booleanFromMap(Map<String, Object> map, String key, boolean defaultValue) {
+        Object val = map.get(key);
+        if (val instanceof Boolean) return (Boolean) val;
         return defaultValue;
     }
 

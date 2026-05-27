@@ -12,6 +12,7 @@ import honey.rendering.Rendering;
 
 public class Ammo {
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
+    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
 
     public static final Map<String, String> ammoNames = new HashMap<>();
     public static final Map<String, Map<String, Number>> ammoAttributes = new HashMap<>();
@@ -83,27 +84,32 @@ public class Ammo {
     }
     
     public void renderScroll(Graphics2D g) {
-        g.drawImage(Rendering.scroll(14), GAME_WIDTH / 2 - 192, 40, 384, 192, null);
+        final int scale = (int) Math.floor(2.5 * HUD_SIZE / 32);
+        final int renderedW = (14 * 4 + 8) * scale;
+        final int renderedH = 32 * scale;
+        final int scrollX = GAME_WIDTH / 2 - renderedW / 2;
+        final int scrollTop = 20;
+        g.drawImage(Rendering.scroll(14), scrollX, scrollTop, renderedW, renderedH, null);
 
         g.setColor(Rendering.decodeColor(texture.getOrDefault("rarityColor", "#333333")));
         g.setFont(new Font("VT323 Regular", Font.PLAIN, 32));
 
-        Rendering.centeredText(g, name, GAME_WIDTH / 2, 88);
+        Rendering.centeredText(g, name, GAME_WIDTH / 2, scrollTop + 8 * scale);
 
         g.setColor(Color.BLACK);
-        Rendering.centeredText(g, "x"+count, GAME_WIDTH / 2, 210);
+        Rendering.centeredText(g, "x" + count, GAME_WIDTH / 2, scrollTop + renderedH - 22);
 
         String[] statKeys = stats.keySet().toArray(String[]::new);
 
         int columns = Math.ceilDiv(statKeys.length, 3);
-        int width = 384 / columns;
-        int x = GAME_WIDTH / 2 - 192 + 192 / columns;
+        int width = renderedW / columns;
+        int x = scrollX + renderedW / 2 / columns;
 
         for (int i = 0; i < columns; i++) {
             for (int e = 0; e < 3; e++) {
                 int index = i * 3 + e;
                 if (index < statKeys.length) {
-                    Rendering.centeredText(g, statKeys[index] + ": " + stats.get(statKeys[index]), x + width * i, 112 + 32 * e, width - 10, 24);
+                    Rendering.centeredText(g, statKeys[index] + ": " + stats.get(statKeys[index]), x + width * i, scrollTop + 12 * scale + 32 * e, width - 10, 24);
                 }
             }
         }

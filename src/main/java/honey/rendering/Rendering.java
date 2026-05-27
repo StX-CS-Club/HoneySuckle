@@ -56,13 +56,13 @@ public final class Rendering {
         return primary + ":" + secondary;
     }
 
-    public static int frameCount(String path) {
+    public static int frameCount(String path, int frameWidth, int frameHeight) {
         Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
         if (gifMap != null && !gifMap.isEmpty()) {
             return gifMap.values().iterator().next().size();
         }
 
-        registerGIF(path, null);
+        registerGIF(path, null, frameWidth, frameHeight);
         gifMap = gifFrames.get(path);
         if (gifMap != null && !gifMap.isEmpty()) {
             return gifMap.values().iterator().next().size();
@@ -82,18 +82,20 @@ public final class Rendering {
         } catch (IOException e) { }
     }
 
-    public static void registerGIF(String path, String color) {
+    public static void registerGIF(String path, String color, int frameWidth, int frameHeight) {
         if (gifFrames.computeIfAbsent(path, k -> new HashMap<>()).containsKey(color)) return;
         final URL url = HoneySuckle.class.getResource("/images/animations/" + path + ".png");
         if (url == null) return;
         try {
             final BufferedImage sheet = ImageIO.read(url);
-            final int frameSize = sheet.getHeight();
-            final int numFrames = sheet.getWidth() / frameSize;
+            final int numCols = sheet.getWidth() / frameWidth;
+            final int numRows = sheet.getHeight() / frameHeight;
             final List<BufferedImage> frames = new ArrayList<>();
             final BufferedImage colored = replaceGradient(sheet, color);
-            for (int i = 0; i < numFrames; i++) {
-                frames.add(colored.getSubimage(i * frameSize, 0, frameSize, frameSize));
+            for (int row = 0; row < numRows; row++) {
+                for (int col = 0; col < numCols; col++) {
+                    frames.add(colored.getSubimage(col * frameWidth, row * frameHeight, frameWidth, frameHeight));
+                }
             }
             gifFrames.get(path).put(color, frames);
         } catch (IOException e) { }
@@ -272,8 +274,8 @@ public final class Rendering {
         g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
     }
 
-    //Render frame from horizontal PNG sprite sheet under animations/
-    public static BufferedImage renderGIF(String path, String color, double frame) {
+    //Render frame from PNG sprite sheet (left-to-right, top-to-bottom) under animations/
+    public static BufferedImage renderGIF(String path, String color, double frame, int frameWidth, int frameHeight) {
         final Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
         if (gifMap != null) {
             final List<BufferedImage> frames = gifMap.get(color);
@@ -284,19 +286,12 @@ public final class Rendering {
             gifFrames.put(path, new HashMap<>());
         }
 
-        final List<BufferedImage> frames = new ArrayList<>();
-        final BufferedImage sheet = image("animations/" + path, color);
-        final int frameSize = sheet.getHeight();
-        final int numFrames = sheet.getWidth() / frameSize;
-        for (int i = 0; i < numFrames; i++) {
-            final BufferedImage slice = sheet.getSubimage(i * frameSize, 0, frameSize, frameSize);
-            frames.add(replaceGradient(slice, color));
-        }
-        gifFrames.get(path).put(color, frames);
+        registerGIF(path, color, frameWidth, frameHeight);
+        final List<BufferedImage> frames = gifFrames.get(path).get(color);
         return frames.get((int) Math.floor(frame * frames.size()));
     }
 
-    public static BufferedImage renderGIF(String path, String color, int frame) {
+    public static BufferedImage renderGIF(String path, String color, int frame, int frameWidth, int frameHeight) {
         final Map<String, List<BufferedImage>> gifMap = gifFrames.get(path);
         if (gifMap != null) {
             final List<BufferedImage> frames = gifMap.get(color);
@@ -307,15 +302,8 @@ public final class Rendering {
             gifFrames.put(path, new HashMap<>());
         }
 
-        final List<BufferedImage> frames = new ArrayList<>();
-        final BufferedImage sheet = image("animations/" + path, color);
-        final int frameSize = sheet.getHeight();
-        final int numFrames = sheet.getWidth() / frameSize;
-        for (int i = 0; i < numFrames; i++) {
-            final BufferedImage slice = sheet.getSubimage(i * frameSize, 0, frameSize, frameSize);
-            frames.add(replaceGradient(slice, color));
-        }
-        gifFrames.get(path).put(color, frames);
+        registerGIF(path, color, frameWidth, frameHeight);
+        final List<BufferedImage> frames = gifFrames.get(path).get(color);
         return frames.get(Math.min(frame, frames.size() - 1));
     }
 

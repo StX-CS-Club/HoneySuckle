@@ -1,0 +1,33 @@
+{
+  "woodenArrow": {
+    "name": "Wooden Arrow",
+    "type": "ammo",
+    "products": [{ "id": 1, "type": 3}],
+    "texture": {
+      "texture": "ammo/wooden_arrow"
+    },
+    "mats": [
+      {
+        "id": 1
+      }
+    ]
+  },
+  "shotgunShell": {
+    "name": "Shotgun Shells",
+    "type": "ammo",
+    "products": [{ "id": 3, "type": 3, "count": 5}],
+    "texture": {
+      "texture": "ammo/shotgun_shell"
+    },
+    "mats": [
+      {
+        "id": 10,
+        "count": 2
+      },
+      {
+        "id": 9,
+        "count": 3
+      }
+    ]
+  }
+}

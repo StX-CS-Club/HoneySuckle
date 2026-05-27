@@ -284,8 +284,6 @@ public class Inventory {
             final double countProb = itemData.getOrDefault("countProb", 0).doubleValue();
             while (ThreadLocalRandom.current().nextDouble() <= countProb) {
                 count++;
-                System.out.println(countProb);
-                System.out.println("Count increased to " + count);
             }
 
             if (count == 0) {
