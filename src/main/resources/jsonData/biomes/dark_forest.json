@@ -22,7 +22,7 @@
           "prob": 0.1,
           "sideProb": [[1, 0.435]],
           "bottomProb": [[1, 0.435]],
-          "rangeProb": [[50, 50, 1]]
+          "rangeProb": [[50, 0, 50, 149, 1]]
         }
       ],
       "objects": [

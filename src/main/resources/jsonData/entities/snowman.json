@@ -1,0 +1,27 @@
+{
+  "snowman": {
+    "id": 7,
+    "name": "Snowman",
+    "texture": {
+      "baseColor": "#FFFFFF",
+      "texture": "entities/snowman/snowman",
+      "natColor": "snowmanColor",
+      "anim": "_x_shoot_"
+    },
+    "attributes": {
+      "size": 1,
+      "health": 0.75,
+      "weight": 2.0
+    },
+    "loot": [
+    ],
+    "brain": {
+      "shoot": {
+        "cooldown": 60.0,
+        "prediction": 5,
+        "range": 15,
+        "proj": 9
+      }
+    }
+  }
+}

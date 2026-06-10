@@ -23,7 +23,7 @@
                     "prob": Number base probability of tile generating on any space,
                     "sideProb": [int Tile ID, Number probability added if Tile of given ID towards start],
                     "bottomProb": [int Tile ID, Number probability added if Tile of given ID below],
-                    "rangeProb": [int minimum x pos of range, int maximum x pos of range, Number prbablity added if within given range]
+                    "rangeProb": [int minimum x pos, int minimum y pos, int maximum x pos, int maximum y pos, Number probability added if within given range]
                 }
             ],
             "objects": List of following Object generation data:[

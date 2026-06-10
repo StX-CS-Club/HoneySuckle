@@ -6,7 +6,7 @@
       "Type": "Shield",
       "Strength": "1.1",
       "Size": "1",
-      "Speed": "0.375"
+      "Speed": "0.25"
     },
     "texture": {
       "itemTexture": "weapons/shield/item",

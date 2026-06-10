@@ -16,7 +16,7 @@
       "tiles": [
         {
           "id": 5,
-          "rangeProb": [[23, 27, 1]]
+          "rangeProb": [[23, 0, 27, 149, 1]]
         }
       ],
       "objects": [

@@ -98,5 +98,13 @@
         "texture": {
             "texture": "items/stinger"
         }
+    },
+    "pine_wood": {
+        "id": 13,
+        "name": "Pine Wood",
+        "recipeUnlocks": ["pineWoodShield"],
+        "texture": {
+            "texture": "items/pine_wood"
+        }
     }
 }

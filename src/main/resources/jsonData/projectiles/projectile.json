@@ -115,5 +115,19 @@
     "texture": {
       "texture": "projectiles/bee_glob"
     }
+  },
+  "snowball": {
+    "name": "Snowball",
+    "id": 9,
+    "tags": ["hurtPlayer", "hurtEntity"],
+    "attributes": {
+      "damage": 0.15,
+      "speed": 0.33,
+      "size": 0.5,
+      "weight": 0.5
+    },
+    "texture": {
+      "texture": "projectiles/snowball"
+    }
   }
 }

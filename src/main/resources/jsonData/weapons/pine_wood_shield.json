@@ -1,0 +1,24 @@
+{
+  "pine_wood_shield": {
+    "name": "Pine Wood Shield",
+    "id": 13,
+    "stats": {
+      "Type": "Shield",
+      "Strength": "1",
+      "Size": "0.75",
+      "Speed": "0.5"
+    },
+    "texture": {
+      "itemTexture": "weapons/pine_wood_shield/item",
+      "texture": "weapons/pine_wood_shield/pine_wood_shield",
+      "animation": "_parry_",
+      "type": "front"
+    },
+    "behavior": {
+      "shield": {
+        "frames": 4.0,
+        "cooldown": 10.0
+      }
+    }
+  }
+}

@@ -221,5 +221,33 @@
         "countProb": 0.25
       }
     ]
+  },
+  "pine_tree": {
+    "name": "Pine Tree",
+    "id": 21,
+    "texture": {
+      "natColor": "treeColor",
+      "baseColor": "#019501",
+      "texture": "objects/pine_tree"
+    },
+    "tags": ["destructable"],
+    "attributes": {
+      "durability": 1.25,
+      "collision": 0.8,
+      "projCollision": 0.25
+    },
+    "loot": [
+      {
+        "id": 13
+      },
+      {
+        "id": 13,
+        "prob": 0.25
+      },
+      {
+        "id": 1,
+        "prob": 0.1
+      }
+    ]
   }
 }

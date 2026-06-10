@@ -68,7 +68,7 @@
   "stingerSword": {
     "name": "Stinger Sword",
     "type": "weapon",
-    "products": [{"id": 11, "type": 1}],
+    "products": [{ "id": 11, "type": 1 }],
     "texture": {
       "texture": "weapons/stinger_sword/item"
     },
@@ -77,10 +77,19 @@
   "stingerSpear": {
     "name": "Stinger Spear",
     "type": "weapon",
-    "products": [{"id": 12, "type": 1}],
+    "products": [{ "id": 12, "type": 1 }],
     "texture": {
       "texture": "weapons/stinger_spear/item"
     },
     "mats": [{ "id": 12 }, { "id": 1, "count": 5 }, { "id": 11, "count": 3 }]
+  },
+  "pineWoodShield": {
+    "name": "Pine Wood Shield",
+    "type": "weapon",
+    "products": [{ "id": 13, "type": 1 }],
+    "texture": {
+      "texture": "weapons/pine_wood_shield/item"
+    },
+    "mats": [{ "id": 13, "count": 15 }, { "id": 8 }]
   }
 }
