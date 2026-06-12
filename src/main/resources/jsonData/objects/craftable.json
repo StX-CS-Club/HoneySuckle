@@ -6,7 +6,7 @@
       "texture": "objects/wall",
       "mapColor": "#6b3200"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "construct"],
     "attributes": {
       "durability": 2.0,
       "collision": 1.0,
@@ -59,7 +59,7 @@
       "texture": "objects/pumpkin",
       "glowColor": "#ff8000"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "construct", "forage"],
     "attributes": {
       "lightRadius": 15.0,
       "durability": 0.5,
@@ -101,7 +101,7 @@
       "anim": "_gif_",
       "glowColor": "#ff8000"
     },
-    "tags": ["destructable", "flameProj"],
+    "tags": ["destructable", "flameProj", "construct"],
     "attributes": {
       "durability": 1.25,
       "lightRadius": 5.0,

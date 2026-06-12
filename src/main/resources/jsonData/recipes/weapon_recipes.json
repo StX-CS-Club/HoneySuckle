@@ -91,5 +91,14 @@
       "texture": "weapons/pine_wood_shield/item"
     },
     "mats": [{ "id": 13, "count": 15 }, { "id": 8 }]
+  },
+  "pineWoodHatchet": {
+    "name": "Pine Wood Hatchet",
+    "type": "weapon",
+    "products": [{ "id": 15, "type": 1 }],
+    "texture": {
+      "texture": "weapons/pine_wood_hatchet/item"
+    },
+    "mats": [{ "id": 13, "count": 5 }, { "id": 8 }, { "id": 3 }]
   }
 }

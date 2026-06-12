@@ -102,7 +102,7 @@
     "pine_wood": {
         "id": 13,
         "name": "Pine Wood",
-        "recipeUnlocks": ["pineWoodShield"],
+        "recipeUnlocks": ["pineWoodShield", "pineWoodHatchet"],
         "texture": {
             "texture": "items/pine_wood"
         }

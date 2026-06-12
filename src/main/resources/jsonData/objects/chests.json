@@ -7,7 +7,7 @@
       "anim": "_destroyed_",
       "mapColor": "#b06e28"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "treasure"],
     "attributes": {
       "durability": 1.5,
       "collision": 1.0,
@@ -22,7 +22,7 @@
       "anim": "_destroyed_",
       "mapColor": "#915c23"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "treasure"],
     "attributes": {
       "durability": 1.25,
       "collision": 1.0
@@ -36,7 +36,7 @@
       "anim": "_destroyed_",
       "mapColor": "#9e480b"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "treasure", "forage"],
     "attributes": {
       "durability": 1.75,
       "collision": 1.0

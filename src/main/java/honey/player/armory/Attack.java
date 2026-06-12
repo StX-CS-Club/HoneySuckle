@@ -149,7 +149,6 @@ public class Attack {
             if (attackFrame <= frames && attackFrame >= 0) {
                 final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", size / TILE_SIZE).doubleValue();
                 final double damage = numberFromMap(swingBehavior, "damage", 0.1).doubleValue();
-                final double objDamage = numberFromMap(swingBehavior, "objDamage", 1).doubleValue();
 
                 //Check all entities
                 for (Entity entity : world.renderEntities) {
@@ -184,9 +183,29 @@ public class Attack {
                                         player.rotation,
                                         new Point2D.Double((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE),
                                         new Point2D.Double(HoneySuckle.TILE_SIZE, TILE_SIZE))) {
-                                    WorldObject obj = world.objGrid[x][y];
+                                    final double objDamage = numberFromMap(swingBehavior, "objDamage", 1).doubleValue();
+                                    final double forageDamage = numberFromMap(swingBehavior, "forageDamage", 1).doubleValue();
+                                    final double mineDamage = numberFromMap(swingBehavior, "mineDamage", 1).doubleValue();
+                                    final double constructDamage = numberFromMap(swingBehavior, "constructDamage", 1).doubleValue();
+                                    final double treasureDamage = numberFromMap(swingBehavior, "treasureDamage", 1).doubleValue();
+                                    final WorldObject obj = world.objGrid[x][y];
+
+                                    double finalDamage = damage * objDamage;
+                                    if(obj.tags.contains("forage")) {
+                                        finalDamage *= forageDamage;
+                                    }
+                                    if(obj.tags.contains("mine")) {
+                                        finalDamage *= mineDamage;
+                                    }
+                                    if(obj.tags.contains("construct")) {
+                                        finalDamage *= constructDamage;
+                                    }
+                                    if(obj.tags.contains("treasure")) {
+                                        finalDamage *= treasureDamage;
+                                    }
+
                                     //Damage object, and if broken add materials
-                                    if (world.objGrid[x][y].damage(damage * objDamage)) {
+                                    if (world.objGrid[x][y].damage(finalDamage)) {
                                         world.processLoot(obj.loot, new double[]{(x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE}, player);
                                     }
                                 }
@@ -370,7 +389,8 @@ public class Attack {
             };
 
             if (animation != null) {
-                if (animation.contains("_swing_") && swingBehavior != null) {
+                final boolean mirroredSwing = animation.contains("_mirroredSwing_");
+                if (animation.contains("_swing_") || mirroredSwing && swingBehavior != null) {
                     final String attackId = (String) swingBehavior.getOrDefault("attackId", "swing");
                     final int frames = numberFromMap(swingBehavior, "frames", 5).intValue();
                     final long attackFrame = staticAttackFrames.get(attackId)[0];
@@ -382,9 +402,15 @@ public class Attack {
                             GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - swingSize - player.size / 2.0
                         };
                         //Render slash
-                        g.drawImage(
+                        if(mirroredSwing) {
+                            g.drawImage(
+                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, SLASH_FRAME_SIZE, SLASH_FRAME_SIZE),
+                                (int) (swingScreenPos[0] + swingSize), (int) swingScreenPos[1], (int) -swingSize, (int) swingSize, null);
+                        } else {
+                            g.drawImage(
                                 Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, SLASH_FRAME_SIZE, SLASH_FRAME_SIZE),
                                 (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
+                        }
                         return;
                     }
                 }

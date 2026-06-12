@@ -7,7 +7,7 @@
       "baseColor": "#019501",
       "texture": "objects/tree"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "forage"],
     "attributes": {
       "durability": 1.0,
       "collision": 0.75,
@@ -31,7 +31,7 @@
       "baseColor": "#d88700",
       "texture": "objects/pumpkin"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "forage"],
     "attributes": {
       "durability": 0.5,
       "collision": 0.5
@@ -50,7 +50,7 @@
       "baseColor": "#47ab00",
       "texture": "objects/cactus"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "forage"],
     "attributes": {
       "hurtness": 1.0,
       "durability": 0.75,
@@ -71,7 +71,7 @@
       "baseColor": "#4d4d4d",
       "texture": "objects/ore"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "mine"],
     "attributes": {
       "durability": 2.0,
       "collision": 0.9,
@@ -101,7 +101,7 @@
       "texture": "objects/crate",
       "mapColor": "#7a5935"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "construct"],
     "attributes": {
       "durability": 0.1,
       "collision": 1.0,
@@ -122,7 +122,7 @@
       "baseColor": "#4ed1f5",
       "texture": "objects/ore_alt"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "mine", "treasure"],
     "attributes": {
       "durability": 5.0,
       "collision": 0.9,
@@ -143,7 +143,7 @@
       "baseColor": "#ddddee",
       "texture": "objects/rock"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "mine"],
     "attributes": {
       "durability": 1.5,
       "collision": 0.9,
@@ -168,7 +168,7 @@
       "texture": "objects/scrap/scrap",
       "mapColor": "#706050"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "mine"],
     "attributes": {
       "durability": 1.25,
       "variants": 2,
@@ -201,7 +201,7 @@
       "mapColor": "#d9a441",
       "anim": "_gif_"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "forage"],
     "attributes": {
       "durability": 0.75,
       "collision": 0.8,
@@ -230,7 +230,7 @@
       "baseColor": "#019501",
       "texture": "objects/pine_tree"
     },
-    "tags": ["destructable"],
+    "tags": ["destructable", "forage"],
     "attributes": {
       "durability": 1.25,
       "collision": 0.8,

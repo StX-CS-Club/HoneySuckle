@@ -1,0 +1,30 @@
+{
+  "pine_wood_hatchet": {
+    "name": "Pine Wood Hatchet",
+    "id": 15,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Hatchet",
+      "Damage": "3.15",
+      "Size": "1.25",
+      "Speed": "2.5",
+      "Forage Damage": "x2.5"
+    },
+    "texture": {
+      "itemTexture": "weapons/pine_wood_hatchet/item",
+      "texture": "weapons/pine_wood_hatchet/pine_wood_hatchet",
+      "animation": "_mirroredSwing_",
+      "rarityColor": "#00db33",
+      "swingColor": "#A17D40",
+      "type": "side"
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.045,
+        "cooldown": 16,
+        "frames": 7,
+        "forageDamage": 2.5
+      }
+    }
+  }
+}
