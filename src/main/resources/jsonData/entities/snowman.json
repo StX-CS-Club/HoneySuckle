@@ -14,6 +14,16 @@
       "weight": 2.0
     },
     "loot": [
+      {
+        "id": 14,
+        "type": 1,
+        "countProb": 0.75
+      },
+      {
+        "id": 7,
+        "type": 2,
+        "prob": 0.01
+      }
     ],
     "brain": {
       "shoot": {

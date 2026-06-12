@@ -32,6 +32,7 @@ public class Attack {
     private final Map<String, Object> shootBehavior;
     private final Map<String, Object> shieldBehavior;
     private final Map<String, Object> stabBehavior;
+    private final Map<String, Object> throwBehavior;
 
     public final boolean constClick;
 
@@ -48,6 +49,7 @@ public class Attack {
         shootBehavior = registerBehavior("shoot");
         shieldBehavior = registerBehavior("shield");
         stabBehavior = registerBehavior("stab");
+        throwBehavior = registerBehavior("throw");
 
         size = weapon.attributes.getOrDefault("size", 1).doubleValue() * TILE_SIZE;
 
@@ -60,7 +62,7 @@ public class Attack {
         if (constClick && input.clickDown(1) || input.clickPressed(1)) {
             if (swingBehavior != null) {
                 final int cooldown = numberFromMap(swingBehavior, "cooldown", 10).intValue();
-                final String attackId = (String) swingBehavior.get("attackId");
+                final String attackId = (String) swingBehavior.getOrDefault("attackId", "swing");
 
                 final long[] attackFrame = staticAttackFrames.get(attackId);
                 if (attackFrame[0] >= cooldown || attackFrame[0] == -1) {
@@ -69,7 +71,7 @@ public class Attack {
             }
             if (shootBehavior != null) {
                 final int cooldown = numberFromMap(shootBehavior, "cooldown", 10).intValue();
-                final String attackId = (String) shootBehavior.get("attackId");
+                final String attackId = (String) shootBehavior.getOrDefault("attackId", "shoot");
 
                 final long[] attackFrame = staticAttackFrames.get(attackId);
                 if (attackFrame[0] >= cooldown || attackFrame[0] == -1) {
@@ -78,7 +80,7 @@ public class Attack {
             }
             if (shieldBehavior != null) {
                 final int cooldown = numberFromMap(shieldBehavior, "cooldown", 10).intValue();
-                final String attackId = (String) shieldBehavior.get("attackId");
+                final String attackId = (String) shieldBehavior.getOrDefault("attackId", "shield");
 
                 final long[] attackFrame = staticAttackFrames.get(attackId);
                 if (attackFrame[0] >= cooldown || attackFrame[0] == -1) {
@@ -87,10 +89,19 @@ public class Attack {
             }
             if (stabBehavior != null) {
                 final int cooldown = numberFromMap(stabBehavior, "cooldown", 10).intValue();
-                final String attackId = (String) stabBehavior.get("attackId");
+                final String attackId = (String) stabBehavior.getOrDefault("attackId", "stab");
 
                 final long[] attackFrame = staticAttackFrames.get(attackId);
                 if (attackFrame[0] >= cooldown || attackFrame[0] == -1) {
+                    attackFrame[0] = 0;
+                }
+            }
+            if (throwBehavior != null) {
+                final int cooldown = numberFromMap(throwBehavior, "cooldown", 10).intValue();
+                final String attackId = (String) throwBehavior.getOrDefault("attackId", "throw");
+
+                final long[] attackFrame = staticAttackFrames.get(attackId);
+                if (attackFrame[0] >= cooldown | attackFrame[0] == -1) {
                     attackFrame[0] = 0;
                 }
             }
@@ -114,7 +125,7 @@ public class Attack {
 
         if (shootBehavior != null) {
             final int frames = numberFromMap(shootBehavior, "frames", 5).intValue();
-            final String attackId = (String) shootBehavior.get("attackId");
+            final String attackId = (String) shootBehavior.getOrDefault("attackId", "shoot");
             if (staticAttackFrames.get(attackId)[0] == frames) {
                 final int bullets = numberFromMap(shootBehavior, "bulletCount", 1).intValue();
                 if (weapon.ammo != null) {
@@ -132,7 +143,7 @@ public class Attack {
 
         if (swingBehavior != null) {
             final int frames = numberFromMap(swingBehavior, "frames", 5).intValue();
-            final String attackId = (String) swingBehavior.get("attackId");
+            final String attackId = (String) swingBehavior.getOrDefault("attackId", "swing");
 
             final long attackFrame = staticAttackFrames.get(attackId)[0];
             if (attackFrame <= frames && attackFrame >= 0) {
@@ -190,7 +201,7 @@ public class Attack {
 
         if (stabBehavior != null) {
             final int frames = numberFromMap(stabBehavior, "frames", 5).intValue();
-            final String attackId = (String) stabBehavior.get("attackId");
+            final String attackId = (String) stabBehavior.getOrDefault("attackId", "stab");
 
             final long attackFrame = staticAttackFrames.get(attackId)[0];
             if (attackFrame <= frames && attackFrame >= 0) {
@@ -255,7 +266,7 @@ public class Attack {
         if (shieldBehavior != null) {
             final int frames = numberFromMap(shieldBehavior, "frames", 10).intValue();
             final int cooldown = numberFromMap(shieldBehavior, "cooldown", 20).intValue();
-            final String attackId = (String) shieldBehavior.get("attackId");
+            final String attackId = (String) shieldBehavior.getOrDefault("attackId", "shield");
 
             final long attackFrame = staticAttackFrames.get(attackId)[0];
 
@@ -328,109 +339,132 @@ public class Attack {
                 }
             }
         }
+
+        if (throwBehavior != null) {
+            final int frames = numberFromMap(throwBehavior, "frames", 5).intValue();
+            final String attackId = (String) throwBehavior.getOrDefault("attackId", "throw");
+            if (staticAttackFrames.get(attackId)[0] == frames) {
+                final int projId = numberFromMap(throwBehavior, "proj", 1).intValue();
+                if (weapon.count != 0) {
+                    world.projectiles.add(new Projectile(Projectile.projStringId.get(projId), player.pos.clone(), player.vel, player.rotation, player));
+                    weapon.count--;
+                }
+            }
+        }
     }
 
     public void render(Graphics2D g, Player player) {
-        final String animation = weapon.texture.get("animation");
-        
-        final Map<String, long[]> staticAttackFrames = Map.copyOf(attackFrames);
+        if (weapon.count != 0) {
+            final String animation = weapon.texture.get("animation");
 
-        String textureId = weapon.texture.get("texture");
-        World world = World.worlds.get(World.level);
-        String overlayColor = null;
+            final Map<String, long[]> staticAttackFrames = Map.copyOf(attackFrames);
 
-        double screenSize = size;
-        double[] screenPos = new double[]{
-            GAME_WIDTH / 2.0 + player.pos[0] - world.camera[0],
-            GAME_HEIGHT / 2.0 + player.pos[1] - world.camera[1]
-        };
+            String textureId = weapon.texture.get("texture");
+            World world = World.worlds.get(World.level);
+            String overlayColor = null;
 
-        if (animation != null) {
-            if (animation.contains("_swing_") && swingBehavior != null) {
-                final String attackId = (String) swingBehavior.get("attackId");
-                final int frames = numberFromMap(swingBehavior, "frames", 5).intValue();
-                final long attackFrame = staticAttackFrames.get(attackId)[0];
-                if (attackFrame < frames && attackFrame >= 0) {
-                    final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", screenSize / TILE_SIZE).doubleValue();
-                    //Position of slash on screen
-                    double[] swingScreenPos = new double[]{
-                        GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - swingSize / 2.0,
-                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - swingSize - player.size / 2.0
-                    };
-                    //Render slash
-                    g.drawImage(
-                            Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, SLASH_FRAME_SIZE, SLASH_FRAME_SIZE),
-                            (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
-                    return;
+            double screenSize = size;
+            double[] screenPos = new double[]{
+                GAME_WIDTH / 2.0 + player.pos[0] - world.camera[0],
+                GAME_HEIGHT / 2.0 + player.pos[1] - world.camera[1]
+            };
+
+            if (animation != null) {
+                if (animation.contains("_swing_") && swingBehavior != null) {
+                    final String attackId = (String) swingBehavior.getOrDefault("attackId", "swing");
+                    final int frames = numberFromMap(swingBehavior, "frames", 5).intValue();
+                    final long attackFrame = staticAttackFrames.get(attackId)[0];
+                    if (attackFrame <= frames && attackFrame >= 0) {
+                        final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", screenSize / TILE_SIZE).doubleValue();
+                        //Position of slash on screen
+                        double[] swingScreenPos = new double[]{
+                            GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - swingSize / 2.0,
+                            GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - swingSize - player.size / 2.0
+                        };
+                        //Render slash
+                        g.drawImage(
+                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, SLASH_FRAME_SIZE, SLASH_FRAME_SIZE),
+                                (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
+                        return;
+                    }
                 }
-            }
 
-            if (animation.contains("_stab_") && stabBehavior != null) {
-                final String attackId = (String) stabBehavior.get("attackId");
-                final int frames = numberFromMap(stabBehavior, "frames", 5).intValue();
-                final long attackFrame = staticAttackFrames.get(attackId)[0];
-                if (attackFrame < frames && attackFrame >= 0) {
-                    final double stabSize = TILE_SIZE * numberFromMap(stabBehavior, "size", screenSize / TILE_SIZE).doubleValue();
-                    //Position of slash on screen
-                    double[] swingScreenPos = new double[]{
-                        GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - stabSize / 4.0,
-                        GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - stabSize * 2 - player.size / 2.0
-                    };
-                    //Render slash
-                    g.drawImage(
-                            Rendering.renderGIF("attacks/stab", weapon.texture.get("stabColor"), ((double) attackFrame) / frames, STAB_FRAME_WIDTH, STAB_FRAME_HEIGHT),
-                            (int) swingScreenPos[0], (int) swingScreenPos[1], (int) stabSize / 2, (int) stabSize * 2, null);
-                    return;
+                if (animation.contains("_stab_") && stabBehavior != null) {
+                    final String attackId = (String) stabBehavior.getOrDefault("attackId", "stab");
+                    final int frames = numberFromMap(stabBehavior, "frames", 5).intValue();
+                    final long attackFrame = staticAttackFrames.get(attackId)[0];
+                    if (attackFrame <= frames && attackFrame >= 0) {
+                        final double stabSize = TILE_SIZE * numberFromMap(stabBehavior, "size", screenSize / TILE_SIZE).doubleValue();
+                        //Position of slash on screen
+                        double[] swingScreenPos = new double[]{
+                            GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - stabSize / 4.0,
+                            GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - stabSize * 2 - player.size / 2.0
+                        };
+                        //Render slash
+                        g.drawImage(
+                                Rendering.renderGIF("attacks/stab", weapon.texture.get("stabColor"), ((double) attackFrame) / frames, STAB_FRAME_WIDTH, STAB_FRAME_HEIGHT),
+                                (int) swingScreenPos[0], (int) swingScreenPos[1], (int) stabSize / 2, (int) stabSize * 2, null);
+                        return;
+                    }
                 }
-            }
 
-            if (animation.contains("_shoot_") && shootBehavior != null) {
-                final String attackId = (String) shootBehavior.get("attackId");
-                final int frames = numberFromMap(shootBehavior, "frames", 5).intValue();
-                final long attackFrame = staticAttackFrames.get(attackId)[0];
-                if (attackFrame < frames && attackFrame >= 0) {
-                    textureId = textureId + "_shoot";
+                if (animation.contains("_shoot_") && shootBehavior != null) {
+                    final String attackId = (String) shootBehavior.getOrDefault("attackId", "shoot");
+                    final int frames = numberFromMap(shootBehavior, "frames", 5).intValue();
+                    final long attackFrame = staticAttackFrames.get(attackId)[0];
+                    if (attackFrame <= frames && attackFrame >= 0) {
+                        textureId = textureId + "_shoot";
+                    }
                 }
-            }
 
-            if (animation.contains("_parry_") && shieldBehavior != null) {
-                final double parry = numberFromMap(shieldBehavior, "parry", 1).doubleValue();
-                final int frames = numberFromMap(shieldBehavior, "frames", 10).intValue();
-                final int cooldown = numberFromMap(shieldBehavior, "cooldown", 20).intValue();
-                final String attackId = (String) shieldBehavior.get("attackId");
+                if (animation.contains("_throw_") && throwBehavior != null) {
+                    final String attackId = (String) throwBehavior.getOrDefault("attackId", "throw");
+                    final int frames = numberFromMap(throwBehavior, "frames", 5).intValue();
+                    final long attackFrame = staticAttackFrames.get(attackId)[0];
+                    if (attackFrame <= frames && attackFrame >= 0) {
+                        textureId = textureId + "_throw";
+                    }
+                }
 
-                final long attackFrame = staticAttackFrames.get(attackId)[0];
+                if (animation.contains("_parry_") && shieldBehavior != null) {
+                    final double parry = numberFromMap(shieldBehavior, "parry", 1).doubleValue();
+                    final int frames = numberFromMap(shieldBehavior, "frames", 10).intValue();
+                    final int cooldown = numberFromMap(shieldBehavior, "cooldown", 20).intValue();
+                    final String attackId = (String) shieldBehavior.getOrDefault("attackId", "shield");
 
-                if (attackFrame > 0) {
-                    double sizeFactor = parry * frames / attackFrame;
-                    if (sizeFactor >= 1) {
-                        screenSize *= sizeFactor;
-                    } else {
-                        if (attackFrame >= frames && attackFrame < cooldown) {
-                            overlayColor = "#888888";
+                    final long attackFrame = staticAttackFrames.get(attackId)[0];
+
+                    if (attackFrame > 0) {
+                        double sizeFactor = parry * frames / attackFrame;
+                        if (sizeFactor >= 1) {
+                            screenSize *= sizeFactor;
+                        } else {
+                            if (attackFrame >= frames && attackFrame < cooldown) {
+                                overlayColor = "#888888";
+                            }
                         }
                     }
                 }
             }
-        }
 
-        final BufferedImage textureImage = overlayColor != null
-                ? Rendering.applyOverlay(textureId, null, overlayColor, 192)
-                : Rendering.texture(textureId, null);
-        switch (weapon.texture.getOrDefault("type", "front")) {
-            case "side" -> {
-                screenPos[0] += player.size / 2.0;
-                screenPos[1] -= screenSize / 2.0 + TILE_SIZE / 4.0;
+            final BufferedImage textureImage = overlayColor != null
+                    ? Rendering.applyOverlay(textureId, null, overlayColor, 192)
+                    : Rendering.texture(textureId, null);
+            switch (weapon.texture.getOrDefault("type", "front")) {
+                case "side" -> {
+                    screenPos[0] += player.size / 2.0;
+                    screenPos[1] -= screenSize / 2.0 + TILE_SIZE / 4.0;
 
-                g.drawImage(textureImage,
-                        (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
-            }
-            case "front" -> {
-                screenPos[0] -= screenSize / 2.0;
-                screenPos[1] -= screenSize + player.size / 2.0;
+                    g.drawImage(textureImage,
+                            (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
+                }
+                case "front" -> {
+                    screenPos[0] -= screenSize / 2.0;
+                    screenPos[1] -= screenSize + player.size / 2.0;
 
-                g.drawImage(textureImage,
-                        (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
+                    g.drawImage(textureImage,
+                            (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
+                }
             }
         }
     }
@@ -439,15 +473,15 @@ public class Attack {
         final Map<String, Object> behaviorEntry = behavior.get(behaviorType);
         if (behaviorEntry != null) {
             behaviorEntry.putIfAbsent("attackId", "base");
-            String attackId = (String) behaviorEntry.get("attackId");
+            String attackId = (String) behaviorEntry.getOrDefault("attackId", behaviorType);
             attackFrames.put(attackId, new long[]{-1});
         }
         return behaviorEntry;
     }
 
     private static Number numberFromMap(Map<String, Object> map, String key, Number defaultValue) {
-        if (map.get(key) instanceof Number) {
-            return (Number) map.get(key);
+        if (map.get(key) instanceof Number number) {
+            return number;
         }
         return defaultValue;
     }

@@ -49,6 +49,7 @@ public class Weapon {
 
     public Ammo ammo = null;
     public List<String> ammoTypes;
+    public int count;
 
     private final Attack attack;
 
@@ -65,6 +66,23 @@ public class Weapon {
         attack = new Attack(this);
 
         ammoTypes = weaponAmmo.get(type);
+        count = 1;
+    }
+
+    //Weapon constructor
+    public Weapon(String type, int count) {
+        //Interprets weapon id
+        attributes = weaponAttributes.get(type);
+        stats = weaponStats.get(type);
+        texture = weaponTextures.get(type);
+        tags = weaponTags.get(type);
+        this.type = type;
+        name = weaponNames.get(type);
+
+        attack = new Attack(this);
+
+        ammoTypes = weaponAmmo.get(type);
+        this.count = count;
     }
 
     public boolean correctAmmo(List<String> ammoTypeList) {
@@ -139,6 +157,15 @@ public class Weapon {
         g.setFont(new Font("VT323 Regular", Font.PLAIN, 32));
 
         Rendering.centeredText(g, name, GAME_WIDTH / 2, scrollTop + 8 * scale);
+
+        if (tags.contains("stackable")) {
+            if (count > 0) {
+                g.setColor(Color.BLACK);
+            } else {
+                g.setColor(Color.RED);
+            }
+            Rendering.centeredText(g, "x" + count, GAME_WIDTH / 2, scrollTop + renderedH - 14);
+        }
 
         g.setColor(Color.BLACK);
         String[] statKeys = stats.keySet().toArray(String[]::new);

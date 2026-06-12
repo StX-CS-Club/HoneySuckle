@@ -317,24 +317,42 @@ public class Inventory {
                     stringId = Weapon.weaponStringId.get(id);
 
                     if (gain) {
-                        for (int i = 0; i < count; i++) {
-                            weapons.add(new Weapon(stringId));
-                            weapons.getLast().setAmmo(ammo);
-                            iconColors[2] = "#00ffaa";
+                        if (Weapon.weaponTags.get(stringId).contains("stackable")) {
+                            boolean create = true;
+                            for (Weapon weapon : weapons) {
+                                if (weapon.type.equals(stringId)) {
+                                    weapon.count += count;
+                                    create = false;
+                                    break;
+                                }
+                            }
+                            if (create) {
+                                weapons.add(new Weapon(stringId, count));
+                            }
+                        } else {
+                            for (int i = 0; i < count; i++) {
+                                weapons.add(new Weapon(stringId));
+                                weapons.getLast().setAmmo(ammo);
+                                iconColors[2] = "#00ffaa";
+                            }
                         }
                         unlockRecipes(Weapon.weaponBlueprintUnlocks.get(stringId), Weapon.weaponRecipeUnlocks.get(stringId));
                     } else {
                         int removed = 0;
                         for (int i = weapons.size() - 1; i > -1; i--) {
-                            Weapon weapon = weapons.get(i);
+                            final Weapon weapon = weapons.get(i);
                             if (weapon.type.equals(stringId)) {
-                                weapons.remove(weapon);
-                                for (int e = 0; e < player.armory.weapons.length; e++) {
-                                    if (player.armory.weapons[e] == weapon) {
-                                        player.armory.weapons[e] = null;
+                                final int removeCount = Math.min(count - removed, weapon.count);
+                                weapon.count -= removeCount;
+                                if (weapon.count == 0) {
+                                    weapons.remove(weapon);
+                                    for (int e = 0; e < player.armory.weapons.length; e++) {
+                                        if (player.armory.weapons[e] == weapon) {
+                                            player.armory.weapons[e] = null;
+                                        }
                                     }
                                 }
-                                removed++;
+                                removed += removeCount;
                                 if (removed == count) {
                                     break;
                                 }
@@ -433,7 +451,7 @@ public class Inventory {
                 int inventoryCount = 0;
                 for (Weapon weapon : weapons) {
                     if (weapon.type.equals(weaponId)) {
-                        inventoryCount++;
+                        inventoryCount += weapon.count;
                     }
                 }
                 return inventoryCount >= count;

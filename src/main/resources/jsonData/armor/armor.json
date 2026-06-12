@@ -142,5 +142,31 @@
         "Health": "1.5",
         "Immunity": "2.25"
     }
+  },
+  "magic_bowler": {
+    "name": "Magic Bowler",
+    "id": 7,
+    "texture": {
+      "texture": "armor/magic_bowler/top",
+      "frontTexture": "armor/magic_bowler/front",
+      "itemTexture": "armor/magic_bowler/item",
+      "playerTexture": "armor/magic_bowler/player",
+      "rarityColor": "#00db33"
+    },
+    "attributes": {
+      "defense": 3,
+      "regen": 0.0005,
+      "speed": 0,
+      "maxHealth": 0.5,
+      "immunity": 2
+    },
+    "stats": {
+        "Defense": "3",
+        "Regen": "0.5",
+        "Speed": "0",
+        "Health": "0.5",
+        "Immunity": "2"
+    }
+
   }
 }

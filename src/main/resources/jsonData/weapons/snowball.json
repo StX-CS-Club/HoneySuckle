@@ -1,0 +1,25 @@
+{
+  "snowball": {
+    "name": "Snowball",
+    "id": 14,
+    "tags": ["constClick", "stackable"],
+    "stats": {
+      "Type": "Throwable",
+      "Damage": "0.33",
+      "Speed": "4"
+    },
+    "texture": {
+      "itemTexture": "weapons/snowball/item",
+      "texture": "weapons/snowball/snowball",
+      "animation": "_throw_",
+      "type": "side"
+    },
+    "behavior": {
+        "throw": {
+            "cooldown": 10,
+            "frames": 1,
+            "proj": 9
+        }
+    }
+  }
+}

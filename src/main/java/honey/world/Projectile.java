@@ -22,8 +22,6 @@ import honey.rendering.Rendering;
  */
 public class Projectile {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
     private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     //Static json data

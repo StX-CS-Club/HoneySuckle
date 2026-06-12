@@ -11,6 +11,7 @@ import honey.HoneySuckle;
 import honey.rendering.Rendering;
 
 public class Ammo {
+
     private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
     private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
 
@@ -80,9 +81,9 @@ public class Ammo {
         }
 
         // Draws the font
-        Rendering.centeredText(g, label, x + 50, y + 100, (int) (100*factor), (int) (24 * factor));
+        Rendering.centeredText(g, label, x + 50, y + 100, (int) (100 * factor), (int) (24 * factor));
     }
-    
+
     public void renderScroll(Graphics2D g) {
         final int scale = (int) Math.floor(2.5 * HUD_SIZE / 32);
         final int renderedW = (14 * 4 + 8) * scale;
@@ -96,8 +97,12 @@ public class Ammo {
 
         Rendering.centeredText(g, name, GAME_WIDTH / 2, scrollTop + 8 * scale);
 
-        g.setColor(Color.BLACK);
-        Rendering.centeredText(g, "x" + count, GAME_WIDTH / 2, scrollTop + renderedH - 22);
+        if (count > 0) {
+            g.setColor(Color.BLACK);
+        } else {
+            g.setColor(Color.RED);
+        }
+        Rendering.centeredText(g, "x" + count, GAME_WIDTH / 2, scrollTop + renderedH - 14);
 
         String[] statKeys = stats.keySet().toArray(String[]::new);
 

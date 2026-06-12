@@ -1,5 +1,6 @@
 package honey.player.armory;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -40,7 +41,7 @@ public class Armory {
     public Weapon weaponSelect = null;
 
     private double armorScroll = 0;
-    private int armorOffset = 0;
+    private int armorAnim = 0;
     private int armorHover = -1;
 
     private final Player player;
@@ -124,7 +125,7 @@ public class Armory {
                     armor = null;
                 } else {
                     armor = invArmor;
-                    armorOffset = 200;
+                    armorAnim = 0;
                 }
             }
         }
@@ -236,16 +237,24 @@ public class Armory {
 
     public void renderArmorMenu(Graphics2D g) {
         if (armor != null) {
-            Map<String, String> armorTexture = armor.texture;
+            final Map<String, String> armorTexture = armor.texture;
+            final int armorOffset = (int) (200 * Math.pow(0.75, armorAnim));
 
-            String back = armorTexture.get("backTexture");
+            final String back = armorTexture.get("backTexture");
             if (back != null) {
                 g.drawImage(Rendering.texture(back, null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
             }
 
             g.drawImage(Rendering.texture("player/front", null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
+            final String playerTexture = armorTexture.get("playerTexture");
+            if (playerTexture != null) {
+                final float opacity = (float) Math.min(1, armorAnim / 10.0);
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+                g.drawImage(Rendering.texture(playerTexture, null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+            }
 
-            String front = armorTexture.get("frontTexture");
+            final String front = armorTexture.get("frontTexture");
             if (front != null) {
                 g.drawImage(Rendering.texture(front, null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
             }
@@ -253,7 +262,7 @@ public class Armory {
             g.drawImage(Rendering.texture("player/front", null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
         }
 
-        armorOffset *= 0.75;
+        armorAnim++;
 
         for (int i = 0; i < player.inventory.armors.size(); i++) {
             final int offset = 130 * i - ((int) Math.floor(armorScroll * 130));
@@ -382,21 +391,23 @@ public class Armory {
 
             //Render slot
             g.drawImage(Rendering.texture("ui/hud/slot", color), HUD_SIZE * i + weaponX, GAME_HEIGHT - HUD_SIZE, HUD_SIZE, HUD_SIZE, null);
-            if (weapons[i] != null) {
+            final Weapon weapon = weapons[i];
+            if (weapon != null) {
                 //Render Weapon Item
-                Map<String, String> texture = weapons[i].texture;
+                Map<String, String> texture = weapon.texture;
                 if (texture.get("itemTexture") != null) {
                     g.drawImage(Rendering.texture(texture.get("itemTexture"), null), HUD_SIZE * i + HUD_SIZE / 8 + weaponX, GAME_HEIGHT - HUD_SIZE * 7 / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
                 }
 
-                if (weapons[i].ammo != null) {
+                if (weapon.ammo != null || weapon.tags.contains("stackable")) {
+                    final int count = weapon.ammo != null ? weapon.ammo.count : weapon.count;
                     g.drawImage(Rendering.texture("ui/hud/counter", null), HUD_SIZE * i + weaponX, GAME_HEIGHT - HUD_SIZE * 5 / 16, HUD_SIZE / 2, HUD_SIZE / 4, null);
-                    if (weapons[i].ammo.count > 0) {
+                    if (count > 0) {
                         g.setColor(Color.BLACK);
                     } else {
                         g.setColor(Color.RED);
                     }
-                    Rendering.centeredText(g, Integer.toString(weapons[i].ammo.count), HUD_SIZE * i + weaponX + HUD_SIZE / 4, GAME_HEIGHT - HUD_SIZE * 1 / 8, HUD_SIZE / 2, 20);
+                    Rendering.centeredText(g, Integer.toString(count), HUD_SIZE * i + weaponX + HUD_SIZE / 4, GAME_HEIGHT - HUD_SIZE * 1 / 8, HUD_SIZE / 2, 20);
                 }
             }
         }
