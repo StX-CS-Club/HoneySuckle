@@ -26,6 +26,8 @@ import honey.world.WorldObject;
 
 public class AssetManager {
 
+    public static ConfigManager config;
+
     public static void preloadImages() {
         // Entities: static and gif variants, respecting natColor per biome
         for (String entityKey : Entity.entityTextures.keySet()) {
@@ -96,9 +98,9 @@ public class AssetManager {
             final String itemTex = tex.get("itemTexture");
             if (itemTex != null) Rendering.registerImage(itemTex, "#e8f1ff");
             final String swingColor = tex.get("swingColor");
-            if (swingColor != null) Rendering.registerGIF("attacks/slash", swingColor, Weapon.SLASH_FRAME_SIZE, Weapon.SLASH_FRAME_SIZE);
+            if (swingColor != null) Rendering.registerGIF("attacks/slash", swingColor, config.slashFrameSize, config.slashFrameSize);
             final String stabColor = tex.get("stabColor");
-            if (stabColor != null) Rendering.registerGIF("attacks/stab", stabColor, Weapon.STAB_FRAME_WIDTH, Weapon.STAB_FRAME_HEIGHT);
+            if (stabColor != null) Rendering.registerGIF("attacks/stab", stabColor, config.stabFrameWidth, config.stabFrameHeight);
         }
 
         // Armor front/back textures
@@ -164,7 +166,6 @@ public class AssetManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static void formatBiomeGeneration() {
         for (String biomeId : Biome.biomeGeneration.keySet()) {
             final Map<String, Object> gen = Biome.biomeGeneration.get(biomeId);
@@ -243,7 +244,6 @@ public class AssetManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static void formatStructureData() {
         for (String structureId : Structure.structureGeneration.keySet()) {
             final Map<String, Object> gen = Structure.structureGeneration.get(structureId);
@@ -300,7 +300,6 @@ public class AssetManager {
         return val instanceof List<?> ? (List<Map<String, Object>>) val : new ArrayList<>();
     }
 
-    @SuppressWarnings("unchecked")
     private static int[] toIntArray(Object raw, int... defaults) {
         if (!(raw instanceof List<?>)) return defaults.clone();
         final List<?> list = (List<?>) raw;
@@ -313,7 +312,6 @@ public class AssetManager {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private static double[] toDoubleArray(Object raw, double... defaults) {
         if (!(raw instanceof List<?>)) return defaults.clone();
         final List<?> list = (List<?>) raw;

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.rendering.Rendering;
 
 /*
@@ -18,8 +19,7 @@ import honey.rendering.Rendering;
  */
 public class WorldObject {
 
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int FPS = HoneySuckle.FPS;
+    public static ConfigManager config;
 
     //Static json dats
     public static final Map<Integer, List<String>> objTags = new HashMap<>();
@@ -81,7 +81,7 @@ public class WorldObject {
         overlayColor = Rendering.decodeColor(texture.get("overlayColor"), 16);
         mapColor = Rendering.decodeColor(getMapColor(world));
 
-        maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
+        maxFrames = attributes.getOrDefault("animFrames", config.fps).intValue();
 
         variant = getVariant();
         staticTexture = getTexture(getPostfix());
@@ -96,7 +96,7 @@ public class WorldObject {
     //Render WorldObject
     public void render(Graphics2D g, World world, double[] screenPos) {
         //If object has texture, render it
-        int size = TILE_SIZE;
+        int size = config.tileSize;
         int posX = (int) screenPos[0];
         int posY = (int) screenPos[1];
 
@@ -107,8 +107,8 @@ public class WorldObject {
 
         if (frameDamage != 0 && ThreadLocalRandom.current().nextBoolean()) {
             size *= .8;
-            posX += TILE_SIZE / 10.0;
-            posY += TILE_SIZE / 10.0;
+            posX += config.tileSize / 10.0;
+            posY += config.tileSize / 10.0;
         }
 
         if (tags.contains("sink")) {
@@ -203,8 +203,8 @@ public class WorldObject {
 
     public void renderLight(double[] screenPos) {
         HoneySuckle.lights.add(Map.of(
-                "posX", screenPos[0] + TILE_SIZE / 2,
-                "posY", screenPos[1] + TILE_SIZE / 2,
+                "posX", screenPos[0] + config.tileSize / 2,
+                "posY", screenPos[1] + config.tileSize / 2,
                 "radius", attributes.getOrDefault("lightRadius", 0),
                 "color", glowColor,
                 "glow", attributes.getOrDefault("glow", 0),

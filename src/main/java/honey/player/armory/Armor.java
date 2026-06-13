@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
@@ -19,8 +19,7 @@ import honey.rendering.Rendering;
  */
 public class Armor {
 
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+    public static ConfigManager config;
 
     //Static json data
     public static final Map<String, Map<String, String>> armorTextures = new HashMap<>();
@@ -80,11 +79,11 @@ public class Armor {
     }
 
     public void renderScroll(Graphics2D g) {
-        final int scale = (int) Math.floor(3.5 * HUD_SIZE / 32);
+        final int scale = (int) Math.floor(3.5 * config.hudSize / 32);
         final int scrollLength = stats.size() + 3;
         final int renderedW = 32 * scale;
         final int renderedH = scrollLength * 4 * scale;
-        final int scrollY = (GAME_HEIGHT - renderedH) / 2;
+        final int scrollY = (config.gameHeight - renderedH) / 2;
         final int scrollCenterX = 25 + renderedW / 2;
         g.drawImage(Rendering.rotateImage(Rendering.scroll(scrollLength), 90), 25, scrollY, renderedW, renderedH, null);
 

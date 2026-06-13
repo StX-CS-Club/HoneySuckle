@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.player.Player;
 
 /* 
@@ -16,8 +17,7 @@ import honey.player.Player;
  */
 public class Brain {
 
-    private static final int FPS = HoneySuckle.FPS;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    public static ConfigManager config;
 
     public static final Map<String, Map<String, Map<String, Object>>> entityBrain = new HashMap<>();
 
@@ -97,7 +97,7 @@ public class Brain {
             }
         }
 
-        final double healthBarDistance = entity.attributes.getOrDefault("healthBarDistance", 0).doubleValue() * TILE_SIZE;
+        final double healthBarDistance = entity.attributes.getOrDefault("healthBarDistance", 0).doubleValue() * config.tileSize;
         if (healthBarDistance != 0) {
             if (healthBarDistance >= playerAbsDistance) {
                 HoneySuckle.healthBars.add(entity);
@@ -117,12 +117,12 @@ public class Brain {
             final double range = numberFromMap(lungeAttack, "range", 10).doubleValue();
             final double length = numberFromMap(lungeAttack, "length", 1).doubleValue();
 
-            if (playerAbsDistance <= range * TILE_SIZE) {
+            if (playerAbsDistance <= range * config.tileSize) {
                 long ticks = tickedThisFrame.add(behaviorId) ? incrementTicks(behaviorId, 1) : entity.ticks.get(behaviorId)[0];
                 if (ticks >= cooldown) {
                     if (checkState("lunging")) {
                         //If within range of view, do a little hop
-                        double coefficient = TILE_SIZE * length / Math.max(1, playerAbsDistance);
+                        double coefficient = config.tileSize * length / Math.max(1, playerAbsDistance);
                         entity.vel[0] += playerDistance[0] * coefficient;
                         entity.vel[1] += playerDistance[1] * coefficient;
                     }
@@ -152,11 +152,11 @@ public class Brain {
             final String behaviorId = stringFromMap(shootAttack, "tickId", "shoot");
             final double range = numberFromMap(shootAttack, "range", 100).doubleValue();
 
-            if (playerAbsDistance <= range * TILE_SIZE) {
+            if (playerAbsDistance <= range * config.tileSize) {
                 final double healthLost = entity.attributes.getOrDefault("health", 1).doubleValue() - entity.health;
                 final double panicSpeed = numberFromMap(shootAttack, "panicSpeed", 0).doubleValue();
                 final double speed = numberFromMap(shootAttack, "speed", 1).doubleValue() + panicSpeed * healthLost;
-                final int cooldown = (int) Math.round(numberFromMap(shootAttack, "cooldown", 100).doubleValue() * FPS / 40.0 / speed);
+                final int cooldown = (int) Math.round(numberFromMap(shootAttack, "cooldown", 100).doubleValue() * config.fps / 40.0 / speed);
                 final double prob = numberFromMap(shootAttack, "prob", 1).doubleValue();
                 final boolean resetOnFail = booleanFromMap(shootAttack, "resetOnFail", true);
                 final int frames = numberFromMap(shootAttack, "frames", 10).intValue();
@@ -206,7 +206,7 @@ public class Brain {
             final String behaviorId = stringFromMap(summonBehavior, "tickId", "summon");
             final double range = numberFromMap(summonBehavior, "range", 10).doubleValue();
 
-            if (playerAbsDistance <= range * TILE_SIZE) {
+            if (playerAbsDistance <= range * config.tileSize) {
                 final int cooldown = numberFromMap(summonBehavior, "cooldown", 200).intValue();
                 final int frames = numberFromMap(summonBehavior, "frames", 10).intValue();
                 final double prob = numberFromMap(summonBehavior, "prob", 1).doubleValue();
@@ -226,8 +226,8 @@ public class Brain {
                     for (int i = 0; i < total; i++) {
                         final double angle = ThreadLocalRandom.current().nextDouble() * 360;
                         final Entity summon = new Entity(entityType, entity.pos, world);
-                        summon.vel[0] = TILE_SIZE * speed * -Math.cos(Math.toRadians(angle + 90));
-                        summon.vel[1] = TILE_SIZE * speed * Math.sin(Math.toRadians(angle - 90));
+                        summon.vel[0] = config.tileSize * speed * -Math.cos(Math.toRadians(angle + 90));
+                        summon.vel[1] = config.tileSize * speed * Math.sin(Math.toRadians(angle - 90));
                         world.entities.add(summon);
                     }
                     entity.ticks.put(behaviorId, new long[]{0});
@@ -254,12 +254,12 @@ public class Brain {
             final double range = numberFromMap(flee, "range", 5).doubleValue();
             final double speed = numberFromMap(flee, "speed", 0.1).doubleValue();
             final double hesitateRange = numberFromMap(flee, "hesitateRange", range).doubleValue();
-            if (playerAbsDistance <= hesitateRange * TILE_SIZE) {
+            if (playerAbsDistance <= hesitateRange * config.tileSize) {
                 hesitate = true;
             }
-            if (playerAbsDistance <= range * TILE_SIZE) {
-                entity.vel[0] -= TILE_SIZE * speed * -Math.cos(Math.toRadians(chaseAngle + 90));
-                entity.vel[1] -= TILE_SIZE * speed * Math.sin(Math.toRadians(chaseAngle - 90));
+            if (playerAbsDistance <= range * config.tileSize) {
+                entity.vel[0] -= config.tileSize * speed * -Math.cos(Math.toRadians(chaseAngle + 90));
+                entity.vel[1] -= config.tileSize * speed * Math.sin(Math.toRadians(chaseAngle - 90));
             }
         }
 
@@ -267,13 +267,13 @@ public class Brain {
             final double range = numberFromMap(chase, "range", 5).doubleValue();
             final double speed = numberFromMap(chase, "speed", 0.1).doubleValue();
             final double hesitateRange = numberFromMap(chase, "hesitateRange", 0).doubleValue();
-            if (playerAbsDistance <= hesitateRange * TILE_SIZE) {
+            if (playerAbsDistance <= hesitateRange * config.tileSize) {
                 hesitate = true;
             }
-            if (playerAbsDistance <= range * TILE_SIZE && !hesitate) {
+            if (playerAbsDistance <= range * config.tileSize && !hesitate) {
                 states.put("chase", true);
-                entity.vel[0] += TILE_SIZE * speed * -Math.cos(Math.toRadians(chaseAngle + 90));
-                entity.vel[1] += TILE_SIZE * speed * Math.sin(Math.toRadians(chaseAngle - 90));
+                entity.vel[0] += config.tileSize * speed * -Math.cos(Math.toRadians(chaseAngle + 90));
+                entity.vel[1] += config.tileSize * speed * Math.sin(Math.toRadians(chaseAngle - 90));
             } else {
                 states.put("chase", false);
             }
@@ -285,11 +285,11 @@ public class Brain {
             final double hesitateRange = numberFromMap(track, "hesitateRange", 0).doubleValue();
             final double turnRate = numberFromMap(track, "turnRate", 3).doubleValue();
 
-            if (hesitateRange > 0 && playerAbsDistance <= hesitateRange * TILE_SIZE) {
+            if (hesitateRange > 0 && playerAbsDistance <= hesitateRange * config.tileSize) {
                 hesitate = true;
             }
 
-            if (playerAbsDistance <= range * TILE_SIZE) {
+            if (playerAbsDistance <= range * config.tileSize) {
                 // Turn toward chaseAngle at max turnRate degrees per tick
                 double diff = chaseAngle - trackAngle;
                 while (diff > 180) diff -= 360;
@@ -298,8 +298,8 @@ public class Brain {
                 trackAngle = ((trackAngle % 360) + 360) % 360;
 
                 if (!hesitate) {
-                    entity.vel[0] += TILE_SIZE * speed * -Math.cos(Math.toRadians(trackAngle + 90));
-                    entity.vel[1] += TILE_SIZE * speed * Math.sin(Math.toRadians(trackAngle - 90));
+                    entity.vel[0] += config.tileSize * speed * -Math.cos(Math.toRadians(trackAngle + 90));
+                    entity.vel[1] += config.tileSize * speed * Math.sin(Math.toRadians(trackAngle - 90));
                     states.put("chase", true);
                 } else {
                     states.put("chase", false);
@@ -377,11 +377,11 @@ public class Brain {
             final String behaviorId = stringFromMap(contactAttack, "tickId", "contact");
             final double damage = numberFromMap(contactAttack, "damage", 0).doubleValue();
             final double bounce = numberFromMap(contactAttack, "bounce", 0).doubleValue();
-            final double range = numberFromMap(contactAttack, "range", Math.ceil(entity.size / TILE_SIZE)).doubleValue();
-            final int rate = (int) Math.floor(FPS / numberFromMap(contactAttack, "rate", 1).doubleValue());
+            final double range = numberFromMap(contactAttack, "range", Math.ceil(entity.size / config.tileSize)).doubleValue();
+            final int rate = (int) Math.floor(config.fps / numberFromMap(contactAttack, "rate", 1).doubleValue());
             final double prob = numberFromMap(contactAttack, "prob", 1).doubleValue();
 
-            if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < TILE_SIZE * range) {
+            if (Math.sqrt(playerDistance[0] * playerDistance[0] + playerDistance[1] * playerDistance[1]) < config.tileSize * range) {
                 long ticks = incrementTicks(behaviorId, 1) - 1;
                 if (ticks % rate == 0 && ThreadLocalRandom.current().nextDouble() <= prob) {
                     player.damage(damage, true);

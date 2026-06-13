@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Rendering;
@@ -21,12 +21,7 @@ import honey.world.WorldObject;
  */
 public class Build {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
-
-    private static final int[] gameSize = new int[]{GAME_WIDTH, GAME_HEIGHT};
+    public static ConfigManager config;
 
     private final Player player;
 
@@ -60,14 +55,15 @@ public class Build {
 
     //Update Build
     public void update(World world, InputHandler input) {
+        int[] gameSize = new int[]{config.gameWidth, config.gameHeight};
         for (int i = 0; i < 2; i++) {
             double mouseDiff = input.mousePos[i]
                     - (gameSize[i] / 2.0
-                    + Math.floor(player.pos[i] / TILE_SIZE) * TILE_SIZE
+                    + Math.floor(player.pos[i] / config.tileSize) * config.tileSize
                     - world.camera[i]);
             if (mouseDiff < 0) {
                 cursor[i] = -1;
-            } else if (mouseDiff > TILE_SIZE) {
+            } else if (mouseDiff > config.tileSize) {
                 cursor[i] = 1;
             } else {
                 cursor[i] = 0;
@@ -79,8 +75,8 @@ public class Build {
     public void render(Graphics2D g, World world) {
         //Tile position of player, with cursor pos added
         int[] index = new int[]{
-            (int) Math.floor(player.pos[0] / TILE_SIZE + cursor[0]),
-            (int) Math.floor(player.pos[1] / TILE_SIZE + cursor[1])
+            (int) Math.floor(player.pos[0] / config.tileSize + cursor[0]),
+            (int) Math.floor(player.pos[1] / config.tileSize + cursor[1])
         };
 
         //Color of tile
@@ -97,23 +93,23 @@ public class Build {
         //Render Build Tile
         g.setColor(new Color(0, 0, 0, 0));
         Rendering.borderRect(g, 1, color,
-                (int) (GAME_WIDTH / 2.0 + index[0] * TILE_SIZE - camera[0]),
-                (int) (GAME_HEIGHT / 2.0 + index[1] * TILE_SIZE - camera[1]),
-                TILE_SIZE, TILE_SIZE);
+                (int) (config.gameWidth / 2.0 + index[0] * config.tileSize - camera[0]),
+                (int) (config.gameHeight / 2.0 + index[1] * config.tileSize - camera[1]),
+                config.tileSize, config.tileSize);
     }
 
     //Render Build UI
     public void renderUi(Graphics2D g, World world) {
-        if (player.screenPos[0] < HUD_SIZE * 3 + TILE_SIZE && player.screenPos[1] > GAME_HEIGHT - HUD_SIZE * 25 / 12 - TILE_SIZE) {
-            blueprints.get(blueprintIndex).renderUiTile(g, GAME_WIDTH - HUD_SIZE * 35 / 12, GAME_HEIGHT - HUD_SIZE * 25 / 12, player.inventory, true);
+        if (player.screenPos[0] < config.hudSize * 3 + config.tileSize && player.screenPos[1] > config.gameHeight - config.hudSize * 25 / 12 - config.tileSize) {
+            blueprints.get(blueprintIndex).renderUiTile(g, config.gameWidth - config.hudSize * 35 / 12, config.gameHeight - config.hudSize * 25 / 12, player.inventory, true);
         } else {
-            blueprints.get(blueprintIndex).renderUiTile(g, HUD_SIZE / 12, GAME_HEIGHT - HUD_SIZE * 25 / 12, player.inventory, false);
+            blueprints.get(blueprintIndex).renderUiTile(g, config.hudSize / 12, config.gameHeight - config.hudSize * 25 / 12, player.inventory, false);
         }
     }
 
     //Change selected blueprint based on scroll wheel
     public void scrollBar(double mouseScroll) {
-        if (Math.abs(mouseScroll) >= InputHandler.CRITICAL_MOUSE_SCROLL) {
+        if (Math.abs(mouseScroll) >= config.criticalMouseScroll) {
             blueprintIndex += Math.signum(mouseScroll);
             if (blueprintIndex < 0) {
                 blueprintIndex = blueprints.size() - 1;
@@ -131,8 +127,8 @@ public class Build {
 
         //Position to build on
         int[] index = new int[]{
-            (int) (Math.floor(player.pos[0] / TILE_SIZE) + cursor[0]),
-            (int) (Math.floor(player.pos[1] / TILE_SIZE) + cursor[1])
+            (int) (Math.floor(player.pos[0] / config.tileSize) + cursor[0]),
+            (int) (Math.floor(player.pos[1] / config.tileSize) + cursor[1])
         };
 
         //Checks if can place on tile

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.player.Player;
 import honey.player.inventory.Inventory;
 import honey.player.inventory.Item;
@@ -18,8 +18,7 @@ import honey.world.World;
 
 public class Blueprint {
 
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+    public static ConfigManager config;
 
     //Static json data
     public static final Map<String, List<Map<String, Number>>> blueprintMats = new HashMap<>();
@@ -75,8 +74,8 @@ public class Blueprint {
     public boolean checkCanPlace(World world, Player player, int[] cursor) {
         //Position trying to build on
         int[] index = new int[]{
-            (int) (Math.floor(player.pos[0] / TILE_SIZE) + cursor[0]),
-            (int) (Math.floor(player.pos[1] / TILE_SIZE) + cursor[1])
+            (int) (Math.floor(player.pos[0] / config.tileSize) + cursor[0]),
+            (int) (Math.floor(player.pos[1] / config.tileSize) + cursor[1])
         };
 
         //Checks if player has materials
@@ -113,17 +112,17 @@ public class Blueprint {
         }
         //Render blueprint Scroll
         if (mirror) {
-            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), x + HUD_SIZE * 17 / 6, y, -HUD_SIZE, HUD_SIZE, null);
+            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), x + config.hudSize * 17 / 6, y, -config.hudSize, config.hudSize, null);
         } else {
-            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), x, y, HUD_SIZE, HUD_SIZE, null);
+            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), x, y, config.hudSize, config.hudSize, null);
         }
 
         //Render blueprint Item
         if (staticTexture != null) {
             if (mirror) {
-                g.drawImage(staticTexture, x + HUD_SIZE * 47 / 24, y + HUD_SIZE * 3 / 24, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
+                g.drawImage(staticTexture, x + config.hudSize * 47 / 24, y + config.hudSize * 3 / 24, config.hudSize * 3 / 4, config.hudSize * 3 / 4, null);
             } else {
-                g.drawImage(staticTexture, x + HUD_SIZE * 3 / 24, y + HUD_SIZE * 3 / 24, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
+                g.drawImage(staticTexture, x + config.hudSize * 3 / 24, y + config.hudSize * 3 / 24, config.hudSize * 3 / 4, config.hudSize * 3 / 4, null);
             }
         }
 
@@ -138,17 +137,17 @@ public class Blueprint {
                 g.setColor(Color.GREEN);
                 if (mirror) {
                     final int w = g.getFontMetrics().stringWidth(name + " x" + itemCount + " ✓");
-                    g.drawString(name + " x" + itemCount + " ✓", x + HUD_SIZE * 5 / 3 - w, y + HUD_SIZE - i * 18);
+                    g.drawString(name + " x" + itemCount + " ✓", x + config.hudSize * 5 / 3 - w, y + config.hudSize - i * 18);
                 } else {
-                    g.drawString("✓ " + name + " x" + itemCount, x + HUD_SIZE * 13 / 12, y + HUD_SIZE - i * 18);
+                    g.drawString("✓ " + name + " x" + itemCount, x + config.hudSize * 13 / 12, y + config.hudSize - i * 18);
                 }
             } else {
                 g.setColor(Color.RED);
                 if (mirror) {
                     final int w = g.getFontMetrics().stringWidth(name + " x" + itemCount + " ✕");
-                    g.drawString(name + " x" + itemCount + " ✕", x + HUD_SIZE * 5 / 3 - w, y + HUD_SIZE - i * 18);
+                    g.drawString(name + " x" + itemCount + " ✕", x + config.hudSize * 5 / 3 - w, y + config.hudSize - i * 18);
                 } else {
-                    g.drawString("✕ " + name + " x" + itemCount, x + HUD_SIZE * 13 / 12, y + HUD_SIZE - i * 18);
+                    g.drawString("✕ " + name + " x" + itemCount, x + config.hudSize * 13 / 12, y + config.hudSize - i * 18);
                 }
             }
         }

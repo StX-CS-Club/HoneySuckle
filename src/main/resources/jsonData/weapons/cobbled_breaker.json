@@ -1,0 +1,28 @@
+{
+  "cobbled_breaker": {
+    "name": "Cobbled Breaker",
+    "id": 16,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Hatchet",
+      "Damage": "4",
+      "Size": "1.25",
+      "Speed": "2",
+      "Object Damage": "x1.5"
+    },
+    "texture": {
+      "itemTexture": "weapons/cobbled_breaker/item",
+      "texture": "weapons/cobbled_breaker/cobbled_breaker",
+      "animation": "_mirroredSwing_",
+      "type": "side"
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.04,
+        "cooldown": 20,
+        "frames": 10,
+        "objectDamage": 1.5
+      }
+    }
+  }
+}

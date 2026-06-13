@@ -17,7 +17,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import honey.mechanics.AssetManager;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.FileManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
@@ -36,7 +36,7 @@ import honey.world.Biome;
 import honey.world.Entity;
 import honey.world.World;
 
-/* 
+/*
  * HoneySuckle.java *
  - Main Class
  -Static variables and constants
@@ -45,12 +45,7 @@ import honey.world.World;
 //Main class, extends JPanel for graphics, implements runnable and listeners
 public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
-    //Static variables referenced throughout code
-    public static final int FPS = 30;
-    public static final int GAME_WIDTH = 640;
-    public static final int GAME_HEIGHT = 480;
-    public static final int TILE_SIZE = 32;
-    public static final int HUD_SIZE = 64;
+    public static ConfigManager config;
 
     //Static variable referencing inputs
     private static final InputHandler inputHandler = new InputHandler();
@@ -67,6 +62,9 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     //Main Method
     public static void main(String[] args) {
+        config = FileManager.readConfig();
+        config.distribute();
+
         //Creates the window
         JFrame frame = new JFrame("HoneySuckle");
         HoneySuckle panel = new HoneySuckle();
@@ -99,7 +97,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     //Game Constructor
     public HoneySuckle() {
         //Creates window
-        setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
+        setPreferredSize(new Dimension(config.gameWidth, config.gameHeight));
         setFocusable(true);
         requestFocusInWindow();
         //Adds event listeners to window
@@ -127,10 +125,10 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     public static void start() {
         //Creates world 1
-        World world = new World();
+        final World world = new World(config.startingBiome);
         //Creates main player in reference to world 1
-        player = new Player(new double[]{TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.start[1] + 0.5)},
-                (int) (TILE_SIZE * 0.75), Arrays.asList("leader"));
+        player = new Player(new double[]{config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.start[1] + 0.5)},
+                (int) (config.tileSize * 0.75), config.playerTags);
         play = true;
     }
 
@@ -141,7 +139,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
         //Converts Graphics to Graphics2D for more methods
         final BufferedImage internalFrame = new BufferedImage(
-                GAME_WIDTH, GAME_HEIGHT, BufferedImage.TYPE_INT_ARGB
+                config.gameWidth, config.gameHeight, BufferedImage.TYPE_INT_ARGB
         );
         final Graphics2D g2d = (Graphics2D) internalFrame.getGraphics();
 
@@ -163,7 +161,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
                 final Color fogColor = Rendering.decodeColor(biome.textureMap.get("fogColor"));
                 Rendering.renderLight(g2d, fogColor, lights);
             }
-            
+
             biome.renderOverlay(g2d);
 
             //Creates red overlay when at low health
@@ -202,16 +200,16 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         double width = getWidth();
         double height = getHeight();
 
-        double scaleX = width / (double) GAME_WIDTH;
-        double scaleY = height / (double) GAME_HEIGHT;
+        double scaleX = width / (double) config.gameWidth;
+        double scaleY = height / (double) config.gameHeight;
 
         double scale = Math.min(scaleX, scaleY);
 
-        int offsetX = (int) Math.floor((width - GAME_WIDTH * scale) / 2);
-        int offsetY = (int) Math.floor((height - GAME_HEIGHT * scale) / 2);
+        int offsetX = (int) Math.floor((width - config.gameWidth * scale) / 2);
+        int offsetY = (int) Math.floor((height - config.gameHeight * scale) / 2);
 
-        int gameWidth = (int) Math.floor(GAME_WIDTH * scale);
-        int gameHeight = (int) Math.floor(GAME_HEIGHT * scale);
+        int gameWidth = (int) Math.floor(config.gameWidth * scale);
+        int gameHeight = (int) Math.floor(config.gameHeight * scale);
         // Apply scaling and translation
         g.drawImage(frame, offsetX, offsetY, gameWidth, gameHeight, null);
 
@@ -248,12 +246,13 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public void run() {
         //Infinite loop
         while (true) {
+            final long startTime = System.currentTimeMillis();
             //Update
             update();
             repaint();
             try {
                 //Sleep for appropriate time to mantain FPS and allow CPU to chill
-                Thread.sleep((int) (1000.0 / FPS));
+                Thread.sleep((int) Math.max(0, 1000.0 / config.fps - (System.currentTimeMillis() - startTime)));
             } catch (InterruptedException e) {
                 System.out.println("HoneySuckle ERROR: Failed to delay loop.");
             }

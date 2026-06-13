@@ -7,13 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.rendering.Rendering;
 
 public class Ammo {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+    public static ConfigManager config;
 
     public static final Map<String, String> ammoNames = new HashMap<>();
     public static final Map<String, Map<String, Number>> ammoAttributes = new HashMap<>();
@@ -85,24 +84,24 @@ public class Ammo {
     }
 
     public void renderScroll(Graphics2D g) {
-        final int scale = (int) Math.floor(2.5 * HUD_SIZE / 32);
+        final int scale = (int) Math.floor(2.5 * config.hudSize / 32);
         final int renderedW = (14 * 4 + 8) * scale;
         final int renderedH = 32 * scale;
-        final int scrollX = GAME_WIDTH / 2 - renderedW / 2;
+        final int scrollX = config.gameWidth / 2 - renderedW / 2;
         final int scrollTop = 20;
         g.drawImage(Rendering.scroll(14), scrollX, scrollTop, renderedW, renderedH, null);
 
         g.setColor(Rendering.decodeColor(texture.getOrDefault("rarityColor", "#333333")));
         g.setFont(new Font("VT323 Regular", Font.PLAIN, 32));
 
-        Rendering.centeredText(g, name, GAME_WIDTH / 2, scrollTop + 8 * scale);
+        Rendering.centeredText(g, name, config.gameWidth / 2, scrollTop + 8 * scale);
 
         if (count > 0) {
             g.setColor(Color.BLACK);
         } else {
             g.setColor(Color.RED);
         }
-        Rendering.centeredText(g, "x" + count, GAME_WIDTH / 2, scrollTop + renderedH - 14);
+        Rendering.centeredText(g, "x" + count, config.gameWidth / 2, scrollTop + renderedH - 14);
 
         String[] statKeys = stats.keySet().toArray(String[]::new);
 

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.rendering.Rendering;
 
 /*
@@ -18,9 +19,7 @@ import honey.rendering.Rendering;
  */
 public class Tile {
 
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int FPS = HoneySuckle.FPS;
-    private static final double TILE_UNIT = TILE_SIZE / 16.0;
+    public static ConfigManager config;
 
     // Static json data
     public static final Map<Integer, List<String>> tileTags = new HashMap<>();
@@ -77,9 +76,9 @@ public class Tile {
         edgeColorDecoded = Rendering.decodeColor(edgeColor);
         mapColor = Rendering.decodeColor(getMapColor(world));
 
-        maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
+        maxFrames = attributes.getOrDefault("animFrames", config.fps).intValue();
         dip = attributes.getOrDefault("dip", 0).intValue();
-        dipPixels = (int) Math.round(TILE_UNIT * dip);
+        dipPixels = (int) Math.round(config.tileSize / 16.0 * dip);
 
         variant = getVariant();
         staticTexture = getTexture(variant);
@@ -91,11 +90,11 @@ public class Tile {
         final int screenY = (int) screenPos[1] + dipPixels;
 
         if (posIndex[1] == 0 && dip != 0) {
-            renderAt(g, screenX, screenY - TILE_SIZE);
+            renderAt(g, screenX, screenY - config.tileSize);
         }
 
         if (anim.contains("_gif_")) {
-            g.drawImage(getFrame(variant), screenX, screenY, TILE_SIZE, TILE_SIZE, null);
+            g.drawImage(getFrame(variant), screenX, screenY, config.tileSize, config.tileSize, null);
             frame = (frame + 1) % maxFrames;
         } else {
             renderAt(g, screenX, screenY);
@@ -108,10 +107,10 @@ public class Tile {
 
     private void renderAt(Graphics2D g, int x, int y) {
         if (staticTexture != null) {
-            g.drawImage(staticTexture, x, y, TILE_SIZE, TILE_SIZE, null);
+            g.drawImage(staticTexture, x, y, config.tileSize, config.tileSize, null);
         } else if (colorDecoded != null) {
             g.setColor(colorDecoded);
-            Rendering.borderRect(g, 2, Color.black, x, y, TILE_SIZE, TILE_SIZE);
+            Rendering.borderRect(g, 2, Color.black, x, y, config.tileSize, config.tileSize);
         }
     }
 
@@ -121,14 +120,14 @@ public class Tile {
 
         final int screenX = (int) screenPos[0];
         final int screenY = (int) screenPos[1] + dipPixels;
-        final int edgeHeight = (int) Math.round(TILE_UNIT * dip);
+        final int edgeHeight = (int) Math.round(config.tileSize / 16.0 * dip);
 
         if (staticEdgeTexture != null) {
-            g.drawImage(staticEdgeTexture, screenX, screenY, screenX + TILE_SIZE, screenY + edgeHeight, 0, 0, 16, dip, null);
+            g.drawImage(staticEdgeTexture, screenX, screenY, screenX + config.tileSize, screenY + edgeHeight, 0, 0, 16, dip, null);
         } else if (edgeColorDecoded != null) {
             g.setColor(edgeColorDecoded);
-            g.fillRect(screenX, screenY, TILE_SIZE, edgeHeight);
-            Rendering.borderOutline(g, 2, Color.black, screenX, screenY, TILE_SIZE, edgeHeight);
+            g.fillRect(screenX, screenY, config.tileSize, edgeHeight);
+            Rendering.borderOutline(g, 2, Color.black, screenX, screenY, config.tileSize, edgeHeight);
         }
     }
 
@@ -202,8 +201,8 @@ public class Tile {
 
     public void renderLight(double[] screenPos) {
         HoneySuckle.lights.add(Map.of(
-                "posX", screenPos[0] + TILE_SIZE / 2,
-                "posY", screenPos[1] + TILE_SIZE / 2,
+                "posX", screenPos[0] + config.tileSize / 2,
+                "posY", screenPos[1] + config.tileSize / 2,
                 "radius", attributes.getOrDefault("lightRadius", 0),
                 "color", glowColor,
                 "glow", attributes.getOrDefault("glow", 0),

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.MapReader;
 import honey.player.Player;
 import honey.player.armory.Effect;
@@ -16,8 +16,8 @@ import honey.world.World;
 
 public class KeyItem {
 
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
-    
+    public static ConfigManager config;
+
     //Static json data
     public static final Map<String, String> keyNames = new HashMap<>();
     public static final Map<String, Map<String, String>> keyTextures = new HashMap<>();
@@ -113,16 +113,16 @@ public class KeyItem {
             color = "#f5d39d";
         }
 
-        Rendering.imageFactor(Rendering.texture("ui/hud/hotslot", color), g, x, y, HUD_SIZE, HUD_SIZE, factor);
+        Rendering.imageFactor(Rendering.texture("ui/hud/hotslot", color), g, x, y, config.hudSize, config.hudSize, factor);
 
         if (!utilAnimFrames.isEmpty()) {
             g.setColor(new Color(128, 128, 128, 128 / utilAnimFrames.size()));
             for (String key : utilAnimFrames.keySet()) {
                 final int animFrames = utilAnimFrames.get(key);
                 if (animFrames > 0) {
-                    final int size = (int) Math.ceil(utilFrames.get(key)[0] / (double) animFrames * HUD_SIZE);
-                    if (size > 0 && size <= HUD_SIZE) {
-                        g.fillRect(x, y + size, HUD_SIZE, HUD_SIZE - size);
+                    final int size = (int) Math.ceil(utilFrames.get(key)[0] / (double) animFrames * config.hudSize);
+                    if (size > 0 && size <= config.hudSize) {
+                        g.fillRect(x, y + size, config.hudSize, config.hudSize - size);
                     }
                 }
             }
@@ -131,10 +131,10 @@ public class KeyItem {
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {
             if (useFrames > 0) {
-                Rendering.imageFactor(Rendering.texture(itemTexture, null), g, x + HUD_SIZE / 8, y + HUD_SIZE / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, 0.8);
+                Rendering.imageFactor(Rendering.texture(itemTexture, null), g, x + config.hudSize / 8, y + config.hudSize / 8, config.hudSize * 3 / 4, config.hudSize * 3 / 4, 0.8);
                 useFrames--;
             } else {
-                g.drawImage(Rendering.texture(itemTexture, null), x + HUD_SIZE / 8, y + HUD_SIZE / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
+                g.drawImage(Rendering.texture(itemTexture, null), x + config.hudSize / 8, y + config.hudSize / 8, config.hudSize * 3 / 4, config.hudSize * 3 / 4, null);
             }
         }
     }

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import honey.HoneySuckle;
 import honey.mechanics.Collision;
+import honey.mechanics.ConfigManager;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
@@ -22,7 +23,7 @@ import honey.rendering.Rendering;
  */
 public class Projectile {
 
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    public static ConfigManager config;
 
     //Static json data
     public static final Map<String, List<String>> projTags = new HashMap<>();
@@ -78,7 +79,7 @@ public class Projectile {
         tags = projTags.get(type);
         splinters = projSplinters.get(type);
 
-        baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * TILE_SIZE;
+        baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * config.tileSize;
 
         //Trig variables
         double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
@@ -99,7 +100,7 @@ public class Projectile {
         this.angle = angle;
         this.source = source;
         weight = attributes.getOrDefault("weight", 1.0).doubleValue();
-        size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
+        size = attributes.getOrDefault("size", 0.5).doubleValue() * config.tileSize;
         circumradius = size / 2.0 * Math.sqrt(2);
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
@@ -131,7 +132,7 @@ public class Projectile {
         }
         this.attributes = attributes;
 
-        baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * TILE_SIZE;
+        baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * config.tileSize;
 
         //Trig variables
         double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
@@ -151,7 +152,7 @@ public class Projectile {
         this.angle = angle;
         this.source = source;
         weight = attributes.getOrDefault("weight", 1.0).doubleValue();
-        size = attributes.getOrDefault("size", 0.5).doubleValue() * HoneySuckle.TILE_SIZE;
+        size = attributes.getOrDefault("size", 0.5).doubleValue() * config.tileSize;
         circumradius = size / 2.0 * Math.sqrt(2);
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
 
@@ -182,8 +183,8 @@ public class Projectile {
         //Current world data
         World world = World.worlds.get(World.level);
         int[] posIndex = new int[]{
-            (int) Math.floor(pos[0] / TILE_SIZE),
-            (int) Math.floor(pos[1] / TILE_SIZE)
+            (int) Math.floor(pos[0] / config.tileSize),
+            (int) Math.floor(pos[1] / config.tileSize)
         };
 
         frames--;
@@ -205,8 +206,8 @@ public class Projectile {
                                     new Point2D.Double(pos[0], pos[1]),
                                     new Point2D.Double(size, size),
                                     angle,
-                                    new Point2D.Double(TILE_SIZE * (x + 0.5), TILE_SIZE * (y + 0.5)),
-                                    new Point2D.Double(TILE_SIZE * 0.5, TILE_SIZE * 0.5))) {
+                                    new Point2D.Double(config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)),
+                                    new Point2D.Double(config.tileSize * 0.5, config.tileSize * 0.5))) {
                                 WorldObject object = world.objGrid[x][y];
                                 if (object != null) {
                                     final double oc = object.attributes.getOrDefault("projCollision", 0).doubleValue();
@@ -214,13 +215,13 @@ public class Projectile {
                                             new Point2D.Double(pos[0], pos[1]),
                                             new Point2D.Double(size, size),
                                             angle,
-                                            new Point2D.Double(TILE_SIZE * (x + 0.5), TILE_SIZE * (y + 0.5)),
-                                            new Point2D.Double(TILE_SIZE * oc * 0.5, TILE_SIZE * oc * 0.5))) {
+                                            new Point2D.Double(config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)),
+                                            new Point2D.Double(config.tileSize * oc * 0.5, config.tileSize * oc * 0.5))) {
                                         //If can damage tile, apply damage
                                         if (tags.contains("damageTile")) {
                                             //If failed to destroy object, remove projectile
                                             if (object.damage(damage)) {
-                                                world.processLoot(object.loot, new double[]{TILE_SIZE * (x + 0.5), TILE_SIZE * (y + 0.5)}, source instanceof Player ? (Player) source : null);
+                                                world.processLoot(object.loot, new double[]{config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)}, source instanceof Player ? (Player) source : null);
                                             } else {
                                                 if (destroy(world)) {
                                                     return;
@@ -259,10 +260,10 @@ public class Projectile {
         }
         //If can hurt entity or boss, query collision grid for nearby candidates
         if (tags.contains("hurtEntity") || tags.contains("hurtBoss")) {
-            final int px0 = Math.max(0, (int) Math.floor((pos[0] - circumradius) / TILE_SIZE));
-            final int px1 = Math.min(world.size[0] - 1, (int) Math.floor((pos[0] + circumradius) / TILE_SIZE));
-            final int py0 = Math.max(0, (int) Math.floor((pos[1] - circumradius) / TILE_SIZE));
-            final int py1 = Math.min(world.size[1] - 1, (int) Math.floor((pos[1] + circumradius) / TILE_SIZE));
+            final int px0 = Math.max(0, (int) Math.floor((pos[0] - circumradius) / config.tileSize));
+            final int px1 = Math.min(world.size[0] - 1, (int) Math.floor((pos[0] + circumradius) / config.tileSize));
+            final int py0 = Math.max(0, (int) Math.floor((pos[1] - circumradius) / config.tileSize));
+            final int py1 = Math.min(world.size[1] - 1, (int) Math.floor((pos[1] + circumradius) / config.tileSize));
             for (int bx = px0; bx <= px1; bx++) {
                 for (int by = py0; by <= py1; by++) {
                     final List<Entity> bucket = world.entityGrid.get(bx * world.size[1] + by);
@@ -332,8 +333,8 @@ public class Projectile {
 
     public void renderLight(double[] screenPos) {
         HoneySuckle.lights.add(Map.of(
-                "posX", screenPos[0] + TILE_SIZE / 2,
-                "posY", screenPos[1] + TILE_SIZE / 2,
+                "posX", screenPos[0] + config.tileSize / 2,
+                "posY", screenPos[1] + config.tileSize / 2,
                 "radius", attributes.getOrDefault("lightRadius", 0),
                 "color", glowColor,
                 "glow", attributes.getOrDefault("glow", 0),

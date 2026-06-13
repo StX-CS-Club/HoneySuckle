@@ -7,15 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.MapReader;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
 public class Effect {
 
-    private static final int FPS = HoneySuckle.FPS;
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+    public static ConfigManager config;
 
     public static final Map<String, Map<String, String>> effectTextures = new HashMap<>();
     public static final Map<String, List<String>> effectTags = new HashMap<>();
@@ -59,7 +58,7 @@ public class Effect {
                 MapReader.castMap(effect, Number.class),
                 effectModifiers.get(type));
 
-        duration = modifiers.getOrDefault("duration", 10).longValue() * FPS;
+        duration = modifiers.getOrDefault("duration", 10).longValue() * config.fps;
         amplifier = modifiers.getOrDefault("amplifier", 1).doubleValue();
         
         staticTexture = getTexture();
@@ -73,7 +72,7 @@ public class Effect {
         this.modifiers = modifiers;
 
         this.type = type;
-        duration = modifiers.getOrDefault("duration", 10).longValue() * FPS;
+        duration = modifiers.getOrDefault("duration", 10).longValue() * config.fps;
         amplifier = modifiers.getOrDefault("amplifier", 1).doubleValue();
 
         staticTexture = getTexture();
@@ -110,13 +109,13 @@ public class Effect {
 
     public void renderUi(Graphics2D g, int x, int y) {
         if (staticTexture != null) {
-            g.drawImage(staticTexture, x, y, HUD_SIZE / 2, HUD_SIZE / 2, null);
+            g.drawImage(staticTexture, x, y, config.hudSize / 2, config.hudSize / 2, null);
 
             if (duration > 0) {
                 g.setColor(new Color(255, 255, 255, 96));
 
-                int size = (int) Math.round(frame / (double) duration * HUD_SIZE / 2.0);
-                g.fillRect(x, y + size, HUD_SIZE / 2, HUD_SIZE / 2 - size);
+                int size = (int) Math.round(frame / (double) duration * config.hudSize / 2.0);
+                g.fillRect(x, y + size, config.hudSize / 2, config.hudSize / 2 - size);
             }
         }
     }

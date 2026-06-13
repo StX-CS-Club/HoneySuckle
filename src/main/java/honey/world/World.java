@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
-/* 
+/*
  * World.java *
  - Class used for managing world
  - Manages tiles and objects
@@ -22,17 +22,20 @@ import honey.rendering.Rendering;
  */
 public class World {
 
-    private static final int FPS = HoneySuckle.FPS;
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int RENDER_DISTANCE = 2;
+    public static ConfigManager config;
+
     private static final double TILE_EPSILON = 0.001;
 
-    private static final int[] renderOffset = new int[] {
-            (int) GAME_WIDTH / TILE_SIZE / 2 + RENDER_DISTANCE,
-            (int) GAME_HEIGHT / TILE_SIZE / 2 + RENDER_DISTANCE
-    };
+    private static int[] cachedRenderOffset;
+    private static int[] renderOffset() {
+        if (cachedRenderOffset == null) {
+            cachedRenderOffset = new int[]{
+                config.gameWidth / config.tileSize / 2 + config.renderDistance,
+                config.gameHeight / config.tileSize / 2 + config.renderDistance
+            };
+        }
+        return cachedRenderOffset;
+    }
 
     // Static variables
     public static List<World> worlds = new ArrayList<>();
@@ -45,7 +48,7 @@ public class World {
         // Generates the world based on the biome
         biome.generateWorld();
         // Sets camera position
-        camera = new double[] { (start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0 };
+        camera = new double[] { (start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0 };
         navigator = new Navigator(this);
         // Adds world to static list of worlds
         worlds.add(this);
@@ -54,7 +57,7 @@ public class World {
     public World(String biomeId) {
         biome = new Biome(this, biomeId);
         biome.generateWorld();
-        camera = new double[] { (start[0] + 0.5) * TILE_SIZE, (size[1] * TILE_SIZE) - GAME_HEIGHT / 2.0 };
+        camera = new double[] { (start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0 };
         navigator = new Navigator(this);
         worlds.add(this);
     }
@@ -97,7 +100,7 @@ public class World {
                     final double burst = entry.getOrDefault("burst", 0).doubleValue();
                     for (int i = 0; i < count; i++) {
                         final double angle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
-                        final double scatter = TILE_SIZE * 0.3;
+                        final double scatter = config.tileSize * 0.3;
                         final double[] pos = {
                             spawnPos[0] + Math.cos(angle) * scatter,
                             spawnPos[1] + Math.sin(angle) * scatter
@@ -105,8 +108,8 @@ public class World {
                         final Entity spawned = new Entity(entityType, pos, this);
                         if (burst > 0) {
                             final double burstAngle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
-                            spawned.vel[0] = Math.cos(burstAngle) * burst * TILE_SIZE;
-                            spawned.vel[1] = Math.sin(burstAngle) * burst * TILE_SIZE;
+                            spawned.vel[0] = Math.cos(burstAngle) * burst * config.tileSize;
+                            spawned.vel[1] = Math.sin(burstAngle) * burst * config.tileSize;
                         }
                         spawned.brain.immunity = 3.0;
                         entities.add(spawned);
@@ -128,8 +131,8 @@ public class World {
 
         final double origX = pos[0];
         final double origY = pos[1];
-        final int posX = (int) Math.floor(origX / TILE_SIZE);
-        final int posY = (int) Math.floor(origY / TILE_SIZE);
+        final int posX = (int) Math.floor(origX / config.tileSize);
+        final int posY = (int) Math.floor(origY / config.tileSize);
         final boolean onWalkable = checkTag(posX, posY, "walkable") && !checkTag(posX, posY, "slippery")
                 && !flying;
         // X phase: apply X delta, resolve collisions against original Y span
@@ -137,17 +140,17 @@ public class World {
             pos[0] += delta[0];
             if (pos[0] < margin)
                 pos[0] = margin;
-            if (pos[0] > size[0] * TILE_SIZE - margin)
-                pos[0] = size[0] * TILE_SIZE - margin;
+            if (pos[0] > size[0] * config.tileSize - margin)
+                pos[0] = size[0] * config.tileSize - margin;
 
-            final int newPosX = (int) Math.floor(pos[0] / TILE_SIZE);
+            final int newPosX = (int) Math.floor(pos[0] / config.tileSize);
             if (onWalkable && newPosX >= 0 && newPosX < size[0] && !checkTag(newPosX, posY, "walkable")) {
                 pos[0] = origX;
             }
-            final int txMin = (int) Math.floor((pos[0] - margin) / TILE_SIZE);
-            final int txMax = (int) Math.floor((pos[0] + margin) / TILE_SIZE);
-            final int tyMin = (int) Math.floor((origY - margin + TILE_EPSILON) / TILE_SIZE);
-            final int tyMax = (int) Math.floor((origY + margin - TILE_EPSILON) / TILE_SIZE);
+            final int txMin = (int) Math.floor((pos[0] - margin) / config.tileSize);
+            final int txMax = (int) Math.floor((pos[0] + margin) / config.tileSize);
+            final int tyMin = (int) Math.floor((origY - margin + TILE_EPSILON) / config.tileSize);
+            final int tyMax = (int) Math.floor((origY + margin - TILE_EPSILON) / config.tileSize);
             if (delta[0] < 0) {
                 double snapRight = Double.NEGATIVE_INFINITY;
                 for (int tx = txMin; tx <= txMax; tx++) {
@@ -156,10 +159,10 @@ public class World {
                             continue;
                         final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
-                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
-                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin < tileRight && pos[0] + margin > tileLeft
                                 && origY - margin + TILE_EPSILON < tileBottom
                                 && origY + margin - TILE_EPSILON > tileTop)
@@ -176,10 +179,10 @@ public class World {
                             continue;
                         final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
-                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
-                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin < tileRight && pos[0] + margin > tileLeft
                                 && origY - margin + TILE_EPSILON < tileBottom
                                 && origY + margin - TILE_EPSILON > tileTop)
@@ -194,18 +197,18 @@ public class World {
         pos[1] += delta[1];
         if (pos[1] < margin)
             pos[1] = margin;
-        if (pos[1] > size[1] * TILE_SIZE - margin)
-            pos[1] = size[1] * TILE_SIZE - margin;
+        if (pos[1] > size[1] * config.tileSize - margin)
+            pos[1] = size[1] * config.tileSize - margin;
         if (delta[1] != 0) {
-            final int curPosX = (int) Math.floor(pos[0] / TILE_SIZE);
-            final int newPosY = (int) Math.floor(pos[1] / TILE_SIZE);
+            final int curPosX = (int) Math.floor(pos[0] / config.tileSize);
+            final int newPosY = (int) Math.floor(pos[1] / config.tileSize);
             if (onWalkable && newPosY >= 0 && newPosY < size[1] && !checkTag(curPosX, newPosY, "walkable")) {
                 pos[1] = origY;
             }
-            final int txMin = (int) Math.floor((pos[0] - margin + TILE_EPSILON) / TILE_SIZE);
-            final int txMax = (int) Math.floor((pos[0] + margin - TILE_EPSILON) / TILE_SIZE);
-            final int tyMin = (int) Math.floor((pos[1] - margin) / TILE_SIZE);
-            final int tyMax = (int) Math.floor((pos[1] + margin) / TILE_SIZE);
+            final int txMin = (int) Math.floor((pos[0] - margin + TILE_EPSILON) / config.tileSize);
+            final int txMax = (int) Math.floor((pos[0] + margin - TILE_EPSILON) / config.tileSize);
+            final int tyMin = (int) Math.floor((pos[1] - margin) / config.tileSize);
+            final int tyMax = (int) Math.floor((pos[1] + margin) / config.tileSize);
             if (delta[1] < 0) {
                 double snapBottom = Double.NEGATIVE_INFINITY;
                 for (int tx = txMin; tx <= txMax; tx++) {
@@ -214,10 +217,10 @@ public class World {
                             continue;
                         final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
-                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
-                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin + TILE_EPSILON < tileRight && pos[0] + margin - TILE_EPSILON > tileLeft
                                 && pos[1] - margin < tileBottom && pos[1] + margin > tileTop)
                             snapBottom = Math.max(snapBottom, tileBottom);
@@ -233,10 +236,10 @@ public class World {
                             continue;
                         final double c = getAttribute(tx, ty, collAttr);
                         if (c <= 0) continue;
-                        final double tileLeft = (tx + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileRight = (tx + (1.0 + c) / 2.0) * TILE_SIZE;
-                        final double tileTop = (ty + (1.0 - c) / 2.0) * TILE_SIZE;
-                        final double tileBottom = (ty + (1.0 + c) / 2.0) * TILE_SIZE;
+                        final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
+                        final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
+                        final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin + TILE_EPSILON < tileRight && pos[0] + margin - TILE_EPSILON > tileLeft
                                 && pos[1] - margin < tileBottom && pos[1] + margin > tileTop)
                             snapTop = Math.min(snapTop, tileTop);
@@ -248,12 +251,12 @@ public class World {
         } // Final clamp
         if (pos[0] < margin)
             pos[0] = margin;
-        if (pos[0] > size[0] * TILE_SIZE - margin)
-            pos[0] = size[0] * TILE_SIZE - margin;
+        if (pos[0] > size[0] * config.tileSize - margin)
+            pos[0] = size[0] * config.tileSize - margin;
         if (pos[1] < margin)
             pos[1] = margin;
-        if (pos[1] > size[1] * TILE_SIZE - margin)
-            pos[1] = size[1] * TILE_SIZE - margin;
+        if (pos[1] > size[1] * config.tileSize - margin)
+            pos[1] = size[1] * config.tileSize - margin;
     }
 
     // Events based on player pos
@@ -263,29 +266,29 @@ public class World {
             if (!biome.tags.contains("enemyLock") || entities.isEmpty()) {
                 level++;
                 World world = new World();
-                player.pos = new double[] { TILE_SIZE * (world.start[0] + 0.5), TILE_SIZE * (world.size[1] - 0.5) };
+                player.pos = new double[] { config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.size[1] - 0.5) };
                 return;
             }
         }
         // Player Tile
-        int[] posIndex = new int[] { (int) Math.floor(player.pos[0] / TILE_SIZE),
-                (int) Math.floor(player.pos[1] / TILE_SIZE) };
+        int[] posIndex = new int[] { (int) Math.floor(player.pos[0] / config.tileSize),
+                (int) Math.floor(player.pos[1] / config.tileSize) };
 
         // Player margin from center
         double margin = player.size / 2.0 + 1;
         // Player touching tiles
         int[][] marginIndex = new int[][] {
-                { (int) (Math.floor((player.pos[0] - margin) / TILE_SIZE)),
-                        (int) (Math.floor((player.pos[0] + margin) / TILE_SIZE)) },
-                { (int) (Math.floor((player.pos[1] - margin) / TILE_SIZE)),
-                        (int) (Math.floor((player.pos[1] + margin) / TILE_SIZE)) }
+                { (int) (Math.floor((player.pos[0] - margin) / config.tileSize)),
+                        (int) (Math.floor((player.pos[0] + margin) / config.tileSize)) },
+                { (int) (Math.floor((player.pos[1] - margin) / config.tileSize)),
+                        (int) (Math.floor((player.pos[1] + margin) / config.tileSize)) }
         };
 
         // Checks if on damage tile
         if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-            player.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS, false);
+            player.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / config.fps, false);
             if (biome.tags.contains("dangerousVoid")) {
-                player.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS, false);
+                player.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / config.fps, false);
             }
         }
         // Checks if on acel tile
@@ -297,7 +300,7 @@ public class World {
         for (int tx = marginIndex[0][0]; tx <= marginIndex[0][1]; tx++) {
             for (int ty = marginIndex[1][0]; ty <= marginIndex[1][1]; ty++) {
                 if (tx >= 0 && tx < size[0] && ty >= 0 && ty < size[1] && checkAttribute(tx, ty, "hurtness")) {
-                    player.damage(0.01 * getAttribute(tx, ty, "hurtness") * 30.0 / FPS, false);
+                    player.damage(0.01 * getAttribute(tx, ty, "hurtness") * 30.0 / config.fps, false);
                 }
             }
         }
@@ -308,7 +311,7 @@ public class World {
         }
 
         // Expands map
-        int[] mapRange = renderOffset.clone();
+        int[] mapRange = renderOffset().clone();
         if (biome.tags.contains("fog")) {
             int lightRadius = player.attributes.getOrDefault("lightRadius", 4).intValue();
             Arrays.fill(mapRange, lightRadius);
@@ -349,25 +352,25 @@ public class World {
     // Events based on entity
     public void entityEvent(Entity entity) {
         // Entity tile
-        int[] posIndex = new int[] { (int) Math.floor(entity.pos[0] / TILE_SIZE),
-                (int) Math.floor(entity.pos[1] / TILE_SIZE) };
+        int[] posIndex = new int[] { (int) Math.floor(entity.pos[0] / config.tileSize),
+                (int) Math.floor(entity.pos[1] / config.tileSize) };
 
         // Entity margin from center
         double margin = entity.size / 2.0 + 1;
         // Entity touching tiles
         int[][] marginIndex = new int[][] {
-                { (int) (Math.floor((entity.pos[0] - margin) / TILE_SIZE)),
-                        (int) (Math.floor((entity.pos[0] + margin) / TILE_SIZE)) },
-                { (int) (Math.floor((entity.pos[1] - margin) / TILE_SIZE)),
-                        (int) (Math.floor((entity.pos[1] + margin) / TILE_SIZE)) }
+                { (int) (Math.floor((entity.pos[0] - margin) / config.tileSize)),
+                        (int) (Math.floor((entity.pos[0] + margin) / config.tileSize)) },
+                { (int) (Math.floor((entity.pos[1] - margin) / config.tileSize)),
+                        (int) (Math.floor((entity.pos[1] + margin) / config.tileSize)) }
         };
 
         // Checks if on damage tile
         if (!entity.tags.contains("flying")) {
             if (checkAttribute(posIndex[0], posIndex[1], "damageness") && !checkTag(posIndex[0], posIndex[1], "safe")) {
-                entity.brain.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                entity.brain.damage(getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / config.fps);
                 if (biome.tags.contains("dangerousVoid")) {
-                    entity.brain.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / FPS);
+                    entity.brain.damage(0.01 * getAttribute(posIndex[0], posIndex[1], "damageness") * 30.0 / config.fps);
                 }
             }
             // Checks if on acel tile
@@ -385,7 +388,7 @@ public class World {
         for (int tx = marginIndex[0][0]; tx <= marginIndex[0][1]; tx++) {
             for (int ty = marginIndex[1][0]; ty <= marginIndex[1][1]; ty++) {
                 if (tx >= 0 && tx < size[0] && ty >= 0 && ty < size[1] && checkAttribute(tx, ty, "hurtness")) {
-                    entity.brain.damage(0.01 * getAttribute(tx, ty, "hurtness") * 30.0 / FPS);
+                    entity.brain.damage(0.01 * getAttribute(tx, ty, "hurtness") * 30.0 / config.fps);
                 }
             }
         }
@@ -420,22 +423,23 @@ public class World {
     public void render(Graphics2D g) {
         // Fills background as voidColor
         g.setColor(Rendering.decodeColor(biome.textureMap.get("voidColor")));
-        g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        g.fillRect(0, 0, config.gameWidth, config.gameHeight);
 
         // Center tile on screen
-        int[] cameraTile = new int[] { (int) Math.floor(camera[0] / TILE_SIZE),
-                (int) Math.floor(camera[1] / TILE_SIZE) };
+        int[] cameraTile = new int[] { (int) Math.floor(camera[0] / config.tileSize),
+                (int) Math.floor(camera[1] / config.tileSize) };
 
         final boolean fog = biome.tags.contains("fog");
+        final int[] ro = renderOffset();
 
         // Runs through all nearby (on screen) tiles to render
-        for (int y = cameraTile[1] - renderOffset[1]; y < cameraTile[1] + renderOffset[1]; y++) {
-            for (int x = cameraTile[0] - renderOffset[0]; x < cameraTile[0] + renderOffset[0]; x++) {
+        for (int y = cameraTile[1] - ro[1]; y < cameraTile[1] + ro[1]; y++) {
+            for (int x = cameraTile[0] - ro[0]; x < cameraTile[0] + ro[0]; x++) {
                 if (y >= 0 && y < grid[0].length && x >= 0 && x < grid.length) {
                     // Position of tile on screen
                     double[] screenPos = new double[] {
-                            (x * TILE_SIZE - camera[0] + GAME_WIDTH / 2.0),
-                            (y * TILE_SIZE - camera[1] + GAME_HEIGHT / 2.0)
+                            (x * config.tileSize - camera[0] + config.gameWidth / 2.0),
+                            (y * config.tileSize - camera[1] + config.gameHeight / 2.0)
                     };
                     // Render tile
                     grid[x][y].render(g, this, screenPos);
@@ -473,8 +477,8 @@ public class World {
         // Renders projectiles
         for (Projectile proj : renderProjectiles) {
             double[] screenPos = new double[] {
-                    GAME_WIDTH / 2.0 + proj.pos[0] - camera[0],
-                    GAME_HEIGHT / 2.0 + proj.pos[1] - camera[1]
+                    config.gameWidth / 2.0 + proj.pos[0] - camera[0],
+                    config.gameHeight / 2.0 + proj.pos[1] - camera[1]
             };
 
             proj.render(g, screenPos);
@@ -493,8 +497,8 @@ public class World {
         // updates them
         renderEntities.clear();
         for (Entity entity : entities) {
-            if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4
-                    && Math.abs(entity.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
+            if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= config.gameWidth * 3.0 / 4
+                    && Math.abs(entity.pos[1] - camera[1]) <= config.gameHeight * 3.0 / 4) {
                 renderEntities.add(entity);
             }
         }
@@ -504,10 +508,10 @@ public class World {
         // Rebuilds entity collision grid from updated renderEntities positions
         entityGrid.clear();
         for (Entity entity : renderEntities) {
-            final int x0 = Math.max(0, (int) Math.floor((entity.pos[0] - entity.size / 2.0) / TILE_SIZE));
-            final int x1 = Math.min(size[0] - 1, (int) Math.floor((entity.pos[0] + entity.size / 2.0) / TILE_SIZE));
-            final int y0 = Math.max(0, (int) Math.floor((entity.pos[1] - entity.size / 2.0) / TILE_SIZE));
-            final int y1 = Math.min(size[1] - 1, (int) Math.floor((entity.pos[1] + entity.size / 2.0) / TILE_SIZE));
+            final int x0 = Math.max(0, (int) Math.floor((entity.pos[0] - entity.size / 2.0) / config.tileSize));
+            final int x1 = Math.min(size[0] - 1, (int) Math.floor((entity.pos[0] + entity.size / 2.0) / config.tileSize));
+            final int y0 = Math.max(0, (int) Math.floor((entity.pos[1] - entity.size / 2.0) / config.tileSize));
+            final int y1 = Math.min(size[1] - 1, (int) Math.floor((entity.pos[1] + entity.size / 2.0) / config.tileSize));
             for (int bx = x0; bx <= x1; bx++) {
                 for (int by = y0; by <= y1; by++) {
                     entityGrid.computeIfAbsent(bx * size[1] + by, k -> new ArrayList<>()).add(entity);
@@ -519,8 +523,8 @@ public class World {
         renderProjectiles.clear();
         for (Projectile projectile : projectiles) {
             if (Projectile.projTags.get(projectile.type).contains("alwaysRender")
-                    || Math.abs(projectile.pos[0] - camera[0]) <= GAME_WIDTH * 3.0 / 4
-                            && Math.abs(projectile.pos[1] - camera[1]) <= GAME_HEIGHT * 3.0 / 4) {
+                    || Math.abs(projectile.pos[0] - camera[0]) <= config.gameWidth * 3.0 / 4
+                            && Math.abs(projectile.pos[1] - camera[1]) <= config.gameHeight * 3.0 / 4) {
                 renderProjectiles.add(projectile);
             }
         }

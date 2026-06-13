@@ -100,5 +100,14 @@
       "texture": "weapons/pine_wood_hatchet/item"
     },
     "mats": [{ "id": 13, "count": 5 }, { "id": 8 }, { "id": 3 }]
+  },
+  "cobbledBreaker": {
+    "name": "Cobbled Breaker",
+    "type": "weapon",
+    "products": [{ "id": 16, "type": 1 }],
+    "texture": {
+      "texture": "weapons/cobbled_breaker/item"
+    },
+    "mats": [{ "id": 1, "count": 10 }, { "id": 8, "count": 3 }]
   }
 }

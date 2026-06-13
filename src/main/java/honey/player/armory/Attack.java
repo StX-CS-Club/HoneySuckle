@@ -6,8 +6,8 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-import honey.HoneySuckle;
 import honey.mechanics.Collision;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Rendering;
@@ -18,12 +18,7 @@ import honey.world.WorldObject;
 
 public class Attack {
 
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int SLASH_FRAME_SIZE = Weapon.SLASH_FRAME_SIZE;
-    private static final int STAB_FRAME_WIDTH = Weapon.STAB_FRAME_WIDTH;
-    private static final int STAB_FRAME_HEIGHT = Weapon.STAB_FRAME_HEIGHT;
+    public static ConfigManager config;
 
     private final Map<String, long[]> attackFrames = new HashMap<>();
 
@@ -51,7 +46,7 @@ public class Attack {
         stabBehavior = registerBehavior("stab");
         throwBehavior = registerBehavior("throw");
 
-        size = weapon.attributes.getOrDefault("size", 1).doubleValue() * TILE_SIZE;
+        size = weapon.attributes.getOrDefault("size", 1).doubleValue() * config.tileSize;
 
         constClick = weapon.tags.contains("constClick");
     }
@@ -147,7 +142,7 @@ public class Attack {
 
             final long attackFrame = staticAttackFrames.get(attackId)[0];
             if (attackFrame <= frames && attackFrame >= 0) {
-                final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", size / TILE_SIZE).doubleValue();
+                final double swingSize = config.tileSize * numberFromMap(swingBehavior, "size", size / config.tileSize).doubleValue();
                 final double damage = numberFromMap(swingBehavior, "damage", 0.1).doubleValue();
 
                 //Check all entities
@@ -166,10 +161,10 @@ public class Attack {
                     }
                 }
                 //Player tile
-                int sizeTiles = (int) Math.floor(swingSize / TILE_SIZE) + 1;
+                int sizeTiles = (int) Math.floor(swingSize / config.tileSize) + 1;
                 int[] posIndex = new int[]{
-                    (int) Math.floor(player.pos[0] / TILE_SIZE),
-                    (int) Math.floor(player.pos[1] / TILE_SIZE)
+                    (int) Math.floor(player.pos[0] / config.tileSize),
+                    (int) Math.floor(player.pos[1] / config.tileSize)
                 };
                 //Check tiles
                 for (int x = posIndex[0] - sizeTiles; x <= posIndex[0] + sizeTiles; x++) {
@@ -181,16 +176,16 @@ public class Attack {
                                         Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), swingSize / 2, player.rotation),
                                         new Point2D.Double(swingSize, swingSize),
                                         player.rotation,
-                                        new Point2D.Double((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE),
-                                        new Point2D.Double(HoneySuckle.TILE_SIZE, TILE_SIZE))) {
-                                    final double objDamage = numberFromMap(swingBehavior, "objDamage", 1).doubleValue();
+                                        new Point2D.Double((x + 0.5) * config.tileSize, (y + 0.5) * config.tileSize),
+                                        new Point2D.Double(config.tileSize, config.tileSize))) {
+                                    final double objectDamage = numberFromMap(swingBehavior, "objectDamage", 1).doubleValue();
                                     final double forageDamage = numberFromMap(swingBehavior, "forageDamage", 1).doubleValue();
                                     final double mineDamage = numberFromMap(swingBehavior, "mineDamage", 1).doubleValue();
                                     final double constructDamage = numberFromMap(swingBehavior, "constructDamage", 1).doubleValue();
                                     final double treasureDamage = numberFromMap(swingBehavior, "treasureDamage", 1).doubleValue();
                                     final WorldObject obj = world.objGrid[x][y];
 
-                                    double finalDamage = damage * objDamage;
+                                    double finalDamage = damage * objectDamage;
                                     if(obj.tags.contains("forage")) {
                                         finalDamage *= forageDamage;
                                     }
@@ -206,7 +201,7 @@ public class Attack {
 
                                     //Damage object, and if broken add materials
                                     if (world.objGrid[x][y].damage(finalDamage)) {
-                                        world.processLoot(obj.loot, new double[]{(x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE}, player);
+                                        world.processLoot(obj.loot, new double[]{(x + 0.5) * config.tileSize, (y + 0.5) * config.tileSize}, player);
                                     }
                                 }
                             }
@@ -224,7 +219,7 @@ public class Attack {
 
             final long attackFrame = staticAttackFrames.get(attackId)[0];
             if (attackFrame <= frames && attackFrame >= 0) {
-                final double stabSize = TILE_SIZE * numberFromMap(stabBehavior, "size", size / TILE_SIZE).doubleValue();
+                final double stabSize = config.tileSize * numberFromMap(stabBehavior, "size", size / config.tileSize).doubleValue();
                 final double damage = numberFromMap(stabBehavior, "damage", 0.5).doubleValue();
                 final double objDamage = numberFromMap(stabBehavior, "objDamage", 1).doubleValue();
 
@@ -248,10 +243,10 @@ public class Attack {
                     }
                 }
                 //Player tile
-                int sizeTiles = (int) Math.floor(stabSize * 2 / TILE_SIZE) + 1;
+                int sizeTiles = (int) Math.floor(stabSize * 2 / config.tileSize) + 1;
                 int[] posIndex = new int[]{
-                    (int) Math.floor(player.pos[0] / TILE_SIZE),
-                    (int) Math.floor(player.pos[1] / TILE_SIZE)
+                    (int) Math.floor(player.pos[0] / config.tileSize),
+                    (int) Math.floor(player.pos[1] / config.tileSize)
                 };
                 //Check tiles
                 for (int x = posIndex[0] - sizeTiles; x <= posIndex[0] + sizeTiles; x++) {
@@ -263,12 +258,12 @@ public class Attack {
                                         Collision.addAtAngle(new Point2D.Double(player.pos[0], player.pos[1]), player.size / 2 + stabSize * progress, player.rotation),
                                         new Point2D.Double(stabSize / 2, stabSize * 2 * progress),
                                         player.rotation,
-                                        new Point2D.Double((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE),
-                                        new Point2D.Double(HoneySuckle.TILE_SIZE, TILE_SIZE))) {
+                                        new Point2D.Double((x + 0.5) * config.tileSize, (y + 0.5) * config.tileSize),
+                                        new Point2D.Double(config.tileSize, config.tileSize))) {
                                     WorldObject obj = world.objGrid[x][y];
                                     //Damage object, and if broken add materials
                                     if (world.objGrid[x][y].damage(damage * objDamage)) {
-                                        world.processLoot(obj.loot, new double[]{(x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE}, player);
+                                        world.processLoot(obj.loot, new double[]{(x + 0.5) * config.tileSize, (y + 0.5) * config.tileSize}, player);
                                     }
                                     attackFrames.get(attackId)[0] = -1;
                                     break;
@@ -290,7 +285,7 @@ public class Attack {
             final long attackFrame = staticAttackFrames.get(attackId)[0];
 
             if ((attackFrame < frames || attackFrame >= cooldown) && attackFrame >= -1) {
-                final double shieldSize = numberFromMap(shieldBehavior, "size", size / TILE_SIZE).doubleValue() * TILE_SIZE;
+                final double shieldSize = numberFromMap(shieldBehavior, "size", size / config.tileSize).doubleValue() * config.tileSize;
                 final double parry = numberFromMap(shieldBehavior, "parry", 1).doubleValue();
                 final double bounce = numberFromMap(shieldBehavior, "bounce", 1).doubleValue();
 
@@ -322,8 +317,8 @@ public class Attack {
                         }
                         //Bonus of parry
                         double[] parryBonus = new double[]{
-                            parry / frames * TILE_SIZE * frameDifference * Math.abs(Math.sin(Math.toRadians(player.rotation))),
-                            parry / frames * TILE_SIZE * frameDifference * Math.abs(Math.cos(Math.toRadians(player.rotation)))
+                            parry / frames * config.tileSize * frameDifference * Math.abs(Math.sin(Math.toRadians(player.rotation))),
+                            parry / frames * config.tileSize * frameDifference * Math.abs(Math.cos(Math.toRadians(player.rotation)))
                         };
                         //Yeet
                         entity.vel[0] = (Math.abs(entity.vel[0]) * bounce * parryCoef + parryBonus[0]) * direction[0] / entity.weight;
@@ -384,8 +379,8 @@ public class Attack {
 
             double screenSize = size;
             double[] screenPos = new double[]{
-                GAME_WIDTH / 2.0 + player.pos[0] - world.camera[0],
-                GAME_HEIGHT / 2.0 + player.pos[1] - world.camera[1]
+                config.gameWidth / 2.0 + player.pos[0] - world.camera[0],
+                config.gameHeight / 2.0 + player.pos[1] - world.camera[1]
             };
 
             if (animation != null) {
@@ -395,20 +390,20 @@ public class Attack {
                     final int frames = numberFromMap(swingBehavior, "frames", 5).intValue();
                     final long attackFrame = staticAttackFrames.get(attackId)[0];
                     if (attackFrame <= frames && attackFrame >= 0) {
-                        final double swingSize = TILE_SIZE * numberFromMap(swingBehavior, "size", screenSize / TILE_SIZE).doubleValue();
+                        final double swingSize = config.tileSize * numberFromMap(swingBehavior, "size", screenSize / config.tileSize).doubleValue();
                         //Position of slash on screen
                         double[] swingScreenPos = new double[]{
-                            GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - swingSize / 2.0,
-                            GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - swingSize - player.size / 2.0
+                            config.gameWidth / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - swingSize / 2.0,
+                            config.gameHeight / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - swingSize - player.size / 2.0
                         };
                         //Render slash
                         if(mirroredSwing) {
                             g.drawImage(
-                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, SLASH_FRAME_SIZE, SLASH_FRAME_SIZE),
+                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, config.slashFrameSize, config.slashFrameSize),
                                 (int) (swingScreenPos[0] + swingSize), (int) swingScreenPos[1], (int) -swingSize, (int) swingSize, null);
                         } else {
                             g.drawImage(
-                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, SLASH_FRAME_SIZE, SLASH_FRAME_SIZE),
+                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, config.slashFrameSize, config.slashFrameSize),
                                 (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
                         }
                         return;
@@ -420,15 +415,15 @@ public class Attack {
                     final int frames = numberFromMap(stabBehavior, "frames", 5).intValue();
                     final long attackFrame = staticAttackFrames.get(attackId)[0];
                     if (attackFrame <= frames && attackFrame >= 0) {
-                        final double stabSize = TILE_SIZE * numberFromMap(stabBehavior, "size", screenSize / TILE_SIZE).doubleValue();
+                        final double stabSize = config.tileSize * numberFromMap(stabBehavior, "size", screenSize / config.tileSize).doubleValue();
                         //Position of slash on screen
                         double[] swingScreenPos = new double[]{
-                            GAME_WIDTH / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - stabSize / 4.0,
-                            GAME_HEIGHT / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - stabSize * 2 - player.size / 2.0
+                            config.gameWidth / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - stabSize / 4.0,
+                            config.gameHeight / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - stabSize * 2 - player.size / 2.0
                         };
                         //Render slash
                         g.drawImage(
-                                Rendering.renderGIF("attacks/stab", weapon.texture.get("stabColor"), ((double) attackFrame) / frames, STAB_FRAME_WIDTH, STAB_FRAME_HEIGHT),
+                                Rendering.renderGIF("attacks/stab", weapon.texture.get("stabColor"), ((double) attackFrame) / frames, config.stabFrameWidth, config.stabFrameHeight),
                                 (int) swingScreenPos[0], (int) swingScreenPos[1], (int) stabSize / 2, (int) stabSize * 2, null);
                         return;
                     }
@@ -479,7 +474,7 @@ public class Attack {
             switch (weapon.texture.getOrDefault("type", "front")) {
                 case "side" -> {
                     screenPos[0] += player.size / 2.0;
-                    screenPos[1] -= screenSize / 2.0 + TILE_SIZE / 4.0;
+                    screenPos[1] -= screenSize / 2.0 + config.tileSize / 4.0;
 
                     g.drawImage(textureImage,
                             (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);

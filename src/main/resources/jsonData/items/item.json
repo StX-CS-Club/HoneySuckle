@@ -63,7 +63,7 @@
         "id": 8,
         "name": "Rock",
         "blueprintUnlocks": ["bridge"],
-        "recipeUnlocks": ["aRock"],
+        "recipeUnlocks": ["cobbledBreaker", "aRock"],
         "texture": {
             "texture": "items/rock"
         }

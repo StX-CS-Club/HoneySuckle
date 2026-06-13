@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.armory.Ammo;
 import honey.player.armory.Armor;
@@ -31,12 +32,7 @@ import honey.world.World;
  */
 public class Player {
 
-    private static final int FPS = HoneySuckle.FPS;
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-
-    private static final int CAMERA_DELAY = 6;
+    public static ConfigManager config;
 
     public static final Map<String, Number> playerDefaultAttributes = new HashMap<>();
 
@@ -48,11 +44,11 @@ public class Player {
         //Assign values to properties
         this.pos = pos;
         this.size = size;
-        build = new Build(this, new LinkedHashSet<>(Arrays.asList("wall", "raft")));
-        craft = new Craft(this, new LinkedHashSet<>());
+        build = new Build(this, new LinkedHashSet<>(config.startingBlueprints));
+        craft = new Craft(this, new LinkedHashSet<>(config.startingRecipes));
         armory = new Armory(this,
-                new Weapon[]{new Weapon("sword"), new Weapon("bow"), new Weapon("shield")},
-                new Armor("leather")
+                new Weapon[]{new Weapon(config.startingWeapons.get(0)), new Weapon(config.startingWeapons.get(1)), new Weapon(config.startingWeapons.get(2))},
+                new Armor(config.startingArmor)
         );
         inventory = new Inventory(
                 this,
@@ -162,7 +158,7 @@ public class Player {
             }
 
             //AKA magnitude of acceleration
-            double incriment = 30.0 / FPS * TILE_SIZE * attributes.getOrDefault("speed", 0.1).doubleValue();
+            double incriment = 30.0 / config.fps * config.tileSize * attributes.getOrDefault("speed", 0.1).doubleValue();
 
             //Get current world camera
             World world = World.worlds.get(World.level);
@@ -200,12 +196,12 @@ public class Player {
                 if (stamina == 1) {
                     vel[0] = 0;
                     vel[1] = 0;
-                    incriment = TILE_SIZE * 1.25;
+                    incriment = config.tileSize * 1.25;
                     stamina = 0;
                 }
             } else {
                 //Recover stamina
-                stamina += 0.1 * 30.0 / FPS;
+                stamina += 0.1 * 30.0 / config.fps;
                 if (stamina > 1) {
                     stamina = 1;
                 }
@@ -234,22 +230,22 @@ public class Player {
             world.bound(pos, vel, List.of(), size / 2.0);
 
             //Reset camera
-            camera[0] = camera[0] - (camera[0] - pos[0]) / CAMERA_DELAY;
-            camera[1] = camera[1] - (camera[1] - pos[1]) / CAMERA_DELAY;
+            camera[0] = camera[0] - (camera[0] - pos[0]) / config.cameraDelay;
+            camera[1] = camera[1] - (camera[1] - pos[1]) / config.cameraDelay;
 
             int[] worldSize = World.worlds.get(World.level).size;
 
-            if (camera[0] - GAME_WIDTH / 2.0 < 0) {
-                camera[0] = GAME_WIDTH / 2.0;
+            if (camera[0] - config.gameWidth / 2.0 < 0) {
+                camera[0] = config.gameWidth / 2.0;
             }
-            if (camera[0] + GAME_WIDTH / 2.0 > worldSize[0] * TILE_SIZE) {
-                camera[0] = worldSize[0] * TILE_SIZE - GAME_WIDTH / 2.0;
+            if (camera[0] + config.gameWidth / 2.0 > worldSize[0] * config.tileSize) {
+                camera[0] = worldSize[0] * config.tileSize - config.gameWidth / 2.0;
             }
-            if (camera[1] - GAME_HEIGHT / 2 < 0.0) {
-                camera[1] = GAME_HEIGHT / 2.0;
+            if (camera[1] - config.gameHeight / 2 < 0.0) {
+                camera[1] = config.gameHeight / 2.0;
             }
-            if (camera[1] + GAME_HEIGHT / 2.0 > worldSize[1] * TILE_SIZE) {
-                camera[1] = worldSize[1] * TILE_SIZE - GAME_HEIGHT / 2.0;
+            if (camera[1] + config.gameHeight / 2.0 > worldSize[1] * config.tileSize) {
+                camera[1] = worldSize[1] * config.tileSize - config.gameHeight / 2.0;
             }
 
             //World interact with player
@@ -260,9 +256,9 @@ public class Player {
 
             //Regenerate health
             double regen = attributes.getOrDefault("regen", 0.001).doubleValue();
-            health += regen * 30.0 / FPS;
+            health += regen * 30.0 / config.fps;
             if (vel[0] == 0 && vel[1] == 0) {
-                health += regen * 30.0 / FPS;
+                health += regen * 30.0 / config.fps;
             }
             //Cap health
             double maxHealth = attributes.getOrDefault("maxHealth", 1).doubleValue();
@@ -275,8 +271,8 @@ public class Player {
 
             //Reset position of player on screen
             screenPos = new double[]{
-                GAME_WIDTH / 2.0 + pos[0] - camera[0],
-                GAME_HEIGHT / 2.0 + pos[1] - camera[1]
+                config.gameWidth / 2.0 + pos[0] - camera[0],
+                config.gameHeight / 2.0 + pos[1] - camera[1]
             };
 
             //Difference between mouse and player pos on screen

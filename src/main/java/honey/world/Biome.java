@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.MapReader;
 import honey.rendering.Rendering;
 
@@ -31,9 +31,7 @@ public class Biome {
             List<TileGenRule> tiles, List<ObjGenRule> objects, List<EntityGenRule> entities,
             List<StructureGenRule> structures) {}
 
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
+    public static ConfigManager config;
 
     // Static data from json
     public static final Map<String, Map<String, String>> biometextureMap = new HashMap<>();
@@ -76,14 +74,14 @@ public class Biome {
     public void renderOverlay(Graphics2D g) {
         if (overlayTexture != null) {
             final double opacitySpeed = attributes.getOrDefault("overlaySpeed", 0).doubleValue();
-            final double oX = GAME_WIDTH - ((world.camera[0] * opacitySpeed) % (GAME_WIDTH));
-            final double oY = GAME_HEIGHT - ((world.camera[1] * opacitySpeed) % (GAME_HEIGHT));
+            final double oX = config.gameWidth - ((world.camera[0] * opacitySpeed) % (config.gameWidth));
+            final double oY = config.gameHeight - ((world.camera[1] * opacitySpeed) % (config.gameHeight));
 
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, attributes.getOrDefault("overlayOpacity", 0.1).floatValue()));
-            g.drawImage(overlayTexture, (int) oX, (int) oY, GAME_WIDTH, GAME_HEIGHT, null);
-            g.drawImage(overlayTexture, (int) oX - GAME_WIDTH, (int) oY, GAME_WIDTH, GAME_HEIGHT, null);
-            g.drawImage(overlayTexture, (int) oX, (int) oY - GAME_HEIGHT, GAME_WIDTH, GAME_HEIGHT, null);
-            g.drawImage(overlayTexture, (int) oX - GAME_WIDTH, (int) oY - GAME_HEIGHT, GAME_WIDTH, GAME_HEIGHT, null);
+            g.drawImage(overlayTexture, (int) oX, (int) oY, config.gameWidth, config.gameHeight, null);
+            g.drawImage(overlayTexture, (int) oX - config.gameWidth, (int) oY, config.gameWidth, config.gameHeight, null);
+            g.drawImage(overlayTexture, (int) oX, (int) oY - config.gameHeight, config.gameWidth, config.gameHeight, null);
+            g.drawImage(overlayTexture, (int) oX - config.gameWidth, (int) oY - config.gameHeight, config.gameWidth, config.gameHeight, null);
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
     }
@@ -219,7 +217,7 @@ public class Biome {
                                     if (ThreadLocalRandom.current().nextDouble() <= prob) {
                                         final String entityId = Entity.entityStringId.get(rule.id());
                                         entityResult.add(new Entity(entityId, new double[]{
-                                                (pos[0] + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE
+                                                (pos[0] + 0.5) * config.tileSize, (y + 0.5) * config.tileSize
                                         }, world));
                                         break;
                                     }
@@ -341,8 +339,8 @@ public class Biome {
         for (Structure.EntitySpawn spawn : sd.entities()) {
             if (ThreadLocalRandom.current().nextDouble() <= spawn.prob()) {
                 final double[] entityPos = new double[]{
-                        (spawn.pos()[0] + pos[0]) * TILE_SIZE,
-                        (spawn.pos()[1] + pos[1]) * TILE_SIZE
+                        (spawn.pos()[0] + pos[0]) * config.tileSize,
+                        (spawn.pos()[1] + pos[1]) * config.tileSize
                 };
                 entityResult.add(new Entity(spawn.entityId(), entityPos, world));
             }

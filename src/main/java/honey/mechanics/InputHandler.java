@@ -2,6 +2,8 @@ package honey.mechanics;
 
 public class InputHandler {
 
+    public static ConfigManager config;
+
     // Key variables
     public final boolean[] keyDown = new boolean[100];
     // Current and last key states for efficient key press detection
@@ -21,7 +23,6 @@ public class InputHandler {
 
     // Mouse scroll value
     public double mouseScroll = 0;
-    public static final double CRITICAL_MOUSE_SCROLL = 0.25;
 
     public void update() {
         // Updates key values efficiently
@@ -32,7 +33,7 @@ public class InputHandler {
         System.arraycopy(currentClick, 0, lastClick, 0, 6);
         System.arraycopy(click, 0, currentClick, 0, 6);
 
-        mouseScroll *= CRITICAL_MOUSE_SCROLL;
+        mouseScroll *= config.criticalMouseScroll;
     }
 
     public boolean keyDown(int keyCode) {

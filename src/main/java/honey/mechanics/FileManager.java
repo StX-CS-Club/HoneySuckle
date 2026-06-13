@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -243,6 +244,19 @@ public class FileManager {
         } catch (URISyntaxException e) {
             System.out.println("FileManager ERROR: Could not find json files.");
         }
+    }
+
+    public static ConfigManager readConfig() {
+        try {
+            URL url = FileManager.class.getResource("/jsonData/config.json");
+            if (url != null) {
+                Map<String, Object> data = objectMapper.readValue(new File(url.toURI()), mapType);
+                return new ConfigManager(data);
+            }
+        } catch (IOException | URISyntaxException e) {
+            System.out.println("FileManager INFO: Using default config values.");
+        }
+        return new ConfigManager(new HashMap<>());
     }
 
     private static Map<String, Object> readJsonDirectory(URI directory) throws IOException {

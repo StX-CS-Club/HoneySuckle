@@ -21,7 +21,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 
 /*
  * Rendering.java *
@@ -30,11 +30,7 @@ import honey.HoneySuckle;
  */
 public final class Rendering {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-
-    private static final int LIGHT_SCALE = 8;
+    public static ConfigManager config;
 
     //Save data -> Save CPU
     public static final Map<String, Map<String, BufferedImage>> textures = new HashMap<>();
@@ -43,11 +39,20 @@ public final class Rendering {
     // outer key: texturePath:textureColor, inner key: overlayColor:alpha
     private static final Map<String, Map<String, BufferedImage>> overlayCache = new HashMap<>();
 
-    //Reusable light map images — cleared each frame instead of reallocated
-    private static final BufferedImage lightImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
-    private static final Graphics2D light2d = lightImage.createGraphics();
-    private static final BufferedImage glowImage = new BufferedImage(GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE, BufferedImage.TYPE_INT_ARGB);
-    private static final Graphics2D glow2d = glowImage.createGraphics();
+    //Reusable light map images — lazily initialized after config is distributed
+    private static BufferedImage lightImage;
+    private static Graphics2D light2d;
+    private static BufferedImage glowImage;
+    private static Graphics2D glow2d;
+
+    private static void initLightImages() {
+        if (lightImage == null) {
+            lightImage = new BufferedImage(config.gameWidth / config.lightScale, config.gameHeight / config.lightScale, BufferedImage.TYPE_INT_ARGB);
+            light2d = lightImage.createGraphics();
+            glowImage = new BufferedImage(config.gameWidth / config.lightScale, config.gameHeight / config.lightScale, BufferedImage.TYPE_INT_ARGB);
+            glow2d = glowImage.createGraphics();
+        }
+    }
 
     //Fonts
     public static final Map<String, Font> fonts = new HashMap<>();
@@ -73,7 +78,7 @@ public final class Rendering {
     public static void registerImage(String texture, String color) {
         final String path = "sprites/" + texture;
         if (textures.computeIfAbsent(path, k -> new HashMap<>()).containsKey(color)) return;
-        final URL url = HoneySuckle.class.getResource("/images/" + path + ".png");
+        final URL url = Rendering.class.getResource("/images/" + path + ".png");
         if (url == null) return;
         try {
             final BufferedImage base = ImageIO.read(url);
@@ -84,7 +89,7 @@ public final class Rendering {
 
     public static void registerGIF(String path, String color, int frameWidth, int frameHeight) {
         if (gifFrames.computeIfAbsent(path, k -> new HashMap<>()).containsKey(color)) return;
-        final URL url = HoneySuckle.class.getResource("/images/animations/" + path + ".png");
+        final URL url = Rendering.class.getResource("/images/animations/" + path + ".png");
         if (url == null) return;
         try {
             final BufferedImage sheet = ImageIO.read(url);
@@ -121,7 +126,7 @@ public final class Rendering {
         BufferedImage baseImage = textures.get(texture).get(null);
         if (baseImage == null) {
             try {
-                baseImage = ImageIO.read(HoneySuckle.class.getResource("/images/" + texture + ".png"));
+                baseImage = ImageIO.read(Rendering.class.getResource("/images/" + texture + ".png"));
                 textures.get(texture).put(null, baseImage);
             } catch (IOException e) {
                 System.out.println("HoneySuckle ERROR: Could not find sprite: " + texture);
@@ -178,19 +183,20 @@ public final class Rendering {
 
     //Render Light
     public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Number>> lights) {
+        initLightImages();
         //Clear reusable light map images
         light2d.setComposite(AlphaComposite.Clear);
-        light2d.fillRect(0, 0, GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE);
+        light2d.fillRect(0, 0, config.gameWidth / config.lightScale, config.gameHeight / config.lightScale);
         light2d.setComposite(AlphaComposite.SrcOver);
 
         glow2d.setComposite(AlphaComposite.Clear);
-        glow2d.fillRect(0, 0, GAME_WIDTH / LIGHT_SCALE, GAME_HEIGHT / LIGHT_SCALE);
+        glow2d.fillRect(0, 0, config.gameWidth / config.lightScale, config.gameHeight / config.lightScale);
         glow2d.setComposite(AlphaComposite.SrcOver);
 
         //Render all lights on light map as radial gradients
         for (Map<String, Number> light : lights) {
-            final Point2D center = new Point2D.Float(light.get("posX").floatValue() / LIGHT_SCALE, light.get("posY").floatValue() / LIGHT_SCALE);
-            final int radius = (int) Math.floor(light.get("radius").doubleValue() * TILE_SIZE / LIGHT_SCALE);
+            final Point2D center = new Point2D.Float(light.get("posX").floatValue() / config.lightScale, light.get("posY").floatValue() / config.lightScale);
+            final int radius = (int) Math.floor(light.get("radius").doubleValue() * config.tileSize / config.lightScale);
             if (radius != 0) {
                 final Ellipse2D circle = new Ellipse2D.Double(
                         center.getX() - radius,
@@ -207,7 +213,7 @@ public final class Rendering {
             if (light.get("glow") != null && light.get("color") != null) {
                 final Color glowColor = new Color(light.get("color").intValue());
                 final int glowValue = light.get("glow").intValue();
-                final int glowRadius = (int) Math.floor(light.get("glowRadius").doubleValue() * TILE_SIZE / LIGHT_SCALE);
+                final int glowRadius = (int) Math.floor(light.get("glowRadius").doubleValue() * config.tileSize / config.lightScale);
                 if (glowRadius != 0) {
                     final Ellipse2D circle = new Ellipse2D.Double(
                             center.getX() - radius,
@@ -226,7 +232,7 @@ public final class Rendering {
         }
         //Input light map into translator and render
         drawLight(g, lightImage, fogColor);
-        g.drawImage(glowImage, 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
+        g.drawImage(glowImage, 0, 0, config.gameWidth, config.gameHeight, null);
     }
 
     //Translate lightmap into light mask
@@ -250,7 +256,7 @@ public final class Rendering {
             }
         }
         //Draw light mask
-        g.drawImage(transparent, 0, 0, GAME_WIDTH, GAME_HEIGHT, null);
+        g.drawImage(transparent, 0, 0, config.gameWidth, config.gameHeight, null);
     }
 
     //Render screen color fade
@@ -264,14 +270,14 @@ public final class Rendering {
         }
         //Set paint to radial gradient
         g.setPaint(new RadialGradientPaint(
-                new Point2D.Float(HoneySuckle.GAME_WIDTH / 2, GAME_HEIGHT / 2),
-                GAME_WIDTH / 2f,
+                new Point2D.Float(config.gameWidth / 2, config.gameHeight / 2),
+                config.gameWidth / 2f,
                 new float[]{0f, 1f},
                 new Color[]{new Color(0, 0, 0, 0), new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * percent))}
         ));
 
         //Render color fase
-        g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        g.fillRect(0, 0, config.gameWidth, config.gameHeight);
     }
 
     //Render frame from PNG sprite sheet (left-to-right, top-to-bottom) under animations/
@@ -280,7 +286,7 @@ public final class Rendering {
         if (gifMap != null) {
             final List<BufferedImage> frames = gifMap.get(color);
             if (frames != null) {
-                return frames.get((int) Math.floor(frame * frames.size()));
+                return frames.get(Math.min((int) Math.floor(frame * frames.size()), frames.size() - 1));
             }
         } else {
             gifFrames.put(path, new HashMap<>());
@@ -288,7 +294,7 @@ public final class Rendering {
 
         registerGIF(path, color, frameWidth, frameHeight);
         final List<BufferedImage> frames = gifFrames.get(path).get(color);
-        return frames.get((int) Math.floor(frame * frames.size()));
+        return frames.get(Math.min((int) Math.floor(frame * frames.size()), frames.size() - 1));
     }
 
     public static BufferedImage renderGIF(String path, String color, int frame, int frameWidth, int frameHeight) {

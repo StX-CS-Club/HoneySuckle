@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.player.armory.Ammo;
 import honey.player.armory.Armor;
 import honey.player.armory.Weapon;
@@ -16,7 +16,7 @@ import honey.player.inventory.KeyItem;
 
 public class Splash {
 
-    private static final int FPS = HoneySuckle.FPS;
+    public static ConfigManager config;
 
     public final String id;
     private final Map<String, Number> attributes;
@@ -81,8 +81,8 @@ public class Splash {
                 id = null;
             }
         }
-        maxFrames = attributes.getOrDefault("splashFrames", FPS).intValue();
-        animFrames = Math.min(FPS, maxFrames) / 2;
+        maxFrames = attributes.getOrDefault("splashFrames", config.fps).intValue();
+        animFrames = Math.min(config.fps, maxFrames) / 2;
 
         splashColor = Rendering.decodeColor(texture.getOrDefault("splashColor", "#ffffff"));
         label = name + " x" + count;

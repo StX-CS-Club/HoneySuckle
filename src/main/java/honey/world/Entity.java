@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.rendering.Rendering;
 
 /* 
@@ -22,10 +22,7 @@ import honey.rendering.Rendering;
  */
 public class Entity {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int FPS = HoneySuckle.FPS;
+    public static ConfigManager config;
 
     //Satic data imported from json files
     public static final Map<String, Map<String, Number>> entityAttributes = new HashMap<>();
@@ -84,7 +81,7 @@ public class Entity {
 
         //Interprets basic attributes
         health = attributes.getOrDefault("health", 1).doubleValue();
-        size = attributes.getOrDefault("size", 1).doubleValue() * TILE_SIZE;
+        size = attributes.getOrDefault("size", 1).doubleValue() * config.tileSize;
         weight = attributes.getOrDefault("weight", 1).doubleValue();
         this.pos = pos.clone();
 
@@ -94,15 +91,15 @@ public class Entity {
         staticTextureId = texture.get("texture");
         animTextureId = texture.get("gif");
         animation = texture.get("anim");
-        maxFrames = attributes.getOrDefault("animFrames", FPS).intValue();
+        maxFrames = attributes.getOrDefault("animFrames", config.fps).intValue();
     }
 
     //Render Entity
     public void render(Graphics2D g, double[] camera) {
         //Position of entity on screen
         double[] screenPos = new double[]{
-            GAME_WIDTH / 2.0 + pos[0] - camera[0] - size / 2.0,
-            GAME_HEIGHT / 2.0 + pos[1] - camera[1] - size / 2.0
+            config.gameWidth / 2.0 + pos[0] - camera[0] - size / 2.0,
+            config.gameHeight / 2.0 + pos[1] - camera[1] - size / 2.0
         };
         double[] screenSize = new double[]{size, size};
 
@@ -215,12 +212,12 @@ public class Entity {
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 
             g.setColor(Color.DARK_GRAY);
-            g.fillRect(GAME_WIDTH / 4, 25 + index * 35, GAME_WIDTH / 2, 10);
+            g.fillRect(config.gameWidth / 4, 25 + index * 35, config.gameWidth / 2, 10);
 
-            final double barWidth = (GAME_WIDTH / 2) * (health / attributes.get("health").doubleValue());
+            final double barWidth = (config.gameWidth / 2) * (health / attributes.get("health").doubleValue());
 
             g.setColor(Rendering.decodeColor(texture.getOrDefault("healthBarColor", "#c4021f")));
-            g.fillRect(GAME_WIDTH / 4, 25 + index * 35, (int) Math.ceil(barWidth), 10);
+            g.fillRect(config.gameWidth / 4, 25 + index * 35, (int) Math.ceil(barWidth), 10);
 
             final String symbol = texture.getOrDefault("healthBarSymbol", "=");
             final String label = (symbol + " " + name + " " + symbol).toUpperCase();
@@ -228,7 +225,7 @@ public class Entity {
             g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
             g.setColor(Color.WHITE);
 
-            Rendering.centeredText(g, label, GAME_WIDTH / 2, 30 + index * 35);
+            Rendering.centeredText(g, label, config.gameWidth / 2, 30 + index * 35);
 
             g.setComposite(originalComposite);
         }

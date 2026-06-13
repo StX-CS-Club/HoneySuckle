@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.player.inventory.KeyItem;
@@ -22,10 +22,7 @@ import honey.rendering.Rendering;
  */
 public class Armory {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+    public static ConfigManager config;
 
     //Basic armory components
     public int weaponIndex = 0;
@@ -112,8 +109,8 @@ public class Armory {
     public void updateArmorMenu(InputHandler input) {
         armorScroll = Math.clamp(armorScroll + input.mouseScroll, 0, player.inventory.armors.size() - 1);
         armorHover = -1;
-        if (Math.abs(input.mousePos[0] - GAME_WIDTH + 100) <= 60) {
-            double armorHighlight = (input.mousePos[1] - (GAME_HEIGHT / 2 - 60)) + armorScroll * 130;
+        if (Math.abs(input.mousePos[0] - config.gameWidth + 100) <= 60) {
+            double armorHighlight = (input.mousePos[1] - (config.gameHeight / 2 - 60)) + armorScroll * 130;
             if (armorHighlight % 130 <= 120) {
                 armorHover = (int) Math.floor(armorHighlight / 130);
             }
@@ -134,8 +131,8 @@ public class Armory {
     public void updateWeaponMenu(InputHandler input) {
         weaponScroll = Math.clamp(weaponScroll + input.mouseScroll, 0, player.inventory.weapons.size() - 1);
         weaponHover = -2;
-        if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
-            double weaponHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
+        if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
+            double weaponHighlight = (input.mousePos[0] - (config.gameWidth / 2 - 50));
             if (weaponSelect == null) {
                 weaponHighlight += weaponScroll * 110;
             }
@@ -163,8 +160,8 @@ public class Armory {
 
     public boolean updateAmmoSelect(InputHandler input) {
         weaponHover = -2;
-        if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
-            double weaponHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
+        if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
+            double weaponHighlight = (input.mousePos[0] - (config.gameWidth / 2 - 50));
             if (weaponHighlight % 110 <= 100) {
                 weaponHover = (int) Math.floor(weaponHighlight / 110 + weaponScroll * 110);
             }
@@ -199,7 +196,7 @@ public class Armory {
 
     //Updates selected weapon from scroll wheel
     public void scrollBar(double mouseScroll) {
-        if (Math.abs(mouseScroll) >= InputHandler.CRITICAL_MOUSE_SCROLL) {
+        if (Math.abs(mouseScroll) >= config.criticalMouseScroll) {
             weaponIndex += Math.signum(mouseScroll);
             if (weaponIndex < 0) {
                 weaponIndex = 2;
@@ -242,24 +239,24 @@ public class Armory {
 
             final String back = armorTexture.get("backTexture");
             if (back != null) {
-                g.drawImage(Rendering.texture(back, null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
+                g.drawImage(Rendering.texture(back, null), (int) config.gameWidth / 2 - 75, (int) config.gameHeight / 2 - 75 - armorOffset, 150, 150, null);
             }
 
-            g.drawImage(Rendering.texture("player/front", null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
+            g.drawImage(Rendering.texture("player/front", null), (int) config.gameWidth / 2 - 75, (int) config.gameHeight / 2 - 75, 150, 150, null);
             final String playerTexture = armorTexture.get("playerTexture");
             if (playerTexture != null) {
                 final float opacity = (float) Math.min(1, armorAnim / 10.0);
                 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-                g.drawImage(Rendering.texture(playerTexture, null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
+                g.drawImage(Rendering.texture(playerTexture, null), (int) config.gameWidth / 2 - 75, (int) config.gameHeight / 2 - 75, 150, 150, null);
                 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
             }
 
             final String front = armorTexture.get("frontTexture");
             if (front != null) {
-                g.drawImage(Rendering.texture(front, null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75 - armorOffset, 150, 150, null);
+                g.drawImage(Rendering.texture(front, null), (int) config.gameWidth / 2 - 75, (int) config.gameHeight / 2 - 75 - armorOffset, 150, 150, null);
             }
         } else {
-            g.drawImage(Rendering.texture("player/front", null), (int) GAME_WIDTH / 2 - 75, (int) GAME_HEIGHT / 2 - 75, 150, 150, null);
+            g.drawImage(Rendering.texture("player/front", null), (int) config.gameWidth / 2 - 75, (int) config.gameHeight / 2 - 75, 150, 150, null);
         }
 
         armorAnim++;
@@ -269,10 +266,10 @@ public class Armory {
 
             if (i == armorHover) {
                 Armor invArmor = player.inventory.armors.get(i);
-                invArmor.renderUiTile(g, GAME_WIDTH - 170, (int) (GAME_HEIGHT / 2 - 60 + offset), 1.1, invArmor == armor);
+                invArmor.renderUiTile(g, config.gameWidth - 170, (int) (config.gameHeight / 2 - 60 + offset), 1.1, invArmor == armor);
             } else {
                 Armor invArmor = player.inventory.armors.get(i);
-                invArmor.renderUiTile(g, GAME_WIDTH - 170, (int) (GAME_HEIGHT / 2 - 60 + offset), 1, invArmor == armor);
+                invArmor.renderUiTile(g, config.gameWidth - 170, (int) (config.gameHeight / 2 - 60 + offset), 1, invArmor == armor);
             }
         }
 
@@ -292,9 +289,9 @@ public class Armory {
             final int offset = 110 * i - ((int) Math.floor(weaponScroll * 110));
 
             if (i == weaponHover) {
-                player.inventory.weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1.1, weapons);
+                player.inventory.weapons.get(i).renderUiTile(g, (int) (config.gameWidth / 2 - 50 + offset), (int) (config.gameHeight / 2 - 50), 1.1, weapons);
             } else {
-                player.inventory.weapons.get(i).renderUiTile(g, (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 1, weapons);
+                player.inventory.weapons.get(i).renderUiTile(g, (int) (config.gameWidth / 2 - 50 + offset), (int) (config.gameHeight / 2 - 50), 1, weapons);
             }
         }
 
@@ -304,7 +301,7 @@ public class Armory {
     }
 
     public void renderWeaponSelect(Graphics2D g) {
-        weaponSelect.renderUiTile(g, GAME_WIDTH / 2 - 50, GAME_HEIGHT / 2 + 75, 1, weapons);
+        weaponSelect.renderUiTile(g, config.gameWidth / 2 - 50, config.gameHeight / 2 + 75, 1, weapons);
 
         renderWeaponList(g);
 
@@ -319,7 +316,7 @@ public class Armory {
     }
 
     public void renderAmmoSelect(Graphics2D g) {
-        player.inventory.ammoSelect.renderUiTile(g, GAME_WIDTH / 2 - 50, GAME_HEIGHT / 2 + 75, 1);
+        player.inventory.ammoSelect.renderUiTile(g, config.gameWidth / 2 - 50, config.gameHeight / 2 + 75, 1);
 
         renderWeaponList(g);
 
@@ -332,8 +329,8 @@ public class Armory {
                 if (iWeapon.ammo != null) {
                     String ammoTexture = iWeapon.ammo.texture.get("texture");
                     if (ammoTexture != null) {
-                        g.drawImage(Rendering.texture("ui/slots/ammo", iWeapon.ammo.texture.get("rarityColor")), GAME_WIDTH / 2 - 126 + i * 110, GAME_HEIGHT / 2 - 66, 32, 32, null);
-                        g.drawImage(Rendering.texture(ammoTexture, null), GAME_WIDTH / 2 - 122 + i * 110, GAME_HEIGHT / 2 - 62, 24, 24, null);
+                        g.drawImage(Rendering.texture("ui/slots/ammo", iWeapon.ammo.texture.get("rarityColor")), config.gameWidth / 2 - 126 + i * 110, config.gameHeight / 2 - 66, 32, 32, null);
+                        g.drawImage(Rendering.texture(ammoTexture, null), config.gameWidth / 2 - 122 + i * 110, config.gameHeight / 2 - 62, 24, 24, null);
                     }
                 }
             }
@@ -359,26 +356,26 @@ public class Armory {
             }
 
             if (iWeapon != null) {
-                iWeapon.renderUiTile(g, GAME_WIDTH / 2 - 160 + i * 110, GAME_HEIGHT / 2 - 50, factor, weapons);
+                iWeapon.renderUiTile(g, config.gameWidth / 2 - 160 + i * 110, config.gameHeight / 2 - 50, factor, weapons);
             } else {
-                g.drawImage(Rendering.texture("ui/slots/weapon", null), (int) (GAME_WIDTH / 2 - 50 * factor + (i - 1) * 110), (int) (GAME_HEIGHT / 2 - 50 * factor), (int) (100 * factor), (int) (100 * factor), null);
+                g.drawImage(Rendering.texture("ui/slots/weapon", null), (int) (config.gameWidth / 2 - 50 * factor + (i - 1) * 110), (int) (config.gameHeight / 2 - 50 * factor), (int) (100 * factor), (int) (100 * factor), null);
                 g.setColor(Color.WHITE);
                 g.setFont(new Font("VT323 Regular", Font.PLAIN, 28));
-                Rendering.centeredText(g, Integer.toString(i + 1), (int) (GAME_WIDTH / 2 + 45 + (i - 1) * 110), (int) (GAME_HEIGHT / 2 + 50));
+                Rendering.centeredText(g, Integer.toString(i + 1), (int) (config.gameWidth / 2 + 45 + (i - 1) * 110), (int) (config.gameHeight / 2 + 50));
             }
         }
     }
 
     //Render Armory UI
     public void renderUi(Graphics2D g, boolean dense) {
-        boolean moveBottom = player.screenPos[0] < HUD_SIZE * 3 + TILE_SIZE && player.screenPos[1] > GAME_HEIGHT - HUD_SIZE * 25 / 12 - TILE_SIZE;
-        boolean moveTop = player.screenPos[0] > GAME_WIDTH * 3 / 4 && player.screenPos[1] < HUD_SIZE * 9 / 8 + TILE_SIZE;
+        boolean moveBottom = player.screenPos[0] < config.hudSize * 3 + config.tileSize && player.screenPos[1] > config.gameHeight - config.hudSize * 25 / 12 - config.tileSize;
+        boolean moveTop = player.screenPos[0] > config.gameWidth * 3 / 4 && player.screenPos[1] < config.hudSize * 9 / 8 + config.tileSize;
 
         int weaponX = 0;
 
         //If player in bottom left corner, display in right corner
         if (moveBottom) {
-            weaponX = GAME_WIDTH - HUD_SIZE * 3;
+            weaponX = config.gameWidth - config.hudSize * 3;
         }
 
         //Go through each slot
@@ -390,54 +387,54 @@ public class Armory {
             }
 
             //Render slot
-            g.drawImage(Rendering.texture("ui/hud/slot", color), HUD_SIZE * i + weaponX, GAME_HEIGHT - HUD_SIZE, HUD_SIZE, HUD_SIZE, null);
+            g.drawImage(Rendering.texture("ui/hud/slot", color), config.hudSize * i + weaponX, config.gameHeight - config.hudSize, config.hudSize, config.hudSize, null);
             final Weapon weapon = weapons[i];
             if (weapon != null) {
                 //Render Weapon Item
                 Map<String, String> texture = weapon.texture;
                 if (texture.get("itemTexture") != null) {
-                    g.drawImage(Rendering.texture(texture.get("itemTexture"), null), HUD_SIZE * i + HUD_SIZE / 8 + weaponX, GAME_HEIGHT - HUD_SIZE * 7 / 8, HUD_SIZE * 3 / 4, HUD_SIZE * 3 / 4, null);
+                    g.drawImage(Rendering.texture(texture.get("itemTexture"), null), config.hudSize * i + config.hudSize / 8 + weaponX, config.gameHeight - config.hudSize * 7 / 8, config.hudSize * 3 / 4, config.hudSize * 3 / 4, null);
                 }
 
                 if (weapon.ammo != null || weapon.tags.contains("stackable")) {
                     final int count = weapon.ammo != null ? weapon.ammo.count : weapon.count;
-                    g.drawImage(Rendering.texture("ui/hud/counter", null), HUD_SIZE * i + weaponX, GAME_HEIGHT - HUD_SIZE * 5 / 16, HUD_SIZE / 2, HUD_SIZE / 4, null);
+                    g.drawImage(Rendering.texture("ui/hud/counter", null), config.hudSize * i + weaponX, config.gameHeight - config.hudSize * 5 / 16, config.hudSize / 2, config.hudSize / 4, null);
                     if (count > 0) {
                         g.setColor(Color.BLACK);
                     } else {
                         g.setColor(Color.RED);
                     }
-                    Rendering.centeredText(g, Integer.toString(count), HUD_SIZE * i + weaponX + HUD_SIZE / 4, GAME_HEIGHT - HUD_SIZE * 1 / 8, HUD_SIZE / 2, 20);
+                    Rendering.centeredText(g, Integer.toString(count), config.hudSize * i + weaponX + config.hudSize / 4, config.gameHeight - config.hudSize * 1 / 8, config.hudSize / 2, 20);
                 }
             }
         }
 
-        int effectX = HUD_SIZE / 8;
+        int effectX = config.hudSize / 8;
 
         if (hotKey != null) {
             if (moveTop) {
-                hotKey.renderHotTile(g, HUD_SIZE / 8, HUD_SIZE / 8, 1.0);
+                hotKey.renderHotTile(g, config.hudSize / 8, config.hudSize / 8, 1.0);
             } else {
-                hotKey.renderHotTile(g, GAME_WIDTH - HUD_SIZE * 9 / 8, HUD_SIZE / 8, 1.0);
+                hotKey.renderHotTile(g, config.gameWidth - config.hudSize * 9 / 8, config.hudSize / 8, 1.0);
             }
-            effectX = HUD_SIZE * 5 / 4;
+            effectX = config.hudSize * 5 / 4;
         }
 
         int offsetX = 0;
-        int offsetY = HUD_SIZE / 8;
+        int offsetY = config.hudSize / 8;
         for (Effect effect : effects) {
             if (effect.hasRender()) {
                 if (moveTop) {
                     effect.renderUi(g, offsetX + effectX, offsetY);
                 } else {
-                    effect.renderUi(g, GAME_WIDTH - HUD_SIZE / 2 - offsetX - effectX, offsetY);
+                    effect.renderUi(g, config.gameWidth - config.hudSize / 2 - offsetX - effectX, offsetY);
                 }
 
-                offsetX += HUD_SIZE * 5 / 8;
+                offsetX += config.hudSize * 5 / 8;
 
-                if (dense && offsetX + effectX + HUD_SIZE / 2 > GAME_WIDTH / 4) {
+                if (dense && offsetX + effectX + config.hudSize / 2 > config.gameWidth / 4) {
                     offsetX = 0;
-                    offsetY += HUD_SIZE * 5 / 8;
+                    offsetY += config.hudSize * 5 / 8;
                 }
             }
         }

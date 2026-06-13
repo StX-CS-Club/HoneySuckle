@@ -3,13 +3,14 @@ package honey.player.inventory;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.player.armory.Ammo;
@@ -19,9 +20,8 @@ import honey.rendering.Rendering;
 
 public class Craft {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int HUD_SIZE = HoneySuckle.HUD_SIZE;
+    public static ConfigManager config;
+
     private static final Color DARK_GREEN = new Color(0, 160, 0);
 
     //Static json data
@@ -33,6 +33,7 @@ public class Craft {
     public static final Map<String, Map<String, Number>> recipeAttributes = new HashMap<>();
 
     public final Set<String> recipes = new LinkedHashSet<>();
+    private List<String> orderedRecipes = new ArrayList<>();
 
     private double scroll = 0;
     private int hover = -1;
@@ -60,18 +61,21 @@ public class Craft {
 
     public void update(InputHandler input) {
         if (!recipes.isEmpty()) {
-            scroll = Math.clamp(scroll + input.mouseScroll, 0, recipes.size() - 1);
+            if(orderedRecipes.size() != recipes.size()){
+                orderedRecipes = buildOrderedRecipes();
+            }
+            scroll = Math.clamp(scroll + input.mouseScroll, 0, orderedRecipes.size() - 1);
             hover = -1;
-            if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
-                double highlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50)) + scroll * 110;
+            if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
+                double highlight = (input.mousePos[0] - (config.gameWidth / 2 - 50)) + scroll * 110;
                 if (highlight % 110 <= 100) {
                     hover = (int) Math.floor(highlight / 110);
                 }
             }
 
             if (input.clickPressed(1) || input.clickDown(3)) {
-                if (hover > -1 && hover < recipes.size()) {
-                    final String recipe = (String) recipes.toArray()[hover];
+                if (hover > -1 && hover < orderedRecipes.size()) {
+                    final String recipe = orderedRecipes.get(hover);
                     if (hasMaterials(player, recipe)) {
                         craft(player, recipe);
                         hover = -1;
@@ -82,7 +86,7 @@ public class Craft {
     }
 
     public void renderUi(Graphics2D g) {
-        final String[] recipeArray = recipes.toArray(String[]::new);
+        final String[] recipeArray = orderedRecipes.toArray(String[]::new);
 
         for (int i = 0; i < recipeArray.length; i++) {
             final String recipe = recipeArray[i];
@@ -97,14 +101,14 @@ public class Craft {
             }
 
             if (hover == i) {
-                g.drawImage(Rendering.texture("ui/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 55 + offset), (int) (GAME_HEIGHT / 2 - 55), 110, 110, null);
+                g.drawImage(Rendering.texture("ui/slots/recipe", slotColor), (int) (config.gameWidth / 2 - 55 + offset), (int) (config.gameHeight / 2 - 55), 110, 110, null);
             } else {
-                g.drawImage(Rendering.texture("ui/slots/recipe", slotColor), (int) (GAME_WIDTH / 2 - 50 + offset), (int) (GAME_HEIGHT / 2 - 50), 100, 100, null);
+                g.drawImage(Rendering.texture("ui/slots/recipe", slotColor), (int) (config.gameWidth / 2 - 50 + offset), (int) (config.gameHeight / 2 - 50), 100, 100, null);
             }
 
             final String recipeTexture = texture.get("texture");
             if (recipeTexture != null) {
-                g.drawImage(Rendering.texture(recipeTexture, null), (int) (GAME_WIDTH / 2 - 40 + offset), (int) (GAME_HEIGHT / 2 - 40), 80, 80, null);
+                g.drawImage(Rendering.texture(recipeTexture, null), (int) (config.gameWidth / 2 - 40 + offset), (int) (config.gameHeight / 2 - 40), 80, 80, null);
             }
         }
 
@@ -123,12 +127,12 @@ public class Craft {
             List<Map<String, Number>> mats = recipeMats.get(recipe);
 
             // Render Scroll
-            final int scale = (int) Math.floor(2.5 * HUD_SIZE / 32);
+            final int scale = (int) Math.floor(2.5 * config.hudSize / 32);
             int scrollWidth = Math.ceilDiv(Math.max(textSize, mats.size() * 60), 4 * scale);
             final int renderedW = (scrollWidth * 4 + 8) * scale;
             final int renderedH = 32 * scale;
             final int scrollTop = 20;
-            final int scrollX = (GAME_WIDTH - renderedW) / 2;
+            final int scrollX = (config.gameWidth - renderedW) / 2;
 
             g.drawImage(Rendering.scroll(scrollWidth), scrollX, scrollTop, renderedW, renderedH, null);
 
@@ -139,7 +143,7 @@ public class Craft {
                 g.setColor(Color.RED);
             }
 
-            g.drawString(name, (int) (GAME_WIDTH - textSize) / 2, scrollTop + 10 * scale);
+            g.drawString(name, (int) (config.gameWidth - textSize) / 2, scrollTop + 10 * scale);
 
             for (int i = 0; i < mats.size(); i++) {
                 Map<String, Number> material = mats.get(i);
@@ -163,7 +167,7 @@ public class Craft {
                     }
                 }
 
-                int x = (int) (GAME_WIDTH - mats.size() * 60) / 2 + i * 60;
+                int x = (int) (config.gameWidth - mats.size() * 60) / 2 + i * 60;
 
                 if (texture != null) {
                     g.drawImage(Rendering.texture(texture, null), x + 5, scrollTop + scale * 50 / 4, 50, 50, null);
@@ -179,6 +183,23 @@ public class Craft {
                 Rendering.centeredText(g, label, x + 30, scrollTop + scale * 110 / 4);
             }
         }
+    }
+
+    private List<String> buildOrderedRecipes() {
+        final List<String> result = new ArrayList<>();
+        for (String type : config.recipeOrder) {
+            for (String recipe : recipes) {
+                if (recipeTypes.get(recipe).equals(type)) {
+                    result.add(recipe);
+                }
+            }
+        }
+        for (String recipe : recipes) {
+            if (!result.contains(recipe)) {
+                result.add(recipe);
+            }
+        }
+        return result;
     }
 
     public static boolean hasMaterials(Player player, String recipeKey) {

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.player.armory.Ammo;
@@ -23,9 +23,7 @@ import honey.rendering.Splash;
  */
 public class Inventory {
 
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
+    public static ConfigManager config;
 
     //Inventory data
     public final List<Weapon> weapons = new ArrayList<>();
@@ -102,9 +100,9 @@ public class Inventory {
         }
         if (isOpen) {
             if (input.clickPressed(1)) {
-                if (Math.abs(GAME_HEIGHT * 9 / 10 - input.mousePos[1]) <= 25) {
+                if (Math.abs(config.gameHeight * 9 / 10 - input.mousePos[1]) <= 25) {
                     for (int i = 0; i < 6; i++) {
-                        if (Math.abs(GAME_WIDTH / 2 - 150 + i * 60 - input.mousePos[0]) <= 25) {
+                        if (Math.abs(config.gameWidth / 2 - 150 + i * 60 - input.mousePos[0]) <= 25) {
                             setPage(i);
                             break;
                         }
@@ -130,8 +128,8 @@ public class Inventory {
                     } else {
                         ammoScroll = Math.clamp(ammoScroll + input.mouseScroll, 0, ammo.size() - 1);
                         ammoHover = -1;
-                        if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
-                            double ammoHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50));
+                        if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
+                            double ammoHighlight = (input.mousePos[0] - (config.gameWidth / 2 - 50));
                             if (ammoSelect == null) {
                                 ammoHighlight += ammoScroll * 110;
                             }
@@ -159,8 +157,8 @@ public class Inventory {
                     if (!keyItems.isEmpty()) {
                         keyScroll = Math.clamp(keyScroll + input.mouseScroll, 0, keyItems.size() - 1);
                         keyHover = -1;
-                        if (Math.abs(input.mousePos[1] - GAME_HEIGHT / 2) <= 50) {
-                            double keyHighlight = (input.mousePos[0] - (GAME_WIDTH / 2 - 50)) + keyScroll * 110;
+                        if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
+                            double keyHighlight = (input.mousePos[0] - (config.gameWidth / 2 - 50)) + keyScroll * 110;
                             if (keyHighlight % 110 <= 100) {
                                 keyHover = (int) Math.floor(keyHighlight / 110);
                             }
@@ -199,7 +197,7 @@ public class Inventory {
         for (int i = 0; i < Math.min(splashes.size(), 3); i++) {
             Splash splash = splashes.get(i);
 
-            if (!splash.render(g, (int) screenPos[0], (int) (screenPos[1] - 25 * i - TILE_SIZE * 1.25))) {
+            if (!splash.render(g, (int) screenPos[0], (int) (screenPos[1] - 25 * i - config.tileSize * 1.25))) {
                 splashes.remove(splash);
             }
         }
@@ -207,7 +205,7 @@ public class Inventory {
 
     public void renderUi(Graphics2D g) {
         g.setColor(new Color(64, 64, 64, 192));
-        g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        g.fillRect(0, 0, config.gameWidth, config.gameHeight);
 
         if (player.armory.weaponSelect != null) {
             player.armory.renderWeaponSelect(g);
@@ -222,12 +220,12 @@ public class Inventory {
                 case 1 -> {
                     for (int i = 0; i < items.size(); i++) {
                         final int offset = 110 * i - ((int) Math.floor(itemScroll * 110));
-                        items.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50);
+                        items.get(i).renderUiTile(g, config.gameWidth / 2 - 50 + offset, config.gameHeight / 2 - 50);
                     }
 
                     // Displays empty slot when items left to be collected
                     if (items.size() < Item.itemNames.size()) {
-                        g.drawImage(Rendering.texture("ui/slots/item", null), GAME_WIDTH / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), GAME_HEIGHT / 2 - 50, 100, 100, null);
+                        g.drawImage(Rendering.texture("ui/slots/item", null), config.gameWidth / 2 - 50 + 110 * items.size() - ((int) Math.floor(itemScroll * 110)), config.gameHeight / 2 - 50, 100, 100, null);
                     }
                 }
                 case 2 -> {
@@ -237,9 +235,9 @@ public class Inventory {
                     for (int i = 0; i < ammo.size(); i++) {
                         final int offset = 110 * i - ((int) Math.floor(ammoScroll * 110));
                         if (ammoHover == i) {
-                            ammo.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1.1);
+                            ammo.get(i).renderUiTile(g, config.gameWidth / 2 - 50 + offset, config.gameHeight / 2 - 50, 1.1);
                         } else {
-                            ammo.get(i).renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1);
+                            ammo.get(i).renderUiTile(g, config.gameWidth / 2 - 50 + offset, config.gameHeight / 2 - 50, 1);
                         }
                     }
 
@@ -255,24 +253,24 @@ public class Inventory {
                         final int offset = 110 * i - ((int) Math.floor(keyScroll * 110));
                         final KeyItem keyItem = keyItems.get(i);
                         if (keyHover == i) {
-                            keyItem.renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1.1);
+                            keyItem.renderUiTile(g, config.gameWidth / 2 - 50 + offset, config.gameHeight / 2 - 50, 1.1);
                         } else {
-                            keyItem.renderUiTile(g, GAME_WIDTH / 2 - 50 + offset, GAME_HEIGHT / 2 - 50, 1);
+                            keyItem.renderUiTile(g, config.gameWidth / 2 - 50 + offset, config.gameHeight / 2 - 50, 1);
                         }
 
                         if (keyItem == player.armory.hotKey) {
-                            g.drawImage(Rendering.texture("ui/symbols/hotkey", "#ffffff"), GAME_WIDTH / 2 - 12 + offset, GAME_HEIGHT / 2 - 85, 24, 24, null);
+                            g.drawImage(Rendering.texture("ui/symbols/hotkey", "#ffffff"), config.gameWidth / 2 - 12 + offset, config.gameHeight / 2 - 85, 24, 24, null);
                         }
                     }
                 }
             }
 
-            g.drawImage(Rendering.texture("ui/icons/craft", iconColors[0]), GAME_WIDTH / 2 - 175, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("ui/icons/items", iconColors[1]), GAME_WIDTH / 2 - 115, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("ui/icons/weapons", iconColors[2]), GAME_WIDTH / 2 - 55, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("ui/icons/ammo", iconColors[3]), GAME_WIDTH / 2 + 5, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("ui/icons/armors", iconColors[4]), GAME_WIDTH / 2 + 65, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
-            g.drawImage(Rendering.texture("ui/icons/key_items", iconColors[5]), GAME_WIDTH / 2 + 125, GAME_HEIGHT * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/craft", iconColors[0]), config.gameWidth / 2 - 175, config.gameHeight * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/items", iconColors[1]), config.gameWidth / 2 - 115, config.gameHeight * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/weapons", iconColors[2]), config.gameWidth / 2 - 55, config.gameHeight * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/ammo", iconColors[3]), config.gameWidth / 2 + 5, config.gameHeight * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/armors", iconColors[4]), config.gameWidth / 2 + 65, config.gameHeight * 9 / 10 - 25, 50, 50, null);
+            g.drawImage(Rendering.texture("ui/icons/key_items", iconColors[5]), config.gameWidth / 2 + 125, config.gameHeight * 9 / 10 - 25, 50, 50, null);
         }
     }
 

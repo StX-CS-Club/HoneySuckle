@@ -7,19 +7,17 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import honey.HoneySuckle;
+import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
 public class Navigator {
 
+    public static ConfigManager config;
+
     private static final int MAP_WIDTH = 32;
     private static final int MAP_PIXEL = 4;
-
-    private static final int GAME_HEIGHT = HoneySuckle.GAME_HEIGHT;
-    private static final int GAME_WIDTH = HoneySuckle.GAME_WIDTH;
-    private static final int TILE_SIZE = HoneySuckle.TILE_SIZE;
 
     private final World world;
     private final int[] size;
@@ -42,22 +40,22 @@ public class Navigator {
         size = world.size;
 
         mapPixel = Math.max(1, Math.min(MAP_PIXEL, Math.min(
-            (GAME_WIDTH - 2 * MAP_WIDTH) / size[0],
-            GAME_HEIGHT / size[1]
+            (config.gameWidth - 2 * MAP_WIDTH) / size[0],
+            config.gameHeight / size[1]
         )));
 
         mapHeight = (int) Math.ceil((size[1] * mapPixel) * 16 / 14.0) + 1;
 
         mapCount = (int) Math.ceil(size[0] * mapPixel / (double) MAP_WIDTH);
 
-        scrollPosY = GAME_HEIGHT / 2 - mapHeight / 2;
+        scrollPosY = config.gameHeight / 2 - mapHeight / 2;
         scrollPosX = new int[]{
-            GAME_WIDTH / 2 - mapCount * MAP_WIDTH / 2 - MAP_WIDTH,
-            GAME_WIDTH / 2 + mapCount * MAP_WIDTH / 2,};
+            config.gameWidth / 2 - mapCount * MAP_WIDTH / 2 - MAP_WIDTH,
+            config.gameWidth / 2 + mapCount * MAP_WIDTH / 2,};
 
         mapPos = new int[]{
-            GAME_WIDTH / 2 - size[0] * mapPixel / 2,
-            GAME_HEIGHT / 2 - size[1] * mapPixel / 2,};
+            config.gameWidth / 2 - size[0] * mapPixel / 2,
+            config.gameHeight / 2 - size[1] * mapPixel / 2,};
     }
 
     public void update(InputHandler input) {
@@ -66,7 +64,7 @@ public class Navigator {
 
     public void renderUi(Graphics2D g) {
         g.setColor(new Color(64, 64, 64, 192));
-        g.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        g.fillRect(0, 0, config.gameWidth, config.gameHeight);
 
         if (started) {
             g.drawImage(Rendering.texture("ui/scroll/map_end", null), scrollPosX[0], scrollPosY, MAP_WIDTH, mapHeight, null);
@@ -104,8 +102,8 @@ public class Navigator {
                 AffineTransform originalTransform = g.getTransform();
 
                 final int[] playerMapPos = new int[]{
-                    (int) (mapPos[0] + player.pos[0] / TILE_SIZE * mapPixel),
-                    (int) (mapPos[1] + player.pos[1] / TILE_SIZE * mapPixel)
+                    (int) (mapPos[0] + player.pos[0] / config.tileSize * mapPixel),
+                    (int) (mapPos[1] + player.pos[1] / config.tileSize * mapPixel)
                 };
 
                 g.rotate(Math.toRadians(player.mapRotation), playerMapPos[0], playerMapPos[1]);
@@ -115,7 +113,7 @@ public class Navigator {
                 g.setTransform(originalTransform);
             }
         } else {
-            g.drawImage(Rendering.texture("ui/symbols/denied", "#999999"), GAME_WIDTH / 2 - 32, GAME_HEIGHT / 2 - 32, 64, 64, null);
+            g.drawImage(Rendering.texture("ui/symbols/denied", "#999999"), config.gameWidth / 2 - 32, config.gameHeight / 2 - 32, 64, 64, null);
         }
     }
 }

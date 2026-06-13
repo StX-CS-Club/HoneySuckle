@@ -1,0 +1,23 @@
+{
+    "game": "good",
+    "jiggle physics": "especially",
+    "fps": 30,
+    "gameWidth": 640,
+    "gameHeight": 480,
+    "tileSize": 32,
+    "hudSize": 64,
+    "cameraDelay": 6,
+    "renderDistance": 2,
+    "lightScale": 8,
+    "slashFrameSize": 8,
+    "stabFrameWidth": 4,
+    "stabFrameHeight": 16,
+    "criticalMouseScroll": 0.25,
+    "startingBiome": "wetlands",
+    "playerTags": [],
+    "startingBlueprints": ["wall", "raft"],
+    "startingRecipes": [],
+    "startingWeapons": ["sword", "bow", "shield"],
+    "startingArmor": "leather",
+    "recipeOrder": ["weapon", "ammo", "armor"]
+}
