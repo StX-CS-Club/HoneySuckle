@@ -3,32 +3,45 @@
         "id": int ID of object,
         "name": String to represent object's name in text,
         "texture": {
-            "texture": String URI of texture file from images/sprites (autofils .png),
-            "natColor": String ID of color from biome to reverse gray scale,
-            "baseColor": String HEX color of object's placeholder square,
+            "texture": String URI of texture file from images/sprites (autofills .png),
+            "gif": String URI of animated GIF sprite sheet from images/sprites (autofills .gif),
+            "anim": String animation tag format e.g. "_destroyed_" — controls which texture variants are preloaded,
+            "natColor": String ID of biome textureMap color to tint object,
+            "baseColor": String HEX fallback color when no biome natColor is available,
             "glowColor": String HEX color of object's glow
         },
         "tags": List of following String tags of object:[
-            "walkable", - Include to allow entity to walk on object
-            "destructable", - Include to allow object to be damaged
-            "safe", - Include to negate effects of tile below
-            "light", - Include to cause object to glow
+            "walkable", - Include to allow entities to walk on object
+            "destructable", - Include to allow object to be damaged and destroyed
+            "safe", - Include to negate harmful effects of tile below
+            "light", - Include to cause object to emit light
+            "sink", - Include to render object partially sunk into tile below
+            "forage", - Include for forageable natural objects
+            "mine", - Include for minable rock/ore objects
+            "construct", - Include for player-constructed objects
+            "tunnel", - Include for tunnel/passage objects
+            "treasure", - Include for chest/treasure objects
+            "flameProj", - Include to interact with flame projectiles
         ],
         "attributes": {
             "durability": Number durability of object (default 1),
-            "hurtness": Number of damage dealt on contact (default 0),
-            "collision": Number 0-1 proportion of tile used as entity collision box (default 0),
-            "projCollision": Number 0-1 proportion of tile used as projectile collision box (default 0),
-            "deathGateId": int ID of death gate functionality,
+            "hurtness": Number of damage dealt per frame on contact (default 0),
+            "collision": Number 0–1 proportion of tile used as entity collision box (default 0),
+            "projCollision": Number 0–1 proportion of tile used as projectile collision box (default 0),
+            "flightCollision": Number 0–1 collision box used for flying entities (default 0),
+            "variants": int number of random texture variants to pick from (default 1),
+            "deathGateId": int ID of gate to open on object death,
             "lightRadius": Number of tiles object's light spreads (default 0),
-            "glow": 8-Bit opacity of object's glow (default 0),
+            "glow": 8-bit opacity of object's glow (default 0),
             "glowRadius": Number of tiles object's glow spreads (default 0)
         },
-        "loot": List of following item data: [
+        "loot": List of following item drop data:[
             {
                 "id": int ID of item,
-                "count": int count of item (default 1)
+                "count": int count of item dropped (default 1),
+                "prob": Number probability of this item dropping (default 1),
+                "countProb": Number probability of dropping one additional item (default 0)
             }
-        ],
+        ]
     }
 }

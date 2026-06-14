@@ -3,19 +3,23 @@
         "id": int ID of tile,
         "name": String to represent tile's name in text,
         "texture": {
-            "texture": String URI of texture file from images/sprites (autofils .png),
-            "natColor": String ID of color from biome to reverse gray scale,
-            "baseColor": String HEX color of tile's placeholder square,
-            "glowColor": String HEX color of tile's glow
+            "texture": String URI of texture file from images/sprites (autofills .png),
+            "natColor": String ID of color from biome textureMap to tint tile,
+            "baseColor": String HEX fallback color when no biome natColor is available,
+            "textureEdge": String URI of edge texture rendered at tile borders (autofills .png),
+            "natColorEdge": String ID of biome textureMap color used to tint edge texture,
+            "baseColorEdge": String HEX fallback color for edge texture
         },
         "tags": List of following String tags of tile:[
             "walkable", - Include to allow entities to walk on tile
-            "slipery", - Include to allow entities to slip of tile
+            "slippery", - Include to cause entities to slip on tile
         ],
         "attributes": {
-            "damageness": Number of damage dealth to entity standong on tile (default 0),
+            "damageness": Number of damage dealt per frame to entities standing on tile (default 0),
+            "acel": Number friction multiplier applied to entity velocity on this tile (default 0.5),
+            "dip": int depth in 1/16ths of a tile — causes edge rendering for adjacent tiles (default 0),
             "lightRadius": Number of tiles tile's light spreads (default 0),
-            "glow": 8-Bit opacity of tile's glow (default 0),
+            "glow": 8-bit opacity of tile's glow (default 0),
             "glowRadius": Number of tiles tile's glow spreads (default 0)
         }
     }

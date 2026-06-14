@@ -33,7 +33,7 @@
       "entities": [
         {
           "id": 1,
-          "levelProbPower": 1,
+          "levelProb": 0.02,
           "tileProb": [[1, 0.01]]
         }
       ]

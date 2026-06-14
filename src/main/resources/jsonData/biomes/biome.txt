@@ -4,47 +4,65 @@
         "level": Minimum level the biome can spawn at (default 1),
         "textureMap": {
             "voidColor": String HEX color of the biome's background color,
-            "fogColor": String HEX color of the biome's fog (required fog tag),
+            "fogColor": String HEX color of the biome's fog (requires fogginess attribute),
             [NatColor String ID]: String HEX color of the biome's given natColor
         },
+        "attributes": {
+            "fogginess": Number fog density; visible light radius = lightRadius / fogginess (omit for no fog)
+        },
         "tags": List of following String tags of biome:[
-            "fog", - Include for fog effect
             "watery", - Include to double generation of water down the center
-        ]
+            "structuresFirst" - Include to generate structures before tiles/objects/entities
+        ],
         "generation": {
             "size": [int biome width, int biome height] (default [51, 100]),
-            "start": [int start x pos, int start y pos] (default [biome width/2, biome height - 1])
+            "start": [int start x pos, int start y pos] (default [biome width/2, biome height - 1]),
             "startMap": 2D Array of biome's starting tile IDs (default [[1, 1, 1]]),
-            "base": The int tile ID of the biome's base tile (default 0),
+            "base": int tile ID of the biome's base tile (default 0),
             "genSize": [int tiles generated from start, int tiles generated from biome] (default [biome width/2, biome height - 1]),
             "tiles": List of following Tile generation data:[
                 {
-                    "id": int ID of Tile to be generated
+                    "id": int ID of Tile to be generated,
                     "prob": Number base probability of tile generating on any space,
-                    "sideProb": [int Tile ID, Number probability added if Tile of given ID towards start],
-                    "bottomProb": [int Tile ID, Number probability added if Tile of given ID below],
-                    "rangeProb": [int minimum x pos, int minimum y pos, int maximum x pos, int maximum y pos, Number probability added if within given range]
+                    "maxProb": Number maximum probability after all modifiers (default 1.0),
+                    "levelProb": Number added to prob per world level — prob += levelProb * level (default 0),
+                    "tileProb": [[int Tile ID, Number prob modifier if current tile matches], ...],
+                    "sideProb": [[int Tile ID, Number prob modifier if adjacent tile toward start matches], ...],
+                    "bottomProb": [[int Tile ID, Number prob modifier if tile below matches], ...],
+                    "rangeProb": [[int minX, int minY, int maxX, int maxY, Number prob modifier if within range], ...]
                 }
             ],
             "objects": List of following Object generation data:[
                 {
                     "id": int ID of Object to be generated,
                     "prob": Number base probability of object generating on any space,
-                    "tileProb": [int Tile ID, Number probability added if on Tile of given ID]
+                    "maxProb": Number maximum probability after all modifiers (default 1.0),
+                    "levelProb": Number added to prob per world level — prob += levelProb * level (default 0),
+                    "tileProb": [[int Tile ID, Number prob modifier if on tile of given ID], ...],
+                    "rangeProb": [[int minX, int minY, int maxX, int maxY, Number prob modifier if within range], ...]
                 }
             ],
             "entities": List of following Entity generation data:[
                 {
                     "id": int ID of Entity to be generated,
-                    "prob": Number base probability of entity to be generated on any space,
-                    "tileProb": [int Tile ID, Number probability added if on Tile of given ID],
-                    "levelProbPower": Number Power of scaling prbability from increasing level
+                    "prob": Number base probability of entity generating on any space,
+                    "maxProb": Number maximum probability after all modifiers (default 1.0),
+                    "levelProb": Number added to prob per world level — prob += levelProb * level (default 0),
+                    "tileProb": [[int Tile ID, Number prob modifier if on tile of given ID], ...],
+                    "rangeProb": [[int minX, int minY, int maxX, int maxY, Number prob modifier if within range], ...]
                 }
             ],
             "structures": List of following Structure generation data:[
                 {
                     "id": int ID of Structure to be generated,
-                    "pos": [int x pos of structure, int y pos of structure]
+                    "prob": Number base probability of structure generating at each grid position,
+                    "maxProb": Number maximum probability after all modifiers (default 1.0),
+                    "levelProb": Number added to prob per world level — prob += levelProb * level (default 0),
+                    "pos": [[int x, int y], ...] Fixed positions where structure always spawns unconditionally,
+                    "grid": [[int startX, int startY, int stepX, int stepY], ...] Grid(s) of candidate positions (default [[0,0,0,0]]),
+                    "offsetBR": [int x, int y] Minimum inset from world edges applied to grid start and end (default [0, 0]),
+                    "tileProb": [[int Tile ID, Number prob modifier if on tile of given ID], ...],
+                    "rangeProb": [[int minX, int minY, int maxX, int maxY, Number prob modifier if within range], ...]
                 }
             ]
         }

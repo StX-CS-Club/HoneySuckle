@@ -1,15 +1,14 @@
 {
     [String ID: snake_case String ID to identify blueprint]: {
-        "id": int ID of blueprint,
         "name": String to represent blueprint's name in text,
         "product": int ID of object created by blueprint,
         "params": {
-            "tile": List of int Tile IDs blueprint can work on,
-            "obj": List of int Object IDs blueprint can work on (default [0])
-        },,
+            "tile": List of int Tile IDs blueprint can be placed on,
+            "obj": List of int Object IDs blueprint can replace (default [0])
+        },
         "tags": List of following String tags of blueprint:[
             "placeAway", - Include to prevent player from placing on self
-        ]
+        ],
         "mats": List of following required material data:[
             {
                 "id": int ID of item,
@@ -17,7 +16,7 @@
             }
         ],
         "texture": {
-            "texture": String URI of UI texture file from images/sprites (autofils .png)
+            "texture": String URI of UI texture file from images/sprites (autofills .png)
         }
-    } 
+    }
 }

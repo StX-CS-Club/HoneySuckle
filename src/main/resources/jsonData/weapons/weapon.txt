@@ -1,0 +1,51 @@
+{
+    [String ID: snake_case String ID to identify weapon]: {
+        "id": int ID of weapon,
+        "name": String to represent weapon's name in text,
+        "tags": List of following String tags of weapon:[
+            "constClick", - Include to allow behavior to trigger while mouse button is held (not just on click)
+            "loadAmmo", - Include to require ammo — weapon will not fire unless compatible ammo is loaded
+        ],
+        "ammo": [String ammo type tag, ...] List of ammo type strings this weapon accepts (requires loadAmmo tag),
+        "stats": {
+            [String stat label]: String display value shown in inventory
+        },
+        "texture": {
+            "itemTexture": String URI of inventory icon texture from images/sprites (autofills .png),
+            "texture": String URI of in-world weapon sprite from images/sprites (autofills .png),
+            "animation": String animation tag — one of "_swing_", "_mirroredSwing_", "_stab_", "_shoot_", "_parry_",
+            "type": String render orientation — "side" for side-held weapons, "front" for forward-facing,
+            "swingColor": String HEX color tint applied to slash attack animation,
+            "stabColor": String HEX color tint applied to stab attack animation,
+            "rarityColor": String HEX color tint applied to rarity display
+        },
+        "behavior": Map of active behavior modules — defines how the weapon acts:[
+            "swing": {
+                "damage": Number base damage dealt per swing,
+                "cooldown": int frames before weapon can swing again,
+                "frames": int number of animation frames for the swing,
+                "forageDamage": Number damage multiplier applied to forageable objects (default 1)
+            },
+            "stab": {
+                "damage": Number base damage dealt per stab,
+                "size": Number reach of the stab hitbox in tiles,
+                "cooldown": int frames before weapon can stab again,
+                "frames": int number of animation frames for the stab
+            },
+            "shoot": {
+                "damage": Number base damage dealt by fired projectile,
+                "cooldown": int frames before weapon can fire again,
+                "frames": int number of charge-up frames before firing,
+                "spread": Number angular spread of fired projectile in turns (0–1),
+                "bulletCount": int number of projectiles fired per shot (default 1),
+                "ammoCount": int number of ammo consumed per shot (default 1)
+            },
+            "shield": {
+                "frames": Number of active parry frames,
+                "cooldown": Number of frames before shield can parry again,
+                "parry": Number damage multiplier reflected back to attacker on parry,
+                "bounce": Number velocity at which attacker is knocked back on parry
+            }
+        ]
+    }
+}

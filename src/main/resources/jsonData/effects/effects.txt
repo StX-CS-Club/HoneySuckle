@@ -1,0 +1,12 @@
+{
+    [String ID: snake_case String ID to identify effect]: {
+        "id": int ID of effect,
+        "name": String to represent effect's name in text,
+        "texture": {
+            "texture": String URI of UI icon texture from images/sprites (autofills .png)
+        },
+        "modifiers": {
+            [String attribute key]: Number value added to the player's matching attribute while effect is active
+        }
+    }
+}

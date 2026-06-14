@@ -3,7 +3,12 @@
         "id": int ID of item,
         "name": String to represent item's name in text,
         "texture": {
-            "texture": String URI of texture file from images/sprites (autofils .png)
-        }
+            "texture": String URI of texture file from images/sprites (autofills .png)
+        },
+        "attributes": {
+            "splashFrames": int number of frames the item pickup splash animation plays (default 0)
+        },
+        "recipeUnlocks": [String recipe ID, ...] List of recipes unlocked when item is picked up,
+        "blueprintUnlocks": [String blueprint ID, ...] List of blueprints unlocked when item is picked up
     }
 }

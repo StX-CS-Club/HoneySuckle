@@ -4,59 +4,88 @@
         "name": String to represent entity's name in text,
         "texture": {
             "baseColor": String HEX color of entity's placeholder square,
-            "texture": String URI of texture file from images/sprites (autofils .png & animation subfixes),
-            "animation": String of animation tags in format "_tag_othertag_"
+            "texture": String URI of static texture from images/sprites (autofills .png and direction/state suffixes),
+            "gif": String URI of animated GIF sprite sheet from images/sprites (autofills .gif and suffixes),
+            "anim": String animation tag format e.g. "_gif_hover_x_shoot_summon_" — controls direction/state variants preloaded
         },
         "attributes": {
             "size": Number of tiles of entity's size (default 1),
             "health": Number of entity's starting health (default 1),
-            "weaight": Number of entity's weight (default 1),
-            "healthBarDistance": Number of entity's health bar's maximum distance from player (default 0)
+            "weight": Number of entity's weight (default 1),
+            "animFrames": int number of frames per animation loop (default fps),
+            "frameSize": int pixel size of each GIF animation frame (default 16),
+            "healthBarDistance": Number tile distance at which entity's health bar is visible (default 0),
+            "lightRadius": Number of tiles entity's light spreads (default 0)
         },
-        "loot": List of following item data: [
+        "tags": List of following String tags of entity:[
+            "alwaysRender", - Include to always render/update entity regardless of distance
+            "flying", - Include for flying entities (bypasses ground collision)
+            "boss", - Include for boss entities (immune to standard projectiles unless hurtBoss)
+        ],
+        "loot": List of following item drop data:[
             {
                 "id": int ID of item,
-                "count": int count of item (default 1)
+                "count": int count of item dropped (default 1),
+                "countProb": Number probability of dropping one additional item (default 0)
             }
         ],
-        "tags": List of following String tags of entity:[
-            "alwaysRender" - Include to always render/update entity
-        ],
-        "brain": Map of following entity brains: {
+        "brain": Map of active brain modules — all run each tick:[
             "lunge": {
-                "rate": Number of lunges per second (default 1),
                 "hesitationTime": Number of frames to hesitate before lunging (default 0),
-                "range": Number of tile distance at which entity will attempt to lunge (default 10),
-                "length": Number of length of tiles the entity will lunge for (default 1),
+                "range": Number tile distance at which entity attempts to lunge (default 10),
+                "length": Number of tiles the entity lunges forward (default 1)
             },
             "shoot": {
-                "speed: Number of speed at which entity will shoot at (default 1),
-                "panicSpeed": Number of additional speed gained per health lost (default 0),
-                "vel": Number of velocity of shot projectile (default speed),
-                "panicVel": Number of additional velocity gained per health lost (default panisSpeed),
+                "speed": Number speed at which entity moves while shooting (default 1),
+                "panicSpeed": Number additional speed gained per health lost (default 0),
+                "vel": Number velocity of fired projectile (default speed),
+                "panicVel": Number additional projectile velocity per health lost (default panicSpeed),
+                "prob": Number probability of firing on each attempt (default 1),
+                "prediction": Number of frames ahead to predict player position (default 0),
                 "cooldown": Number of cooldown frames before firing again (default 100),
-                "frames": Number of frames at which entity charges up shot (default 10),
-                "range": Number of tile distance at which entity will attempt to shoot (default 100),
-                "proj": int ID of projectile fired (default 3)
+                "frames": Number of charge-up frames before firing (default 10),
+                "range": Number tile distance at which entity attempts to shoot (default 100),
+                "proj": int ID of projectile fired (default 3),
+                "tickId": String shared tick ID — modules sharing this ID share cooldown state,
+                "resetOnFail": Boolean whether to reset charge if shot fails (default true)
             },
-            "flee": {
-                "range": Number of tile distance at which entity will flee (default 5),
-                "speed": Number at which entity will accelerate while fleeing (default 0.1),
-                "hesitateRange": Number of tile distance at which entity will hesitate to flee (default range)
+            "summon": {
+                "range": Number tile distance at which entity attempts to summon (default 10),
+                "frames": Number of charge-up frames before summoning (default 10),
+                "cooldown": Number of cooldown frames before summoning again (default 200),
+                "entity": int ID of entity to summon (default 0),
+                "count": int number of entities summoned (default 1),
+                "countProb": Number probability of summoning one additional entity (default 0),
+                "speed": Number initial velocity of summoned entity (default 0.1),
+                "tickId": String shared tick ID — modules sharing this ID share cooldown state,
+                "resetOnFail": Boolean whether to reset charge if summon fails (default true)
             },
             "chase": {
-                "range": Number of tile distance at which entity will chase (default 5),
-                "speed": Number at which entity will accelerate whiel fleeing (default 0.1)
+                "range": Number tile distance at which entity chases player (default 5),
+                "speed": Number acceleration while chasing (default 0.1),
+                "hesitateRange": Number tile distance at which entity hesitates before chasing (default 0)
+            },
+            "track": {
+                "range": Number tile distance at which entity tracks player (default 10),
+                "speed": Number acceleration while tracking (default 0.1),
+                "turnRate": Number of degrees per tick entity turns toward player (default 3),
+                "hesitateRange": Number tile distance at which entity hesitates (default 0)
+            },
+            "flee": {
+                "range": Number tile distance at which entity flees (default 5),
+                "speed": Number acceleration while fleeing (default 0.1),
+                "hesitateRange": Number tile distance at which entity hesitates before fleeing (default range)
             },
             "contact": {
-                "damage": Number of damage entity does on contact (default 0),
-                "bounce": Number of velocity entity will bounce back at on contact (default 0),
-                "range": Number of tile distance at whcih entity will contact at (default size),
-                "rate": Number of contact / second (default 1)
+                "damage": Number of damage dealt on contact (default 0),
+                "bounce": Number velocity entity bounces back at on contact (default 0),
+                "prob": Number probability of a successful hit on contact (default 1),
+                "range": Number tile distance at which contact triggers (default size),
+                "rate": Number of contacts per second (default 1)
             },
             "death": {
-                "gateId": int ID of death gate to open on death
+                "gateId": int ID of gate to open on entity death
             }
-        }
+        ]
     }
 }

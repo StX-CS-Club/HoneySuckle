@@ -1,14 +1,23 @@
 {
     [String ID: snake_case String ID to identify armor]: {
+        "id": int ID of armor,
         "name": String to represent armor's name in text,
         "texture": {
-            "texture": String URI of texture file from images/sprites (autofils .png)
+            "texture": String URI of top-down player texture from images/sprites (autofills .png),
+            "frontTexture": String URI of front-facing player texture (autofills .png),
+            "backTexture": String URI of back-facing player texture (autofills .png),
+            "itemTexture": String URI of inventory item texture (autofills .png),
+            "rarityColor": String HEX color tint applied to rarity display
         },
         "attributes": {
             "defense": Number value of armor's defense (default 1),
-            "regen": Number value of armor's health regen/frame (default 0.001),
+            "regen": Number value of armor's health regen per frame (default 0.001),
             "speed": Number value of armor's speed acceleration (default 0.1),
             "maxHealth": Number value of armor's maximum health (default 1)
-        }
+        },
+        "stats": {
+            [String stat label]: String display value shown in inventory
+        },
+        "recipeUnlocks": [String recipe ID, ...] List of recipes unlocked when armor is equipped
     }
 }

@@ -3,21 +3,32 @@
         "id": int ID of projectile,
         "name": String to represent projectile's name in text,
         "texture": {
-            "texture": String URI of texture file from images/sprites (autofils .png)
+            "texture": String URI of texture file from images/sprites (autofills .png),
+            "anim": String animation tag format e.g. "_flame_" — controls texture variant preloading
         },
         "tags": List of following String tags of projectile:[
-            "hurtEntity", - Include to allow entities to be damaged by projectile
-            "hurtPlayer", - Include to allow players to be damaged by projectile
-            "hurtSource", - Include to allow the projectile's source to be damaged by projectile
-            "alwaysRender", - Include to always render / update projectile
-            "damageTile", - Include to allow objects to be damaged by projectile
+            "hurtEntity", - Include to allow entities to be damaged
+            "hurtPlayer", - Include to allow players to be damaged
+            "hurtSource", - Include to allow the projectile's own source to be damaged
+            "hurtBoss", - Include to allow boss entities to be damaged
+            "alwaysRender", - Include to always render/update projectile
+            "damageTile", - Include to allow objects to be damaged
+            "stationary", - Include for projectiles that do not move
         ],
         "attributes": {
             "damage": Number of damage to deal on contact (default 0.25),
             "size": Number of tiles of the projectile's size (default 0.5),
             "weight": Number of the projectile's weight (default 1),
-            "speed": Number of tiles / second of the projectile's speed (default 0.25),
-            "parryProj": int ID the projectile is replaced by on parry (default id)
-        }
+            "speed": Number of tiles per second of the projectile's speed (default 0.25),
+            "hits": int number of times projectile can hit before expiring (default 1),
+            "frames": int lifetime in frames before expiring — -1 for infinite (default -1),
+            "lightRadius": Number of tiles projectile's light spreads (default 0),
+            "parryProj": int ID of projectile this is replaced by when parried (default same id)
+        },
+        "splinters": List of projectiles spawned when this projectile expires:[
+            {
+                "proj": int ID of projectile to spawn
+            }
+        ]
     }
 }

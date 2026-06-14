@@ -1,0 +1,23 @@
+{
+    [String ID: snake_case String ID to identify recipe]: {
+        "name": String to represent recipe's name in text,
+        "type": String category of recipe — one of "weapon", "armor", or "ammo",
+        "texture": {
+            "texture": String URI of UI icon texture from images/sprites (autofills .png)
+        },
+        "products": List of items produced by this recipe:[
+            {
+                "id": int ID of the product,
+                "type": int item category — 1 = weapon, 2 = armor, 3 = ammo (omit for regular item),
+                "count": int quantity produced (default 1)
+            }
+        ],
+        "mats": List of materials required to craft:[
+            {
+                "id": int ID of the required item,
+                "type": int item category — 1 = weapon, 2 = armor, 3 = ammo (omit for regular item),
+                "count": int quantity required (default 1)
+            }
+        ]
+    }
+}

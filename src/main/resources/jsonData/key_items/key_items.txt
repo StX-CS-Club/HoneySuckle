@@ -1,0 +1,22 @@
+{
+    [String ID: snake_case String ID to identify key item]: {
+        "id": int ID of key item,
+        "name": String to represent key item's name in text,
+        "texture": {
+            "texture": String URI of inventory icon texture from images/sprites (autofills .png)
+        },
+        "utilities": Map of active utility modules — defines what the item does when used:[
+            "map": {} - Grants access to the world map,
+            "potion": {
+                "cooldown": int frames before potion can be used again,
+                "useFrames": int number of frames the use animation plays,
+                "effects": List of effects applied on use:[
+                    {
+                        "effect": String ID of effect to apply,
+                        "duration": int duration of effect in seconds (omit for permanent until next world)
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,20 @@
+{
+    [String ID: snake_case String ID to identify ammo]: {
+        "id": int ID of ammo,
+        "name": String to represent ammo's name in text,
+        "types": [String type tag, ...] List of type strings that weapons use to filter compatible ammo (e.g. "arrow", "shotgun_shell"),
+        "texture": {
+            "texture": String URI of inventory icon texture from images/sprites (autofills .png)
+        },
+        "stats": {
+            [String stat label]: String display value shown in inventory
+        },
+        "attributes": {
+            "proj": int ID of projectile fired when this ammo is used,
+            "damage": Number damage multiplier applied to fired projectile,
+            "speed": Number speed multiplier applied to fired projectile,
+            "size": Number size of the fired projectile in tiles,
+            "weight": Number weight of the fired projectile
+        }
+    }
+}

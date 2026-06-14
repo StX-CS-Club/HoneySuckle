@@ -2,13 +2,58 @@
     [String ID: snake_case String ID to identify structure]: {
         "id": int ID of structure,
         "name": String to represent structure's name in text,
+        "texture": {
+            "mapTexture": String URI of map icon texture from images/sprites (autofills .png)
+        },
+        "attributes": {
+            "mapRange": Number tile radius within which structure icon appears on map (default 1)
+        },
         "generation": {
-            "tileMap": 2D Array of int Tile IDs,
-            "objMap": 2D Array of int Object IDs,
-            "entities": List of following Entity generation data:[
+            "size": [int width, int height] of structure in tiles,
+            "core": [int x, int y] anchor tile used for joint alignment and map marker position,
+            "tileMap": 2D Array of int Tile IDs (-1 = leave existing tile unchanged),
+            "objMap": 2D Array of int Object IDs (-1 = leave existing object unchanged, 0 = clear),
+            "entities": List of following Entity spawn data:[
                 {
                     "id": int ID of Entity,
-                    "pos": [int entity x pos, int entity y pos]
+                    "prob": Number base probability of entity spawning (default 1),
+                    "maxProb": Number maximum probability after all modifiers (default 1.0),
+                    "levelProb": Number added to prob per world level — prob += levelProb * level (default 0),
+                    "pos": [Number x, Number y] position within structure in tiles
+                }
+            ],
+            "chests": List of following Chest spawn data:[
+                {
+                    "id": int ID of chest WorldObject,
+                    "prob": Number base probability of chest spawning (default 1),
+                    "maxProb": Number maximum probability after all modifiers (default 1.0),
+                    "levelProb": Number added to prob per world level — prob += levelProb * level (default 0),
+                    "pos": [int x, int y] position within structure in tiles,
+                    "lootEntries": Cumulative probability table — one entry is selected per chest:[
+                        {
+                            "prob": Number probability weight for this entry (entries without prob share remaining weight equally),
+                            "maxProb": Number maximum weight for this entry (default 1.0),
+                            "levelProb": Number added to weight per world level (default 0),
+                            "loot": List of following item data:[
+                                {
+                                    "id": int ID of item,
+                                    "count": int count of item (default 1)
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "joints": List of connection points that attach child structures:[
+                {
+                    "pos": [int x, int y] position of joint relative to structure (may be outside structure bounds),
+                    "rotation": int relative rotation offset applied to child (0–3, wraps with parent rotation, default 0),
+                    "segments": Cumulative probability table — one child structure is selected and placed:[
+                        {
+                            "id": int ID of Structure to attach,
+                            "prob": Number probability weight for this segment (entries without prob share remaining weight equally)
+                        }
+                    ]
                 }
             ]
         }
