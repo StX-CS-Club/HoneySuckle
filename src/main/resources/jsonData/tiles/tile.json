@@ -212,5 +212,35 @@
       "acel": 0.9
     },
     "tags": ["walkable"]
+   },
+   "sandstone": {
+    "name": "Sandstone",
+    "id": 14,
+    "texture": {
+      "natColor": "sandstoneColor",
+      "baseColor": "#FFDD89",
+      "texture": "tiles/sandstone/sandstone",
+      "natColorEdge": "sandstoneColor",
+      "baseColorEdge": "#DBBF78",
+      "textureEdge": "tiles/sandstone/sandstone_edge",
+      "mapColor": "#DCBF75"
+    },
+    "tags": ["walkable"]
+   },
+   "sandstone_wall": {
+    "name": "Sandstone Wall",
+    "id": 15,
+    "texture": {
+      "natColor": "sandstoneColor",
+      "baseColor": "#FFDD89",
+      "texture": "tiles/sandstone/sandstone_wall",
+      "natColorEdge": "sandstoneColor",
+      "baseColorEdge": "#FFDD89",
+      "textureEdge": "tiles/sandstone/sandstone_wall",
+      "mapColor": "#FFDD89"
+    },
+    "attributes": {
+      "collision": 1.0
+    }
    }
 }

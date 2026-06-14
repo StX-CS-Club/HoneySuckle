@@ -2,7 +2,7 @@
     "wood": {
         "id": 1,
         "name": "Wood",
-        "recipeUnlocks": ["woodenArrow"],
+        "recipeUnlocks": ["wooden_arrow"],
         "texture": {
             "texture": "items/wood"
         },
@@ -13,7 +13,7 @@
     "slime": {
         "id": 2,
         "name": "Slime",
-        "recipeUnlocks": ["slimeShield"],
+        "recipeUnlocks": ["slime_shield"],
         "texture": {
             "texture": "items/slime"
         }
@@ -30,7 +30,7 @@
         "id": 4,
         "name": "Pumpkin",
         "blueprintUnlocks": ["jackolantern"],
-        "recipeUnlocks": ["pumpkinHelm"],
+        "recipeUnlocks": ["pumpkin_helm"],
         "texture": {
             "texture": "items/pumpkin"
         }
@@ -38,7 +38,7 @@
     "cactus": {
         "id": 5,
         "name": "Cactus",
-        "recipeUnlocks": ["cactusSword"],
+        "recipeUnlocks": ["cactus_sword"],
         "texture": {
             "texture": "items/cactus"
         }
@@ -46,7 +46,7 @@
     "scale": {
         "id": 6,
         "name": "Dragon Scale",
-        "recipeUnlocks": ["dragonSword", "dragonScaleArmor"],
+        "recipeUnlocks": ["dragon_sword", "dragon_scaleArmor"],
         "texture": {
             "texture": "items/scale"
         }
@@ -54,7 +54,7 @@
     "diamond": {
         "id": 7,
         "name": "Diamond",
-        "recipeUnlocks": ["diamondSword"],
+        "recipeUnlocks": ["diamond_sword"],
         "texture": {
             "texture": "items/diamond"
         }
@@ -63,7 +63,7 @@
         "id": 8,
         "name": "Rock",
         "blueprintUnlocks": ["bridge"],
-        "recipeUnlocks": ["cobbledBreaker", "aRock"],
+        "recipeUnlocks": ["cobbled_breaker", "a_rock"],
         "texture": {
             "texture": "items/rock"
         }
@@ -79,7 +79,7 @@
     "gunpowder": {
         "id": 10,
         "name": "Gunpowder",
-        "recipeUnlocks": ["shotgunShell"],
+        "recipeUnlocks": ["shotgun_shell"],
         "texture": {
             "texture": "items/gunpowder"
         }
@@ -87,7 +87,7 @@
     "honeycomb": {
         "id": 11,
         "name": "Honeycomb",
-        "recipeUnlocks": ["honeycombHelm", "stingerSword", "stingerSpear"],
+        "recipeUnlocks": ["honeycomb_helm", "stinger_sword", "stinger_spear"],
         "texture": {
             "texture": "items/honeycomb"
         }
@@ -102,7 +102,7 @@
     "pine_wood": {
         "id": 13,
         "name": "Pine Wood",
-        "recipeUnlocks": ["pineWoodShield", "pineWoodHatchet"],
+        "recipeUnlocks": ["pine_wood_shield", "pine_wood_hatchet"],
         "texture": {
             "texture": "items/pine_wood"
         }

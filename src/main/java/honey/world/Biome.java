@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.mechanics.ConfigManager;
-import honey.mechanics.MapReader;
 import honey.rendering.Rendering;
 
 /*
@@ -20,16 +19,31 @@ import honey.rendering.Rendering;
  */
 public class Biome {
 
-    public record TileGenRule(int id, double prob, double[][] tileProb, double[][] sideProb,
-            double[][] bottomProb, double[][] rangeProb) {}
-    public record ObjGenRule(int id, double prob, double[][] tileProb, double[][] rangeProb) {}
-    public record EntityGenRule(int id, double prob, double[][] tileProb, double[][] rangeProb,
-            double levelProbPower) {}
-    public record StructureGenRule(int id, double prob, int[][] pos, int[][] grid,
-            double[][] tileProb, double[][] rangeProb, int[] offsetBR) {}
+    public record TileGenRule(int id, double prob, double maxProb, double levelProb,
+            double[][] tileProb, double[][] sideProb, double[][] bottomProb, double[][] rangeProb) {
+
+    }
+
+    public record ObjGenRule(int id, double prob, double maxProb, double levelProb,
+            double[][] tileProb, double[][] rangeProb) {
+
+    }
+
+    public record EntityGenRule(int id, double prob, double maxProb, double[][] tileProb,
+            double[][] rangeProb, double levelProb) {
+
+    }
+
+    public record StructureGenRule(int id, double prob, double maxProb, double levelProb,
+            int[][] pos, int[][] grid, double[][] tileProb, double[][] rangeProb, int[] offsetBR) {
+
+    }
+
     public record BiomeGenData(int[] size, int[] start, int[][] startMap, int baseTile, int[] margin,
             List<TileGenRule> tiles, List<ObjGenRule> objects, List<EntityGenRule> entities,
-            List<StructureGenRule> structures) {}
+            List<StructureGenRule> structures) {
+
+    }
 
     public static ConfigManager config;
 
@@ -123,7 +137,7 @@ public class Biome {
         // Generate base tiles
         for (int x = 0; x < world.size[0]; x++) {
             for (int y = 0; y < world.size[1]; y++) {
-                result[x][y] = new Tile(genData.baseTile(), new int[]{ x, y }, world);
+                result[x][y] = new Tile(genData.baseTile(), new int[]{x, y}, world);
             }
         }
 
@@ -135,7 +149,7 @@ public class Biome {
 
         for (int i = 0; i < startWidth; i++) {
             for (int e = 0; e < startHeight; e++) {
-                final int[] pos = new int[]{ world.start[0] - startSide + i, world.start[1] - startHeight + 1 + e };
+                final int[] pos = new int[]{world.start[0] - startSide + i, world.start[1] - startHeight + 1 + e};
                 result[pos[0]][pos[1]] = new Tile(startMap[e][i], pos, world);
             }
         }
@@ -153,12 +167,14 @@ public class Biome {
             for (int y = world.start[1] - startHeight; y > Math.max(world.start[1] - margin[1] - 1, -1); y--) {
                 for (int i = 1; i > -2; i -= 2) {
                     if (x != 0 || i != -1) {
-                        final int[] pos = new int[]{ world.start[0] - x * i, y };
+                        final int[] pos = new int[]{world.start[0] - x * i, y};
 
                         if (pos[0] >= 0 && pos[0] < world.size[0]) {
                             // Generate tiles
                             for (TileGenRule rule : genData.tiles()) {
-                                if (watery && x == 0 && result[pos[0]][y + 1].id != 0) break;
+                                if (watery && x == 0 && result[pos[0]][y + 1].id != 0) {
+                                    break;
+                                }
 
                                 double prob = rule.prob();
                                 for (double[] tp : rule.tileProb()) {
@@ -176,6 +192,8 @@ public class Biome {
                                         prob += rp[4];
                                     }
                                 }
+                                prob += rule.levelProb() * World.level;
+                                prob = Math.min(prob, rule.maxProb());
                                 if (ThreadLocalRandom.current().nextDouble() <= prob) {
                                     result[pos[0]][y] = new Tile(rule.id(), pos, world);
                                     break;
@@ -194,6 +212,8 @@ public class Biome {
                                         prob += rp[4];
                                     }
                                 }
+                                prob += rule.levelProb() * World.level;
+                                prob = Math.min(prob, rule.maxProb());
                                 if (ThreadLocalRandom.current().nextDouble() <= prob) {
                                     objResult[pos[0]][y] = new WorldObject(rule.id(), pos, world);
                                     break;
@@ -213,11 +233,12 @@ public class Biome {
                                             prob += rp[4];
                                         }
                                     }
-                                    prob *= Math.pow(World.level, rule.levelProbPower());
+                                    prob += rule.levelProb() * World.level;
+                                    prob = Math.min(prob, rule.maxProb());
                                     if (ThreadLocalRandom.current().nextDouble() <= prob) {
                                         final String entityId = Entity.entityStringId.get(rule.id());
                                         entityResult.add(new Entity(entityId, new double[]{
-                                                (pos[0] + 0.5) * config.tileSize, (y + 0.5) * config.tileSize
+                                            (pos[0] + 0.5) * config.tileSize, (y + 0.5) * config.tileSize
                                         }, world));
                                         break;
                                     }
@@ -242,11 +263,11 @@ public class Biome {
             WorldObject[][] objResult, List<Entity> entityResult, boolean[][] structureResult) {
         for (StructureGenRule rule : genData.structures()) {
             final String structureId = Structure.structureStringId.get(rule.id());
-            final int[] size = Structure.structureData.get(structureId).size();
             final int[] offsetBR = rule.offsetBR();
 
             for (int[] setPos : rule.pos()) {
-                generateStructure(world, result, objResult, entityResult, structureResult, setPos, structureId);
+                final Structure structure = new Structure(structureId, setPos);
+                structure.generate(world, result, objResult, entityResult, structureResult);
             }
 
             for (int[] rawGrid : rule.grid()) {
@@ -260,7 +281,9 @@ public class Biome {
                     for (int y = g[1]; y < world.size[1] - offsetBR[1]; y += g[3]) {
                         double prob = rule.prob();
                         for (double[] tp : rule.tileProb()) {
-                            if (result[x][y].id == (int) tp[0]) prob += tp[1];
+                            if (result[x][y].id == (int) tp[0]) {
+                                prob += tp[1];
+                            }
                         }
                         for (double[] rp : rule.rangeProb()) {
                             if (x >= (int) rp[0] && y >= (int) rp[1]
@@ -268,138 +291,19 @@ public class Biome {
                                 prob += rp[4];
                             }
                         }
+                        prob += rule.levelProb() * World.level;
+                        prob = Math.min(prob, rule.maxProb());
                         if (ThreadLocalRandom.current().nextDouble() <= prob) {
-                            final int[] pos = new int[]{ x, y };
-                            if (structureCanGenerate(structureResult, pos, size)) {
-                                generateStructure(world, result, objResult, entityResult, structureResult, pos, structureId);
+                            final int[] pos = new int[]{x, y};
+                            if (Structure.canGenerate(structureResult, pos, structureId, 0)) {
+                                final Structure structure = new Structure(structureId, pos);
+                                structure.generate(world, result, objResult, entityResult, structureResult);
                             }
                         }
                     }
                 }
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void generateStructure(World world, Tile[][] result, WorldObject[][] objResult,
-            List<Entity> entityResult, boolean[][] structureResult, int[] pos, String id) {
-        final Structure.StructureData sd = Structure.structureData.get(id);
-
-        if (sd.core() != null) {
-            final double[] corePos = new double[]{
-                    sd.core()[0] + pos[0] + 0.5,
-                    sd.core()[1] + pos[1] + 0.5
-            };
-            if (corePos[0] < world.size[0] && corePos[1] < world.size[1]) {
-                world.structureGrid[(int) corePos[0]][(int) corePos[1]] = new Structure(id, corePos);
-            }
-        }
-
-        final int[] size = sd.size();
-        for (int x = pos[0]; x < pos[0] + size[0]; x++) {
-            if (x >= 0 && x < structureResult.length) {
-                for (int y = pos[1]; y < pos[1] + size[1]; y++) {
-                    if (y >= 0 && y < structureResult[0].length) {
-                        structureResult[x][y] = true;
-                    }
-                }
-            }
-        }
-
-        final int[][] tileMap = sd.tileMap();
-        for (int y = 0; y < tileMap.length; y++) {
-            for (int x = 0; x < tileMap[y].length; x++) {
-                final int[] tilePos = new int[]{ pos[0] + x, pos[1] + y };
-                if (tilePos[0] < result.length && tilePos[1] < result[0].length) {
-                    if (tileMap[y][x] == -1) continue;
-                    result[tilePos[0]][tilePos[1]] = new Tile(tileMap[y][x], tilePos, world);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        final int[][] objMap = sd.objMap();
-        for (int y = 0; y < objMap.length; y++) {
-            for (int x = 0; x < objMap[y].length; x++) {
-                final int[] objPos = new int[]{ pos[0] + x, pos[1] + y };
-                if (objPos[0] < objResult.length && objPos[1] < objResult[0].length) {
-                    if (objMap[y][x] == -1) continue;
-                    if (objMap[y][x] != 0) {
-                        objResult[objPos[0]][objPos[1]] = new WorldObject(objMap[y][x], objPos, world);
-                    } else {
-                        objResult[objPos[0]][objPos[1]] = null;
-                    }
-                } else {
-                    break;
-                }
-            }
-        }
-
-        for (Structure.EntitySpawn spawn : sd.entities()) {
-            if (ThreadLocalRandom.current().nextDouble() <= spawn.prob()) {
-                final double[] entityPos = new double[]{
-                        (spawn.pos()[0] + pos[0]) * config.tileSize,
-                        (spawn.pos()[1] + pos[1]) * config.tileSize
-                };
-                entityResult.add(new Entity(spawn.entityId(), entityPos, world));
-            }
-        }
-
-        for (Structure.ChestSpawn chestSpawn : sd.chests()) {
-            if (ThreadLocalRandom.current().nextDouble() <= chestSpawn.prob()) {
-                final int[] chestPos = new int[]{ chestSpawn.pos()[0] + pos[0], chestSpawn.pos()[1] + pos[1] };
-                if (chestPos[0] > -1 && chestPos[0] < objResult.length
-                        && chestPos[1] > -1 && chestPos[1] < objResult[0].length) {
-                    final WorldObject chest = new WorldObject(chestSpawn.id(), chestPos, world);
-                    final List<Map<String, Object>> lootEntries = chestSpawn.lootEntries();
-                    final double chestSeed = ThreadLocalRandom.current().nextDouble();
-                    final double defaultProb = defaultProb(lootEntries);
-                    double chestProgress = 0;
-                    for (Map<String, Object> lootEntry : lootEntries) {
-                        final double lootProb = MapReader.getNumberOrDefault(lootEntry, "prob", defaultProb)
-                                .doubleValue() + chestProgress;
-                        if (lootProb >= chestSeed) {
-                            final Object rawLoot = lootEntry.get("loot");
-                            if (rawLoot instanceof List<?>) {
-                                chest.setLoot((List<Map<String, Number>>) rawLoot);
-                            }
-                            break;
-                        }
-                        chestProgress = lootProb;
-                    }
-                    objResult[chestPos[0]][chestPos[1]] = chest;
-                }
-            }
-        }
-    }
-
-    private static double defaultProb(List<Map<String, Object>> maps) {
-        int count = maps.size();
-        double probSum = 0;
-        for (Map<String, Object> map : maps) {
-            int prob = MapReader.getNumberOrDefault(map, "prob", 0).intValue();
-            if (prob != 0) {
-                probSum += prob;
-                count--;
-            }
-        }
-        return (1 - probSum) / (double) count;
-    }
-
-    private boolean structureCanGenerate(boolean[][] structureGrid, int[] pos, int[] size) {
-        for (int x = pos[0]; x < pos[0] + size[0]; x++) {
-            if (x >= 0 && x < structureGrid.length) {
-                for (int y = pos[1]; y < pos[1] + size[1]; y++) {
-                    if (y >= 0 && y < structureGrid[0].length) {
-                        if (structureGrid[x][y]) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     private static double conditionalProb(Tile tile, int condition, double prob) {

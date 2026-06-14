@@ -1,8 +1,8 @@
 {
-  "darkForest": {
+  "dark_forest": {
     "name": "Dark Forest",
     "level": 5,
-    "tags": ["fog"],
+    "attributes": {"fogginess": 1.0},
     "textureMap": {
       "landColor": "#2a562a",
       "voidColor": "#001139",

@@ -156,10 +156,11 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
             }
 
             final Biome biome = World.worlds.get(World.level).biome;
-            //Renders fog, is present
-            if (biome.tags.contains("fog")) {
+            //Renders fog, if present
+            final double fogginess = biome.attributes.getOrDefault("fogginess", 0).doubleValue();
+            if (fogginess > 0) {
                 final Color fogColor = Rendering.decodeColor(biome.textureMap.get("fogColor"));
-                Rendering.renderLight(g2d, fogColor, lights);
+                Rendering.renderLight(g2d, fogColor, fogginess, lights);
             }
 
             biome.renderOverlay(g2d);

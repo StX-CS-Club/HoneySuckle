@@ -1,5 +1,5 @@
 {
-  "woodenArrow": {
+  "wooden_arrow": {
     "name": "Wooden Arrow",
     "type": "ammo",
     "products": [{ "id": 1, "type": 3}],
@@ -12,7 +12,7 @@
       }
     ]
   },
-  "shotgunShell": {
+  "shotgun_shell": {
     "name": "Shotgun Shells",
     "type": "ammo",
     "products": [{ "id": 3, "type": 3, "count": 5}],

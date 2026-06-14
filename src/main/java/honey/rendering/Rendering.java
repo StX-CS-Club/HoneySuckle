@@ -182,7 +182,7 @@ public final class Rendering {
     }
 
     //Render Light
-    public static void renderLight(Graphics2D g, Color fogColor, Set<Map<String, Number>> lights) {
+    public static void renderLight(Graphics2D g, Color fogColor, double fogginess, Set<Map<String, Number>> lights) {
         initLightImages();
         //Clear reusable light map images
         light2d.setComposite(AlphaComposite.Clear);
@@ -196,7 +196,7 @@ public final class Rendering {
         //Render all lights on light map as radial gradients
         for (Map<String, Number> light : lights) {
             final Point2D center = new Point2D.Float(light.get("posX").floatValue() / config.lightScale, light.get("posY").floatValue() / config.lightScale);
-            final int radius = (int) Math.floor(light.get("radius").doubleValue() * config.tileSize / config.lightScale);
+            final int radius = (int) Math.floor(light.get("radius").doubleValue() / fogginess * config.tileSize / config.lightScale);
             if (radius != 0) {
                 final Ellipse2D circle = new Ellipse2D.Double(
                         center.getX() - radius,

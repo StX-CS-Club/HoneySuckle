@@ -194,6 +194,8 @@ public class AssetManager {
                 tileRules.add(new Biome.TileGenRule(
                         getInt(tile, "id", 1),
                         getDouble(tile, "prob", 0),
+                        getDouble(tile, "maxProb", 1.0),
+                        getDouble(tile, "levelProb", 0),
                         toDoubleMatrix(tile.get("tileProb")),
                         toDoubleMatrix(tile.get("sideProb")),
                         toDoubleMatrix(tile.get("bottomProb")),
@@ -206,6 +208,8 @@ public class AssetManager {
                 objRules.add(new Biome.ObjGenRule(
                         getInt(obj, "id", 1),
                         getDouble(obj, "prob", 0),
+                        getDouble(obj, "maxProb", 1.0),
+                        getDouble(obj, "levelProb", 0),
                         toDoubleMatrix(obj.get("tileProb")),
                         toDoubleMatrix(obj.get("rangeProb"))
                 ));
@@ -216,9 +220,10 @@ public class AssetManager {
                 entityRules.add(new Biome.EntityGenRule(
                         getInt(entity, "id", 0),
                         getDouble(entity, "prob", 0),
+                        getDouble(entity, "maxProb", 1.0),
                         toDoubleMatrix(entity.get("tileProb")),
                         toDoubleMatrix(entity.get("rangeProb")),
-                        getDouble(entity, "levelProbPower", 0)
+                        getDouble(entity, "levelProb", 0)
                 ));
             }
 
@@ -229,6 +234,8 @@ public class AssetManager {
                 structureRules.add(new Biome.StructureGenRule(
                         getInt(structure, "id", 0),
                         getDouble(structure, "prob", 0),
+                        getDouble(structure, "maxProb", 1.0),
+                        getDouble(structure, "levelProb", 0),
                         toIntMatrix(structure.get("pos")),
                         grid,
                         toDoubleMatrix(structure.get("tileProb")),
@@ -264,6 +271,8 @@ public class AssetManager {
                 entitySpawns.add(new Structure.EntitySpawn(
                         entityId,
                         getDouble(entity, "prob", 1),
+                        getDouble(entity, "maxProb", 1.0),
+                        getDouble(entity, "levelProb", 0),
                         toDoubleArray(entity.get("pos"), 0, 0)
                 ));
             }
@@ -273,13 +282,24 @@ public class AssetManager {
                 chestSpawns.add(new Structure.ChestSpawn(
                         getInt(chest, "id", 16),
                         getDouble(chest, "prob", 1),
+                        getDouble(chest, "maxProb", 1.0),
+                        getDouble(chest, "levelProb", 0),
                         toIntArray(chest.get("pos"), 0, 0),
                         getListOfMaps(chest, "lootEntries")
                 ));
             }
 
+            final List<Structure.StructureJoint> joints = new ArrayList<>();
+            for (Map<String, Object> joint : getListOfMaps(gen, "joints")) {
+                joints.add(new Structure.StructureJoint(
+                    toIntArray(joint.get("pos"), 0, 0),
+                    getListOfMaps(joint, "segments"),
+                    getInt(joint, "rotation", 0)
+                ));
+            }
+
             Structure.structureData.put(structureId, new Structure.StructureData(
-                    core, size, tileMap, objMap, entitySpawns, chestSpawns
+                    core, size, tileMap, objMap, entitySpawns, chestSpawns, joints
             ));
         }
     }

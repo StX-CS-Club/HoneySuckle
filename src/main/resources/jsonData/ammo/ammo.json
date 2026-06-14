@@ -1,5 +1,5 @@
 {
-  "woodenArrow": {
+  "wooden_arrow": {
     "name": "Wood Arrow",
     "types": ["arrow"],
     "id": 1,
@@ -20,7 +20,7 @@
       "weight": 0.5
     }
   },
-  "sharpArrow": {
+  "sharp_arrow": {
     "name": "Sharp Arrow",
     "types": ["arrow"],
     "id": 2,
@@ -41,9 +41,9 @@
       "weight": 0.5
     }
   },
-  "shotgunShell": {
+  "shotgun_shell": {
     "name": "Shotgun Shell",
-    "types": ["shotgunShell"],
+    "types": ["shotgun_shell"],
     "id": 3,
     "texture": {
         "texture": "ammo/shotgun_shell"
@@ -62,7 +62,7 @@
       "weight": 0.75
     }
   },
-  "pumpkannonBall": {
+  "pumpkannon_ball": {
     "name": "Pumpkannon Ball",
     "types": ["pumpkin"],
     "id": 4,

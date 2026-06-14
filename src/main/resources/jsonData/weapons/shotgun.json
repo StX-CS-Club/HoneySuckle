@@ -3,7 +3,7 @@
     "name": "Shotgun",
     "id": 8,
     "tags": ["constClick", "loadAmmo"],
-    "ammo": ["shotgunShell"],
+    "ammo": ["shotgun_shell"],
     "stats": {
       "Type": "Gun",
       "Damage": "0.5",

@@ -84,7 +84,7 @@
       }
     ]
   },
-  "deathgate": {
+  "death_gate": {
     "name": "Death Gate",
     "id": 5,
     "texture": {

@@ -27,7 +27,7 @@
       "texture": "projectiles/fireball"
     }
   },
-  "enemyArrow": {
+  "enemy_arrow": {
     "name": "Enemy Arrow",
     "id": 3,
     "tags": ["hurtPlayer"],
@@ -43,7 +43,7 @@
       "anim": "_flame_"
     }
   },
-  "woodenArrow": {
+  "wooden_arrow": {
     "name": "Wooden Arrow",
     "id": 4,
     "tags": ["hurtEntity", "hurtPlayer"],

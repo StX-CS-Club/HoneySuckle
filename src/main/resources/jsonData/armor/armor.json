@@ -21,7 +21,7 @@
         "Health": "1"
     }
   },
-  "aRock": {
+  "a_rock": {
     "name": "Rock",
     "id": 2,
     "texture": {
@@ -44,10 +44,10 @@
         "Rock": "is there"
     }
   },
-  "pumpkinHelm": {
+  "pumpkin_helm": {
     "name": "Pumpkin Helm",
     "id": 3,
-    "recipeUnlocks": ["jackolanternHelm"],
+    "recipeUnlocks": ["jackolantern_helm"],
     "texture": {
       "texture": "armor/pumpkin_helm/top",
       "frontTexture": "armor/pumpkin_helm/front",
@@ -68,7 +68,7 @@
         "Health": "1"
     }
   },
-  "jackolanternHelm": {
+  "jackolantern_helm": {
     "name": "Jack-o-lantern Helm",
     "id": 4,
     "texture": {
@@ -93,7 +93,7 @@
         "Light": "9"
     }
   },
-  "dragonScale": {
+  "dragon_scale": {
     "name": "Dragon Scale Armor",
     "id": 5,
     "texture": {
@@ -117,7 +117,7 @@
         "Health": "1.5"
     }
   },
-  "honeycombHelm": {
+  "honeycomb_helm": {
     "name": "Honeycomb Helm",
     "id": 6,
     "texture": {
@@ -167,6 +167,5 @@
         "Health": "0.5",
         "Immunity": "2"
     }
-
   }
 }

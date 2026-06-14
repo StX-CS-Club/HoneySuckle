@@ -25,6 +25,7 @@ import honey.world.Brain;
 import honey.world.Entity;
 import honey.world.Navigator;
 import honey.world.Projectile;
+import honey.world.Structure;
 import honey.world.Tile;
 import honey.world.World;
 import honey.world.WorldObject;
@@ -88,6 +89,7 @@ public class ConfigManager {
         Projectile.config   = this;
         Tile.config         = this;
         Biome.config        = this;
+        Structure.config    = this;
         WorldObject.config  = this;
         Navigator.config    = this;
         Rendering.config    = this;

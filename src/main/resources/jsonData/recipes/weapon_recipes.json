@@ -1,5 +1,5 @@
 {
-  "dragonSword": {
+  "dragon_sword": {
     "name": "Dragon Sword",
     "type": "weapon",
     "products": [{ "id": 4, "type": 1 }],
@@ -12,7 +12,7 @@
       }
     ]
   },
-  "slimeShield": {
+  "slime_shield": {
     "name": "Bouncy Shield",
     "type": "weapon",
     "products": [{ "id": 5, "type": 1 }],
@@ -29,7 +29,7 @@
       }
     ]
   },
-  "cactusSword": {
+  "cactus_sword": {
     "name": "Cactus Sword",
     "type": "weapon",
     "products": [{ "id": 6, "type": 1 }],
@@ -47,7 +47,7 @@
       }
     ]
   },
-  "diamondSword": {
+  "diamond_sword": {
     "name": "Diamond Sword",
     "type": "weapon",
     "products": [{ "id": 7, "type": 1 }],
@@ -65,7 +65,7 @@
       }
     ]
   },
-  "stingerSword": {
+  "stinger_sword": {
     "name": "Stinger Sword",
     "type": "weapon",
     "products": [{ "id": 11, "type": 1 }],
@@ -74,7 +74,7 @@
     },
     "mats": [{ "id": 12 }, { "id": 1, "count": 5 }, { "id": 11, "count": 3 }]
   },
-  "stingerSpear": {
+  "stinger_spear": {
     "name": "Stinger Spear",
     "type": "weapon",
     "products": [{ "id": 12, "type": 1 }],
@@ -83,7 +83,7 @@
     },
     "mats": [{ "id": 12 }, { "id": 1, "count": 5 }, { "id": 11, "count": 3 }]
   },
-  "pineWoodShield": {
+  "pine_wood_shield": {
     "name": "Pine Wood Shield",
     "type": "weapon",
     "products": [{ "id": 13, "type": 1 }],
@@ -92,7 +92,7 @@
     },
     "mats": [{ "id": 13, "count": 15 }, { "id": 8 }]
   },
-  "pineWoodHatchet": {
+  "pine_wood_hatchet": {
     "name": "Pine Wood Hatchet",
     "type": "weapon",
     "products": [{ "id": 15, "type": 1 }],
@@ -101,7 +101,7 @@
     },
     "mats": [{ "id": 13, "count": 5 }, { "id": 8 }, { "id": 3 }]
   },
-  "cobbledBreaker": {
+  "cobbled_breaker": {
     "name": "Cobbled Breaker",
     "type": "weapon",
     "products": [{ "id": 16, "type": 1 }],

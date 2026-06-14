@@ -312,9 +312,10 @@ public class World {
 
         // Expands map
         int[] mapRange = renderOffset().clone();
-        if (biome.tags.contains("fog")) {
-            int lightRadius = player.attributes.getOrDefault("lightRadius", 4).intValue();
-            Arrays.fill(mapRange, lightRadius);
+        final double fogginess = biome.attributes.getOrDefault("fogginess", 0).doubleValue();
+        if (fogginess > 0) {
+            int fogRadius = (int) (player.attributes.getOrDefault("lightRadius", 4).doubleValue() / fogginess);
+            Arrays.fill(mapRange, fogRadius);
         }
         if (navigator.started) {
             for (int x = posIndex[0] - mapRange[0]; x < posIndex[0] + mapRange[0]; x++) {
@@ -429,7 +430,7 @@ public class World {
         int[] cameraTile = new int[] { (int) Math.floor(camera[0] / config.tileSize),
                 (int) Math.floor(camera[1] / config.tileSize) };
 
-        final boolean fog = biome.tags.contains("fog");
+        final boolean fog = biome.attributes.getOrDefault("fogginess", 0).doubleValue() > 0;
         final int[] ro = renderOffset();
 
         // Runs through all nearby (on screen) tiles to render

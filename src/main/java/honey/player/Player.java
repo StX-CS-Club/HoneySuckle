@@ -55,7 +55,7 @@ public class Player {
                 Arrays.asList(armory.weapons),
                 Arrays.asList(armory.armor),
                 Arrays.asList(new Item("wood", 4)),
-                Arrays.asList(new Ammo("woodenArrow", 10)),
+                Arrays.asList(new Ammo("wooden_arrow", 10)),
                 Arrays.asList(new KeyItem("map", 1)));
         armory.weapons[1].setAmmo(inventory.ammo);
 
@@ -124,7 +124,7 @@ public class Player {
         Biome biome = World.worlds.get(World.level).biome;
 
         //If biome is foggy, add light source at player
-        if (biome.tags.contains("fog")) {
+        if (biome.attributes.getOrDefault("fogginess", 0).doubleValue() > 0) {
             HoneySuckle.lights.add(Map.of(
                     "posX", screenPos[0],
                     "posY", screenPos[1],
