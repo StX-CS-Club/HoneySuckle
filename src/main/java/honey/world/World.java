@@ -39,7 +39,7 @@ public class World {
 
     // Static variables
     public static List<World> worlds = new ArrayList<>();
-    public static int level = 0;
+    public static int level;
 
     // World Constructor
     public World() {
@@ -265,7 +265,7 @@ public class World {
         if (player.pos[1] <= player.size / 2.0) {
             if (!biome.tags.contains("enemyLock") || entities.isEmpty()) {
                 level++;
-                World world = new World();
+                final World world = new World();
                 player.pos = new double[] { config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.size[1] - 0.5) };
                 return;
             }

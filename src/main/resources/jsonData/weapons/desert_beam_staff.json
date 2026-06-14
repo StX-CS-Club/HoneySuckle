@@ -1,0 +1,24 @@
+{
+  "desert_beam_staff": {
+    "name": "Desert Beam Staff",
+    "id": 17,
+    "stats": {
+      "Type": "Staff",
+      "Damage": "5",
+      "Speed": "1.5"
+    },
+    "texture": {
+      "itemTexture": "weapons/desert_beam_staff/item",
+      "texture": "weapons/desert_beam_staff/desert_beam_staff",
+      "rarityColor": "#57a5ff",
+      "type": "side"
+    },
+    "behavior": {
+      "shoot": {
+        "cooldown": 45,
+        "proj": 10,
+        "ammoCount": 0
+      }
+    }
+  }
+}

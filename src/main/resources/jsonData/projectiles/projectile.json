@@ -129,5 +129,22 @@
     "texture": {
       "texture": "projectiles/snowball"
     }
+  },
+  "beam": {
+    "name": "Beam",
+    "id": 10,
+    "tags": ["hurtEntity", "hurtPlayer", "damageTile", "alwaysRender"],
+    "attributes": {
+      "damage": 0.5,
+      "speed": 0.5,
+      "size": 0.5,
+      "lightRadius": 2,
+      "bounceCount": 3,
+      "trailCount": 10,
+      "steps": 5
+    },
+    "texture": {
+      "texture": "projectiles/beam"
+    }
   }
 }

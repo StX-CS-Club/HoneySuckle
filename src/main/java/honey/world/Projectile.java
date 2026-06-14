@@ -47,6 +47,8 @@ public class Projectile {
 
     //Source of projectile
     public Object source;
+    private int trail;
+    public int bounces;
 
     //Specific projectile attributes
     private final Map<String, String> texture;
@@ -65,7 +67,6 @@ public class Projectile {
 
     //Projectile Constructor
     public Projectile(String type, double[] pos, double[] currentVel, double angle, Object source) {
-        //Interprets projectile type
         texture = projTextures.get(type);
         anim = texture.getOrDefault("anim", "");
         String glowColorString = texture.get("glowColor");
@@ -81,20 +82,15 @@ public class Projectile {
 
         baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * config.tileSize;
 
-        //Trig variables
         double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
         double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
-
-        //Calculate velocity based on angle and magnitude
         vel = new double[]{sin, cos};
-
         vel[0] += currentVel[0];
         vel[1] += currentVel[1];
 
         hits = attributes.getOrDefault("hits", 1).intValue();
         frames = attributes.getOrDefault("frames", -1).intValue();
 
-        //Assign values to properties
         this.pos = pos.clone();
         this.type = type;
         this.angle = angle;
@@ -103,6 +99,8 @@ public class Projectile {
         size = attributes.getOrDefault("size", 0.5).doubleValue() * config.tileSize;
         circumradius = size / 2.0 * Math.sqrt(2);
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
+        trail = attributes.getOrDefault("trailCount", 0).intValue();
+        bounces = attributes.getOrDefault("bounceCount", -1).intValue();
 
         staticTexture = getTexture(getPostfix());
     }
@@ -110,7 +108,6 @@ public class Projectile {
     public Projectile(Map<String, Number> attributes, double[] pos, double[] currentVel, double angle, Object source) {
         type = projStringId.get(attributes.get("proj").intValue());
 
-        //Interprets projectile type
         texture = projTextures.get(type);
         anim = texture.getOrDefault("anim", "");
         String glowColorString = texture.get("glowColor");
@@ -134,20 +131,15 @@ public class Projectile {
 
         baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * config.tileSize;
 
-        //Trig variables
         double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
         double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
-
-        //Calculate velocity based on angle and magnitude
         vel = new double[]{sin, cos};
-
         vel[0] += currentVel[0];
         vel[1] += currentVel[1];
 
         hits = attributes.getOrDefault("hits", 1).intValue();
         frames = attributes.getOrDefault("frames", -1).intValue();
 
-        //Assign values to properties
         this.pos = pos.clone();
         this.angle = angle;
         this.source = source;
@@ -155,13 +147,14 @@ public class Projectile {
         size = attributes.getOrDefault("size", 0.5).doubleValue() * config.tileSize;
         circumradius = size / 2.0 * Math.sqrt(2);
         damage = attributes.getOrDefault("damage", 0.25).doubleValue();
+        trail = attributes.getOrDefault("trailCount", 0).intValue();
+        bounces = attributes.getOrDefault("bounceCount", -1).intValue();
 
         staticTexture = getTexture(getPostfix());
     }
 
     //Change velocity of projectile
     public void alterVel(double[] pos, double[] currentVel, double angle, double velCoef, Object source) {
-        //Trig variables
         double sin = Math.sin(Math.toRadians(-angle)) * velCoef * -baseSpeed;
         double cos = Math.cos(Math.toRadians(-angle)) * velCoef * -baseSpeed;
 
@@ -175,142 +168,39 @@ public class Projectile {
 
     //Update Projectile
     public void update() {
-        //Move Projectile
-        if (!tags.contains("stationary")) {
-            pos[0] += vel[0];
-            pos[1] += vel[1];
-        }
-        //Current world data
-        World world = World.worlds.get(World.level);
-        int[] posIndex = new int[]{
-            (int) Math.floor(pos[0] / config.tileSize),
-            (int) Math.floor(pos[1] / config.tileSize)
-        };
+        final World world = World.worlds.get(World.level);
+        final int trailCount = attributes.getOrDefault("trailCount", 0).intValue();
+        final int steps = attributes.getOrDefault("steps", 1).intValue();
 
         frames--;
         if (frames == 0) {
-            hits = 1;
             destroy(world);
+            return;
         }
 
-        //If projectile is outa here, remove it
-        if (posIndex[0] < 0 || posIndex[0] >= world.size[0] || posIndex[1] < 0 || posIndex[1] >= world.size[1]) {
-            destroy(world);
-        } else {
-            //World object of projectile
-            for (int x = (int) Math.floor(posIndex[0] - size); x < posIndex[0] + size; x++) {
-                if (x > -1 && x < world.size[0]) {
-                    for (int y = (int) Math.floor(posIndex[1] - size); y < posIndex[1] + size; y++) {
-                        if (y > -1 && y < world.size[1]) {
-                            if (Collision.isBoxOverlap(
-                                    new Point2D.Double(pos[0], pos[1]),
-                                    new Point2D.Double(size, size),
-                                    angle,
-                                    new Point2D.Double(config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)),
-                                    new Point2D.Double(config.tileSize * 0.5, config.tileSize * 0.5))) {
-                                WorldObject object = world.objGrid[x][y];
-                                if (object != null) {
-                                    final double oc = object.attributes.getOrDefault("projCollision", 0).doubleValue();
-                                    if (oc > 0 && Collision.isBoxOverlap(
-                                            new Point2D.Double(pos[0], pos[1]),
-                                            new Point2D.Double(size, size),
-                                            angle,
-                                            new Point2D.Double(config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)),
-                                            new Point2D.Double(config.tileSize * oc * 0.5, config.tileSize * oc * 0.5))) {
-                                        //If can damage tile, apply damage
-                                        if (tags.contains("damageTile")) {
-                                            //If failed to destroy object, remove projectile
-                                            if (object.damage(damage)) {
-                                                world.processLoot(object.loot, new double[]{config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)}, source instanceof Player ? (Player) source : null);
-                                            } else {
-                                                if (destroy(world)) {
-                                                    return;
-                                                }
-                                            }
-                                        } else {
-                                            //If object blocks projectile, remove it
-                                            if (destroy(world)) {
-                                                return;
-                                            }
-                                        }
-                                    }
-                                    if (object.tags.contains("flameProj") && !flaming) {
-                                        damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
-                                        flaming = true;
-                                        staticTexture = getTexture(getPostfix());
-                                    }
-                                }
+        if (!tags.contains("stationary")) {
+            final double[] newPos = pos.clone();
 
-                                Tile tile = world.grid[posIndex[0]][posIndex[1]];
-                                if (tile.attributes.getOrDefault("projCollision", 0).doubleValue() > 0) {
-                                    if (destroy(world)) {
-                                        return;
-                                    }
-                                }
-                                if (tile.tags.contains("flameProj") && !flaming) {
-                                    damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
-                                    flaming = true;
-                                    staticTexture = getTexture(getPostfix());
-                                }
-                            }
-                        }
-                    }
-                }
+            for (int step = 0; step < steps; step++) {
+                newPos[0] += vel[0] / steps;
+                newPos[1] += vel[1] / steps;
+                if (checkCollision(world, newPos)) break;
             }
-        }
-        //If can hurt entity or boss, query collision grid for nearby candidates
-        if (tags.contains("hurtEntity") || tags.contains("hurtBoss")) {
-            final int px0 = Math.max(0, (int) Math.floor((pos[0] - circumradius) / config.tileSize));
-            final int px1 = Math.min(world.size[0] - 1, (int) Math.floor((pos[0] + circumradius) / config.tileSize));
-            final int py0 = Math.max(0, (int) Math.floor((pos[1] - circumradius) / config.tileSize));
-            final int py1 = Math.min(world.size[1] - 1, (int) Math.floor((pos[1] + circumradius) / config.tileSize));
-            for (int bx = px0; bx <= px1; bx++) {
-                for (int by = py0; by <= py1; by++) {
-                    final List<Entity> bucket = world.entityGrid.get(bx * world.size[1] + by);
-                    if (bucket == null) continue;
-                    for (Entity entity : bucket) {
-                        if (hitEntities.contains(entity)) continue;
-                        if (!tags.contains("hurtEntity") && !entity.tags.contains("boss")) continue;
-                        //If can hurt source or is not source...
-                        if (source != entity || tags.contains("hurtSource")) {
-                            //Check collision
-                            if (Collision.isBoxOverlap(
-                                    new Point2D.Double(pos[0], pos[1]),
-                                    new Point2D.Double(size, size),
-                                    angle,
-                                    new Point2D.Double(entity.pos[0], entity.pos[1]),
-                                    new Point2D.Double(entity.size, entity.size))) {
-                                hitEntities.add(entity);
-                                //damage entity, and remove self
-                                if (entity.brain.damage(damage)) {
-                                    world.processLoot(entity.loot, entity.pos.clone(), source instanceof Player ? (Player) source : null);
-                                }
-                                if (destroy(world)) {
-                                    return;
-                                }
-                            }
-                        }
-                    }
+
+            if (!world.projectiles.contains(this)) return;
+
+            if (trailCount == 0) {
+                pos[0] = newPos[0];
+                pos[1] = newPos[1];
+            } else {
+                if (trail == trailCount) {
+                    Projectile child = new Projectile(type, new double[]{pos[0] + vel[0], pos[1] + vel[1]}, new double[2], angle, source);
+                    child.bounces = this.bounces;
+                    world.projectiles.add(child);
                 }
-            }
-        }
-        //If can hurt player, check players to hurt
-        if (tags.contains("hurtPlayer")) {
-            for (Player player : Player.players) {
-                //If can hurt source or is not source...
-                if (source != player || tags.contains("hurtSource")) {
-                    if (Collision.isBoxOverlap(
-                            new Point2D.Double(pos[0], pos[1]),
-                            new Point2D.Double(size, size),
-                            angle,
-                            new Point2D.Double(player.pos[0], player.pos[1]),
-                            new Point2D.Double(player.size, player.size))) {
-                        //damage player, and remove self
-                        player.damage(damage, true);
-                        if (destroy(world)) {
-                            return;
-                        }
-                    }
+                trail--;
+                if (trail == 0) {
+                    world.projectiles.remove(this);
                 }
             }
         }
@@ -318,16 +208,9 @@ public class Projectile {
 
     //Render projectile
     public void render(Graphics2D g, double[] screenPos) {
-        //Original rotation
         AffineTransform originalTransform = g.getTransform();
-
-        //Rotate based off angle
         g.rotate(Math.toRadians(angle), screenPos[0], screenPos[1]);
-
-        //Render projectiles
         g.drawImage(staticTexture, (int) (screenPos[0] - size / 2.0), (int) (screenPos[1] - size / 2.0), (int) size, (int) size, null);
-
-        //Reset rotation
         g.setTransform(originalTransform);
     }
 
@@ -348,21 +231,175 @@ public class Projectile {
 
     private String getPostfix() {
         StringBuilder postfix = new StringBuilder();
-
         if (anim.contains("_flame_")) {
             if (flaming) {
                 postfix.append("_flame");
             }
         }
-
         return postfix.toString();
+    }
+
+    //Checks all collision at a given position, returns true if something was hit
+    private boolean checkCollision(World world, double[] checkPos) {
+        int[] posIndex = new int[]{
+            (int) Math.floor(checkPos[0] / config.tileSize),
+            (int) Math.floor(checkPos[1] / config.tileSize)
+        };
+
+        if (posIndex[0] < 0 || posIndex[0] >= world.size[0] || posIndex[1] < 0 || posIndex[1] >= world.size[1]) {
+            destroy(world);
+            return true;
+        }
+
+        //World objects and tiles
+        for (int x = (int) Math.floor(posIndex[0] - size); x < posIndex[0] + size; x++) {
+            if (x > -1 && x < world.size[0]) {
+                for (int y = (int) Math.floor(posIndex[1] - size); y < posIndex[1] + size; y++) {
+                    if (y > -1 && y < world.size[1]) {
+                        if (Collision.isBoxOverlap(
+                                new Point2D.Double(checkPos[0], checkPos[1]),
+                                new Point2D.Double(size, size),
+                                angle,
+                                new Point2D.Double(config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)),
+                                new Point2D.Double(config.tileSize * 0.5, config.tileSize * 0.5))) {
+                            final WorldObject object = world.objGrid[x][y];
+                            if (object != null) {
+                                final double oc = object.attributes.getOrDefault("projCollision", 0).doubleValue();
+                                if (oc > 0 && Collision.isBoxOverlap(
+                                        new Point2D.Double(checkPos[0], checkPos[1]),
+                                        new Point2D.Double(size, size),
+                                        angle,
+                                        new Point2D.Double(config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)),
+                                        new Point2D.Double(config.tileSize * oc * 0.5, config.tileSize * oc * 0.5))) {
+                                    if (tags.contains("damageTile")) {
+                                        if (object.damage(damage)) {
+                                            //Object destroyed — projectile passes through
+                                            world.processLoot(object.loot, new double[]{config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)}, source instanceof Player ? (Player) source : null);
+                                        } else {
+                                            //Object survived — bounce or stop
+                                            if (bounces > 0) reflectOff(x, y, checkPos, world);
+                                            else destroy(world);
+                                            return true;
+                                        }
+                                    } else {
+                                        if (bounces > 0) reflectOff(x, y, checkPos, world);
+                                        else destroy(world);
+                                        return true;
+                                    }
+                                }
+                                if (object.tags.contains("flameProj") && !flaming) {
+                                    damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
+                                    flaming = true;
+                                    staticTexture = getTexture(getPostfix());
+                                }
+                            }
+
+                            final Tile tile = world.grid[posIndex[0]][posIndex[1]];
+                            if (tile.attributes.getOrDefault("projCollision", 0).doubleValue() > 0) {
+                                if (bounces > 0) reflectOff(posIndex[0], posIndex[1], checkPos, world);
+                                else destroy(world);
+                                return true;
+                            }
+                            if (tile.tags.contains("flameProj") && !flaming) {
+                                damage *= attributes.getOrDefault("flame", 1.5).doubleValue();
+                                flaming = true;
+                                staticTexture = getTexture(getPostfix());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Entities
+        if (tags.contains("hurtEntity") || tags.contains("hurtBoss")) {
+            final int px0 = Math.max(0, (int) Math.floor((checkPos[0] - circumradius) / config.tileSize));
+            final int px1 = Math.min(world.size[0] - 1, (int) Math.floor((checkPos[0] + circumradius) / config.tileSize));
+            final int py0 = Math.max(0, (int) Math.floor((checkPos[1] - circumradius) / config.tileSize));
+            final int py1 = Math.min(world.size[1] - 1, (int) Math.floor((checkPos[1] + circumradius) / config.tileSize));
+            for (int bx = px0; bx <= px1; bx++) {
+                for (int by = py0; by <= py1; by++) {
+                    final List<Entity> bucket = world.entityGrid.get(bx * world.size[1] + by);
+                    if (bucket == null) continue;
+                    for (Entity entity : bucket) {
+                        if (hitEntities.contains(entity)) continue;
+                        if (!tags.contains("hurtEntity") && !entity.tags.contains("boss")) continue;
+                        if (source != entity || tags.contains("hurtSource")) {
+                            if (Collision.isBoxOverlap(
+                                    new Point2D.Double(checkPos[0], checkPos[1]),
+                                    new Point2D.Double(size, size),
+                                    angle,
+                                    new Point2D.Double(entity.pos[0], entity.pos[1]),
+                                    new Point2D.Double(entity.size, entity.size))) {
+                                hitEntities.add(entity);
+                                if (entity.brain.damage(damage)) {
+                                    world.processLoot(entity.loot, entity.pos.clone(), source instanceof Player ? (Player) source : null);
+                                }
+                                if (destroy(world)) return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Players
+        if (tags.contains("hurtPlayer")) {
+            for (Player player : Player.players) {
+                if (source != player || tags.contains("hurtSource")) {
+                    if (Collision.isBoxOverlap(
+                            new Point2D.Double(checkPos[0], checkPos[1]),
+                            new Point2D.Double(size, size),
+                            angle,
+                            new Point2D.Double(player.pos[0], player.pos[1]),
+                            new Point2D.Double(player.size, player.size))) {
+                        player.damage(damage, true);
+                        if (destroy(world)) return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void reflectOff(int tx, int ty, double[] checkPos, World world) {
+        final int sx = (int) Math.signum(vel[0]);
+        final int sy = (int) Math.signum(vel[1]);
+
+        final boolean openX = !hasProjCollision(world, tx - sx, ty);
+        final boolean openY = !hasProjCollision(world, tx, ty - sy);
+
+        if (openX && !openY) {
+            vel[0] = -vel[0];
+        } else if (!openX && openY) {
+            vel[1] = -vel[1];
+        } else {
+            // Single tile or true corner — fall back to distance-to-center
+            final double tcx = (tx + 0.5) * config.tileSize;
+            final double tcy = (ty + 0.5) * config.tileSize;
+            if (Math.abs(checkPos[0] - tcx) > Math.abs(checkPos[1] - tcy)) {
+                vel[0] = -vel[0];
+            } else {
+                vel[1] = -vel[1];
+            }
+        }
+        angle = Math.toDegrees(Math.atan2(vel[0], -vel[1]));
+        hitEntities.clear();
+        bounces--;
+    }
+
+    private boolean hasProjCollision(World world, int tx, int ty) {
+        if (tx < 0 || tx >= world.size[0] || ty < 0 || ty >= world.size[1]) return true;
+        WorldObject obj = world.objGrid[tx][ty];
+        if (obj != null && obj.attributes.getOrDefault("projCollision", 0).doubleValue() >= 1) return true;
+        return world.grid[tx][ty].attributes.getOrDefault("projCollision", 0).doubleValue() >= 1;
     }
 
     private boolean destroy(World world) {
         hits--;
         if (hits == 0) {
             world.projectiles.remove(this);
-
             for (Map<String, Number> splinter : splinters) {
                 world.projectiles.add(new Projectile(splinter, pos, vel, angle, source));
             }

@@ -123,14 +123,21 @@ public class Attack {
             final String attackId = (String) shootBehavior.getOrDefault("attackId", "shoot");
             if (staticAttackFrames.get(attackId)[0] == frames) {
                 final int bullets = numberFromMap(shootBehavior, "bulletCount", 1).intValue();
-                if (weapon.ammo != null) {
-                    final int ammoUsed = numberFromMap(shootBehavior, "ammoCount", bullets).intValue();
-                    if (weapon.ammo.count >= ammoUsed) {
+                final int ammoUsed = numberFromMap(shootBehavior, "ammoCount", bullets).intValue();
+                if (ammoUsed == 0 || weapon.ammo != null) {
+                    if (ammoUsed == 0 || weapon.ammo.count >= ammoUsed) {
                         final double spread = Math.toDegrees(numberFromMap(shootBehavior, "spread", 0).doubleValue());
+                        final int projId = numberFromMap(shootBehavior, "proj", 0).intValue();
                         for (int i = 0; i < bullets; i++) {
-                            world.projectiles.add(new Projectile(weapon.ammo.mergeAttributes(weapon.type, shootBehavior), player.pos.clone(), player.vel, player.rotation - (bullets - 1) * spread / 2 + spread * i, player));
+                            if (projId == 0) {
+                                world.projectiles.add(new Projectile(weapon.ammo.mergeAttributes(weapon.type, shootBehavior), player.pos.clone(), player.vel, player.rotation - (bullets - 1) * spread / 2 + spread * i, player));
+                            } else {
+                                world.projectiles.add(new Projectile(Projectile.projStringId.get(projId), player.pos.clone(), player.vel, player.rotation - (bullets - 1) * spread / 2 + spread * i, player));
+                            }
                         }
-                        weapon.ammo.count -= ammoUsed;
+                        if (ammoUsed != 0) {
+                            weapon.ammo.count -= ammoUsed;
+                        }
                     }
                 }
             }
@@ -186,16 +193,16 @@ public class Attack {
                                     final WorldObject obj = world.objGrid[x][y];
 
                                     double finalDamage = damage * objectDamage;
-                                    if(obj.tags.contains("forage")) {
+                                    if (obj.tags.contains("forage")) {
                                         finalDamage *= forageDamage;
                                     }
-                                    if(obj.tags.contains("mine")) {
+                                    if (obj.tags.contains("mine")) {
                                         finalDamage *= mineDamage;
                                     }
-                                    if(obj.tags.contains("construct")) {
+                                    if (obj.tags.contains("construct")) {
                                         finalDamage *= constructDamage;
                                     }
-                                    if(obj.tags.contains("treasure")) {
+                                    if (obj.tags.contains("treasure")) {
                                         finalDamage *= treasureDamage;
                                     }
 
@@ -397,14 +404,14 @@ public class Attack {
                             config.gameHeight / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - swingSize - player.size / 2.0
                         };
                         //Render slash
-                        if(mirroredSwing) {
+                        if (mirroredSwing) {
                             g.drawImage(
-                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, config.slashFrameSize, config.slashFrameSize),
-                                (int) (swingScreenPos[0] + swingSize), (int) swingScreenPos[1], (int) -swingSize, (int) swingSize, null);
+                                    Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, config.slashFrameSize, config.slashFrameSize),
+                                    (int) (swingScreenPos[0] + swingSize), (int) swingScreenPos[1], (int) -swingSize, (int) swingSize, null);
                         } else {
                             g.drawImage(
-                                Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, config.slashFrameSize, config.slashFrameSize),
-                                (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
+                                    Rendering.renderGIF("attacks/slash", weapon.texture.get("swingColor"), ((double) attackFrame) / frames, config.slashFrameSize, config.slashFrameSize),
+                                    (int) swingScreenPos[0], (int) swingScreenPos[1], (int) swingSize, (int) swingSize, null);
                         }
                         return;
                     }

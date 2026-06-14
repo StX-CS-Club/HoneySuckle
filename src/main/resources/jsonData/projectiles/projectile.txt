@@ -23,7 +23,10 @@
             "hits": int number of times projectile can hit before expiring (default 1),
             "frames": int lifetime in frames before expiring — -1 for infinite (default -1),
             "lightRadius": Number of tiles projectile's light spreads (default 0),
-            "parryProj": int ID of projectile this is replaced by when parried (default same id)
+            "parryProj": int ID of projectile this is replaced by when parried (default same id),
+            "bounceCount": int number of times projectile reflects off walls/objects before expiring (default -1, no bouncing),
+            "trailCount": int length of trail — projectile becomes a trail head that spawns a child each frame and fades over trailCount frames (default 0, no trail),
+            "steps": int number of sub-steps to subdivide movement per frame — prevents fast projectiles from skipping through thin walls (default 1)
         },
         "splinters": List of projectiles spawned when this projectile expires:[
             {
