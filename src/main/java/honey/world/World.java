@@ -420,6 +420,14 @@ public class World {
         return grid[x][y].attributes.containsKey(value);
     }
 
+    public void revealAll(){
+        for(Tile[] tiles : grid){
+            for(Tile tile : tiles){
+                tile.rendered = true;
+            }
+        }
+    }
+
     // Render World
     public void render(Graphics2D g) {
         // Fills background as voidColor

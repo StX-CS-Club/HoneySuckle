@@ -44,7 +44,7 @@ public class Tile {
     private final Color colorDecoded;
     private final Color edgeColorDecoded;
     public final Color mapColor;
-    public boolean rendered = true;
+    public boolean rendered = false;
     private final BufferedImage staticTexture;
     private final BufferedImage staticEdgeTexture;
 

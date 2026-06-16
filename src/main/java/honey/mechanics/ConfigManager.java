@@ -56,6 +56,7 @@ public class ConfigManager {
     public final List<String> startingRecipes;
     public final List<String> startingWeapons;
     public final String startingArmor;
+    public final String startingKeyItem;
     public final List<String> recipeOrder;
 
     public ConfigManager(Map<String, Object> data) {
@@ -77,6 +78,7 @@ public class ConfigManager {
         startingRecipes   = getStringList(data, "startingRecipes", new ArrayList<>());
         startingWeapons   = getStringList(data, "startingWeapons", new ArrayList<>());
         startingArmor     = getString(data, "startingArmor", "leather");
+        startingKeyItem = getString(data, "startingKeyItem", "map");
         recipeOrder = getStringList(data, "recipeOrder", new ArrayList<>());
     }
 

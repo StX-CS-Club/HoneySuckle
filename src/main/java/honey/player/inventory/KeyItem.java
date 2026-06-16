@@ -169,10 +169,15 @@ public class KeyItem {
         if (count > 0) {
             if (mapUtility != null) {
                 final String utilId = (String) mapUtility.get("utilId");
-                int uses = staticUtilUses.get(utilId);
+                final int uses = staticUtilUses.get(utilId);
 
                 if (uses != 0 && !world.navigator.started) {
+                    final boolean revealAll = MapReader.getOrDefault(mapUtility, "revealAll", false);
                     world.navigator.started = true;
+                    if(revealAll){
+                        world.revealAll();
+                    }
+                    
                     utilUses.put(utilId, uses - 1);
                     useFrames = MapReader.getNumberOrDefault(mapUtility, "useFrames", 1).intValue();
                 }

@@ -8,5 +8,17 @@
         "utilities": {
             "map": {}
         }
+    },
+    "magic_map": {
+        "id": 5,
+        "name": "Magic Map",
+        "texture": {
+            "texture": "key_items/magic_map"
+        },
+        "utilities": {
+            "map": {
+                "revealAll": true
+            }
+        }
     }
 }
