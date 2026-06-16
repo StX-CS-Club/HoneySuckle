@@ -68,7 +68,7 @@ public class MapReader {
         Map<String, T> result = new HashMap<>();
         for (String key : map.keySet()) {
             Object value = map.get(key);
-            if (value.getClass() == type) {
+            if (type.isInstance(value)) {
                 result.put(key, (T) value);
             }
         }

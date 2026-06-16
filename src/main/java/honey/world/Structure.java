@@ -1,6 +1,7 @@
 package honey.world;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,10 +164,8 @@ public class Structure {
                         entryProb = Math.min(entryProb, MapReader.getNumberOrDefault(lootEntry, "maxProb", 1.0).doubleValue());
                         final double lootProb = entryProb + chestProgress;
                         if (lootProb >= chestSeed) {
-                            final Object rawLoot = lootEntry.get("loot");
-                            if (rawLoot instanceof List<?>) {
-                                chest.setLoot((List<Map<String, Number>>) rawLoot);
-                            }
+                            final List<Map<String, Number>> rawLoot = MapReader.getOrDefault(lootEntry, "loot", new ArrayList<>());
+                            chest.setLoot(rawLoot);
                             break;
                         }
                         chestProgress = lootProb;

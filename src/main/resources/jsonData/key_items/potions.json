@@ -12,7 +12,7 @@
                 "effects": [
                     {
                         "effect": "speed",
-                        "duration": 30
+                        "duration": 60
                     }
                 ] 
             }

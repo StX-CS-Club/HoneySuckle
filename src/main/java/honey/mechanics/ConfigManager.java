@@ -50,7 +50,6 @@ public class ConfigManager {
     public final int stabFrameWidth;
     public final int stabFrameHeight;
     public final double criticalMouseScroll;
-    public final int startingLevel;
     public final String startingBiome;
     public final List<String> playerTags;
     public final List<String> startingBlueprints;
@@ -72,7 +71,6 @@ public class ConfigManager {
         stabFrameWidth    = getInt(data,    "stabFrameWidth",     4);
         stabFrameHeight   = getInt(data,    "stabFrameHeight",    16);
         criticalMouseScroll = getDouble(data, "criticalMouseScroll", 0.25);
-        startingLevel     = getInt(data,    "startingLevel",      0);
         startingBiome     = getString(data, "startingBiome",      "wetlands");
         playerTags        = getStringList(data, "playerTags", new ArrayList<>());
         startingBlueprints = getStringList(data, "startingBlueprints", new ArrayList<>());

@@ -117,7 +117,6 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public static void stop() {
         play = false;
         World.worlds.clear();
-        World.level = config.startingLevel;
         Player.players.clear();
         healthBars.clear();
         lights.clear();
@@ -125,7 +124,6 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     public static void start() {
         //Creates world 1
-        World.level = config.startingLevel;
         final World world = new World(config.startingBiome);
         //Creates main player in reference to world 1
         player = new Player(new double[]{config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.start[1] + 0.5)},

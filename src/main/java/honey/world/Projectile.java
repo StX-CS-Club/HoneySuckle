@@ -85,8 +85,10 @@ public class Projectile {
         double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
         double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
         vel = new double[]{sin, cos};
-        vel[0] += currentVel[0];
-        vel[1] += currentVel[1];
+        if (!tags.contains("independent")) {
+            vel[0] += currentVel[0];
+            vel[1] += currentVel[1];
+        }
 
         hits = attributes.getOrDefault("hits", 1).intValue();
         frames = attributes.getOrDefault("frames", -1).intValue();
@@ -134,8 +136,10 @@ public class Projectile {
         double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
         double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
         vel = new double[]{sin, cos};
-        vel[0] += currentVel[0];
-        vel[1] += currentVel[1];
+        if (!tags.contains("independent")) {
+            vel[0] += currentVel[0];
+            vel[1] += currentVel[1];
+        }
 
         hits = attributes.getOrDefault("hits", 1).intValue();
         frames = attributes.getOrDefault("frames", -1).intValue();
@@ -160,8 +164,10 @@ public class Projectile {
 
         //Reset shit
         vel = new double[]{sin, cos};
-        vel[0] += currentVel[0];
-        vel[1] += currentVel[1];
+        if (!tags.contains("independent")) {
+            vel[0] += currentVel[0];
+            vel[1] += currentVel[1];
+        }
         this.angle = angle;
         this.source = source;
     }
@@ -184,10 +190,14 @@ public class Projectile {
             for (int step = 0; step < steps; step++) {
                 newPos[0] += vel[0] / steps;
                 newPos[1] += vel[1] / steps;
-                if (checkCollision(world, newPos)) break;
+                if (checkCollision(world, newPos)) {
+                    break;
+                }
             }
 
-            if (!world.projectiles.contains(this)) return;
+            if (!world.projectiles.contains(this)) {
+                return;
+            }
 
             if (trailCount == 0) {
                 pos[0] = newPos[0];
@@ -277,13 +287,19 @@ public class Projectile {
                                             world.processLoot(object.loot, new double[]{config.tileSize * (x + 0.5), config.tileSize * (y + 0.5)}, source instanceof Player ? (Player) source : null);
                                         } else {
                                             //Object survived — bounce or stop
-                                            if (bounces > 0) reflectOff(x, y, checkPos, world);
-                                            else destroy(world);
+                                            if (bounces > 0) {
+                                                reflectOff(x, y, checkPos, world); 
+                                            } else {
+                                                destroy(world);
+                                            }
                                             return true;
                                         }
                                     } else {
-                                        if (bounces > 0) reflectOff(x, y, checkPos, world);
-                                        else destroy(world);
+                                        if (bounces > 0) {
+                                            reflectOff(x, y, checkPos, world); 
+                                        }else {
+                                            destroy(world);
+                                        }
                                         return true;
                                     }
                                 }
@@ -296,8 +312,11 @@ public class Projectile {
 
                             final Tile tile = world.grid[posIndex[0]][posIndex[1]];
                             if (tile.attributes.getOrDefault("projCollision", 0).doubleValue() > 0) {
-                                if (bounces > 0) reflectOff(posIndex[0], posIndex[1], checkPos, world);
-                                else destroy(world);
+                                if (bounces > 0) {
+                                    reflectOff(posIndex[0], posIndex[1], checkPos, world); 
+                                }else {
+                                    destroy(world);
+                                }
                                 return true;
                             }
                             if (tile.tags.contains("flameProj") && !flaming) {
@@ -320,10 +339,16 @@ public class Projectile {
             for (int bx = px0; bx <= px1; bx++) {
                 for (int by = py0; by <= py1; by++) {
                     final List<Entity> bucket = world.entityGrid.get(bx * world.size[1] + by);
-                    if (bucket == null) continue;
+                    if (bucket == null) {
+                        continue;
+                    }
                     for (Entity entity : bucket) {
-                        if (hitEntities.contains(entity)) continue;
-                        if (!tags.contains("hurtEntity") && !entity.tags.contains("boss")) continue;
+                        if (hitEntities.contains(entity)) {
+                            continue;
+                        }
+                        if (!tags.contains("hurtEntity") && !entity.tags.contains("boss")) {
+                            continue;
+                        }
                         if (source != entity || tags.contains("hurtSource")) {
                             if (Collision.isBoxOverlap(
                                     new Point2D.Double(checkPos[0], checkPos[1]),
@@ -335,7 +360,9 @@ public class Projectile {
                                 if (entity.brain.damage(damage)) {
                                     world.processLoot(entity.loot, entity.pos.clone(), source instanceof Player ? (Player) source : null);
                                 }
-                                if (destroy(world)) return true;
+                                if (destroy(world)) {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -354,7 +381,9 @@ public class Projectile {
                             new Point2D.Double(player.pos[0], player.pos[1]),
                             new Point2D.Double(player.size, player.size))) {
                         player.damage(damage, true);
-                        if (destroy(world)) return true;
+                        if (destroy(world)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -390,15 +419,19 @@ public class Projectile {
     }
 
     private boolean hasProjCollision(World world, int tx, int ty) {
-        if (tx < 0 || tx >= world.size[0] || ty < 0 || ty >= world.size[1]) return true;
+        if (tx < 0 || tx >= world.size[0] || ty < 0 || ty >= world.size[1]) {
+            return true;
+        }
         WorldObject obj = world.objGrid[tx][ty];
-        if (obj != null && obj.attributes.getOrDefault("projCollision", 0).doubleValue() >= 1) return true;
+        if (obj != null && obj.attributes.getOrDefault("projCollision", 0).doubleValue() >= 1) {
+            return true;
+        }
         return world.grid[tx][ty].attributes.getOrDefault("projCollision", 0).doubleValue() >= 1;
     }
 
     private boolean destroy(World world) {
         hits--;
-        if (hits == 0) {
+        if (hits == 0 || bounces == 0) {
             world.projectiles.remove(this);
             for (Map<String, Number> splinter : splinters) {
                 world.projectiles.add(new Projectile(splinter, pos, vel, angle, source));

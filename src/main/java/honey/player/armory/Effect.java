@@ -89,8 +89,10 @@ public class Effect {
     public void modify(Map<String, Number> attributes) {
         if (active) {
             for (String key : modifiers.keySet()) {
+                Number base = MapReader.getOrGet(attributes, Player.playerDefaultAttributes, key);
+                if (base == null) continue;
                 double modifier = 1 + modifiers.get(key).doubleValue() * amplifier;
-                attributes.put(key, modifier * MapReader.getOrGet(attributes, Player.playerDefaultAttributes, key).doubleValue());
+                attributes.put(key, modifier * base.doubleValue());
             }
         }
     }

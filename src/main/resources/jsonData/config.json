@@ -13,12 +13,11 @@
     "stabFrameWidth": 4,
     "stabFrameHeight": 16,
     "criticalMouseScroll": 0.25,
-    "startingLevel": 0,
-    "startingBiome": "desert",
+    "startingBiome": "wetlands",
     "playerTags": [],
     "startingBlueprints": ["wall", "raft"],
     "startingRecipes": [],
-    "startingWeapons": ["desert_beam_staff", "bow", "shield"],
+    "startingWeapons": ["sword", "bow", "shield"],
     "startingArmor": "leather",
     "recipeOrder": ["weapon", "ammo", "armor"]
 }

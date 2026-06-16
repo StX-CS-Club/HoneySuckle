@@ -139,7 +139,6 @@ public class Brain {
                             states.put("lunging", true);
                         } else if (resetOnFail) {
                             entity.ticks.put(behaviorId, new long[]{0});
-                            ticks = 0;
                         }
                     }
                 } else {
@@ -193,7 +192,6 @@ public class Brain {
                             states.put("shooting", true);
                         } else if (resetOnFail) {
                             entity.ticks.put(behaviorId, new long[]{0});
-                            ticks = 0;
                         }
                     }
                 } else {
@@ -241,7 +239,6 @@ public class Brain {
                             states.put("summoning", true);
                         } else if (resetOnFail) {
                             entity.ticks.put(behaviorId, new long[]{0});
-                            ticks = 0;
                         }
                     }
                 } else {
@@ -421,8 +418,8 @@ public class Brain {
     }
 
     private static Number numberFromMap(Map<String, Object> map, String key, Number defaultValue) {
-        if (map.get(key) instanceof Number) {
-            return (Number) map.get(key);
+        if (map.get(key) instanceof Number number) {
+            return number;
         }
         return defaultValue;
     }
@@ -433,7 +430,7 @@ public class Brain {
 
     private static boolean booleanFromMap(Map<String, Object> map, String key, boolean defaultValue) {
         Object val = map.get(key);
-        if (val instanceof Boolean) return (Boolean) val;
+        if (val instanceof Boolean aBoolean) return aBoolean;
         return defaultValue;
     }
 

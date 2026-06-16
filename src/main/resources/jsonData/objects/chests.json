@@ -41,5 +41,19 @@
       "durability": 1.75,
       "collision": 1.0
     }
+  },
+  "desert_chest": {
+    "name": "Desert Chest",
+    "id": 22,
+    "texture": {
+      "texture": "objects/chests/desert_chest/desert_chest",
+      "anim": "_destroyed_",
+      "mapColor": "#c9a66e"
+    },
+    "tags": ["destructable", "treasure"],
+    "attributes": {
+      "durability": 2.0,
+      "collision": 1.0
+    }
   }
 }
