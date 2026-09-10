@@ -55,4 +55,15 @@ public class Item {
         // Draws the font
         Rendering.centeredText(g, label, x + 50, y + 100, 100, 24);
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "id", id,
+            "count", count
+        );
+    }
+
+    public static Item fromJson(Map<String, Object> json) {
+        return new Item((String) json.get("id"), ((Number) json.get("count")).intValue());
+    }
 }

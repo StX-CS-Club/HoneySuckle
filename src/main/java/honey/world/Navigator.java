@@ -2,6 +2,7 @@ package honey.world;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashSet;
@@ -59,7 +60,7 @@ public class Navigator {
     }
 
     public void update(InputHandler input) {
-        isOpen = input.keyDown(16) || input.clickDown(5);
+        isOpen = input.keyDown(KeyEvent.VK_SHIFT) || input.clickDown(InputHandler.BUTTON5);
     }
 
     public void renderUi(Graphics2D g) {

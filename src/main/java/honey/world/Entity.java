@@ -266,4 +266,27 @@ public class Entity {
         animFrames.put(key, new long[]{amount});
         return amount;
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "type", type,
+            "health", health,
+            "pos", pos,
+            "vel", vel
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Entity fromJson(Map<String, Object> json, World world) {
+        final List<Number> posJson = (List<Number>) json.get("pos");
+        final double[] pos = {posJson.get(0).doubleValue(), posJson.get(1).doubleValue()};
+
+        final Entity entity = new Entity((String) json.get("type"), pos, world);
+        entity.health = ((Number) json.get("health")).doubleValue();
+
+        final List<Number> velJson = (List<Number>) json.get("vel");
+        entity.vel = new double[]{velJson.get(0).doubleValue(), velJson.get(1).doubleValue()};
+
+        return entity;
+    }
 }

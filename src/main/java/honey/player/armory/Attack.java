@@ -1,6 +1,7 @@
 package honey.player.armory;
 
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class Attack {
     public void updateControls(InputHandler input, Player player) {
         final Map<String, long[]> staticAttackFrames = Map.copyOf(attackFrames);
 
-        if (constClick && input.clickDown(1) || input.clickPressed(1)) {
+        if (constClick && input.clickDown(MouseEvent.BUTTON1) || input.clickPressed(MouseEvent.BUTTON1)) {
             if (swingBehavior != null) {
                 final int cooldown = numberFromMap(swingBehavior, "cooldown", 10).intValue();
                 final String attackId = (String) swingBehavior.getOrDefault("attackId", "swing");

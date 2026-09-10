@@ -1,6 +1,8 @@
 package honey.player;
 
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,8 @@ public class Player {
 
     public static ConfigManager config;
 
+    private static final int IDEA_SIZE = 20;
+
     public static final Map<String, Number> playerDefaultAttributes = new HashMap<>();
 
     //Static list of all players
@@ -62,6 +66,27 @@ public class Player {
         attributes = armory.getAttributes();
 
         //Adds player to list of players
+        players.add(this);
+    }
+
+    //Player Constructor - reconstructs a saved player instead of fresh starting gear
+    @SuppressWarnings("unchecked")
+    public Player(double[] pos, Map<String, Object> saveData) {
+        this.pos = pos;
+        this.size = (int) (config.tileSize * 0.75);
+
+        health = ((Number) saveData.get("health")).doubleValue();
+        stamina = ((Number) saveData.get("stamina")).doubleValue();
+        immunity = ((Number) saveData.get("immunity")).doubleValue();
+        dead = (Boolean) saveData.get("dead");
+
+        build = Build.fromJson(this, (Map<String, Object>) saveData.get("build"));
+        craft = Craft.fromJson(this, (Map<String, Object>) saveData.get("craft"));
+        inventory = Inventory.fromJson(this, (Map<String, Object>) saveData.get("inventory"));
+        armory = Armory.fromJson(this, (Map<String, Object>) saveData.get("armory"), inventory);
+
+        attributes = armory.getAttributes();
+
         players.add(this);
     }
 
@@ -133,9 +158,21 @@ public class Player {
         }
 
         if (inventory.ideaFrames >= 0) {
-            g.drawImage(Rendering.texture("ui/hud/idea", inventory.ideaColor), (int) screenPos[0] - 15, (int) screenPos[1] - 15 - size, 30, 30, null);
+            g.drawImage(Rendering.texture("ui/hud/idea", inventory.ideaColor), (int) screenPos[0] - IDEA_SIZE / 2, (int) screenPos[1] - IDEA_SIZE / 2 - size, IDEA_SIZE, IDEA_SIZE, null);
             inventory.ideaFrames--;
         }
+    }
+
+    // Recomputes screenPos from the current world's camera, without running any other
+    // per-frame logic. Used to keep the player's on-screen position correct immediately
+    // after being teleported into a newly-published world (e.g. level transitions) while
+    // game logic is still paused - see World.publishPendingWorld().
+    public void syncScreenPos() {
+        final double[] camera = World.worlds.get(World.level).camera;
+        screenPos = new double[] {
+            config.gameWidth / 2.0 + pos[0] - camera[0],
+            config.gameHeight / 2.0 + pos[1] - camera[1]
+        };
     }
 
     //Update Player
@@ -161,12 +198,12 @@ public class Player {
             double incriment = 30.0 / config.fps * config.tileSize * attributes.getOrDefault("speed", 0.1).doubleValue();
 
             //Get current world camera
-            World world = World.worlds.get(World.level);
+            final World world = World.worlds.get(World.level);
             double[] camera = world.camera;
 
             if (!inventory.isOpen) {
                 //Toggle weaponScroll on scroll wheel click
-                if (input.clickPressed(2)) {
+                if (input.clickPressed(MouseEvent.BUTTON2)) {
                     weaponScroll = !weaponScroll;
                 }
 
@@ -182,7 +219,7 @@ public class Player {
                 armory.updateControls(input);
 
                 //Build on right click
-                if (input.clickDown(3)) {
+                if (input.clickDown(MouseEvent.BUTTON3)) {
                     build.build(World.worlds.get(World.level));
                 }
             }
@@ -191,7 +228,7 @@ public class Player {
             inventory.update(input);
 
             //If space pressed, reset acel to dash acel
-            if (input.keyPressed(32)) {
+            if (input.keyPressed(KeyEvent.VK_SPACE)) {
                 //If have stamina...
                 if (stamina == 1) {
                     vel[0] = 0;
@@ -208,21 +245,21 @@ public class Player {
             }
 
             //If going diaganol, divide by sqrt 2
-            if ((input.keyDown(83) || input.keyDown(87)) && (input.keyDown(65) || input.keyDown(68))) {
+            if ((input.keyDown(KeyEvent.VK_S) || input.keyDown(KeyEvent.VK_W)) && (input.keyDown(KeyEvent.VK_A) || input.keyDown(KeyEvent.VK_D))) {
                 incriment /= Math.sqrt(2);
             }
 
             //Add acel to vel if key down
-            if (input.keyDown(83)) {
+            if (input.keyDown(KeyEvent.VK_S)) {
                 vel[1] += incriment;
             }
-            if (input.keyDown(87)) {
+            if (input.keyDown(KeyEvent.VK_W)) {
                 vel[1] -= incriment;
             }
-            if (input.keyDown(65)) {
+            if (input.keyDown(KeyEvent.VK_A)) {
                 vel[0] -= incriment;
             }
-            if (input.keyDown(68)) {
+            if (input.keyDown(KeyEvent.VK_D)) {
                 vel[0] += incriment;
             }
 
@@ -318,5 +355,19 @@ public class Player {
             immunity++;
         }
         health -= damage;
+    }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "pos", pos,
+            "health", health,
+            "stamina", stamina,
+            "immunity", immunity,
+            "dead", dead,
+            "inventory", inventory.toJson(),
+            "build", build.toJson(),
+            "craft", craft.toJson(),
+            "armory", armory.toJson()
+        );
     }
 }

@@ -76,6 +76,23 @@ public class Biome {
         overlayTexture = getOverlayTexture();
     }
 
+    // Used only by World(int targetLevel) for background level-progression generation.
+    // Takes the target level explicitly (computed synchronously on the main thread before
+    // the background thread starts) instead of reading the live World.level static, which
+    // would still hold the OLD value while this constructor runs concurrently off-thread.
+    public Biome(World world, int targetLevel) {
+        this.world = world;
+        if (targetLevel > 0) {
+            type = randomizeBiome(World.worlds.getLast().biome.type, targetLevel);
+        } else {
+            type = "wetlands";
+        }
+        tags = biomeTags.get(type);
+        attributes = biomeAttributes.get(type);
+        textureMap = biometextureMap.get(type);
+        overlayTexture = getOverlayTexture();
+    }
+
     public Biome(World world, String biomeId) {
         this.world = world;
         type = biomeId;

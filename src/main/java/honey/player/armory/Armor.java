@@ -110,4 +110,14 @@ public class Armor {
     //Update Armor
     public void update(Player player) {
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "type", type
+        );
+    }
+
+    public static Armor fromJson(Map<String, Object> json) {
+        return new Armor((String) json.get("type"));
+    }
 }

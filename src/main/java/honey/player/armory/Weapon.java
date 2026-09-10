@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -177,5 +178,28 @@ public class Weapon {
                 }
             }
         }
+    }
+
+    public Map<String, Object> toJson() {
+        //LinkedHashMap, not Map.of: ammo is null when the weapon holds none, and Map.of rejects null values
+        final Map<String, Object> json = new LinkedHashMap<>();
+        json.put("type", type);
+        json.put("ammo", ammo != null ? ammo.type : null);
+        return json;
+    }
+
+    //ammoPool is the already-reconstructed inventory ammo list, searched by exact type to restore the specific loaded ammo
+    public static Weapon fromJson(Map<String, Object> json, List<Ammo> ammoPool) {
+        final Weapon weapon = new Weapon((String) json.get("type"));
+        final String ammoType = (String) json.get("ammo");
+        if (ammoType != null) {
+            for (Ammo candidate : ammoPool) {
+                if (candidate.type.equals(ammoType)) {
+                    weapon.ammo = candidate;
+                    break;
+                }
+            }
+        }
+        return weapon;
     }
 }

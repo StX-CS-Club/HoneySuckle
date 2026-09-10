@@ -4,15 +4,21 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
+import honey.player.inventory.Inventory;
 import honey.player.inventory.KeyItem;
 import honey.rendering.Rendering;
 
@@ -63,14 +69,14 @@ public class Armory {
         }
         //Selects weapon from number key
         for (int i = 0; i < 3; i++) {
-            if (inputHandler.keyDown(49 + i)) {
+            if (inputHandler.keyDown(KeyEvent.VK_1 + i)) {
                 weaponIndex = i;
                 break;
             }
         }
 
         if (hotKey != null) {
-            if (inputHandler.clickPressed(4) || inputHandler.keyPressed(81) || inputHandler.keyPressed(18)) {
+            if (inputHandler.clickPressed(InputHandler.BUTTON4) || inputHandler.keyPressed(KeyEvent.VK_Q) || inputHandler.keyPressed(KeyEvent.VK_ALT)) {
                 hotKey.use(player);
             }
         }
@@ -115,7 +121,7 @@ public class Armory {
                 armorHover = (int) Math.floor(armorHighlight / 130);
             }
         }
-        if (input.clickPressed(1)) {
+        if (input.clickPressed(MouseEvent.BUTTON1)) {
             if (armorHover > -1 && armorHover < player.inventory.armors.size()) {
                 Armor invArmor = player.inventory.armors.get(armorHover);
                 if (invArmor == armor) {
@@ -140,7 +146,7 @@ public class Armory {
                 weaponHover = (int) Math.floor(weaponHighlight / 110);
             }
         }
-        if (input.clickPressed(1)) {
+        if (input.clickPressed(MouseEvent.BUTTON1)) {
             if (weaponSelect != null) {
                 if (Math.abs(weaponHover) <= 1) {
                     for (int i = 0; i < 3; i++) {
@@ -170,7 +176,7 @@ public class Armory {
         if (weaponHover > -2 && weaponHover < 2) {
             if (!weapons[weaponHover + 1].correctAmmo(player.inventory.ammoSelect.types)) {
                 weaponHover = -2;
-            } else if (input.clickPressed(1)) {
+            } else if (input.clickPressed(MouseEvent.BUTTON1)) {
                 weapons[weaponHover + 1].ammo = player.inventory.ammoSelect;
                 player.inventory.ammoSelect = null;
             }
@@ -438,5 +444,54 @@ public class Armory {
                 }
             }
         }
+    }
+
+    public Map<String, Object> toJson() {
+        //LinkedHashMap, not Map.of: empty armor/hotKey slots are null, and Map.of rejects null values
+        final Map<String, Object> json = new LinkedHashMap<>();
+        json.put("weapons", Arrays.stream(weapons).map(weapon -> weapon != null ? weapon.type : null).toList());
+        json.put("armor", armor != null ? armor.type : null);
+        json.put("hotKey", hotKey != null ? hotKey.id : null);
+        json.put("effects", effects.stream().map(Effect::toJson).toList());
+        return json;
+    }
+
+    //Equipped weapons/armor are looked up by type from the already-reconstructed inventory rather than built fresh,
+    //preserving the same shared-instance relationship the normal Player constructor sets up
+    @SuppressWarnings("unchecked")
+    public static Armory fromJson(Player player, Map<String, Object> json, Inventory inventory) {
+        final List<String> weaponTypes = (List<String>) json.get("weapons");
+        final Weapon[] weapons = new Weapon[3];
+        for (int i = 0; i < weaponTypes.size(); i++) {
+            final String type = weaponTypes.get(i);
+            if (type != null) {
+                weapons[i] = findByType(inventory.weapons, w -> w.type, type);
+            }
+        }
+
+        final String armorType = (String) json.get("armor");
+        final Armor armor = armorType != null ? findByType(inventory.armors, a -> a.type, armorType) : null;
+
+        final Armory armory = new Armory(player, weapons, armor);
+
+        final String hotKeyId = (String) json.get("hotKey");
+        if (hotKeyId != null) {
+            armory.hotKey = findByType(inventory.keyItems, k -> k.id, hotKeyId);
+        }
+
+        for (Map<String, Object> effectJson : (List<Map<String, Object>>) json.get("effects")) {
+            armory.effects.add(new Effect(effectJson));
+        }
+
+        return armory;
+    }
+
+    private static <T> T findByType(List<T> pool, Function<T, String> typeOf, String type) {
+        for (T candidate : pool) {
+            if (typeOf.apply(candidate).equals(type)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 }

@@ -121,4 +121,12 @@ public class Effect {
             }
         }
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "effect", type,
+            "duration", duration / config.fps,
+            "amplifier", amplifier
+        );
+    }
 }

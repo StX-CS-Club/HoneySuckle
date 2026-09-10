@@ -28,7 +28,7 @@ public class KeyItem {
     public static final Map<Integer, String> keyStringId = new HashMap<>();
     public static final Map<String, Integer> keyIntId = new HashMap<>();
 
-    final String id;
+    final public String id;
     int count;
 
     private final String name;
@@ -235,5 +235,16 @@ public class KeyItem {
 
     private void setUtil() {
         utilUses.putAll(defaultUtilUses);
+    }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "id", id,
+            "count", count
+        );
+    }
+
+    public static KeyItem fromJson(Map<String, Object> json) {
+        return new KeyItem((String) json.get("id"), ((Number) json.get("count")).intValue());
     }
 }

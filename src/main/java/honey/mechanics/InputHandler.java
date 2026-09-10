@@ -2,6 +2,10 @@ package honey.mechanics;
 
 public class InputHandler {
 
+    //AWT's MouseEvent only names BUTTON1-3; these follow its naming for the extra side buttons this game binds
+    public static final int BUTTON4 = 4;
+    public static final int BUTTON5 = 5;
+
     public static ConfigManager config;
 
     // Key variables

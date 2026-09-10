@@ -208,4 +208,17 @@ public class Tile {
                 "glow", attributes.getOrDefault("glow", 0),
                 "glowRadius", attributes.getOrDefault("glowRadius", 0)));
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "id", id,
+            "rendered", rendered
+        );
+    }
+
+    public static Tile fromJson(Map<String, Object> json, int[] posIndex, World world) {
+        final Tile tile = new Tile(((Number) json.get("id")).intValue(), posIndex, world);
+        tile.rendered = (Boolean) json.get("rendered");
+        return tile;
+    }
 }

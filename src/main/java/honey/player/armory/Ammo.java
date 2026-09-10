@@ -133,4 +133,15 @@ public class Ammo {
     private double mergeAttribute(String key, Map<String, Number> attribute1, Map<String, Number> attribute2) {
         return attribute1.getOrDefault(key, 1).doubleValue() * attribute2.getOrDefault(key, 1).doubleValue();
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "type", type,
+            "count", count
+        );
+    }
+
+    public static Ammo fromJson(Map<String, Object> json) {
+        return new Ammo((String) json.get("type"), ((Number) json.get("count")).intValue());
+    }
 }

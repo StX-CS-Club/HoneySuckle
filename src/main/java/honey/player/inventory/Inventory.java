@@ -2,6 +2,8 @@ package honey.player.inventory;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +15,7 @@ import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.player.armory.Ammo;
 import honey.player.armory.Armor;
+import honey.player.armory.Effect;
 import honey.player.armory.Weapon;
 import honey.rendering.Rendering;
 import honey.rendering.Splash;
@@ -86,20 +89,20 @@ public class Inventory {
             keyItem.update();
         }
 
-        if (input.keyPressed(69)) {
+        if (input.keyPressed(KeyEvent.VK_E)) {
             isOpen = !isOpen;
             player.armory.weaponSelect = null;
             ammoSelect = null;
             setPage(1);
         }
-        if (input.keyPressed(82)) {
+        if (input.keyPressed(KeyEvent.VK_R)) {
             isOpen = !isOpen;
             player.armory.weaponSelect = null;
             ammoSelect = null;
             setPage(0);
         }
         if (isOpen) {
-            if (input.clickPressed(1)) {
+            if (input.clickPressed(MouseEvent.BUTTON1)) {
                 if (Math.abs(config.gameHeight * 9 / 10 - input.mousePos[1]) <= 25) {
                     for (int i = 0; i < 6; i++) {
                         if (Math.abs(config.gameWidth / 2 - 150 + i * 60 - input.mousePos[0]) <= 25) {
@@ -137,7 +140,7 @@ public class Inventory {
                                 ammoHover = (int) Math.floor(ammoHighlight / 110);
                             }
                         }
-                        if (input.clickPressed(1)) {
+                        if (input.clickPressed(MouseEvent.BUTTON1)) {
                             if (ammoHover > -1 && ammoHover < ammo.size()) {
                                 Ammo invAmmo = ammo.get(ammoHover);
                                 for (Weapon weapon : player.armory.weapons) {
@@ -163,11 +166,11 @@ public class Inventory {
                                 keyHover = (int) Math.floor(keyHighlight / 110);
                             }
                         }
-                        if (input.clickPressed(1)) {
+                        if (input.clickPressed(MouseEvent.BUTTON1)) {
                             if (keyHover > -1 && keyHover < keyItems.size()) {
                                 keyItems.get(keyHover).use(player);
                             }
-                        } else if (input.clickPressed(3)) {
+                        } else if (input.clickPressed(MouseEvent.BUTTON3)) {
                             if (keyHover > -1 && keyHover < keyItems.size()) {
                                 KeyItem keyItem = keyItems.get(keyHover);
                                 if (player.armory.hotKey == keyItem) {
@@ -542,5 +545,30 @@ public class Inventory {
             }
         }
         return 0;
+    }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "weapons", weapons.stream().map(Weapon::toJson).toList(),
+            "armors", armors.stream().map(Armor::toJson).toList(),
+            "items", items.stream().map(Item::toJson).toList(),
+            "ammo", ammo.stream().map(Ammo::toJson).toList(),
+            "keyItems", keyItems.stream().map(KeyItem::toJson).toList(),
+            "effects", player.armory.effects.stream().map(Effect::toJson).toList()
+        );
+    }
+
+    //"effects" is not read here - it's a duplicate of Armory's own effects list, reconstructed by Armory.fromJson
+    @SuppressWarnings("unchecked")
+    public static Inventory fromJson(Player player, Map<String, Object> json) {
+        //Built first so each weapon's saved ammo type can be matched against it
+        final List<Ammo> ammo = ((List<Map<String, Object>>) json.get("ammo")).stream().map(Ammo::fromJson).toList();
+
+        final List<Weapon> weapons = ((List<Map<String, Object>>) json.get("weapons")).stream().map(weaponJson -> Weapon.fromJson(weaponJson, ammo)).toList();
+        final List<Armor> armors = ((List<Map<String, Object>>) json.get("armors")).stream().map(Armor::fromJson).toList();
+        final List<Item> items = ((List<Map<String, Object>>) json.get("items")).stream().map(Item::fromJson).toList();
+        final List<KeyItem> keyItems = ((List<Map<String, Object>>) json.get("keyItems")).stream().map(KeyItem::fromJson).toList();
+
+        return new Inventory(player, weapons, armors, items, ammo, keyItems);
     }
 }

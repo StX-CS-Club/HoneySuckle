@@ -13,7 +13,7 @@
     "stabFrameWidth": 4,
     "stabFrameHeight": 16,
     "criticalMouseScroll": 0.25,
-    "startingBiome": "desert",
+    "startingBiome": "wetlands",
     "playerTags": [],
     "startingBlueprints": ["wall", "raft"],
     "startingRecipes": [],

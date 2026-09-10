@@ -3,6 +3,7 @@ package honey.player.inventory;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -73,7 +74,7 @@ public class Craft {
                 }
             }
 
-            if (input.clickPressed(1) || input.clickDown(3)) {
+            if (input.clickPressed(MouseEvent.BUTTON1) || input.clickDown(MouseEvent.BUTTON3)) {
                 if (hover > -1 && hover < orderedRecipes.size()) {
                     final String recipe = orderedRecipes.get(hover);
                     if (hasMaterials(player, recipe)) {
@@ -215,5 +216,16 @@ public class Craft {
         }
         //If makes it past check, return true
         return true;
+    }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "recipes", recipes
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Craft fromJson(Player player, Map<String, Object> json) {
+        return new Craft(player, new LinkedHashSet<>((List<String>) json.get("recipes")));
     }
 }

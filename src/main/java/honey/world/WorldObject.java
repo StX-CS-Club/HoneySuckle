@@ -242,4 +242,24 @@ public class WorldObject {
             World.worlds.get(World.level).objGrid[posIndex[0]][posIndex[1]] = null;
         }
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "id", id,
+            "posIndex", posIndex,
+            "rendered", rendered,
+            "durability", durability
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    public static WorldObject fromJson(Map<String, Object> json, World world) {
+        final List<Number> posIndexJson = (List<Number>) json.get("posIndex");
+        final int[] posIndex = {posIndexJson.get(0).intValue(), posIndexJson.get(1).intValue()};
+
+        final WorldObject object = new WorldObject(((Number) json.get("id")).intValue(), posIndex, world);
+        object.rendered = (Boolean) json.get("rendered");
+        object.durability = ((Number) json.get("durability")).doubleValue();
+        return object;
+    }
 }

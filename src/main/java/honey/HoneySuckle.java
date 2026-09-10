@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Taskbar;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -27,7 +28,7 @@ import javax.swing.JPanel;
 
 import honey.mechanics.AssetManager;
 import honey.mechanics.ConfigManager;
-import honey.mechanics.FileManager;
+import honey.mechanics.DataManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Menu;
@@ -54,7 +55,8 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public static Player player;
     public static Menu menu = new Menu(Menu.MenuType.MAIN_MENU);
 
-    public static boolean play = false;
+    public static boolean running = false;
+    public static boolean rendering = false;
 
     //Public set of light data used in lighting system
     public static Set<Map<String, Number>> lights = new LinkedHashSet<>();
@@ -62,18 +64,25 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
 
     //Main Method
     public static void main(String[] args) {
-        config = FileManager.readConfig();
+        config = DataManager.readConfig();
         config.distribute();
 
         //Creates the window
-        JFrame frame = new JFrame("HoneySuckle");
-        HoneySuckle panel = new HoneySuckle();
+        final JFrame frame = new JFrame("HoneySuckle");
+        final HoneySuckle panel = new HoneySuckle();
 
         //Trys to set window icon as logo
-        URL iconUrl = HoneySuckle.class.getResource("/images/HoneySuckleIcon.png");
+        final URL iconUrl = HoneySuckle.class.getResource("/images/HoneySuckleIcon.png");
         try {
-            Image iconImage = ImageIO.read(iconUrl);
+            final Image iconImage = ImageIO.read(iconUrl);
             frame.setIconImage(iconImage);
+            //setIconImage only sets the title-bar icon; macOS ignores it and needs the Dock icon set separately
+            if (Taskbar.isTaskbarSupported()) {
+                final Taskbar taskbar = Taskbar.getTaskbar();
+                if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+                    taskbar.setIconImage(iconImage);
+                }
+            }
         } catch (IOException e) {
             if (iconUrl == null) {
                 System.out.println("HoneySuckle ERROR: Could not find icon.");
@@ -90,7 +99,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Starts game loop
-        Thread gameThread = new Thread(panel);
+        final Thread gameThread = new Thread(panel);
         gameThread.start();
     }
 
@@ -107,7 +116,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         addMouseWheelListener(this);
         //Fetches all data from json files into appropriate hashmaps
 
-        FileManager.readJsonData();
+        DataManager.readJsonData();
         AssetManager.formatBiomeGeneration();
         AssetManager.formatStructureData();
         AssetManager.registerFont();
@@ -115,8 +124,11 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     }
 
     public static void stop() {
-        play = false;
+        running = false;
+        rendering = false;
         World.worlds.clear();
+        World.level = 0;
+        World.pendingNextWorld = null;
         Player.players.clear();
         healthBars.clear();
         lights.clear();
@@ -128,7 +140,30 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         //Creates main player in reference to world 1
         player = new Player(new double[]{config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.start[1] + 0.5)},
                 (int) (config.tileSize * 0.75), config.playerTags);
-        play = true;
+        running = true;
+        rendering = true;
+    }
+
+    public static void play() {
+        running = true;
+        rendering = true;
+    }
+
+    public static void pause() {
+        running = false;
+    }
+
+    // Begins a level transition: freezes game logic (rendering continues), plays the
+    // loading-screen animation, and generates the next level on a background thread.
+    // See Menu's LOADING_MENU case for the animation/publish state machine.
+    public static void beginLevelTransition() {
+        pause();
+        final int targetLevel = World.level + 1;
+        menu.setMenuType(Menu.MenuType.LOADING_MENU);
+        new Thread(() -> {
+            final World world = new World(targetLevel);
+            World.pendingNextWorld = world;
+        }).start();
     }
 
     //Render
@@ -142,7 +177,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
         );
         final Graphics2D g2d = (Graphics2D) internalFrame.getGraphics();
 
-        if (play) {
+        if (rendering) {
             //Resets lights every frame
             lights.clear();
 
@@ -228,10 +263,22 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     public void update() {
         inputHandler.update();
 
+        if (inputHandler.keyPressed(KeyEvent.VK_ESCAPE)) {
+            if (menu.menuType == Menu.MenuType.PAUSE_MENU && !menu.complete) {
+                //Pause menu is currently showing -> resume
+                play();
+                menu.complete = true;
+            } else if (running && menu.menuType != Menu.MenuType.GAME_OVER_MENU && menu.menuType != Menu.MenuType.RESTART_MENU) {
+                //Actively playing (not mid game-over/restart sequence) -> open pause menu
+                pause();
+                menu.setMenuType(Menu.MenuType.PAUSE_MENU);
+            }
+        }
+
         if (!menu.complete) {
             menu.update(inputHandler);
         }
-        if (play) {
+        if (running) {
             //Updates all players
             for (Player updatePlayer : Player.players) {
                 updatePlayer.update(inputHandler);

@@ -8,18 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+import honey.HoneySuckle;
 import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
-/*
- * World.java *
- - Class used for managing world
- - Manages tiles and objects
- - Manages entities and projectiles
- - Update and Render Methods
- */
 public class World {
 
     public static ConfigManager config;
@@ -27,6 +21,7 @@ public class World {
     private static final double TILE_EPSILON = 0.001;
 
     private static int[] cachedRenderOffset;
+
     private static int[] renderOffset() {
         if (cachedRenderOffset == null) {
             cachedRenderOffset = new int[]{
@@ -41,14 +36,15 @@ public class World {
     public static List<World> worlds = new ArrayList<>();
     public static int level;
 
-    // World Constructor
+    public static volatile World pendingNextWorld;
+
+    //Synchronized method to get the current world, which may be pending a transition to a new world
     public World() {
         // Pseudo-Randomized Biome
         biome = new Biome(this);
-        // Generates the world based on the biome
         biome.generateWorld();
         // Sets camera position
-        camera = new double[] { (start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0 };
+        camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
         navigator = new Navigator(this);
         // Adds world to static list of worlds
         worlds.add(this);
@@ -57,8 +53,72 @@ public class World {
     public World(String biomeId) {
         biome = new Biome(this, biomeId);
         biome.generateWorld();
-        camera = new double[] { (start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0 };
+        camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
         navigator = new Navigator(this);
+        worlds.add(this);
+    }
+
+    // Asynchronously generates a new world in the background, to be published later by publishPendingWorld()
+    public World(int targetLevel) {
+        biome = new Biome(this, targetLevel);
+        biome.generateWorld();
+        camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
+        navigator = new Navigator(this);
+    }
+
+    public static void publishPendingWorld(Player player) {
+        final World world = pendingNextWorld;
+        level++;
+        worlds.add(world);
+        player.pos = new double[]{config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.size[1] - 0.5)};
+        // Neither of these run any actual game logic (no entity/projectile ticks, no input/
+        // physics processing) - they just make the freshly-generated world and the
+        // repositioned player render correctly while running stays paused for the reveal.
+        world.refreshRenderLists();
+        player.syncScreenPos();
+        pendingNextWorld = null;
+    }
+
+    // Saved world reconstruction
+    @SuppressWarnings("unchecked")
+    public World(Map<String, Object> saveData) {
+        final String biomeType = (String) saveData.get("biome");
+        biome = new Biome(this, biomeType);
+
+        final Biome.BiomeGenData genData = Biome.biomeGenData.get(biomeType);
+        size = genData.size().clone();
+        start = genData.start().clone();
+
+        final List<List<Map<String, Object>>> gridJson = (List<List<Map<String, Object>>>) saveData.get("grid");
+        grid = new Tile[size[0]][size[1]];
+        for (int x = 0; x < size[0]; x++) {
+            for (int y = 0; y < size[1]; y++) {
+                grid[x][y] = Tile.fromJson(gridJson.get(x).get(y), new int[]{x, y}, this);
+            }
+        }
+
+        objGrid = new WorldObject[size[0]][size[1]];
+        for (Map<String, Object> objJson : (List<Map<String, Object>>) saveData.get("objects")) {
+            final WorldObject object = WorldObject.fromJson(objJson, this);
+            objGrid[object.posIndex[0]][object.posIndex[1]] = object;
+        }
+
+        entities = new ArrayList<>();
+        for (Map<String, Object> entityJson : (List<Map<String, Object>>) saveData.get("entities")) {
+            entities.add(Entity.fromJson(entityJson, this));
+        }
+
+        structureGrid = new Structure[size[0]][size[1]];
+        for (Map<String, Object> structureJson : (List<Map<String, Object>>) saveData.get("structures")) {
+            final Structure structure = Structure.fromJson(structureJson);
+            if (structure.pos.length != 0) {
+                structureGrid[(int) structure.pos[0]][(int) structure.pos[1]] = structure;
+            }
+        }
+
+        camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
+        navigator = new Navigator(this);
+        navigator.started = (Boolean) saveData.getOrDefault("mapStarted", false);
         worlds.add(this);
     }
 
@@ -91,10 +151,14 @@ public class World {
         for (Map<String, Number> entry : loot) {
             if (entry.getOrDefault("type", 0).intValue() == 7) {
                 final double prob = entry.getOrDefault("prob", 1).doubleValue();
-                if (Math.random() >= prob) continue;
+                if (Math.random() >= prob) {
+                    continue;
+                }
                 int count = entry.getOrDefault("count", 1).intValue();
                 final double countProb = entry.getOrDefault("countProb", 0).doubleValue();
-                while (ThreadLocalRandom.current().nextDouble() <= countProb) count++;
+                while (ThreadLocalRandom.current().nextDouble() <= countProb) {
+                    count++;
+                }
                 final String entityType = Entity.entityStringId.get(entry.getOrDefault("id", 0).intValue());
                 if (entityType != null) {
                     final double burst = entry.getOrDefault("burst", 0).doubleValue();
@@ -123,8 +187,9 @@ public class World {
 
     // Bounds movement to boundaries of world, mutates pos in place
     public void bound(double[] pos, double[] delta, List<String> tags, double margin) {
-        if (margin <= 0)
+        if (margin <= 0) {
             margin = 0.01;
+        }
 
         final boolean flying = tags.contains("flying");
         final String collAttr = flying ? "flightCollision" : "collision";
@@ -138,10 +203,12 @@ public class World {
         // X phase: apply X delta, resolve collisions against original Y span
         if (delta[0] != 0) {
             pos[0] += delta[0];
-            if (pos[0] < margin)
+            if (pos[0] < margin) {
                 pos[0] = margin;
-            if (pos[0] > size[0] * config.tileSize - margin)
+            }
+            if (pos[0] > size[0] * config.tileSize - margin) {
                 pos[0] = size[0] * config.tileSize - margin;
+            }
 
             final int newPosX = (int) Math.floor(pos[0] / config.tileSize);
             if (onWalkable && newPosX >= 0 && newPosX < size[0] && !checkTag(newPosX, posY, "walkable")) {
@@ -155,50 +222,62 @@ public class World {
                 double snapRight = Double.NEGATIVE_INFINITY;
                 for (int tx = txMin; tx <= txMax; tx++) {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
-                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel")) {
                             continue;
+                        }
                         final double c = getAttribute(tx, ty, collAttr);
-                        if (c <= 0) continue;
+                        if (c <= 0) {
+                            continue;
+                        }
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
                         final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin < tileRight && pos[0] + margin > tileLeft
                                 && origY - margin + TILE_EPSILON < tileBottom
-                                && origY + margin - TILE_EPSILON > tileTop)
+                                && origY + margin - TILE_EPSILON > tileTop) {
                             snapRight = Math.max(snapRight, tileRight);
+                        }
                     }
                 }
-                if (snapRight != Double.NEGATIVE_INFINITY)
+                if (snapRight != Double.NEGATIVE_INFINITY) {
                     pos[0] = snapRight + margin;
+                }
             } else {
                 double snapLeft = Double.POSITIVE_INFINITY;
                 for (int tx = txMin; tx <= txMax; tx++) {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
-                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel")) {
                             continue;
+                        }
                         final double c = getAttribute(tx, ty, collAttr);
-                        if (c <= 0) continue;
+                        if (c <= 0) {
+                            continue;
+                        }
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
                         final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin < tileRight && pos[0] + margin > tileLeft
                                 && origY - margin + TILE_EPSILON < tileBottom
-                                && origY + margin - TILE_EPSILON > tileTop)
+                                && origY + margin - TILE_EPSILON > tileTop) {
                             snapLeft = Math.min(snapLeft, tileLeft);
+                        }
                     }
                 }
-                if (snapLeft != Double.POSITIVE_INFINITY)
+                if (snapLeft != Double.POSITIVE_INFINITY) {
                     pos[0] = snapLeft - margin;
+                }
             }
         }
         // Y phase: apply Y delta, resolve collisions against updated X span
         pos[1] += delta[1];
-        if (pos[1] < margin)
+        if (pos[1] < margin) {
             pos[1] = margin;
-        if (pos[1] > size[1] * config.tileSize - margin)
+        }
+        if (pos[1] > size[1] * config.tileSize - margin) {
             pos[1] = size[1] * config.tileSize - margin;
+        }
         if (delta[1] != 0) {
             final int curPosX = (int) Math.floor(pos[0] / config.tileSize);
             final int newPosY = (int) Math.floor(pos[1] / config.tileSize);
@@ -213,50 +292,64 @@ public class World {
                 double snapBottom = Double.NEGATIVE_INFINITY;
                 for (int tx = txMin; tx <= txMax; tx++) {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
-                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel")) {
                             continue;
+                        }
                         final double c = getAttribute(tx, ty, collAttr);
-                        if (c <= 0) continue;
+                        if (c <= 0) {
+                            continue;
+                        }
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
                         final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin + TILE_EPSILON < tileRight && pos[0] + margin - TILE_EPSILON > tileLeft
-                                && pos[1] - margin < tileBottom && pos[1] + margin > tileTop)
+                                && pos[1] - margin < tileBottom && pos[1] + margin > tileTop) {
                             snapBottom = Math.max(snapBottom, tileBottom);
+                        }
                     }
                 }
-                if (snapBottom != Double.NEGATIVE_INFINITY)
+                if (snapBottom != Double.NEGATIVE_INFINITY) {
                     pos[1] = snapBottom + margin;
+                }
             } else {
                 double snapTop = Double.POSITIVE_INFINITY;
                 for (int tx = txMin; tx <= txMax; tx++) {
                     for (int ty = tyMin; ty <= tyMax; ty++) {
-                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel"))
+                        if (tx < 0 || tx >= size[0] || ty < 0 || ty >= size[1] || checkTag(tx, ty, "tunnel")) {
                             continue;
+                        }
                         final double c = getAttribute(tx, ty, collAttr);
-                        if (c <= 0) continue;
+                        if (c <= 0) {
+                            continue;
+                        }
                         final double tileLeft = (tx + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileRight = (tx + (1.0 + c) / 2.0) * config.tileSize;
                         final double tileTop = (ty + (1.0 - c) / 2.0) * config.tileSize;
                         final double tileBottom = (ty + (1.0 + c) / 2.0) * config.tileSize;
                         if (pos[0] - margin + TILE_EPSILON < tileRight && pos[0] + margin - TILE_EPSILON > tileLeft
-                                && pos[1] - margin < tileBottom && pos[1] + margin > tileTop)
+                                && pos[1] - margin < tileBottom && pos[1] + margin > tileTop) {
                             snapTop = Math.min(snapTop, tileTop);
+                        }
                     }
                 }
-                if (snapTop != Double.POSITIVE_INFINITY)
+                if (snapTop != Double.POSITIVE_INFINITY) {
                     pos[1] = snapTop - margin;
+                }
             }
         } // Final clamp
-        if (pos[0] < margin)
+        if (pos[0] < margin) {
             pos[0] = margin;
-        if (pos[0] > size[0] * config.tileSize - margin)
+        }
+        if (pos[0] > size[0] * config.tileSize - margin) {
             pos[0] = size[0] * config.tileSize - margin;
-        if (pos[1] < margin)
+        }
+        if (pos[1] < margin) {
             pos[1] = margin;
-        if (pos[1] > size[1] * config.tileSize - margin)
+        }
+        if (pos[1] > size[1] * config.tileSize - margin) {
             pos[1] = size[1] * config.tileSize - margin;
+        }
     }
 
     // Events based on player pos
@@ -264,24 +357,22 @@ public class World {
         // Checks if player is at end of world, then progresses
         if (player.pos[1] <= player.size / 2.0) {
             if (!biome.tags.contains("enemyLock") || entities.isEmpty()) {
-                level++;
-                final World world = new World();
-                player.pos = new double[] { config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.size[1] - 0.5) };
+                HoneySuckle.beginLevelTransition();
                 return;
             }
         }
         // Player Tile
-        int[] posIndex = new int[] { (int) Math.floor(player.pos[0] / config.tileSize),
-                (int) Math.floor(player.pos[1] / config.tileSize) };
+        int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / config.tileSize),
+            (int) Math.floor(player.pos[1] / config.tileSize)};
 
         // Player margin from center
         double margin = player.size / 2.0 + 1;
         // Player touching tiles
-        int[][] marginIndex = new int[][] {
-                { (int) (Math.floor((player.pos[0] - margin) / config.tileSize)),
-                        (int) (Math.floor((player.pos[0] + margin) / config.tileSize)) },
-                { (int) (Math.floor((player.pos[1] - margin) / config.tileSize)),
-                        (int) (Math.floor((player.pos[1] + margin) / config.tileSize)) }
+        int[][] marginIndex = new int[][]{
+            {(int) (Math.floor((player.pos[0] - margin) / config.tileSize)),
+                (int) (Math.floor((player.pos[0] + margin) / config.tileSize))},
+            {(int) (Math.floor((player.pos[1] - margin) / config.tileSize)),
+                (int) (Math.floor((player.pos[1] + margin) / config.tileSize))}
         };
 
         // Checks if on damage tile
@@ -353,17 +444,17 @@ public class World {
     // Events based on entity
     public void entityEvent(Entity entity) {
         // Entity tile
-        int[] posIndex = new int[] { (int) Math.floor(entity.pos[0] / config.tileSize),
-                (int) Math.floor(entity.pos[1] / config.tileSize) };
+        int[] posIndex = new int[]{(int) Math.floor(entity.pos[0] / config.tileSize),
+            (int) Math.floor(entity.pos[1] / config.tileSize)};
 
         // Entity margin from center
         double margin = entity.size / 2.0 + 1;
         // Entity touching tiles
-        int[][] marginIndex = new int[][] {
-                { (int) (Math.floor((entity.pos[0] - margin) / config.tileSize)),
-                        (int) (Math.floor((entity.pos[0] + margin) / config.tileSize)) },
-                { (int) (Math.floor((entity.pos[1] - margin) / config.tileSize)),
-                        (int) (Math.floor((entity.pos[1] + margin) / config.tileSize)) }
+        int[][] marginIndex = new int[][]{
+            {(int) (Math.floor((entity.pos[0] - margin) / config.tileSize)),
+                (int) (Math.floor((entity.pos[0] + margin) / config.tileSize))},
+            {(int) (Math.floor((entity.pos[1] - margin) / config.tileSize)),
+                (int) (Math.floor((entity.pos[1] + margin) / config.tileSize))}
         };
 
         // Checks if on damage tile
@@ -420,9 +511,9 @@ public class World {
         return grid[x][y].attributes.containsKey(value);
     }
 
-    public void revealAll(){
-        for(Tile[] tiles : grid){
-            for(Tile tile : tiles){
+    public void revealAll() {
+        for (Tile[] tiles : grid) {
+            for (Tile tile : tiles) {
                 tile.rendered = true;
             }
         }
@@ -435,8 +526,8 @@ public class World {
         g.fillRect(0, 0, config.gameWidth, config.gameHeight);
 
         // Center tile on screen
-        int[] cameraTile = new int[] { (int) Math.floor(camera[0] / config.tileSize),
-                (int) Math.floor(camera[1] / config.tileSize) };
+        int[] cameraTile = new int[]{(int) Math.floor(camera[0] / config.tileSize),
+            (int) Math.floor(camera[1] / config.tileSize)};
 
         final boolean fog = biome.attributes.getOrDefault("fogginess", 0).doubleValue() > 0;
         final int[] ro = renderOffset();
@@ -446,9 +537,9 @@ public class World {
             for (int x = cameraTile[0] - ro[0]; x < cameraTile[0] + ro[0]; x++) {
                 if (y >= 0 && y < grid[0].length && x >= 0 && x < grid.length) {
                     // Position of tile on screen
-                    double[] screenPos = new double[] {
-                            (x * config.tileSize - camera[0] + config.gameWidth / 2.0),
-                            (y * config.tileSize - camera[1] + config.gameHeight / 2.0)
+                    double[] screenPos = new double[]{
+                        (x * config.tileSize - camera[0] + config.gameWidth / 2.0),
+                        (y * config.tileSize - camera[1] + config.gameHeight / 2.0)
                     };
                     // Render tile
                     grid[x][y].render(g, this, screenPos);
@@ -485,9 +576,9 @@ public class World {
         }
         // Renders projectiles
         for (Projectile proj : renderProjectiles) {
-            double[] screenPos = new double[] {
-                    config.gameWidth / 2.0 + proj.pos[0] - camera[0],
-                    config.gameHeight / 2.0 + proj.pos[1] - camera[1]
+            double[] screenPos = new double[]{
+                config.gameWidth / 2.0 + proj.pos[0] - camera[0],
+                config.gameHeight / 2.0 + proj.pos[1] - camera[1]
             };
 
             proj.render(g, screenPos);
@@ -499,11 +590,12 @@ public class World {
         }
     }
 
-    // Updates world
-    public void update(InputHandler input) {
-        navigator.update(input);
-        // Empties renderEntities, then adds nearby entities into renderEntities, and
-        // updates them
+    // Filters entities/projectiles within render distance of the camera into renderEntities/
+    // renderProjectiles, without ticking any entity/projectile logic. Normally called each
+    // frame from update(); also called directly right after publishing a background-
+    // generated world (see publishPendingWorld) so it renders correctly before game logic
+    // (and thus update()) resumes.
+    public void refreshRenderLists() {
         renderEntities.clear();
         for (Entity entity : entities) {
             if (entity.tags.contains("alwaysRender") || Math.abs(entity.pos[0] - camera[0]) <= config.gameWidth * 3.0 / 4
@@ -511,6 +603,20 @@ public class World {
                 renderEntities.add(entity);
             }
         }
+        renderProjectiles.clear();
+        for (Projectile projectile : projectiles) {
+            if (Projectile.projTags.get(projectile.type).contains("alwaysRender")
+                    || Math.abs(projectile.pos[0] - camera[0]) <= config.gameWidth * 3.0 / 4
+                    && Math.abs(projectile.pos[1] - camera[1]) <= config.gameHeight * 3.0 / 4) {
+                renderProjectiles.add(projectile);
+            }
+        }
+    }
+
+    // Updates world
+    public void update(InputHandler input) {
+        navigator.update(input);
+        refreshRenderLists();
         for (Entity entity : renderEntities) {
             entity.update();
         }
@@ -527,18 +633,55 @@ public class World {
                 }
             }
         }
-        // Empties renderProjectiles, then adds nearby projectiles into
-        // renderProjectiles, and updates them
-        renderProjectiles.clear();
-        for (Projectile projectile : projectiles) {
-            if (Projectile.projTags.get(projectile.type).contains("alwaysRender")
-                    || Math.abs(projectile.pos[0] - camera[0]) <= config.gameWidth * 3.0 / 4
-                            && Math.abs(projectile.pos[1] - camera[1]) <= config.gameHeight * 3.0 / 4) {
-                renderProjectiles.add(projectile);
-            }
-        }
         for (Projectile projectile : renderProjectiles) {
             projectile.update();
         }
+    }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+                "mapStarted", navigator.started,
+                "biome", biome.type,
+                "grid", getGridJson(),
+                "objects", getObjectsJson(),
+                "entities", entities.stream().map(Entity::toJson).toList(),
+                "structures", getStructuresJson()
+        );
+    }
+
+    private List<List<Map<String, Object>>> getGridJson() {
+        final List<List<Map<String, Object>>> gridJson = new ArrayList<>();
+        for (int x = 0; x < size[0]; x++) {
+            final List<Map<String, Object>> column = new ArrayList<>();
+            for (int y = 0; y < size[1]; y++) {
+                column.add(grid[x][y].toJson());
+            }
+            gridJson.add(column);
+        }
+        return gridJson;
+    }
+
+    private List<Map<String, Object>> getObjectsJson() {
+        final List<Map<String, Object>> objectsJson = new ArrayList<>();
+        for (int x = 0; x < size[0]; x++) {
+            for (int y = 0; y < size[1]; y++) {
+                if (objGrid[x][y] != null) {
+                    objectsJson.add(objGrid[x][y].toJson());
+                }
+            }
+        }
+        return objectsJson;
+    }
+
+    private List<Map<String, Object>> getStructuresJson() {
+        final List<Map<String, Object>> structuresJson = new ArrayList<>();
+        for (int x = 0; x < size[0]; x++) {
+            for (int y = 0; y < size[1]; y++) {
+                if (structureGrid[x][y] != null) {
+                    structuresJson.add(structureGrid[x][y].toJson());
+                }
+            }
+        }
+        return structuresJson;
     }
 }

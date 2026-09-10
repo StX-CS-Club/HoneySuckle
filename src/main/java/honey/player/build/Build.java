@@ -3,6 +3,7 @@ package honey.player.build;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -140,5 +141,16 @@ public class Build {
                 player.inventory.incrementItem(material, false);
             }
         }
+    }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "blueprints", blueprints.stream().map(blueprint -> blueprint.type).toList()
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Build fromJson(Player player, Map<String, Object> json) {
+        return new Build(player, new LinkedHashSet<>((List<String>) json.get("blueprints")));
     }
 }

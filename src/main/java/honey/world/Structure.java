@@ -301,4 +301,20 @@ public class Structure {
         }
         return new double[]{};
     }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+            "type", type,
+            "index", index,
+            "rotation", rotation,
+            "pos", pos
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Structure fromJson(Map<String, Object> json) {
+        final List<Number> indexJson = (List<Number>) json.get("index");
+        final int[] index = {indexJson.get(0).intValue(), indexJson.get(1).intValue()};
+        return new Structure((String) json.get("type"), index, ((Number) json.get("rotation")).intValue());
+    }
 }
