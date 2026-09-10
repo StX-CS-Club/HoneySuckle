@@ -6,15 +6,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
 import honey.mechanics.ConfigManager;
+import honey.mechanics.GameRandom;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
-public class World {
+public final class World {
 
     public static ConfigManager config;
 
@@ -38,8 +40,12 @@ public class World {
 
     public static volatile World pendingNextWorld;
 
+    // Per-world generation RNG, seeded deterministically from the run's master seed + level
+    public final Random genRandom;
+
     //Synchronized method to get the current world, which may be pending a transition to a new world
     public World() {
+        genRandom = GameRandom.forLevel(0);
         // Pseudo-Randomized Biome
         biome = new Biome(this);
         biome.generateWorld();
@@ -51,6 +57,7 @@ public class World {
     }
 
     public World(String biomeId) {
+        genRandom = GameRandom.forLevel(0);
         biome = new Biome(this, biomeId);
         biome.generateWorld();
         camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
@@ -60,6 +67,7 @@ public class World {
 
     // Asynchronously generates a new world in the background, to be published later by publishPendingWorld()
     public World(int targetLevel) {
+        genRandom = GameRandom.forLevel(targetLevel);
         biome = new Biome(this, targetLevel);
         biome.generateWorld();
         camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
@@ -82,6 +90,7 @@ public class World {
     // Saved world reconstruction
     @SuppressWarnings("unchecked")
     public World(Map<String, Object> saveData) {
+        genRandom = GameRandom.forLevel(World.level);
         final String biomeType = (String) saveData.get("biome");
         biome = new Biome(this, biomeType);
 

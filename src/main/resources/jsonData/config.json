@@ -1,4 +1,8 @@
 {
+    "version": "1.0.0",
+    "applicationDataDirectory": "HoneySuckle",
+    "saveFileDirectory": "saves",
+    "saveFileExtension": "honeysave",
     "game": "good",
     "jiggle physics": "especially",
     "fps": 30,

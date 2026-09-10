@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import honey.mechanics.AssetManager;
 import honey.mechanics.ConfigManager;
 import honey.mechanics.DataManager;
+import honey.mechanics.GameRandom;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Menu;
@@ -44,7 +45,7 @@ import honey.world.World;
  - Creates window and canvas, centerlizes rendering and updating
  */
 //Main class, extends JPanel for graphics, implements runnable and listeners
-public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+public final class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     public static ConfigManager config;
 
@@ -135,6 +136,7 @@ public class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseL
     }
 
     public static void start() {
+        GameRandom.newSeed();
         //Creates world 1
         final World world = new World(config.startingBiome);
         //Creates main player in reference to world 1

@@ -6,6 +6,8 @@ import javax.swing.JFileChooser;
 
 public class FileManager {
 
+    public static ConfigManager config;
+
     public static String getFilePath(String dialog, String directory, String fileType, String extension, boolean newFile) {
         final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(dialog);
@@ -41,11 +43,11 @@ public class FileManager {
         final String userHome = System.getProperty("user.home");
 
         if (os.contains("win")) {
-            return ensureDirectoryExists(userHome + File.separator + "AppData" + File.separator + "Roaming" + File.separator + "HoneySuckle");
+            return ensureDirectoryExists(userHome + File.separator + "AppData" + File.separator + "Roaming" + File.separator + config.applicationDataDirectory);
         } else if (os.contains("mac")) {
-            return ensureDirectoryExists(userHome + File.separator + "Library" + File.separator + "Application Support" + File.separator + "HoneySuckle");
+            return ensureDirectoryExists(userHome + File.separator + "Library" + File.separator + "Application Support" + File.separator + config.applicationDataDirectory);
         } else {
-            return ensureDirectoryExists(userHome + File.separator + ".honeysuckle");
+            return ensureDirectoryExists(userHome + File.separator + "." + config.applicationDataDirectory);
         }
     }
 

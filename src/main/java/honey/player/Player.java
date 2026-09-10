@@ -32,7 +32,7 @@ import honey.world.World;
  * Player.java *
  - Class for managing players
  */
-public class Player {
+public final class Player {
 
     public static ConfigManager config;
 

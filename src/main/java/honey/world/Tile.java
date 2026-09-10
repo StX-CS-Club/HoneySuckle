@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import honey.HoneySuckle;
 import honey.mechanics.ConfigManager;
@@ -56,6 +56,11 @@ public class Tile {
 
     // Tile Constructor
     public Tile(int id, int[] posIndex, World world) {
+        this(id, posIndex, world, computeVariant(world.genRandom, id));
+    }
+
+    // Reconstructs a tile with a specific variant (e.g. restored from a save) instead of rolling one
+    public Tile(int id, int[] posIndex, World world, String variant) {
         this.id = id;
         this.posIndex = posIndex;
 
@@ -80,9 +85,17 @@ public class Tile {
         dip = attributes.getOrDefault("dip", 0).intValue();
         dipPixels = (int) Math.round(config.tileSize / 16.0 * dip);
 
-        variant = getVariant();
+        this.variant = variant;
         staticTexture = getTexture(variant);
         staticEdgeTexture = getEdgeTexture();
+    }
+
+    private static String computeVariant(Random random, int id) {
+        int textureCount = tileAttributes.get(id).getOrDefault("variants", 1).intValue();
+        if (textureCount > 1) {
+            return "_" + random.nextInt(1, textureCount + 1);
+        }
+        return "";
     }
 
     public void render(Graphics2D g, World world, double[] screenPos) {
@@ -191,14 +204,6 @@ public class Tile {
         return null;
     }
 
-    private String getVariant() {
-        int textureCount = attributes.getOrDefault("variants", 1).intValue();
-        if (textureCount > 1) {
-            return "_" + ThreadLocalRandom.current().nextInt(1, textureCount + 1);
-        }
-        return "";
-    }
-
     public void renderLight(double[] screenPos) {
         HoneySuckle.lights.add(Map.of(
                 "posX", screenPos[0] + config.tileSize / 2,
@@ -212,12 +217,17 @@ public class Tile {
     public Map<String, Object> toJson() {
         return Map.of(
             "id", id,
-            "rendered", rendered
+            "rendered", rendered,
+            "variant", variant
         );
     }
 
     public static Tile fromJson(Map<String, Object> json, int[] posIndex, World world) {
-        final Tile tile = new Tile(((Number) json.get("id")).intValue(), posIndex, world);
+        final int id = ((Number) json.get("id")).intValue();
+        final String variant = json.containsKey("variant")
+                ? (String) json.get("variant")
+                : computeVariant(world.genRandom, id);
+        final Tile tile = new Tile(id, posIndex, world, variant);
         tile.rendered = (Boolean) json.get("rendered");
         return tile;
     }

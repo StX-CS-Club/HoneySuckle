@@ -38,6 +38,10 @@ import honey.world.WorldObject;
  */
 public class ConfigManager {
 
+    public final String version;
+    public final String applicationDataDirectory;
+    public final String saveFileDirectory;
+    public final String saveFileExtension;
     public final int fps;
     public final int gameWidth;
     public final int gameHeight;
@@ -60,56 +64,62 @@ public class ConfigManager {
     public final List<String> recipeOrder;
 
     public ConfigManager(Map<String, Object> data) {
-        fps               = getInt(data,    "fps",                30);
-        gameWidth         = getInt(data,    "gameWidth",          640);
-        gameHeight        = getInt(data,    "gameHeight",         480);
-        tileSize          = getInt(data,    "tileSize",           32);
-        hudSize           = getInt(data,    "hudSize",            64);
-        cameraDelay       = getInt(data,    "cameraDelay",        6);
-        renderDistance    = getInt(data,    "renderDistance",     2);
-        lightScale        = getInt(data,    "lightScale",         8);
-        slashFrameSize    = getInt(data,    "slashFrameSize",     8);
-        stabFrameWidth    = getInt(data,    "stabFrameWidth",     4);
-        stabFrameHeight   = getInt(data,    "stabFrameHeight",    16);
+        version = getString(data, "version", "1.0.0");
+        applicationDataDirectory = getString(data, "applicationDataDirectory", "HoneySuckle");
+        saveFileDirectory = getString(data, "saveFileDirectory", "saves");
+        saveFileExtension = getString(data, "saveFileExtension", "honeysave");
+        fps = getInt(data, "fps", 30);
+        gameWidth = getInt(data, "gameWidth", 640);
+        gameHeight = getInt(data, "gameHeight", 480);
+        tileSize = getInt(data, "tileSize", 32);
+        hudSize = getInt(data, "hudSize", 64);
+        cameraDelay = getInt(data, "cameraDelay", 6);
+        renderDistance = getInt(data, "renderDistance", 2);
+        lightScale = getInt(data, "lightScale", 8);
+        slashFrameSize = getInt(data, "slashFrameSize", 8);
+        stabFrameWidth = getInt(data, "stabFrameWidth", 4);
+        stabFrameHeight = getInt(data, "stabFrameHeight", 16);
         criticalMouseScroll = getDouble(data, "criticalMouseScroll", 0.25);
-        startingBiome     = getString(data, "startingBiome",      "wetlands");
-        playerTags        = getStringList(data, "playerTags", new ArrayList<>());
+        startingBiome = getString(data, "startingBiome", "wetlands");
+        playerTags = getStringList(data, "playerTags", new ArrayList<>());
         startingBlueprints = getStringList(data, "startingBlueprints", new ArrayList<>());
-        startingRecipes   = getStringList(data, "startingRecipes", new ArrayList<>());
-        startingWeapons   = getStringList(data, "startingWeapons", new ArrayList<>());
-        startingArmor     = getString(data, "startingArmor", "leather");
+        startingRecipes = getStringList(data, "startingRecipes", new ArrayList<>());
+        startingWeapons = getStringList(data, "startingWeapons", new ArrayList<>());
+        startingArmor = getString(data, "startingArmor", "leather");
         startingKeyItem = getString(data, "startingKeyItem", "map");
         recipeOrder = getStringList(data, "recipeOrder", new ArrayList<>());
     }
 
     public void distribute() {
-        HoneySuckle.config  = this;
-        Player.config       = this;
-        World.config        = this;
-        Entity.config       = this;
-        Brain.config        = this;
-        Projectile.config   = this;
-        Tile.config         = this;
-        Biome.config        = this;
-        Structure.config    = this;
-        WorldObject.config  = this;
-        Navigator.config    = this;
-        Rendering.config    = this;
-        Menu.config         = this;
-        Splash.config       = this;
-        Attack.config       = this;
-        Weapon.config       = this;
-        Armor.config        = this;
-        Armory.config       = this;
-        KeyItem.config      = this;
-        Ammo.config         = this;
-        Craft.config        = this;
-        Inventory.config    = this;
-        Blueprint.config    = this;
-        Build.config        = this;
-        Effect.config       = this;
+        HoneySuckle.config = this;
+        Player.config = this;
+        World.config = this;
+        Entity.config = this;
+        Brain.config = this;
+        Projectile.config = this;
+        Tile.config = this;
+        Biome.config = this;
+        Structure.config = this;
+        WorldObject.config = this;
+        Navigator.config = this;
+        Rendering.config = this;
+        Menu.config = this;
+        Splash.config = this;
+        Attack.config = this;
+        Weapon.config = this;
+        Armor.config = this;
+        Armory.config = this;
+        KeyItem.config = this;
+        Ammo.config = this;
+        Craft.config = this;
+        Inventory.config = this;
+        Blueprint.config = this;
+        Build.config = this;
+        Effect.config = this;
         InputHandler.config = this;
         AssetManager.config = this;
+        SaveStateManager.config = this;
+        FileManager.config = this;
     }
 
     private static int getInt(Map<String, Object> data, String key, int defaultValue) {
@@ -128,7 +138,7 @@ public class ConfigManager {
     }
 
     @SuppressWarnings("unchecked")
-	private static List<String> getStringList(Map<String, Object> data, String key, List<String> defaultValue) {
+    private static List<String> getStringList(Map<String, Object> data, String key, List<String> defaultValue) {
         final Object val = data.get(key);
         if (val instanceof List) {
             final List<?> list = (List<?>) val;

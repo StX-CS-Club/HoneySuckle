@@ -17,14 +17,15 @@ import honey.world.World;
 
 public class SaveStateManager {
 
-    private static final String SAVE_FILE_DIRECTORY = FileManager.ensureDirectoryExists(FileManager.getApplicationDirectory() + File.separator + "saves");
-    private static final String SAVE_FILE_EXTENSION = "honeysave";
+    public static ConfigManager config;
 
     private static final ObjectMapper objectMapper = DataManager.objectMapper;
 
     public static boolean saveGame() {
-        final String filePath = FileManager.getFilePath("Save Game", SAVE_FILE_DIRECTORY, "HoneySuckle Save File", SAVE_FILE_EXTENSION, true);
-        if (filePath == null) return false;
+        final String filePath = FileManager.getFilePath("Save Game", saveFileDirectory(), "HoneySuckle Save File", config.saveFileExtension, true);
+        if (filePath == null) {
+            return false;
+        }
         return saveToFile(filePath);
     }
 
@@ -39,8 +40,10 @@ public class SaveStateManager {
     }
 
     public static void loadGame() {
-        final String filePath = FileManager.getFilePath("Load Game", SAVE_FILE_DIRECTORY, "HoneySuckle Save File", SAVE_FILE_EXTENSION, false);
-        if (filePath == null) return;
+        final String filePath = FileManager.getFilePath("Load Game", saveFileDirectory(), "HoneySuckle Save File", config.saveFileExtension, false);
+        if (filePath == null) {
+            return;
+        }
 
         loadFromFile(filePath);
     }
@@ -52,8 +55,13 @@ public class SaveStateManager {
 
             HoneySuckle.stop();
 
+            final Object seedJson = (Number) saveData.get("seed");
+            if (seedJson instanceof Number seedNumber) {
+                GameRandom.seed(seedNumber.longValue());
+            }
+
             World.level = ((Number) saveData.get("level")).intValue();
-            for(int i = 0; i < World.level; i++) {
+            for (int i = 0; i < World.level; i++) {
                 World.worlds.add(null);
             }
             final World world = new World((Map<String, Object>) saveData.get("world"));
@@ -74,9 +82,15 @@ public class SaveStateManager {
 
     private static Map<String, Object> getSaveJson() {
         return Map.of(
+                "version", config.version,
+                "seed", GameRandom.seed(),
                 "level", World.level,
                 "player", HoneySuckle.player.toJson(),
                 "world", World.worlds.get(World.level).toJson()
         );
+    }
+
+    private static String saveFileDirectory() {
+        return FileManager.getApplicationDirectory() + File.separator + config.saveFileDirectory;
     }
 }

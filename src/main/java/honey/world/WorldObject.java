@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
@@ -57,6 +58,11 @@ public class WorldObject {
 
     //WorldObject Contructor
     public WorldObject(int id, int[] posIndex, World world) {
+        this(id, posIndex, world, computeVariant(world.genRandom, id));
+    }
+
+    // Reconstructs an object with a specific variant (e.g. restored from a save) instead of rolling one
+    public WorldObject(int id, int[] posIndex, World world, String variant) {
         this.id = id;
         this.posIndex = posIndex;
         //Interprets entity tags and attributes
@@ -83,9 +89,17 @@ public class WorldObject {
 
         maxFrames = attributes.getOrDefault("animFrames", config.fps).intValue();
 
-        variant = getVariant();
+        this.variant = variant;
         staticTexture = getTexture(getPostfix());
 
+    }
+
+    private static String computeVariant(Random random, int id) {
+        int textureCount = objAttributes.get(id).getOrDefault("variants", 1).intValue();
+        if (textureCount > 1) {
+            return "_" + random.nextInt(1, textureCount + 1);
+        }
+        return "";
     }
 
     public void setLoot(List<Map<String, Number>> newLoot) {
@@ -181,14 +195,6 @@ public class WorldObject {
         return null;
     }
 
-    private String getVariant() {
-        int textureCount = attributes.getOrDefault("variants", 1).intValue();
-        if (textureCount > 1) {
-            return "_" + ThreadLocalRandom.current().nextInt(1, textureCount + 1);
-        }
-        return "";
-    }
-
     private String getPostfix() {
         StringBuilder postfix = new StringBuilder(variant);
 
@@ -248,7 +254,8 @@ public class WorldObject {
             "id", id,
             "posIndex", posIndex,
             "rendered", rendered,
-            "durability", durability
+            "durability", durability,
+            "variant", variant
         );
     }
 
@@ -256,8 +263,12 @@ public class WorldObject {
     public static WorldObject fromJson(Map<String, Object> json, World world) {
         final List<Number> posIndexJson = (List<Number>) json.get("posIndex");
         final int[] posIndex = {posIndexJson.get(0).intValue(), posIndexJson.get(1).intValue()};
+        final int id = ((Number) json.get("id")).intValue();
+        final String variant = json.containsKey("variant")
+                ? (String) json.get("variant")
+                : computeVariant(world.genRandom, id);
 
-        final WorldObject object = new WorldObject(((Number) json.get("id")).intValue(), posIndex, world);
+        final WorldObject object = new WorldObject(id, posIndex, world, variant);
         object.rendered = (Boolean) json.get("rendered");
         object.durability = ((Number) json.get("durability")).doubleValue();
         return object;

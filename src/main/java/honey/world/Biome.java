@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import honey.mechanics.ConfigManager;
 import honey.rendering.Rendering;
@@ -66,7 +66,7 @@ public class Biome {
     public Biome(World world) {
         this.world = world;
         if (World.level > 0) {
-            type = randomizeBiome(World.worlds.getLast().biome.type, World.level);
+            type = randomizeBiome(world.genRandom, World.worlds.getLast().biome.type, World.level);
         } else {
             type = "wetlands";
         }
@@ -83,7 +83,7 @@ public class Biome {
     public Biome(World world, int targetLevel) {
         this.world = world;
         if (targetLevel > 0) {
-            type = randomizeBiome(World.worlds.getLast().biome.type, targetLevel);
+            type = randomizeBiome(world.genRandom, World.worlds.getLast().biome.type, targetLevel);
         } else {
             type = "wetlands";
         }
@@ -125,16 +125,16 @@ public class Biome {
         return null;
     }
 
-    public static String randomizeBiome(String lastBiome, int level) {
+    public static String randomizeBiome(Random random, String lastBiome, int level) {
         final List<String> biomes = new ArrayList<>();
         for (String biomeId : biomeLevel.keySet()) {
             if (biomeLevel.get(biomeId) <= level) {
                 biomes.add(biomeId);
             }
         }
-        String biome = biomes.get((int) Math.floor(Math.random() * biomes.size()));
+        String biome = biomes.get((int) Math.floor(random.nextDouble() * biomes.size()));
         if (biome.equals(lastBiome)) {
-            biome = biomes.get((int) Math.floor(Math.random() * biomes.size()));
+            biome = biomes.get((int) Math.floor(random.nextDouble() * biomes.size()));
         }
         return biome;
     }
@@ -211,7 +211,7 @@ public class Biome {
                                 }
                                 prob += rule.levelProb() * World.level;
                                 prob = Math.min(prob, rule.maxProb());
-                                if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                                if (world.genRandom.nextDouble() <= prob) {
                                     result[pos[0]][y] = new Tile(rule.id(), pos, world);
                                     break;
                                 }
@@ -231,7 +231,7 @@ public class Biome {
                                 }
                                 prob += rule.levelProb() * World.level;
                                 prob = Math.min(prob, rule.maxProb());
-                                if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                                if (world.genRandom.nextDouble() <= prob) {
                                     objResult[pos[0]][y] = new WorldObject(rule.id(), pos, world);
                                     break;
                                 }
@@ -252,7 +252,7 @@ public class Biome {
                                     }
                                     prob += rule.levelProb() * World.level;
                                     prob = Math.min(prob, rule.maxProb());
-                                    if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                                    if (world.genRandom.nextDouble() <= prob) {
                                         final String entityId = Entity.entityStringId.get(rule.id());
                                         entityResult.add(new Entity(entityId, new double[]{
                                             (pos[0] + 0.5) * config.tileSize, (y + 0.5) * config.tileSize
@@ -310,7 +310,7 @@ public class Biome {
                         }
                         prob += rule.levelProb() * World.level;
                         prob = Math.min(prob, rule.maxProb());
-                        if (ThreadLocalRandom.current().nextDouble() <= prob) {
+                        if (world.genRandom.nextDouble() <= prob) {
                             final int[] pos = new int[]{x, y};
                             if (Structure.canGenerate(structureResult, pos, structureId, 0)) {
                                 final Structure structure = new Structure(structureId, pos);

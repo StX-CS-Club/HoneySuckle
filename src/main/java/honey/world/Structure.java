@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import honey.mechanics.ConfigManager;
 import honey.mechanics.MapReader;
@@ -141,7 +140,7 @@ public class Structure {
 
         for (EntitySpawn spawn : sd.entities()) {
             final double spawnProb = Math.min(spawn.prob() + spawn.levelProb() * World.level, spawn.maxProb());
-            if (ThreadLocalRandom.current().nextDouble() <= spawnProb) {
+            if (world.genRandom.nextDouble() <= spawnProb) {
                 final double[] entityPos = rotatePos(index, size, rotation, spawn.pos()[0], spawn.pos()[1]);
                 entityResult.add(new Entity(spawn.entityId(), new double[]{entityPos[0] * config.tileSize, entityPos[1] * config.tileSize}, world));
             }
@@ -149,13 +148,13 @@ public class Structure {
 
         for (ChestSpawn chestSpawn : sd.chests()) {
             final double chestProb = Math.min(chestSpawn.prob() + chestSpawn.levelProb() * World.level, chestSpawn.maxProb());
-            if (ThreadLocalRandom.current().nextDouble() <= chestProb) {
+            if (world.genRandom.nextDouble() <= chestProb) {
                 final int[] chestPos = rotateIndex(index, size, rotation, chestSpawn.pos()[0], chestSpawn.pos()[1]);
                 if (chestPos[0] > -1 && chestPos[0] < objResult.length
                         && chestPos[1] > -1 && chestPos[1] < objResult[0].length) {
                     final WorldObject chest = new WorldObject(chestSpawn.id(), chestPos, world);
                     final List<Map<String, Object>> lootEntries = chestSpawn.lootEntries();
-                    final double chestSeed = ThreadLocalRandom.current().nextDouble();
+                    final double chestSeed = world.genRandom.nextDouble();
                     final double defaultProb = defaultProb(lootEntries);
                     double chestProgress = 0;
                     for (Map<String, Object> lootEntry : lootEntries) {
@@ -177,7 +176,7 @@ public class Structure {
 
         for (StructureJoint joint : sd.joints()) {
             final double defaultProb = defaultProb(joint.segments());
-            final double jointSeed = ThreadLocalRandom.current().nextDouble();
+            final double jointSeed = world.genRandom.nextDouble();
             double jointProgress = 0;
             for (Map<String, Object> segment : joint.segments()) {
                 final double prob = MapReader.getNumberOrDefault(segment, "prob", defaultProb).doubleValue() + jointProgress;
