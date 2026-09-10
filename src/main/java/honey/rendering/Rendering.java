@@ -23,11 +23,6 @@ import javax.imageio.ImageIO;
 
 import honey.mechanics.ConfigManager;
 
-/*
- * Rendering.java *
- - Class for running static methods involving more complex rendering
- - Static lists of already rendered shit
- */
 public final class Rendering {
 
     public static ConfigManager config;
@@ -443,7 +438,7 @@ public final class Rendering {
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         // Create an AffineTransform to rotate around the center
-        AffineTransform at = new AffineTransform();
+        final AffineTransform at = new AffineTransform();
         at.translate(newW / 2.0, newH / 2.0); // Move origin to center
         at.rotate(angle);
         at.translate(-w / 2.0, -h / 2.0); // Move image back
@@ -470,7 +465,20 @@ public final class Rendering {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
     }
 
-    public static void imageFactor(BufferedImage image, Graphics2D g, int x, int y, int w, int h, double factor) {
+    //Draws image at the given scale, offset so the box (x, y, w, h) - as it would appear at factor 1 - stays centered
+    public static void scale(BufferedImage image, Graphics2D g, int x, int y, int w, int h, double factor) {
         g.drawImage(image, (int) (x - w * (factor - 1) / 2), (int) (y - h * (factor - 1) / 2), (int) (w * factor), (int) (h * factor), null);
+    }
+
+    public static void renderCounter(Graphics2D g, int slotX, int slotY, int count, boolean centered) {
+        final int boxW = config.hudSize / 2;
+        final int boxH = config.hudSize / 4;
+        final int boxX = centered ? slotX + (config.hudSize - boxW) / 2 : slotX;
+        final int boxY = slotY + config.hudSize * 11 / 16 + (centered ? boxH / 2 : 0);
+
+        g.drawImage(texture("ui/hud/counter", null), boxX, boxY, boxW, boxH, null);
+
+        g.setColor(count > 0 ? Color.BLACK : Color.RED);
+        centeredText(g, Integer.toString(count), boxX + boxW / 2, boxY + boxH * 3 / 4, boxW, 20);
     }
 }

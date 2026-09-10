@@ -1,5 +1,6 @@
 package honey.player;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -26,12 +27,9 @@ import honey.player.inventory.KeyItem;
 import honey.rendering.Menu;
 import honey.rendering.Rendering;
 import honey.world.Biome;
+import honey.world.Entity;
 import honey.world.World;
 
-/*
- * Player.java *
- - Class for managing players
- */
 public final class Player {
 
     public static ConfigManager config;
@@ -44,10 +42,12 @@ public final class Player {
     public static List<Player> players = new ArrayList<>();
 
     //Player Constructor
-    public Player(double[] pos, int size, List<String> tags) {
+    public Player(double[] pos, int size, List<String> tags, World world) {
         //Assign values to properties
         this.pos = pos;
         this.size = size;
+        this.world = world;
+        world.players.add(this);
         build = new Build(this, new LinkedHashSet<>(config.startingBlueprints));
         craft = new Craft(this, new LinkedHashSet<>(config.startingRecipes));
         armory = new Armory(this,
@@ -64,16 +64,15 @@ public final class Player {
         armory.weapons[1].setAmmo(inventory.ammo);
 
         attributes = armory.getAttributes();
-
-        //Adds player to list of players
-        players.add(this);
     }
 
     //Player Constructor - reconstructs a saved player instead of fresh starting gear
     @SuppressWarnings("unchecked")
-    public Player(double[] pos, Map<String, Object> saveData) {
+    public Player(double[] pos, Map<String, Object> saveData, World world) {
         this.pos = pos;
         this.size = (int) (config.tileSize * 0.75);
+        this.world = world;
+        world.players.add(this);
 
         health = ((Number) saveData.get("health")).doubleValue();
         stamina = ((Number) saveData.get("stamina")).doubleValue();
@@ -86,9 +85,13 @@ public final class Player {
         armory = Armory.fromJson(this, (Map<String, Object>) saveData.get("armory"), inventory);
 
         attributes = armory.getAttributes();
-
-        players.add(this);
     }
+
+    //World this player currently stands in - kept in sync with the player's actual location instead of
+    //looked up via World.getCurrentWorld(), so it stays correct even if that static ever stops meaning
+    //"this player's world" (e.g. multiple worlds active at once). Updated on level transition by
+    //World.publishPendingWorld().
+    public World world;
 
     //Player properties
     public double[] pos;
@@ -112,7 +115,7 @@ public final class Player {
     public final Armory armory;
 
     //If scroll wheel goes to weapons or recipes
-    private boolean weaponScroll = false;
+    public boolean weaponScroll = false;
 
     //Render Player
     public void render(Graphics2D g) {
@@ -120,13 +123,13 @@ public final class Player {
         if (!dead) {
             //Render building and armory
             if (!inventory.isOpen) {
-                build.render(g, World.worlds.get(World.level));
+                build.render(g, world);
             }
             armory.render(g);
             inventory.renderSplashes(g, screenPos);
 
             //Original rotation
-            AffineTransform originalTransform = g.getTransform();
+            final AffineTransform originalTransform = g.getTransform();
 
             //Rotate to face mouse
             g.rotate(Math.toRadians(rotation), screenPos[0], screenPos[1]);
@@ -146,11 +149,11 @@ public final class Player {
         }
 
         //Biome of current world
-        Biome biome = World.worlds.get(World.level).biome;
+        final Biome biome = world.biome;
 
         //If biome is foggy, add light source at player
         if (biome.attributes.getOrDefault("fogginess", 0).doubleValue() > 0) {
-            HoneySuckle.lights.add(Map.of(
+            world.lights.add(Map.of(
                     "posX", screenPos[0],
                     "posY", screenPos[1],
                     "radius", attributes.getOrDefault("lightRadius", 6)
@@ -163,12 +166,50 @@ public final class Player {
         }
     }
 
-    // Recomputes screenPos from the current world's camera, without running any other
-    // per-frame logic. Used to keep the player's on-screen position correct immediately
-    // after being teleported into a newly-published world (e.g. level transitions) while
-    // game logic is still paused - see World.publishPendingWorld().
+    // Renders everything dependent on this player's point of view: their world, every player
+    // standing in it, biome fog/overlay, this player's low-health tint, nearby entities' health
+    // bars, and whichever GUI (navigator/inventory/build+armory) this player currently has open.
+    public void renderPOV(Graphics2D g) {
+        world.lights.clear();
+
+        world.render(g);
+        for (Player worldPlayer : world.players) {
+            worldPlayer.render(g);
+        }
+
+        final Biome biome = world.biome;
+        final double fogginess = biome.attributes.getOrDefault("fogginess", 0).doubleValue();
+        if (fogginess > 0) {
+            final Color fogColor = Rendering.decodeColor(biome.textureMap.get("fogColor"));
+            Rendering.renderLight(g, fogColor, fogginess, world.lights);
+        }
+
+        biome.renderOverlay(g);
+
+        //Creates red overlay when at low health
+        Rendering.colorFade(g, Color.red, 1 - health);
+
+        int healthBarIndex = 0;
+        for (Entity entity : HoneySuckle.healthBars) {
+            entity.renderHealthBar(g, healthBarIndex);
+            healthBarIndex++;
+        }
+
+        if (health > 0) {
+            //Renders crafting and weapon ui
+            if (world.navigator.isOpen) {
+                world.navigator.renderUi(g);
+            } else if (inventory.isOpen) {
+                inventory.renderUi(g);
+            } else {
+                build.renderUi(g, world);
+                armory.renderUi(g, !HoneySuckle.healthBars.isEmpty());
+            }
+        }
+    }
+
     public void syncScreenPos() {
-        final double[] camera = World.worlds.get(World.level).camera;
+        final double[] camera = world.camera;
         screenPos = new double[] {
             config.gameWidth / 2.0 + pos[0] - camera[0],
             config.gameHeight / 2.0 + pos[1] - camera[1]
@@ -197,9 +238,8 @@ public final class Player {
             //AKA magnitude of acceleration
             double incriment = 30.0 / config.fps * config.tileSize * attributes.getOrDefault("speed", 0.1).doubleValue();
 
-            //Get current world camera
-            final World world = World.worlds.get(World.level);
-            double[] camera = world.camera;
+            //Local alias for this player's world, reused throughout this method
+            final World world = this.world;
 
             if (!inventory.isOpen) {
                 //Toggle weaponScroll on scroll wheel click
@@ -220,7 +260,7 @@ public final class Player {
 
                 //Build on right click
                 if (input.clickDown(MouseEvent.BUTTON3)) {
-                    build.build(World.worlds.get(World.level));
+                    build.build(world);
                 }
             }
             // Updates Inventory
@@ -267,22 +307,20 @@ public final class Player {
             world.bound(pos, vel, List.of(), size / 2.0);
 
             //Reset camera
-            camera[0] = camera[0] - (camera[0] - pos[0]) / config.cameraDelay;
-            camera[1] = camera[1] - (camera[1] - pos[1]) / config.cameraDelay;
+            world.camera[0] = world.camera[0] - (world.camera[0] - pos[0]) / config.cameraDelay;
+            world.camera[1] = world.camera[1] - (world.camera[1] - pos[1]) / config.cameraDelay;
 
-            int[] worldSize = World.worlds.get(World.level).size;
-
-            if (camera[0] - config.gameWidth / 2.0 < 0) {
-                camera[0] = config.gameWidth / 2.0;
+            if (world.camera[0] - config.gameWidth / 2.0 < 0) {
+                world.camera[0] = config.gameWidth / 2.0;
             }
-            if (camera[0] + config.gameWidth / 2.0 > worldSize[0] * config.tileSize) {
-                camera[0] = worldSize[0] * config.tileSize - config.gameWidth / 2.0;
+            if (world.camera[0] + config.gameWidth / 2.0 > world.size[0] * config.tileSize) {
+                world.camera[0] = world.size[0] * config.tileSize - config.gameWidth / 2.0;
             }
-            if (camera[1] - config.gameHeight / 2 < 0.0) {
-                camera[1] = config.gameHeight / 2.0;
+            if (world.camera[1] - config.gameHeight / 2 < 0.0) {
+                world.camera[1] = config.gameHeight / 2.0;
             }
-            if (camera[1] + config.gameHeight / 2.0 > worldSize[1] * config.tileSize) {
-                camera[1] = worldSize[1] * config.tileSize - config.gameHeight / 2.0;
+            if (world.camera[1] + config.gameHeight / 2.0 > world.size[1] * config.tileSize) {
+                world.camera[1] = world.size[1] * config.tileSize - config.gameHeight / 2.0;
             }
 
             //World interact with player
@@ -292,13 +330,13 @@ public final class Player {
             armory.updateEffects();
 
             //Regenerate health
-            double regen = attributes.getOrDefault("regen", 0.001).doubleValue();
+            final double regen = attributes.getOrDefault("regen", 0.001).doubleValue();
             health += regen * 30.0 / config.fps;
             if (vel[0] == 0 && vel[1] == 0) {
                 health += regen * 30.0 / config.fps;
             }
             //Cap health
-            double maxHealth = attributes.getOrDefault("maxHealth", 1).doubleValue();
+            final double maxHealth = attributes.getOrDefault("maxHealth", 1).doubleValue();
             if (health > maxHealth) {
                 health = maxHealth;
             }
@@ -308,12 +346,12 @@ public final class Player {
 
             //Reset position of player on screen
             screenPos = new double[]{
-                config.gameWidth / 2.0 + pos[0] - camera[0],
-                config.gameHeight / 2.0 + pos[1] - camera[1]
+                config.gameWidth / 2.0 + pos[0] - world.camera[0],
+                config.gameHeight / 2.0 + pos[1] - world.camera[1]
             };
 
             //Difference between mouse and player pos on screen
-            double[] mouseDiff = new double[]{input.mousePos[0] - screenPos[0], input.mousePos[1] - screenPos[1]};
+            final double[] mouseDiff = new double[]{input.mousePos[0] - screenPos[0], input.mousePos[1] - screenPos[1]};
 
             //Rotate player to face mouse
             rotation = Math.toDegrees(Math.atan(mouseDiff[0] / -mouseDiff[1]));
@@ -325,8 +363,8 @@ public final class Player {
 
             // vel[0] = vx, vel[1] = vy
             if (vel[0] != 0 || vel[1] != 0) {
-                double vx = vel[0];
-                double vy = vel[1];
+                final double vx = vel[0];
+                final double vy = vel[1];
 
                 // 0° = up (-Y), 90° = right (+X), 180° = down (+Y), 270° = left (-X)
                 double target = Math.toDegrees(Math.atan2(vx, -vy)); // note (x, -y) to match your original convention
@@ -334,8 +372,7 @@ public final class Player {
                     target += 360;                       // normalize to [0, 360)
                 }
                 // Smallest signed difference in [-180, 180)
-                double delta = target - mapRotation;
-                delta = ((delta + 540) % 360) - 180;
+                final double delta = ((target - mapRotation + 540) % 360) - 180;
 
                 // Ease 25% toward target
                 mapRotation += delta * 0.25;

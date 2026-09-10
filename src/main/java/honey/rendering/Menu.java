@@ -140,7 +140,7 @@ public class Menu {
                 g.drawImage(Rendering.image("HoneySuckle"), config.gameWidth / 4, config.gameHeight / 16 - offset, config.gameWidth / 2, config.gameWidth / 2, null);
             }
             case LOADING_MENU -> {
-                final int curtainFrames = curtainFrames();
+                final int curtainFrames = (int) Math.round(config.fps * LOADING_CURTAIN_SECONDS);
                 final int offsetY;
                 if (!loadingPublished) {
                     //COVER: slides up from fully off-screen-bottom (+gameHeight) to fully covering (0)
@@ -225,12 +225,6 @@ public class Menu {
 
     private int pauseButtonY(int scrollY, int renderedH, int index) {
         return scrollY + (int) (renderedH * PAUSE_BUTTON_Y_FRACTIONS[index]);
-    }
-
-    //Frame count for one LOADING_MENU curtain sweep (cover or reveal), derived from
-    //LOADING_CURTAIN_SECONDS at the current config.fps
-    private static int curtainFrames() {
-        return (int) Math.round(config.fps * LOADING_CURTAIN_SECONDS);
     }
 
     public void update(InputHandler input) {
@@ -323,7 +317,7 @@ public class Menu {
                 }
             }
             case LOADING_MENU -> {
-                final int curtainFrames = curtainFrames();
+                final int curtainFrames = (int) Math.round(config.fps * LOADING_CURTAIN_SECONDS);
                 if (!loadingPublished) {
                     //Slides up to cover, then holds fully covered until the background world is ready
                     frame = Math.min(frame + 1, curtainFrames);

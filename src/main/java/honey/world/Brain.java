@@ -66,16 +66,20 @@ public class Brain {
     //Update Entity based on type
     public void update() {
         final Set<String> tickedThisFrame = new HashSet<>();
-        //Find closest player using squared distance (no sqrt, no Point2D allocation)
-        Player player = HoneySuckle.player;
-        double bestDistSq = distSq(entity.pos, player.pos);
+        //Find closest player in this entity's own world (squared distance, no sqrt/allocation)
+        Player player = null;
+        double bestDistSq = Double.POSITIVE_INFINITY;
 
-        for (Player testPlayer : Player.players) {
-            double testDistSq = distSq(entity.pos, testPlayer.pos);
+        for (Player testPlayer : world.players) {
+            final double testDistSq = distSq(entity.pos, testPlayer.pos);
             if (testDistSq < bestDistSq) {
                 player = testPlayer;
                 bestDistSq = testDistSq;
             }
+        }
+
+        if (player == null) {
+            return;
         }
         double[] playerDistance = new double[]{
             player.pos[0] - entity.pos[0],
@@ -330,12 +334,12 @@ public class Brain {
             return false;
         }
         //If dead, die, and return true
-        die(World.worlds.get(World.level));
+        die();
         return true;
     }
 
     //Kill Entity events
-    public void die(World world) {
+    public void die() {
         if (!death.isEmpty()) {
             final int gateId = numberFromMap(death, "gateId", 0).intValue();
             if (gateId != 0) {
@@ -365,7 +369,7 @@ public class Brain {
 
     //Entity interacts with player
     public void event(Player player) {
-        double[] playerDistance = new double[]{
+        final double[] playerDistance = new double[]{
             player.pos[0] - entity.pos[0],
             player.pos[1] - entity.pos[1]
         };
@@ -406,9 +410,9 @@ public class Brain {
     }
 
     private Map<String, Object> registerBrain(String brainType) {
-        Map<String, Object> brain = brainMap.get(brainType);
+        final Map<String, Object> brain = brainMap.get(brainType);
         if (brain != null) {
-            String behaviorId = stringFromMap(brain, "tickId", brainType);
+            final String behaviorId = stringFromMap(brain, "tickId", brainType);
             if (!entity.ticks.containsKey(behaviorId)) {
                 entity.ticks.put(behaviorId, new long[]{0});
             }
@@ -429,13 +433,13 @@ public class Brain {
     }
 
     private static boolean booleanFromMap(Map<String, Object> map, String key, boolean defaultValue) {
-        Object val = map.get(key);
+        final Object val = map.get(key);
         if (val instanceof Boolean aBoolean) return aBoolean;
         return defaultValue;
     }
 
     private double getAngle(double[] targetPos) {
-        double[] distance = new double[]{
+        final double[] distance = new double[]{
             targetPos[0] - entity.pos[0],
             targetPos[1] - entity.pos[1]
         };

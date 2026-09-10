@@ -8,15 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import honey.HoneySuckle;
 import honey.mechanics.ConfigManager;
 import honey.rendering.Rendering;
 
-/*
- * Tile.java *
- - Class for managing world tiles
- - Static json data
- */
 public class Tile {
 
     public static ConfigManager config;
@@ -69,7 +63,7 @@ public class Tile {
         texture = tileTextures.get(id);
         anim = texture.getOrDefault("anim", "");
 
-        String glowColorString = texture.get("glowColor");
+        final String glowColorString = texture.get("glowColor");
         if (glowColorString != null) {
             glowColor = Integer.parseInt(glowColorString.substring(1), 16);
         } else {
@@ -91,7 +85,7 @@ public class Tile {
     }
 
     private static String computeVariant(Random random, int id) {
-        int textureCount = tileAttributes.get(id).getOrDefault("variants", 1).intValue();
+        final int textureCount = tileAttributes.get(id).getOrDefault("variants", 1).intValue();
         if (textureCount > 1) {
             return "_" + random.nextInt(1, textureCount + 1);
         }
@@ -169,9 +163,9 @@ public class Tile {
         if (mColor != null) {
             return mColor;
         }
-        String natColorId = texture.get("natColor");
+        final String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.textureMap.get(natColorId);
+            final String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }
@@ -180,7 +174,7 @@ public class Tile {
     }
 
     private BufferedImage getTexture(String postfix) {
-        String textureString = texture.get("texture");
+        final String textureString = texture.get("texture");
         if (textureString != null) {
             return Rendering.texture(textureString + postfix, color);
         }
@@ -196,7 +190,7 @@ public class Tile {
     }
 
     private BufferedImage getFrame(String postfix) {
-        String textureString = texture.get("gif");
+        final String textureString = texture.get("gif");
         if (textureString != null) {
             final int frameSize = attributes.getOrDefault("frameSize", 16).intValue();
             return Rendering.renderGIF(textureString + postfix, color, frame / (double) maxFrames, frameSize, frameSize);
@@ -204,8 +198,8 @@ public class Tile {
         return null;
     }
 
-    public void renderLight(double[] screenPos) {
-        HoneySuckle.lights.add(Map.of(
+    public void renderLight(double[] screenPos, World world) {
+        world.lights.add(Map.of(
                 "posX", screenPos[0] + config.tileSize / 2,
                 "posY", screenPos[1] + config.tileSize / 2,
                 "radius", attributes.getOrDefault("lightRadius", 0),

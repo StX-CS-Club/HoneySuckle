@@ -4,9 +4,11 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
@@ -35,15 +37,19 @@ public final class World {
     }
 
     // Static variables
-    public static List<World> worlds = new ArrayList<>();
+    public static final List<World> worlds = new ArrayList<>();
     public static int level;
+
+    public static World getCurrentWorld() {
+        return worlds.get(level);
+    }
 
     public static volatile World pendingNextWorld;
 
     // Per-world generation RNG, seeded deterministically from the run's master seed + level
     public final Random genRandom;
-
-    //Synchronized method to get the current world, which may be pending a transition to a new world
+    
+    // World constructor for a new world, generates a random biome
     public World() {
         genRandom = GameRandom.forLevel(0);
         // Pseudo-Randomized Biome
@@ -52,17 +58,15 @@ public final class World {
         // Sets camera position
         camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
         navigator = new Navigator(this);
-        // Adds world to static list of worlds
-        worlds.add(this);
     }
 
+    // World constructor for a specific biome
     public World(String biomeId) {
         genRandom = GameRandom.forLevel(0);
         biome = new Biome(this, biomeId);
         biome.generateWorld();
         camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
         navigator = new Navigator(this);
-        worlds.add(this);
     }
 
     // Asynchronously generates a new world in the background, to be published later by publishPendingWorld()
@@ -79,9 +83,12 @@ public final class World {
         level++;
         worlds.add(world);
         player.pos = new double[]{config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.size[1] - 0.5)};
-        // Neither of these run any actual game logic (no entity/projectile ticks, no input/
-        // physics processing) - they just make the freshly-generated world and the
-        // repositioned player render correctly while running stays paused for the reveal.
+
+        //Move the player from the old world's roster to the new one
+        player.world.players.remove(player);
+        player.world = world;
+        world.players.add(player);
+
         world.refreshRenderLists();
         player.syncScreenPos();
         pendingNextWorld = null;
@@ -128,7 +135,6 @@ public final class World {
         camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
         navigator = new Navigator(this);
         navigator.started = (Boolean) saveData.getOrDefault("mapStarted", false);
-        worlds.add(this);
     }
 
     // Camera position for rendering
@@ -140,6 +146,8 @@ public final class World {
     public List<Entity> entities;
     public Structure[][] structureGrid;
     public List<Projectile> projectiles = new ArrayList<>();
+    public final List<Player> players = new ArrayList<>();
+    public final Set<Map<String, Number>> lights = new LinkedHashSet<>();
 
     public final Navigator navigator;
 
@@ -371,13 +379,13 @@ public final class World {
             }
         }
         // Player Tile
-        int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / config.tileSize),
+        final int[] posIndex = new int[]{(int) Math.floor(player.pos[0] / config.tileSize),
             (int) Math.floor(player.pos[1] / config.tileSize)};
 
         // Player margin from center
-        double margin = player.size / 2.0 + 1;
+        final double margin = player.size / 2.0 + 1;
         // Player touching tiles
-        int[][] marginIndex = new int[][]{
+        final int[][] marginIndex = new int[][]{
             {(int) (Math.floor((player.pos[0] - margin) / config.tileSize)),
                 (int) (Math.floor((player.pos[0] + margin) / config.tileSize))},
             {(int) (Math.floor((player.pos[1] - margin) / config.tileSize)),
@@ -411,10 +419,10 @@ public final class World {
         }
 
         // Expands map
-        int[] mapRange = renderOffset().clone();
+        final int[] mapRange = renderOffset().clone();
         final double fogginess = biome.attributes.getOrDefault("fogginess", 0).doubleValue();
         if (fogginess > 0) {
-            int fogRadius = (int) (player.attributes.getOrDefault("lightRadius", 4).doubleValue() / fogginess);
+            final int fogRadius = (int) (player.attributes.getOrDefault("lightRadius", 4).doubleValue() / fogginess);
             Arrays.fill(mapRange, fogRadius);
         }
         if (navigator.started) {
@@ -427,17 +435,7 @@ public final class World {
                             if (objGrid[x][y] != null) {
                                 objGrid[x][y].rendered = true;
                             }
-                        }
-                    }
-                }
-            }
-        }
 
-        if (navigator.started) {
-            for (int x = posIndex[0] - 10; x < posIndex[0] + 10; x++) {
-                if (x > -1 && x < size[0]) {
-                    for (int y = posIndex[1] - 10; y < posIndex[1] + 10; y++) {
-                        if (y > -1 && y < size[1]) {
                             if (structureGrid[x][y] != null) {
                                 if (structureGrid[x][y].withinRange(posIndex)) {
                                     navigator.icons.add(structureGrid[x][y]);
@@ -453,13 +451,13 @@ public final class World {
     // Events based on entity
     public void entityEvent(Entity entity) {
         // Entity tile
-        int[] posIndex = new int[]{(int) Math.floor(entity.pos[0] / config.tileSize),
+        final int[] posIndex = new int[]{(int) Math.floor(entity.pos[0] / config.tileSize),
             (int) Math.floor(entity.pos[1] / config.tileSize)};
 
         // Entity margin from center
-        double margin = entity.size / 2.0 + 1;
+        final double margin = entity.size / 2.0 + 1;
         // Entity touching tiles
-        int[][] marginIndex = new int[][]{
+        final int[][] marginIndex = new int[][]{
             {(int) (Math.floor((entity.pos[0] - margin) / config.tileSize)),
                 (int) (Math.floor((entity.pos[0] + margin) / config.tileSize))},
             {(int) (Math.floor((entity.pos[1] - margin) / config.tileSize)),
@@ -505,12 +503,11 @@ public final class World {
 
     // Gives sum of tile and obj value
     public double getAttribute(int x, int y, String value) {
-        double result = 0;
-        result += grid[x][y].attributes.getOrDefault(value, 0).doubleValue();
         if (objGrid[x][y] != null) {
-            result += objGrid[x][y].attributes.getOrDefault(value, 0).doubleValue();
+            return grid[x][y].attributes.getOrDefault(value, 0).doubleValue()
+                    + objGrid[x][y].attributes.getOrDefault(value, 0).doubleValue();
         }
-        return result;
+        return grid[x][y].attributes.getOrDefault(value, 0).doubleValue();
     }
 
     private boolean checkAttribute(int x, int y, String value) {
@@ -535,7 +532,7 @@ public final class World {
         g.fillRect(0, 0, config.gameWidth, config.gameHeight);
 
         // Center tile on screen
-        int[] cameraTile = new int[]{(int) Math.floor(camera[0] / config.tileSize),
+        final int[] cameraTile = new int[]{(int) Math.floor(camera[0] / config.tileSize),
             (int) Math.floor(camera[1] / config.tileSize)};
 
         final boolean fog = biome.attributes.getOrDefault("fogginess", 0).doubleValue() > 0;
@@ -556,11 +553,11 @@ public final class World {
                     if (objGrid[x][y] != null) {
                         objGrid[x][y].render(g, this, screenPos);
                     }
-                    // If tile/object provides light, add light to HoneySuckle.lights
+                    // If tile/object provides light, add light to this world's lights
                     if (fog) {
                         if (grid[x][y].attributes.containsKey("lightRadius")
                                 || grid[x][y].attributes.containsKey("glowRadius")) {
-                            grid[x][y].renderLight(screenPos);
+                            grid[x][y].renderLight(screenPos, this);
                             if (navigator.started) {
                                 grid[x][y].rendered = true;
                             }
@@ -585,7 +582,7 @@ public final class World {
         }
         // Renders projectiles
         for (Projectile proj : renderProjectiles) {
-            double[] screenPos = new double[]{
+            final double[] screenPos = new double[]{
                 config.gameWidth / 2.0 + proj.pos[0] - camera[0],
                 config.gameHeight / 2.0 + proj.pos[1] - camera[1]
             };
@@ -593,17 +590,12 @@ public final class World {
             proj.render(g, screenPos);
             if (fog) {
                 if (proj.attributes.containsKey("lightRadius") || proj.attributes.containsKey("glowRadius")) {
-                    proj.renderLight(screenPos);
+                    proj.renderLight(screenPos, this);
                 }
             }
         }
     }
 
-    // Filters entities/projectiles within render distance of the camera into renderEntities/
-    // renderProjectiles, without ticking any entity/projectile logic. Normally called each
-    // frame from update(); also called directly right after publishing a background-
-    // generated world (see publishPendingWorld) so it renders correctly before game logic
-    // (and thus update()) resumes.
     public void refreshRenderLists() {
         renderEntities.clear();
         for (Entity entity : entities) {
@@ -643,7 +635,7 @@ public final class World {
             }
         }
         for (Projectile projectile : renderProjectiles) {
-            projectile.update();
+            projectile.update(this);
         }
     }
 

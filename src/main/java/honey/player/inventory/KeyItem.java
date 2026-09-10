@@ -29,7 +29,7 @@ public class KeyItem {
     public static final Map<String, Integer> keyIntId = new HashMap<>();
 
     final public String id;
-    int count;
+    public int count;
 
     private final String name;
     private final Map<String, String> texture;
@@ -62,12 +62,8 @@ public class KeyItem {
     }
 
     public void renderUiTile(Graphics2D g, int x, int y, double factor) {
-        String color = null;
-        if (count > 0) {
-            color = "#f5d39d";
-        }
 
-        Rendering.imageFactor(Rendering.texture("ui/slots/key_item", color), g, x, y, 100, 100, factor);
+        Rendering.scale(Rendering.texture("ui/slots/key_item", count > 0 ? "#f5d39d" : null), g, x, y, 100, 100, factor);
 
         boolean ready = utilAnimFrames.isEmpty();
         if (!ready) {
@@ -88,7 +84,7 @@ public class KeyItem {
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {
             if (useFrames > 0) {
-                Rendering.imageFactor(Rendering.texture(itemTexture, null), g, x + 15, y + 15, 70, 70, 0.8);
+                Rendering.scale(Rendering.texture(itemTexture, null), g, x + 15, y + 15, 70, 70, 0.8);
                 useFrames--;
             } else {
                 g.drawImage(Rendering.texture(itemTexture, null), x + 15, y + 15, 70, 70, null);
@@ -108,12 +104,8 @@ public class KeyItem {
     }
 
     public void renderHotTile(Graphics2D g, int x, int y, double factor) {
-        String color = null;
-        if (count > 0) {
-            color = "#f5d39d";
-        }
 
-        Rendering.imageFactor(Rendering.texture("ui/hud/hotslot", color), g, x, y, config.hudSize, config.hudSize, factor);
+        Rendering.scale(Rendering.texture("ui/hud/hotslot", count > 0 ? "#f5d39d" : null), g, x, y, config.hudSize, config.hudSize, factor);
 
         if (!utilAnimFrames.isEmpty()) {
             g.setColor(new Color(128, 128, 128, 128 / utilAnimFrames.size()));
@@ -131,24 +123,26 @@ public class KeyItem {
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {
             if (useFrames > 0) {
-                Rendering.imageFactor(Rendering.texture(itemTexture, null), g, x + config.hudSize / 8, y + config.hudSize / 8, config.hudSize * 3 / 4, config.hudSize * 3 / 4, 0.8);
+                Rendering.scale(Rendering.texture(itemTexture, null), g, x + config.hudSize / 8, y + config.hudSize / 8, config.hudSize * 3 / 4, config.hudSize * 3 / 4, 0.8);
                 useFrames--;
             } else {
                 g.drawImage(Rendering.texture(itemTexture, null), x + config.hudSize / 8, y + config.hudSize / 8, config.hudSize * 3 / 4, config.hudSize * 3 / 4, null);
             }
         }
+
+        //Same counter badge used for weapon ammo/stack counts in the HUD, centered on the tile
+        Rendering.renderCounter(g, x, y, count, true);
     }
 
     public void update() {
         for (String key : utilFrames.keySet()) {
-            long frame = utilFrames.get(key)[0];
+            final long frame = utilFrames.get(key)[0];
             if (frame != -1) {
                 utilFrames.get(key)[0]++;
             }
         }
 
         boolean reset = !utilUses.isEmpty();
-
         for (Integer use : utilUses.values()) {
             if (use != 0) {
                 reset = false;
@@ -163,7 +157,7 @@ public class KeyItem {
     }
 
     public void use(Player player) {
-        final World world = World.worlds.get(World.level);
+        final World world = player.world;
         final Map<String, Integer> staticUtilUses = Map.copyOf(utilUses);
 
         if (count > 0) {
@@ -174,10 +168,10 @@ public class KeyItem {
                 if (uses != 0 && !world.navigator.started) {
                     final boolean revealAll = MapReader.getOrDefault(mapUtility, "revealAll", false);
                     world.navigator.started = true;
-                    if(revealAll){
+                    if (revealAll) {
                         world.revealAll();
                     }
-                    
+
                     utilUses.put(utilId, uses - 1);
                     useFrames = MapReader.getNumberOrDefault(mapUtility, "useFrames", 1).intValue();
                 }
@@ -208,7 +202,7 @@ public class KeyItem {
         final Map<String, Object> utilEntry = utilities.get(utility);
         if (utilEntry != null) {
             utilEntry.putIfAbsent("utilId", "base");
-            String utilId = (String) utilEntry.get("utilId");
+            final String utilId = (String) utilEntry.get("utilId");
 
             final int uses = MapReader.getNumberOrDefault(utilEntry, "uses", 1).intValue();
             if (uses == -1) {
@@ -239,8 +233,8 @@ public class KeyItem {
 
     public Map<String, Object> toJson() {
         return Map.of(
-            "id", id,
-            "count", count
+                "id", id,
+                "count", count
         );
     }
 

@@ -76,10 +76,6 @@ public class Biome {
         overlayTexture = getOverlayTexture();
     }
 
-    // Used only by World(int targetLevel) for background level-progression generation.
-    // Takes the target level explicitly (computed synchronously on the main thread before
-    // the background thread starts) instead of reading the live World.level static, which
-    // would still hold the OLD value while this constructor runs concurrently off-thread.
     public Biome(World world, int targetLevel) {
         this.world = world;
         if (targetLevel > 0) {
@@ -145,9 +141,9 @@ public class Biome {
         world.size = genData.size().clone();
         world.start = genData.start().clone();
 
-        Tile[][] result = new Tile[world.size[0]][world.size[1]];
-        WorldObject[][] objResult = new WorldObject[world.size[0]][world.size[1]];
-        List<Entity> entityResult = new ArrayList<>();
+        final Tile[][] result = new Tile[world.size[0]][world.size[1]];
+        final WorldObject[][] objResult = new WorldObject[world.size[0]][world.size[1]];
+        final List<Entity> entityResult = new ArrayList<>();
         world.structureGrid = new Structure[world.size[0]][world.size[1]];
         final boolean[][] structureResult = new boolean[world.size[0]][world.size[1]];
 

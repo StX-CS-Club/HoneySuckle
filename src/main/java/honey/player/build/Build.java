@@ -89,7 +89,7 @@ public class Build {
         }
 
         //Import camera from world
-        double[] camera = World.worlds.get(World.level).camera;
+        double[] camera = world.camera;
 
         //Render Build Tile
         g.setColor(new Color(0, 0, 0, 0));
@@ -101,10 +101,22 @@ public class Build {
 
     //Render Build UI
     public void renderUi(Graphics2D g, World world) {
+        //While the scroll wheel toggle is set to weapons instead of blueprints, the tile isn't scroll-actionable -
+        //shrink it and drop the ingredients list so it reads as secondary
+        final boolean small = player.weaponScroll;
+        final double factor = small ? Blueprint.SMALL_FACTOR : 1.0;
+        final int size = (int) (config.hudSize * factor);
+
+        //Bottom edge of the tile stays pinned just above the weapon row regardless of size
+        final int y = config.gameHeight - config.hudSize * 13 / 12 - size;
+
         if (player.screenPos[0] < config.hudSize * 3 + config.tileSize && player.screenPos[1] > config.gameHeight - config.hudSize * 25 / 12 - config.tileSize) {
-            blueprints.get(blueprintIndex).renderUiTile(g, config.gameWidth - config.hudSize * 35 / 12, config.gameHeight - config.hudSize * 25 / 12, player.inventory, true);
+            //Bottom-right corner (mirrored): keep the right edge pinned regardless of size
+            final int x = (int) (config.gameWidth - config.hudSize / 12 - config.hudSize * 17 / 6 * factor);
+            blueprints.get(blueprintIndex).renderUiTile(g, x, y, player.inventory, true, small);
         } else {
-            blueprints.get(blueprintIndex).renderUiTile(g, config.hudSize / 12, config.gameHeight - config.hudSize * 25 / 12, player.inventory, false);
+            //Bottom-left corner: the left edge is already pinned at a fixed margin regardless of size
+            blueprints.get(blueprintIndex).renderUiTile(g, config.hudSize / 12, y, player.inventory, false, small);
         }
     }
 
@@ -124,10 +136,10 @@ public class Build {
     //Build something in the world
     public void build(World world) {
         //Current selected blueprint
-        Blueprint blueprint = blueprints.get(blueprintIndex);
+        final Blueprint blueprint = blueprints.get(blueprintIndex);
 
         //Position to build on
-        int[] index = new int[]{
+        final int[] index = new int[]{
             (int) (Math.floor(player.pos[0] / config.tileSize) + cursor[0]),
             (int) (Math.floor(player.pos[1] / config.tileSize) + cursor[1])
         };

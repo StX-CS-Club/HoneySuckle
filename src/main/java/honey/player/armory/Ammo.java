@@ -46,7 +46,7 @@ public class Ammo {
     }
 
     public Map<String, Number> mergeAttributes(String weaponType, Map<String, Object> weaponBehavior) {
-        Map<String, Number> result = mergedAttributes.getOrDefault(weaponType, new HashMap<>());
+        final Map<String, Number> result = mergedAttributes.getOrDefault(weaponType, new HashMap<>());
 
         if (result.isEmpty()) {
             Map<String, Number> weaponAttributes = numberMap(weaponBehavior);
@@ -64,7 +64,7 @@ public class Ammo {
 
     public void renderUiTile(Graphics2D g, int x, int y, double factor) {
         final String color = texture.get("rarityColor");
-        g.drawImage(Rendering.texture("ui/slots/ammo", color), (int) (x - 50 * (factor - 1)), (int) (y - 50 * (factor - 1)), (int) (100 * factor), (int) (100 * factor), null);
+        Rendering.scale(Rendering.texture("ui/slots/ammo", color), g, x, y, 100, 100, factor);
 
         final String itemTexture = texture.get("texture");
         if (itemTexture != null) {
@@ -103,15 +103,15 @@ public class Ammo {
         }
         Rendering.centeredText(g, "x" + count, config.gameWidth / 2, scrollTop + renderedH - 14);
 
-        String[] statKeys = stats.keySet().toArray(String[]::new);
+        final String[] statKeys = stats.keySet().toArray(String[]::new);
 
-        int columns = Math.ceilDiv(statKeys.length, 3);
-        int width = renderedW / columns;
-        int x = scrollX + renderedW / 2 / columns;
+        final int columns = Math.ceilDiv(statKeys.length, 3);
+        final int width = renderedW / columns;
+        final int x = scrollX + renderedW / 2 / columns;
 
         for (int i = 0; i < columns; i++) {
             for (int e = 0; e < 3; e++) {
-                int index = i * 3 + e;
+                final int index = i * 3 + e;
                 if (index < statKeys.length) {
                     Rendering.centeredText(g, statKeys[index] + ": " + stats.get(statKeys[index]), x + width * i, scrollTop + 12 * scale + 32 * e, width - 10, 24);
                 }
@@ -120,11 +120,11 @@ public class Ammo {
     }
 
     private Map<String, Number> numberMap(Map<String, Object> map) {
-        Map<String, Number> result = new HashMap<>();
+        final Map<String, Number> result = new HashMap<>();
         for (String key : map.keySet()) {
-            Object value = map.get(key);
-            if (value instanceof Number) {
-                result.put(key, (Number) value);
+            final Object value = map.get(key);
+            if (value instanceof Number number) {
+                result.put(key, number);
             }
         }
         return result;

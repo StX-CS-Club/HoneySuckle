@@ -126,7 +126,7 @@ public class Weapon {
         final String weaponTexture = texture.get("itemTexture");
         final String color = texture.get("rarityColor");
 
-        g.drawImage(Rendering.texture("ui/slots/weapon", color), (int) (x - 50 * (factor - 1)), (int) (y - 50 * (factor - 1)), (int) (100 * factor), (int) (100 * factor), null);
+        Rendering.scale(Rendering.texture("ui/slots/weapon", color), g, x, y, 100, 100, factor);
 
         if (weaponTexture != null) {
             g.drawImage(Rendering.texture(weaponTexture, "#e8f1ff"), x + 0xc, y + 12, 75, 75, null);
@@ -164,15 +164,15 @@ public class Weapon {
         }
 
         g.setColor(Color.BLACK);
-        String[] statKeys = stats.keySet().toArray(String[]::new);
+        final String[] statKeys = stats.keySet().toArray(String[]::new);
 
-        int columns = Math.ceilDiv(statKeys.length, 3);
-        int width = renderedW / columns;
-        int x = scrollX + renderedW / 2 / columns;
+        final int columns = Math.ceilDiv(statKeys.length, 3);
+        final int width = renderedW / columns;
+        final int x = scrollX + renderedW / 2 / columns;
 
         for (int i = 0; i < columns; i++) {
             for (int e = 0; e < 3; e++) {
-                int index = i * 3 + e;
+                final int index = i * 3 + e;
                 if (index < statKeys.length) {
                     Rendering.centeredText(g, statKeys[index] + ": " + stats.get(statKeys[index]), x + width * i, scrollTop + 12 * scale + 32 * e, width - 10, 24);
                 }
@@ -181,7 +181,6 @@ public class Weapon {
     }
 
     public Map<String, Object> toJson() {
-        //LinkedHashMap, not Map.of: ammo is null when the weapon holds none, and Map.of rejects null values
         final Map<String, Object> json = new LinkedHashMap<>();
         json.put("type", type);
         json.put("ammo", ammo != null ? ammo.type : null);

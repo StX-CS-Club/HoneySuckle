@@ -37,6 +37,8 @@ public class Blueprint {
 
     public final BufferedImage staticTexture;
 
+    public static final double SMALL_FACTOR = 0.85;
+
     public Blueprint(String type) {
         this.type = type;
         product = blueprintProducts.get(type);
@@ -73,7 +75,7 @@ public class Blueprint {
     //Checks if blueprint can be built
     public boolean checkCanPlace(World world, Player player, int[] cursor) {
         //Position trying to build on
-        int[] index = new int[]{
+        final int[] index = new int[]{
             (int) (Math.floor(player.pos[0] / config.tileSize) + cursor[0]),
             (int) (Math.floor(player.pos[1] / config.tileSize) + cursor[1])
         };
@@ -103,34 +105,39 @@ public class Blueprint {
                 && objList.contains(world.objGrid[index[0]][index[1]].id));
     }
 
-    public void renderUiTile(Graphics2D g, int x, int y, Inventory inventory, boolean mirror) {
+    public void renderUiTile(Graphics2D g, int x, int y, Inventory inventory, boolean mirror, boolean small) {
         //Verification color
-        String textureColor = "#ff0000";
-        //If have materials, display green verification
-        if (hasMaterials(inventory)) {
-            textureColor = "#00ff00";
-        }
+        final String textureColor = hasMaterials(inventory) ? "#00ff00" : "#ff0000";
+
+        final double factor = small ? SMALL_FACTOR : 1.0;
+        final int size = (int) (config.hudSize * factor);
+        final int iconSize = (int) (config.hudSize * 3 / 4 * factor);
+
         //Render blueprint Scroll
         if (mirror) {
-            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), x + config.hudSize * 17 / 6, y, -config.hudSize, config.hudSize, null);
+            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), (int) (x + config.hudSize * 17 / 6 * factor), y, -size, size, null);
         } else {
-            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), x, y, config.hudSize, config.hudSize, null);
+            g.drawImage(Rendering.texture("ui/hud/blueprint", textureColor), x, y, size, size, null);
         }
 
         //Render blueprint Item
         if (staticTexture != null) {
             if (mirror) {
-                g.drawImage(staticTexture, x + config.hudSize * 47 / 24, y + config.hudSize * 3 / 24, config.hudSize * 3 / 4, config.hudSize * 3 / 4, null);
+                g.drawImage(staticTexture, (int) (x + config.hudSize * 47 / 24 * factor), (int) (y + config.hudSize * 3 / 24 * factor), iconSize, iconSize, null);
             } else {
-                g.drawImage(staticTexture, x + config.hudSize * 3 / 24, y + config.hudSize * 3 / 24, config.hudSize * 3 / 4, config.hudSize * 3 / 4, null);
+                g.drawImage(staticTexture, (int) (x + config.hudSize * 3 / 24 * factor), (int) (y + config.hudSize * 3 / 24 * factor), iconSize, iconSize, null);
             }
         }
 
+        if (small) {
+            return;
+        }
+
         for (int i = 0; i < mats.size(); i++) {
-            Map<String, Number> mat = mats.get(i);
-            String itemId = Item.itemStringId.get(mat.get("id").intValue());
-            String name = Item.itemNames.get(itemId);
-            int itemCount = mat.getOrDefault("count", 1).intValue();
+            final Map<String, Number> mat = mats.get(i);
+            final String itemId = Item.itemStringId.get(mat.get("id").intValue());
+            final String name = Item.itemNames.get(itemId);
+            final int itemCount = mat.getOrDefault("count", 1).intValue();
 
             g.setFont(new Font("Dialog", Font.PLAIN, 16));
             if (inventory.getItemCount(itemId) >= itemCount) {

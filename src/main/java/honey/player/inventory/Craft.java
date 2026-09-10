@@ -52,7 +52,7 @@ public class Craft {
         }
 
         //Material data
-        List<Map<String, Number>> recipe = recipeMats.get(recipeKey);
+        final List<Map<String, Number>> recipe = recipeMats.get(recipeKey);
 
         //Removes materials
         for (Map<String, Number> material : recipe) {
@@ -68,7 +68,7 @@ public class Craft {
             scroll = Math.clamp(scroll + input.mouseScroll, 0, orderedRecipes.size() - 1);
             hover = -1;
             if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
-                double highlight = (input.mousePos[0] - (config.gameWidth / 2 - 50)) + scroll * 110;
+                final double highlight = (input.mousePos[0] - (config.gameWidth / 2 - 50)) + scroll * 110;
                 if (highlight % 110 <= 100) {
                     hover = (int) Math.floor(highlight / 110);
                 }
@@ -95,11 +95,7 @@ public class Craft {
 
             final int offset = 110 * i - ((int) Math.floor(scroll * 110));
 
-            String slotColor = "#ff0000";
-
-            if (hasMaterials(player, recipe)) {
-                slotColor = "#00ff00";
-            }
+            final String slotColor = hasMaterials(player, recipe) ? "#00ff00" : "#ff0000";
 
             if (hover == i) {
                 g.drawImage(Rendering.texture("ui/slots/recipe", slotColor), (int) (config.gameWidth / 2 - 55 + offset), (int) (config.gameHeight / 2 - 55), 110, 110, null);
@@ -119,17 +115,17 @@ public class Craft {
         }
 
         if (!recipes.isEmpty()) {
-            String recipe = recipeArray[descIndex];
-            String name = recipeNames.get(recipe);
+            final String recipe = recipeArray[descIndex];
+            final String name = recipeNames.get(recipe);
 
             g.setFont(new Font("VT323 Regular", Font.PLAIN, 36));
-            int textSize = g.getFontMetrics().stringWidth(name);
+            final int textSize = g.getFontMetrics().stringWidth(name);
 
-            List<Map<String, Number>> mats = recipeMats.get(recipe);
+            final List<Map<String, Number>> mats = recipeMats.get(recipe);
 
             // Render Scroll
             final int scale = (int) Math.floor(2.5 * config.hudSize / 32);
-            int scrollWidth = Math.ceilDiv(Math.max(textSize, mats.size() * 60), 4 * scale);
+            final int scrollWidth = Math.ceilDiv(Math.max(textSize, mats.size() * 60), 4 * scale);
             final int renderedW = (scrollWidth * 4 + 8) * scale;
             final int renderedH = 32 * scale;
             final int scrollTop = 20;
@@ -147,41 +143,31 @@ public class Craft {
             g.drawString(name, (int) (config.gameWidth - textSize) / 2, scrollTop + 10 * scale);
 
             for (int i = 0; i < mats.size(); i++) {
-                Map<String, Number> material = mats.get(i);
-                int count = material.getOrDefault("count", 1).intValue();
-
-                String texture = null;
+                final Map<String, Number> material = mats.get(i);
+                final int count = material.getOrDefault("count", 1).intValue();
 
                 final int id = material.get("id").intValue();
-                switch (material.getOrDefault("type", 0).intValue()) {
-                    case 0 -> {
-                        texture = Item.itemTextures.get(Item.itemStringId.get(id)).get("texture");
-                    }
-                    case 1 -> {
-                        texture = Weapon.weaponTextures.get(Weapon.weaponStringId.get(id)).get("itemTexture");
-                    }
-                    case 2 -> {
-                        texture = Armor.armorTextures.get(Armor.armorStringId.get(id)).get("itemTexture");
-                    }
-                    case 3 -> {
-                        texture = Ammo.ammoTextures.get(Ammo.ammoStringId.get(id)).get("texture");
-                    }
-                }
+                final String texture = switch (material.getOrDefault("type", 0).intValue()) {
+                    case 0 -> Item.itemTextures.get(Item.itemStringId.get(id)).get("texture");
+                    case 1 -> Weapon.weaponTextures.get(Weapon.weaponStringId.get(id)).get("itemTexture");
+                    case 2 -> Armor.armorTextures.get(Armor.armorStringId.get(id)).get("itemTexture");
+                    case 3 -> Ammo.ammoTextures.get(Ammo.ammoStringId.get(id)).get("texture");
+                    default -> null;
+                };
 
-                int x = (int) (config.gameWidth - mats.size() * 60) / 2 + i * 60;
+                final int x = (int) (config.gameWidth - mats.size() * 60) / 2 + i * 60;
 
                 if (texture != null) {
                     g.drawImage(Rendering.texture(texture, null), x + 5, scrollTop + scale * 50 / 4, 50, 50, null);
                 }
-
-                String label = "x" + count;
+;
                 g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
                 if(player.inventory.hasMaterial(material)){
                     g.setColor(DARK_GREEN);
                 } else {
                     g.setColor(Color.RED);
                 }
-                Rendering.centeredText(g, label, x + 30, scrollTop + scale * 110 / 4);
+                Rendering.centeredText(g, "x" + count, x + 30, scrollTop + scale * 110 / 4);
             }
         }
     }
@@ -205,7 +191,7 @@ public class Craft {
 
     public static boolean hasMaterials(Player player, String recipeKey) {
         //Material data
-        List<Map<String, Number>> recipe = recipeMats.get(recipeKey);
+        final List<Map<String, Number>> recipe = recipeMats.get(recipeKey);
 
         //Go through all materials needed
         for (Map<String, Number> material : recipe) {

@@ -19,7 +19,7 @@ public class SaveStateManager {
 
     public static ConfigManager config;
 
-    private static final ObjectMapper objectMapper = DataManager.objectMapper;
+    private static final ObjectMapper objectMapper = FileManager.objectMapper;
 
     public static boolean saveGame() {
         final String filePath = FileManager.getFilePath("Save Game", saveFileDirectory(), "HoneySuckle Save File", config.saveFileExtension, true);
@@ -65,12 +65,14 @@ public class SaveStateManager {
                 World.worlds.add(null);
             }
             final World world = new World((Map<String, Object>) saveData.get("world"));
+            World.worlds.add(world);
 
             final Map<String, Object> playerJson = (Map<String, Object>) saveData.get("player");
             final List<Number> posJson = (List<Number>) playerJson.get("pos");
             final double[] pos = {posJson.get(0).doubleValue(), posJson.get(1).doubleValue()};
 
-            HoneySuckle.player = new Player(pos, playerJson);
+            HoneySuckle.player = new Player(pos, playerJson, world);
+            Player.players.add(HoneySuckle.player);
             world.camera[0] = pos[0];
             world.camera[1] = pos[1];
 
@@ -86,7 +88,7 @@ public class SaveStateManager {
                 "seed", GameRandom.seed(),
                 "level", World.level,
                 "player", HoneySuckle.player.toJson(),
-                "world", World.worlds.get(World.level).toJson()
+                "world", HoneySuckle.player.world.toJson()
         );
     }
 

@@ -73,16 +73,16 @@ public class Navigator {
                 g.drawImage(Rendering.texture("ui/scroll/map_middle", null), scrollPosX[0] + i * MAP_WIDTH + MAP_WIDTH, scrollPosY, MAP_WIDTH, mapHeight, null);
             }
             g.drawImage(Rendering.texture("ui/scroll/map_end", null), scrollPosX[1], scrollPosY, MAP_WIDTH, mapHeight, null);
-            BufferedImage mapImage = new BufferedImage(size[0], size[1], BufferedImage.TYPE_INT_ARGB);
+            final BufferedImage mapImage = new BufferedImage(size[0], size[1], BufferedImage.TYPE_INT_ARGB);
             for (int x = 0; x < size[0]; x++) {
                 for (int y = 0; y < size[1]; y++) {
-                    WorldObject obj = world.objGrid[x][y];
+                    final WorldObject obj = world.objGrid[x][y];
                     if (obj != null) {
                         if (obj.rendered) {
                             mapImage.setRGB(x, y, obj.mapColor.getRGB());
                         }
                     } else {
-                        Tile tile = world.grid[x][y];
+                        final Tile tile = world.grid[x][y];
                         if (tile.rendered) {
                             mapImage.setRGB(x, y, tile.mapColor.getRGB());
                         }
@@ -98,9 +98,9 @@ public class Navigator {
                 }
             }
 
-            for (Player player : Player.players) {
+            for (Player player : world.players) {
                 //Original rotation
-                AffineTransform originalTransform = g.getTransform();
+                final AffineTransform originalTransform = g.getTransform();
 
                 final int[] playerMapPos = new int[]{
                     (int) (mapPos[0] + player.pos[0] / config.tileSize * mapPixel),

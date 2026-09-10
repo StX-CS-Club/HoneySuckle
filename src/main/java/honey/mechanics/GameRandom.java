@@ -3,16 +3,9 @@ package honey.mechanics;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-/*
- * GameRandom.java *
- - Holds the master seed for a run and derives per-level generation randomness from it
- */
 public final class GameRandom {
 
     private static long masterSeed;
-
-    private GameRandom() {
-    }
 
     public static void newSeed() {
         seed(ThreadLocalRandom.current().nextLong());
@@ -20,15 +13,12 @@ public final class GameRandom {
 
     public static void seed(long newSeed) {
         masterSeed = newSeed;
-        System.out.println("HoneySuckle: master seed = " + masterSeed);
     }
 
     public static long seed() {
         return masterSeed;
     }
 
-    // Pure function of (masterSeed, level): always returns a Random that will produce the same
-    // future output for the same inputs, so a level's generation never depends on save/load timing.
     public static Random forLevel(int level) {
         return new Random(mix(masterSeed, level));
     }

@@ -123,12 +123,12 @@ public class ConfigManager {
     }
 
     private static int getInt(Map<String, Object> data, String key, int defaultValue) {
-        Object val = data.get(key);
+        final Object val = data.get(key);
         return val instanceof Number ? ((Number) val).intValue() : defaultValue;
     }
 
     private static double getDouble(Map<String, Object> data, String key, double defaultValue) {
-        Object val = data.get(key);
+        final Object val = data.get(key);
         return val instanceof Number ? ((Number) val).doubleValue() : defaultValue;
     }
 

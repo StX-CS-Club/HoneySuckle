@@ -19,7 +19,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -29,21 +28,14 @@ import javax.swing.JPanel;
 import honey.mechanics.AssetManager;
 import honey.mechanics.ConfigManager;
 import honey.mechanics.DataManager;
+import honey.mechanics.FileManager;
 import honey.mechanics.GameRandom;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Menu;
-import honey.rendering.Rendering;
-import honey.world.Biome;
 import honey.world.Entity;
 import honey.world.World;
 
-/*
- * HoneySuckle.java *
- - Main Class
- -Static variables and constants
- - Creates window and canvas, centerlizes rendering and updating
- */
 //Main class, extends JPanel for graphics, implements runnable and listeners
 public final class HoneySuckle extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
@@ -59,18 +51,18 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
     public static boolean running = false;
     public static boolean rendering = false;
 
-    //Public set of light data used in lighting system
-    public static Set<Map<String, Number>> lights = new LinkedHashSet<>();
+    //Public set of entities with visible health bars
     public static Set<Entity> healthBars = new LinkedHashSet<>();
 
     //Main Method
     public static void main(String[] args) {
-        config = DataManager.readConfig();
+        config = FileManager.readConfig();
         config.distribute();
 
         //Creates the window
         final JFrame frame = new JFrame("HoneySuckle");
         final HoneySuckle panel = new HoneySuckle();
+        panel.register();
 
         //Trys to set window icon as logo
         final URL iconUrl = HoneySuckle.class.getResource("/images/HoneySuckleIcon.png");
@@ -110,18 +102,21 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
         setPreferredSize(new Dimension(config.gameWidth, config.gameHeight));
         setFocusable(true);
         requestFocusInWindow();
+
+        //Fetches all data from json files into appropriate hashmaps
+        DataManager.readJsonData();
+        DataManager.formatBiomeGeneration();
+        DataManager.formatStructureData();
+        AssetManager.registerFont();
+        AssetManager.preloadImages();
+    }
+
+    public void register() {
         //Adds event listeners to window
         addKeyListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
-        //Fetches all data from json files into appropriate hashmaps
-
-        DataManager.readJsonData();
-        AssetManager.formatBiomeGeneration();
-        AssetManager.formatStructureData();
-        AssetManager.registerFont();
-        AssetManager.preloadImages();
     }
 
     public static void stop() {
@@ -132,16 +127,17 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
         World.pendingNextWorld = null;
         Player.players.clear();
         healthBars.clear();
-        lights.clear();
     }
 
     public static void start() {
         GameRandom.newSeed();
         //Creates world 1
         final World world = new World(config.startingBiome);
+        World.worlds.add(world);
         //Creates main player in reference to world 1
         player = new Player(new double[]{config.tileSize * (world.start[0] + 0.5), config.tileSize * (world.start[1] + 0.5)},
-                (int) (config.tileSize * 0.75), config.playerTags);
+                (int) (config.tileSize * 0.75), config.playerTags, world);
+        Player.players.add(player);
         running = true;
         rendering = true;
     }
@@ -155,9 +151,6 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
         running = false;
     }
 
-    // Begins a level transition: freezes game logic (rendering continues), plays the
-    // loading-screen animation, and generates the next level on a background thread.
-    // See Menu's LOADING_MENU case for the animation/publish state machine.
     public static void beginLevelTransition() {
         pause();
         final int targetLevel = World.level + 1;
@@ -180,47 +173,7 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
         final Graphics2D g2d = (Graphics2D) internalFrame.getGraphics();
 
         if (rendering) {
-            //Resets lights every frame
-            lights.clear();
-
-            //Renders World
-            final World world = World.worlds.get(World.level);
-            world.render(g2d);
-            //Renders Players
-            for (Player renderPlayer : Player.players) {
-                renderPlayer.render(g2d);
-            }
-
-            final Biome biome = World.worlds.get(World.level).biome;
-            //Renders fog, if present
-            final double fogginess = biome.attributes.getOrDefault("fogginess", 0).doubleValue();
-            if (fogginess > 0) {
-                final Color fogColor = Rendering.decodeColor(biome.textureMap.get("fogColor"));
-                Rendering.renderLight(g2d, fogColor, fogginess, lights);
-            }
-
-            biome.renderOverlay(g2d);
-
-            //Creates red overlay when at low health
-            Rendering.colorFade(g2d, Color.red, 1 - player.health);
-
-            int healthBarIndex = 0;
-            for (Entity entity : healthBars) {
-                entity.renderHealthBar(g2d, healthBarIndex);
-                healthBarIndex++;
-            }
-
-            if (player.health > 0) {
-                //Renders crafting and weapon ui
-                if(world.navigator.isOpen){
-                    world.navigator.renderUi(g2d);
-                } else if (player.inventory.isOpen) {
-                    player.inventory.renderUi(g2d);
-                } else {
-                    player.build.renderUi(g2d, World.worlds.get(World.level));
-                    player.armory.renderUi(g2d, !healthBars.isEmpty());
-                }
-            }
+            player.renderPOV(g2d);
         }
 
         if (!menu.complete) {
@@ -234,19 +187,19 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
     }
 
     public void scaleGraphics(Graphics g, BufferedImage frame) {
-        double width = getWidth();
-        double height = getHeight();
+        final double width = getWidth();
+        final double height = getHeight();
 
-        double scaleX = width / (double) config.gameWidth;
-        double scaleY = height / (double) config.gameHeight;
+        final double scaleX = width / (double) config.gameWidth;
+        final double scaleY = height / (double) config.gameHeight;
 
-        double scale = Math.min(scaleX, scaleY);
+        final double scale = Math.min(scaleX, scaleY);
 
-        int offsetX = (int) Math.floor((width - config.gameWidth * scale) / 2);
-        int offsetY = (int) Math.floor((height - config.gameHeight * scale) / 2);
+        final int offsetX = (int) Math.floor((width - config.gameWidth * scale) / 2);
+        final int offsetY = (int) Math.floor((height - config.gameHeight * scale) / 2);
 
-        int gameWidth = (int) Math.floor(config.gameWidth * scale);
-        int gameHeight = (int) Math.floor(config.gameHeight * scale);
+        final int gameWidth = (int) Math.floor(config.gameWidth * scale);
+        final int gameHeight = (int) Math.floor(config.gameHeight * scale);
         // Apply scaling and translation
         g.drawImage(frame, offsetX, offsetY, gameWidth, gameHeight, null);
 
@@ -286,7 +239,7 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
                 updatePlayer.update(inputHandler);
             }
             //Updates current world
-            World.worlds.get(World.level).update(inputHandler);
+            World.getCurrentWorld().update(inputHandler);
         }
     }
 

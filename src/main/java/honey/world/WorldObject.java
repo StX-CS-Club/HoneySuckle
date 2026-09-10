@@ -9,15 +9,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import honey.HoneySuckle;
 import honey.mechanics.ConfigManager;
 import honey.rendering.Rendering;
 
-/*
- * WorldObject.java *
- - Class for handling world objects
- - Static json data
- */
 public class WorldObject {
 
     public static ConfigManager config;
@@ -56,6 +50,8 @@ public class WorldObject {
     private final int maxFrames;
     private int frame = 0;
 
+    private final World world;
+
     //WorldObject Contructor
     public WorldObject(int id, int[] posIndex, World world) {
         this(id, posIndex, world, computeVariant(world.genRandom, id));
@@ -65,6 +61,7 @@ public class WorldObject {
     public WorldObject(int id, int[] posIndex, World world, String variant) {
         this.id = id;
         this.posIndex = posIndex;
+        this.world = world;
         //Interprets entity tags and attributes
         tags = objTags.get(id);
         attributes = objAttributes.get(id);
@@ -76,7 +73,7 @@ public class WorldObject {
             durability = attributes.getOrDefault("durability", 1).doubleValue();
         }
 
-        String glowColorString = texture.get("glowColor");
+        final String glowColorString = texture.get("glowColor");
         if (glowColorString != null) {
             glowColor = Integer.parseInt(glowColorString.substring(1), 16);
         } else {
@@ -95,7 +92,7 @@ public class WorldObject {
     }
 
     private static String computeVariant(Random random, int id) {
-        int textureCount = objAttributes.get(id).getOrDefault("variants", 1).intValue();
+        final int textureCount = objAttributes.get(id).getOrDefault("variants", 1).intValue();
         if (textureCount > 1) {
             return "_" + random.nextInt(1, textureCount + 1);
         }
@@ -146,15 +143,15 @@ public class WorldObject {
 
     private String getColor(World world) {
         //If tile has biome specific color, find color from biome
-        String natColorId = texture.get("natColor");
+        final String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.textureMap.get(natColorId);
+            final String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }
             //If tile has listed base color, set as color
         }
-        String baseColor = texture.get("baseColor");
+        final String baseColor = texture.get("baseColor");
         if (baseColor != null) {
             return baseColor;
         }
@@ -167,9 +164,9 @@ public class WorldObject {
             return mColor;
         }
         //If tile has biome specific color, find color from biome
-        String natColorId = texture.get("natColor");
+        final String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.textureMap.get(natColorId);
+            final String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }
@@ -179,7 +176,7 @@ public class WorldObject {
     }
 
     private BufferedImage getTexture(String postfix) {
-        String textureString = texture.get("texture");
+        final String textureString = texture.get("texture");
         if (textureString != null) {
             return Rendering.texture(textureString + postfix, color);
         }
@@ -187,7 +184,7 @@ public class WorldObject {
     }
 
     private BufferedImage getFrame(String postfix) {
-        String textureString = texture.get("gif");
+        final String textureString = texture.get("gif");
         if (textureString != null) {
             final int frameSize = attributes.getOrDefault("frameSize", 16).intValue();
             return Rendering.renderGIF(textureString + postfix, color, frame / (double) maxFrames, frameSize, frameSize);
@@ -196,7 +193,7 @@ public class WorldObject {
     }
 
     private String getPostfix() {
-        StringBuilder postfix = new StringBuilder(variant);
+        final StringBuilder postfix = new StringBuilder(variant);
 
         if(anim.contains("_destroyed_")){
             if(durability <= 0){
@@ -208,7 +205,7 @@ public class WorldObject {
     }
 
     public void renderLight(double[] screenPos) {
-        HoneySuckle.lights.add(Map.of(
+        world.lights.add(Map.of(
                 "posX", screenPos[0] + config.tileSize / 2,
                 "posY", screenPos[1] + config.tileSize / 2,
                 "radius", attributes.getOrDefault("lightRadius", 0),
@@ -245,7 +242,7 @@ public class WorldObject {
         if (anim.contains("_destroyed_")) {
             staticTexture = getTexture(getPostfix());
         } else {
-            World.worlds.get(World.level).objGrid[posIndex[0]][posIndex[1]] = null;
+            world.objGrid[posIndex[0]][posIndex[1]] = null;
         }
     }
 

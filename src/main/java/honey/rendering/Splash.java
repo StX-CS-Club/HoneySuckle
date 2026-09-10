@@ -108,10 +108,10 @@ public class Splash {
     }
 
     private void drawSplash() {
-        int opacity = (int) Math.floor(255 * Math.min((double) (maxFrames - frames) / animFrames, 1));
+        final int opacity = (int) Math.floor(255 * Math.min((double) (maxFrames - frames) / animFrames, 1));
 
-        BufferedImage result = new BufferedImage(150, 32, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = result.createGraphics();
+        final BufferedImage result = new BufferedImage(150, 32, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = result.createGraphics();
 
         g.setColor(new Color(splashColor.getRed(), splashColor.getGreen(), splashColor.getBlue(), opacity));
         Rendering.centeredText(g, label, 75, 24, 150, 24);

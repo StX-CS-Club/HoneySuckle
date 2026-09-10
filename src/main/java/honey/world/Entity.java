@@ -97,16 +97,16 @@ public class Entity {
     //Render Entity
     public void render(Graphics2D g, double[] camera) {
         //Position of entity on screen
-        double[] screenPos = new double[]{
+        final double[] screenPos = new double[]{
             config.gameWidth / 2.0 + pos[0] - camera[0] - size / 2.0,
             config.gameHeight / 2.0 + pos[1] - camera[1] - size / 2.0
         };
-        double[] screenSize = new double[]{size, size};
+        final double[] screenSize = new double[]{size, size};
 
         //If entity has texture, display
         if (staticTextureId != null || animTextureId != null) {
-            String baseId = animTextureId != null ? animTextureId : staticTextureId;
-            StringBuilder textureId = new StringBuilder(baseId);
+            final String baseId = animTextureId != null ? animTextureId : staticTextureId;
+            final StringBuilder textureId = new StringBuilder(baseId);
             //Add parameters to stem file name, if applicable
             if (animation != null) {
                 if (animation.contains("_x_")) {
@@ -166,11 +166,10 @@ public class Entity {
             }
 
             //Rotate to face locked target
-            AffineTransform originalTransform = null;
+            final AffineTransform originalTransform = g.getTransform();
             if (animation != null && animation.contains("_face_")) {
                 double cx = screenPos[0] + screenSize[0] / 2.0;
                 double cy = screenPos[1] + screenSize[1] / 2.0;
-                originalTransform = g.getTransform();
                 g.rotate(Math.toRadians(brain.trackAngle), cx, cy);
             }
 
@@ -195,9 +194,7 @@ public class Entity {
 
             g.drawImage(textureImage, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1], null);
 
-            if (originalTransform != null) {
-                g.setTransform(originalTransform);
-            }
+            g.setTransform(originalTransform);
         } else {
             g.setColor(colorDecoded);
             Rendering.borderRect(g, 2, Color.black, (int) screenPos[0], (int) screenPos[1], (int) screenSize[0], (int) screenSize[1]);
@@ -208,7 +205,7 @@ public class Entity {
         if (index < 3) {
             healthBarFrames++;
             final float opacity = Math.min(healthBarFrames * 3, 255) / 255f;
-            Composite originalComposite = g.getComposite();
+            final Composite originalComposite = g.getComposite();
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 
             g.setColor(Color.DARK_GRAY);
@@ -234,15 +231,15 @@ public class Entity {
 
     private String getColor(World world) {
         //If entity has biome specific color, get color from biome
-        String natColorId = texture.get("natColor");
+        final String natColorId = texture.get("natColor");
         if (natColorId != null) {
-            String natColor = world.biome.textureMap.get(natColorId);
+            final String natColor = world.biome.textureMap.get(natColorId);
             if (natColor != null) {
                 return natColor;
             }
             //If entity has specified baseColor, set as color
         }
-        String baseColor = texture.get("baseColor");
+        final String baseColor = texture.get("baseColor");
         if (baseColor != null) {
             return baseColor;
         }

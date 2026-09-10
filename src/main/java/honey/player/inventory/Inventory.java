@@ -20,10 +20,6 @@ import honey.player.armory.Weapon;
 import honey.rendering.Rendering;
 import honey.rendering.Splash;
 
-/*
- * Item.java *
- - Class for managing player inventories
- */
 public class Inventory {
 
     public static ConfigManager config;
@@ -161,7 +157,7 @@ public class Inventory {
                         keyScroll = Math.clamp(keyScroll + input.mouseScroll, 0, keyItems.size() - 1);
                         keyHover = -1;
                         if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
-                            double keyHighlight = (input.mousePos[0] - (config.gameWidth / 2 - 50)) + keyScroll * 110;
+                            final double keyHighlight = (input.mousePos[0] - (config.gameWidth / 2 - 50)) + keyScroll * 110;
                             if (keyHighlight % 110 <= 100) {
                                 keyHover = (int) Math.floor(keyHighlight / 110);
                             }
@@ -172,7 +168,7 @@ public class Inventory {
                             }
                         } else if (input.clickPressed(MouseEvent.BUTTON3)) {
                             if (keyHover > -1 && keyHover < keyItems.size()) {
-                                KeyItem keyItem = keyItems.get(keyHover);
+                                final KeyItem keyItem = keyItems.get(keyHover);
                                 if (player.armory.hotKey == keyItem) {
                                     player.armory.hotKey = null;
                                 } else {
@@ -198,7 +194,7 @@ public class Inventory {
 
     public void renderSplashes(Graphics2D g, double[] screenPos) {
         for (int i = 0; i < Math.min(splashes.size(), 3); i++) {
-            Splash splash = splashes.get(i);
+            final Splash splash = splashes.get(i);
 
             if (!splash.render(g, (int) screenPos[0], (int) (screenPos[1] - 25 * i - config.tileSize * 1.25))) {
                 splashes.remove(splash);
@@ -294,6 +290,7 @@ public class Inventory {
             final int type = itemData.getOrDefault("type", 0).intValue();
 
             String stringId = null;
+            boolean showSplash = true;
             switch (type) {
                 case 0 -> {
                     stringId = Item.itemStringId.get(id);
@@ -365,15 +362,20 @@ public class Inventory {
                     stringId = Armor.armorStringId.get(id);
 
                     if (gain) {
-                        for (int i = 0; i < count; i++) {
-                            armors.add(new Armor(stringId));
-                            iconColors[4] = "#00ffaa";
+                        //Armor doesn't stack - skip if the player already owns this type
+                        if (getArmor(stringId) == null) {
+                            for (int i = 0; i < count; i++) {
+                                armors.add(new Armor(stringId));
+                                iconColors[4] = "#00ffaa";
+                            }
+                            unlockRecipes(Armor.armorBlueprintUnlocks.get(stringId), Armor.armorRecipeUnlocks.get(stringId));
+                        } else {
+                            showSplash = false;
                         }
-                        unlockRecipes(Armor.armorBlueprintUnlocks.get(stringId), Armor.armorRecipeUnlocks.get(stringId));
                     } else {
                         int removed = 0;
                         for (int i = armors.size() - 1; i > -1; i--) {
-                            Armor armor = armors.get(i);
+                            final Armor armor = armors.get(i);
                             if (armor.type.equals(stringId)) {
                                 armors.remove(armor);
                                 if (armor == player.armory.armor) {
@@ -427,7 +429,7 @@ public class Inventory {
                 }
             }
 
-            if (gain) {
+            if (gain && showSplash) {
                 Splash splash = getSplash(type + ":" + stringId);
                 if (splash == null) {
                     splash = new Splash(itemData, count);
@@ -506,6 +508,15 @@ public class Inventory {
         for (Ammo invAmmo : ammo) {
             if (invAmmo.type.equals(ammoId)) {
                 return invAmmo;
+            }
+        }
+        return null;
+    }
+
+    private Armor getArmor(String armorId) {
+        for (Armor invArmor : armors) {
+            if (invArmor.type.equals(armorId)) {
+                return invArmor;
             }
         }
         return null;

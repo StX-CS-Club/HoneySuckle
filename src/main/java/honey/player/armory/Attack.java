@@ -115,7 +115,7 @@ public class Attack {
     }
 
     public void update(Player player) {
-        final World world = World.worlds.get(World.level);
+        final World world = player.world;
 
         final Map<String, long[]> staticAttackFrames = Map.copyOf(attackFrames);
 
@@ -169,8 +169,8 @@ public class Attack {
                     }
                 }
                 //Player tile
-                int sizeTiles = (int) Math.floor(swingSize / config.tileSize) + 1;
-                int[] posIndex = new int[]{
+                final int sizeTiles = (int) Math.floor(swingSize / config.tileSize) + 1;
+                final int[] posIndex = new int[]{
                     (int) Math.floor(player.pos[0] / config.tileSize),
                     (int) Math.floor(player.pos[1] / config.tileSize)
                 };
@@ -251,8 +251,8 @@ public class Attack {
                     }
                 }
                 //Player tile
-                int sizeTiles = (int) Math.floor(stabSize * 2 / config.tileSize) + 1;
-                int[] posIndex = new int[]{
+                final int sizeTiles = (int) Math.floor(stabSize * 2 / config.tileSize) + 1;
+                final int[] posIndex = new int[]{
                     (int) Math.floor(player.pos[0] / config.tileSize),
                     (int) Math.floor(player.pos[1] / config.tileSize)
                 };
@@ -298,7 +298,7 @@ public class Attack {
                 final double bounce = numberFromMap(shieldBehavior, "bounce", 1).doubleValue();
 
                 //Direction shield is facing
-                double[] direction = new double[]{
+                final double[] direction = new double[]{
                     Math.signum(Math.sin(Math.toRadians(player.rotation))),
                     -Math.signum(Math.cos(Math.toRadians(player.rotation)))
                 };
@@ -315,16 +315,13 @@ public class Attack {
                         //Block tuah! Shield that thang!
 
                         //Stength of parry
-                        double parryCoef = parry * frames / attackFrame;
-                        if (attackFrame == frames) {
-                            parryCoef = 1;
-                        }
+                        final double parryCoef = attackFrame == frames ? 1 : parry * frames / attackFrame;
                         long frameDifference = (frames - attackFrame);
                         if (frameDifference < 0 || attackFrame == -1) {
                             frameDifference = 0;
                         }
                         //Bonus of parry
-                        double[] parryBonus = new double[]{
+                        final double[] parryBonus = new double[]{
                             parry / frames * config.tileSize * frameDifference * Math.abs(Math.sin(Math.toRadians(player.rotation))),
                             parry / frames * config.tileSize * frameDifference * Math.abs(Math.cos(Math.toRadians(player.rotation)))
                         };
@@ -381,8 +378,8 @@ public class Attack {
 
             final Map<String, long[]> staticAttackFrames = Map.copyOf(attackFrames);
 
+            final World world = player.world;
             String textureId = weapon.texture.get("texture");
-            World world = World.worlds.get(World.level);
             String overlayColor = null;
 
             double screenSize = size;
@@ -401,8 +398,8 @@ public class Attack {
                         final double swingSize = config.tileSize * numberFromMap(swingBehavior, "size", screenSize / config.tileSize).doubleValue();
                         //Position of slash on screen
                         double[] swingScreenPos = new double[]{
-                            config.gameWidth / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - swingSize / 2.0,
-                            config.gameHeight / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - swingSize - player.size / 2.0
+                            config.gameWidth / 2.0 + player.pos[0] - world.camera[0] - swingSize / 2.0,
+                            config.gameHeight / 2.0 + player.pos[1] - world.camera[1] - swingSize - player.size / 2.0
                         };
                         //Render slash
                         if (mirroredSwing) {
@@ -425,9 +422,9 @@ public class Attack {
                     if (attackFrame <= frames && attackFrame >= 0) {
                         final double stabSize = config.tileSize * numberFromMap(stabBehavior, "size", screenSize / config.tileSize).doubleValue();
                         //Position of slash on screen
-                        double[] swingScreenPos = new double[]{
-                            config.gameWidth / 2.0 + player.pos[0] - World.worlds.get(World.level).camera[0] - stabSize / 4.0,
-                            config.gameHeight / 2.0 + player.pos[1] - World.worlds.get(World.level).camera[1] - stabSize * 2 - player.size / 2.0
+                        final double[] swingScreenPos = new double[]{
+                            config.gameWidth / 2.0 + player.pos[0] - world.camera[0] - stabSize / 4.0,
+                            config.gameHeight / 2.0 + player.pos[1] - world.camera[1] - stabSize * 2 - player.size / 2.0
                         };
                         //Render slash
                         g.drawImage(
@@ -502,7 +499,7 @@ public class Attack {
         final Map<String, Object> behaviorEntry = behavior.get(behaviorType);
         if (behaviorEntry != null) {
             behaviorEntry.putIfAbsent("attackId", "base");
-            String attackId = (String) behaviorEntry.getOrDefault("attackId", behaviorType);
+            final String attackId = (String) behaviorEntry.getOrDefault("attackId", behaviorType);
             attackFrames.put(attackId, new long[]{-1});
         }
         return behaviorEntry;

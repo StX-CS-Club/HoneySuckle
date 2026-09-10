@@ -10,17 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import honey.HoneySuckle;
 import honey.mechanics.Collision;
 import honey.mechanics.ConfigManager;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
-/*
- * Projectile.java *
- - Class for managing projectiles
- - Contains static json data
- */
 public class Projectile {
 
     public static ConfigManager config;
@@ -69,7 +63,7 @@ public class Projectile {
     public Projectile(String type, double[] pos, double[] currentVel, double angle, Object source) {
         texture = projTextures.get(type);
         anim = texture.getOrDefault("anim", "");
-        String glowColorString = texture.get("glowColor");
+        final String glowColorString = texture.get("glowColor");
         if (glowColorString != null) {
             glowColor = Integer.parseInt(glowColorString.substring(1), 16);
         } else {
@@ -82,8 +76,8 @@ public class Projectile {
 
         baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * config.tileSize;
 
-        double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
-        double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
+        final double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
+        final double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
         vel = new double[]{sin, cos};
         if (!tags.contains("independent")) {
             vel[0] += currentVel[0];
@@ -112,7 +106,7 @@ public class Projectile {
 
         texture = projTextures.get(type);
         anim = texture.getOrDefault("anim", "");
-        String glowColorString = texture.get("glowColor");
+        final String glowColorString = texture.get("glowColor");
         if (glowColorString != null) {
             glowColor = Integer.parseInt(glowColorString.substring(1), 16);
         } else {
@@ -122,8 +116,8 @@ public class Projectile {
         tags = projTags.get(type);
         splinters = projSplinters.get(type);
 
-        Set<String> keys = attributes.keySet();
-        Map<String, Number> defaultAttributes = projAttributes.get(type);
+        final Set<String> keys = attributes.keySet();
+        final Map<String, Number> defaultAttributes = projAttributes.get(type);
         for (String key : defaultAttributes.keySet()) {
             if (!keys.contains(key)) {
                 attributes.put(key, defaultAttributes.get(key));
@@ -133,8 +127,8 @@ public class Projectile {
 
         baseSpeed = attributes.getOrDefault("speed", 0.25).doubleValue() * config.tileSize;
 
-        double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
-        double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
+        final double sin = Math.sin(Math.toRadians(-angle)) * -baseSpeed;
+        final double cos = Math.cos(Math.toRadians(-angle)) * -baseSpeed;
         vel = new double[]{sin, cos};
         if (!tags.contains("independent")) {
             vel[0] += currentVel[0];
@@ -159,8 +153,8 @@ public class Projectile {
 
     //Change velocity of projectile
     public void alterVel(double[] pos, double[] currentVel, double angle, double velCoef, Object source) {
-        double sin = Math.sin(Math.toRadians(-angle)) * velCoef * -baseSpeed;
-        double cos = Math.cos(Math.toRadians(-angle)) * velCoef * -baseSpeed;
+        final double sin = Math.sin(Math.toRadians(-angle)) * velCoef * -baseSpeed;
+        final double cos = Math.cos(Math.toRadians(-angle)) * velCoef * -baseSpeed;
 
         //Reset shit
         vel = new double[]{sin, cos};
@@ -172,9 +166,9 @@ public class Projectile {
         this.source = source;
     }
 
-    //Update Projectile
-    public void update() {
-        final World world = World.worlds.get(World.level);
+    //Update Projectile - world is the World whose renderProjectiles list this projectile is currently in
+    //(passed in by World.update(), the only caller), rather than looked up via World.getCurrentWorld()
+    public void update(World world) {
         final int trailCount = attributes.getOrDefault("trailCount", 0).intValue();
         final int steps = attributes.getOrDefault("steps", 1).intValue();
 
@@ -204,7 +198,7 @@ public class Projectile {
                 pos[1] = newPos[1];
             } else {
                 if (trail == trailCount) {
-                    Projectile child = new Projectile(type, new double[]{pos[0] + vel[0], pos[1] + vel[1]}, new double[2], angle, source);
+                    final Projectile child = new Projectile(type, new double[]{pos[0] + vel[0], pos[1] + vel[1]}, new double[2], angle, source);
                     child.bounces = this.bounces;
                     world.projectiles.add(child);
                 }
@@ -218,14 +212,14 @@ public class Projectile {
 
     //Render projectile
     public void render(Graphics2D g, double[] screenPos) {
-        AffineTransform originalTransform = g.getTransform();
+        final AffineTransform originalTransform = g.getTransform();
         g.rotate(Math.toRadians(angle), screenPos[0], screenPos[1]);
         g.drawImage(staticTexture, (int) (screenPos[0] - size / 2.0), (int) (screenPos[1] - size / 2.0), (int) size, (int) size, null);
         g.setTransform(originalTransform);
     }
 
-    public void renderLight(double[] screenPos) {
-        HoneySuckle.lights.add(Map.of(
+    public void renderLight(double[] screenPos, World world) {
+        world.lights.add(Map.of(
                 "posX", screenPos[0] + config.tileSize / 2,
                 "posY", screenPos[1] + config.tileSize / 2,
                 "radius", attributes.getOrDefault("lightRadius", 0),
@@ -240,7 +234,7 @@ public class Projectile {
     }
 
     private String getPostfix() {
-        StringBuilder postfix = new StringBuilder();
+        final StringBuilder postfix = new StringBuilder();
         if (anim.contains("_flame_")) {
             if (flaming) {
                 postfix.append("_flame");
@@ -251,7 +245,7 @@ public class Projectile {
 
     //Checks all collision at a given position, returns true if something was hit
     private boolean checkCollision(World world, double[] checkPos) {
-        int[] posIndex = new int[]{
+        final int[] posIndex = new int[]{
             (int) Math.floor(checkPos[0] / config.tileSize),
             (int) Math.floor(checkPos[1] / config.tileSize)
         };
@@ -372,7 +366,7 @@ public class Projectile {
 
         //Players
         if (tags.contains("hurtPlayer")) {
-            for (Player player : Player.players) {
+            for (Player player : world.players) {
                 if (source != player || tags.contains("hurtSource")) {
                     if (Collision.isBoxOverlap(
                             new Point2D.Double(checkPos[0], checkPos[1]),

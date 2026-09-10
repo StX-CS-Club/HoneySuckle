@@ -1,17 +1,11 @@
 package honey.mechanics;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import honey.player.Player;
 import honey.player.armory.Ammo;
@@ -32,18 +26,14 @@ import honey.world.WorldObject;
 
 public class DataManager {
 
-    public static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
-    };
-
     @SuppressWarnings("unchecked")
     public static void readJsonData() {
         try {
             //Maps object data
-            Map<String, Object> objData = readJsonDirectory(DataManager.class.getResource("/jsonData/objects").toURI());
+            final Map<String, Object> objData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/objects").toURI());
             for (String key : objData.keySet()) {
-                Map<String, Object> obj = (Map<String, Object>) objData.get(key);
-                int intKey = (Integer) obj.get("id");
+                final Map<String, Object> obj = (Map<String, Object>) objData.get(key);
+                final int intKey = (Integer) obj.get("id");
                 WorldObject.objLoot.put(intKey, (List<Map<String, Number>>) obj.getOrDefault("loot", new ArrayList<>()));
                 WorldObject.objTextures.put(intKey, (Map<String, String>) obj.getOrDefault("texture", new HashMap<>()));
                 WorldObject.objAttributes.put(intKey, (Map<String, Number>) obj.getOrDefault("attributes", new HashMap<>()));
@@ -53,10 +43,10 @@ public class DataManager {
             }
 
             //Maps tile data
-            Map<String, Object> tileData = readJsonDirectory(DataManager.class.getResource("/jsonData/tiles").toURI());
+            final Map<String, Object> tileData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/tiles").toURI());
             for (String key : tileData.keySet()) {
-                Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
-                int intKey = (Integer) tile.get("id");
+                final Map<String, Object> tile = (Map<String, Object>) tileData.get(key);
+                final int intKey = (Integer) tile.get("id");
                 Tile.tileTextures.put(intKey, (Map<String, String>) tile.getOrDefault("texture", new HashMap<>()));
                 Tile.tileAttributes.put(intKey, (Map<String, Number>) tile.getOrDefault("attributes", new HashMap<>()));
                 Tile.tileTags.put(intKey, (List<String>) tile.getOrDefault("tags", new ArrayList<>()));
@@ -65,9 +55,9 @@ public class DataManager {
             }
 
             //Maps blueprint data
-            Map<String, Object> blueprintData = readJsonDirectory(DataManager.class.getResource("/jsonData/blueprints").toURI());
+            final Map<String, Object> blueprintData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/blueprints").toURI());
             for (String key : blueprintData.keySet()) {
-                Map<String, Object> blueprint = (Map<String, Object>) blueprintData.get(key);
+                final Map<String, Object> blueprint = (Map<String, Object>) blueprintData.get(key);
                 Blueprint.blueprintMats.put(key, (List<Map<String, Number>>) blueprint.getOrDefault("mats", new ArrayList<>()));
                 Blueprint.blueprintParams.put(key, (Map<String, List<Number>>) blueprint.getOrDefault("params", new HashMap<>()));
                 Blueprint.blueprintTextures.put(key, (Map<String, String>) blueprint.getOrDefault("texture", new HashMap<>()));
@@ -76,9 +66,9 @@ public class DataManager {
             }
 
             //Maps recipe data
-            Map<String, Object> recipeData = readJsonDirectory(DataManager.class.getResource("/jsonData/recipes").toURI());
+            final Map<String, Object> recipeData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/recipes").toURI());
             for (String key : recipeData.keySet()) {
-                Map<String, Object> recipe = (Map<String, Object>) recipeData.get(key);
+                final Map<String, Object> recipe = (Map<String, Object>) recipeData.get(key);
                 Craft.recipeMats.put(key, (List<Map<String, Number>>) recipe.getOrDefault("mats", new ArrayList<>()));
                 Craft.recipeAttributes.put(key, (Map<String, Number>) recipe.getOrDefault("attributes", new HashMap<>()));
                 Craft.recipeTextures.put(key, (Map<String, String>) recipe.getOrDefault("texture", new HashMap<>()));
@@ -88,7 +78,7 @@ public class DataManager {
             }
 
             //Maps item data
-            Map<String, Object> itemData = readJsonDirectory(DataManager.class.getResource("/jsonData/items").toURI());
+            final Map<String, Object> itemData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/items").toURI());
             for (String key : itemData.keySet()) {
                 final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
                 Item.itemNames.put(key, (String) item.getOrDefault("name", key));
@@ -103,7 +93,7 @@ public class DataManager {
             }
 
             //Maps key item data
-            Map<String, Object> keyData = readJsonDirectory(DataManager.class.getResource("/jsonData/key_items").toURI());
+            final Map<String, Object> keyData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/key_items").toURI());
             for (String key : keyData.keySet()) {
                 final Map<String, Object> keyItem = (Map<String, Object>) keyData.get(key);
                 KeyItem.keyNames.put(key, (String) keyItem.getOrDefault("name", key));
@@ -119,9 +109,9 @@ public class DataManager {
             }
 
             //Maps biome data
-            Map<String, Object> biomeData = readJsonDirectory(DataManager.class.getResource("/jsonData/biomes").toURI());
+            final Map<String, Object> biomeData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/biomes").toURI());
             for (String key : biomeData.keySet()) {
-                Map<String, Object> biome = (Map<String, Object>) biomeData.get(key);
+                final Map<String, Object> biome = (Map<String, Object>) biomeData.get(key);
                 Biome.biometextureMap.put(key, (Map<String, String>) biome.getOrDefault("textureMap", new HashMap<>()));
                 Biome.biomeTags.put(key, (List<String>) biome.getOrDefault("tags", new ArrayList<>()));
                 Biome.biomeAttributes.put(key, (Map<String, Number>) biome.getOrDefault("attributes", new HashMap<>()));
@@ -130,7 +120,7 @@ public class DataManager {
             }
 
             //Maps structure data
-            Map<String, Object> structureData = readJsonDirectory(DataManager.class.getResource("/jsonData/structures").toURI());
+            final Map<String, Object> structureData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/structures").toURI());
             for (String key : structureData.keySet()) {
                 final Map<String, Object> structure = (Map<String, Object>) structureData.get(key);
                 Structure.structureName.put(key, (String) structure.getOrDefault("name", key));
@@ -144,9 +134,9 @@ public class DataManager {
             }
 
             //Maps entity data
-            Map<String, Object> entityData = readJsonDirectory(DataManager.class.getResource("/jsonData/entities").toURI());
+            final Map<String, Object> entityData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/entities").toURI());
             for (String key : entityData.keySet()) {
-                Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
+                final Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
                 Entity.entityAttributes.put(key, (Map<String, Number>) entity.getOrDefault("attributes", new HashMap<>()));
                 Entity.entityTextures.put(key, (Map<String, String>) entity.getOrDefault("texture", new HashMap<>()));
                 Entity.entityLoot.put(key, (List<Map<String, Number>>) entity.getOrDefault("loot", new ArrayList<>()));
@@ -160,9 +150,9 @@ public class DataManager {
             }
 
             //Maps weapon data
-            Map<String, Object> weaponData = readJsonDirectory(DataManager.class.getResource("/jsonData/weapons").toURI());
+            final Map<String, Object> weaponData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/weapons").toURI());
             for (String key : weaponData.keySet()) {
-                Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
+                final Map<String, Object> weapon = (Map<String, Object>) weaponData.get(key);
                 Weapon.weaponAttributes.put(key, (Map<String, Number>) weapon.getOrDefault("attributes", new HashMap<>()));
                 Weapon.weaponAmmo.put(key, (List<String>) weapon.getOrDefault("ammo", new ArrayList<>()));
                 Weapon.weaponStats.put(key, (Map<String, String>) weapon.getOrDefault("stats", new HashMap<>()));
@@ -179,9 +169,9 @@ public class DataManager {
             }
 
             //Maps ammo data
-            Map<String, Object> ammoData = readJsonDirectory(DataManager.class.getResource("/jsonData/ammo").toURI());
+            final Map<String, Object> ammoData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/ammo").toURI());
             for (String key : ammoData.keySet()) {
-                Map<String, Object> ammo = (Map<String, Object>) ammoData.get(key);
+                final Map<String, Object> ammo = (Map<String, Object>) ammoData.get(key);
                 Ammo.ammoAttributes.put(key, (Map<String, Number>) ammo.getOrDefault("attributes", new HashMap<>()));
                 Ammo.ammoNames.put(key, (String) ammo.getOrDefault("name", key));
                 Ammo.ammoStats.put(key, (Map<String, String>) ammo.getOrDefault("stats", new HashMap<>()));
@@ -196,9 +186,9 @@ public class DataManager {
             }
 
             //Maps armor data
-            Map<String, Object> armorData = readJsonDirectory(DataManager.class.getResource("/jsonData/armor").toURI());
+            final Map<String, Object> armorData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/armor").toURI());
             for (String key : armorData.keySet()) {
-                Map<String, Object> armor = (Map<String, Object>) armorData.get(key);
+                final Map<String, Object> armor = (Map<String, Object>) armorData.get(key);
                 Armor.armorTextures.put(key, (Map<String, String>) armor.getOrDefault("texture", new HashMap<>()));
                 Armor.armorAttributes.put(key, (Map<String, Number>) armor.getOrDefault("attributes", new HashMap<>()));
                 Armor.armorRecipeUnlocks.put(key, (List<String>) armor.getOrDefault("recipeUnlocks", new ArrayList<>()));
@@ -213,9 +203,9 @@ public class DataManager {
             Player.playerDefaultAttributes.putAll(Armor.armorAttributes.get("naked"));
 
             //Maps Projectile data
-            Map<String, Object> projData = readJsonDirectory(DataManager.class.getResource("/jsonData/projectiles").toURI());
+            final Map<String, Object> projData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/projectiles").toURI());
             for (String key : projData.keySet()) {
-                Map<String, Object> proj = (Map<String, Object>) projData.get(key);
+                final Map<String, Object> proj = (Map<String, Object>) projData.get(key);
                 Projectile.projAttributes.put(key, (Map<String, Number>) proj.getOrDefault("attributes", new HashMap<>()));
                 Projectile.projTextures.put(key, (Map<String, String>) proj.getOrDefault("texture", new HashMap<>()));
                 Projectile.projSplinters.put(key, (List<Map<String, Number>>) proj.getOrDefault("splinters", new ArrayList<>()));
@@ -227,9 +217,9 @@ public class DataManager {
             }
 
             //Maps Effect data
-            Map<String, Object> effectData = readJsonDirectory(DataManager.class.getResource("/jsonData/effects").toURI());
+            final Map<String, Object> effectData = FileManager.readJsonDirectory(DataManager.class.getResource("/jsonData/effects").toURI());
             for (String key : effectData.keySet()) {
-                Map<String, Object> effect = (Map<String, Object>) effectData.get(key);
+                final Map<String, Object> effect = (Map<String, Object>) effectData.get(key);
                 Effect.effectNames.put(key, (String) effect.getOrDefault("name", key));
                 Effect.effectTextures.put(key, (Map<String, String>) effect.getOrDefault("texture", new HashMap<>()));
                 Effect.effectModifiers.put(key, (Map<String, Number>) effect.getOrDefault("modifiers", new HashMap<>()));
@@ -246,29 +236,233 @@ public class DataManager {
         }
     }
 
-    public static ConfigManager readConfig() {
-        try {
-            URL url = DataManager.class.getResource("/jsonData/config.json");
-            if (url != null) {
-                Map<String, Object> data = objectMapper.readValue(new File(url.toURI()), mapType);
-                return new ConfigManager(data);
+    public static void formatBiomeGeneration() {
+        for (String biomeId : Biome.biomeGeneration.keySet()) {
+            final Map<String, Object> gen = Biome.biomeGeneration.get(biomeId);
+
+            int[] size = toIntArray(gen.get("size"), 51, 100);
+            if (size.length < 2) {
+                size = new int[]{51, 100};
             }
-        } catch (IOException | URISyntaxException e) {
-            System.out.println("DataManager INFO: Using default config values.");
+
+            int[][] startMap = toIntMatrix(gen.get("startMap"));
+            if (startMap.length == 0) {
+                startMap = new int[][]{{1}};
+            }
+            final int startHeight = startMap.length;
+
+            final int defaultStartX = size[0] / 2;
+            final int defaultStartY = size[1] - 1;
+            int[] start = toIntArray(gen.get("start"), defaultStartX, defaultStartY);
+            if (start.length < 2) {
+                start = new int[]{defaultStartX, defaultStartY};
+            }
+
+            final int baseTile = getInt(gen, "base", 0);
+
+            final int defaultMarginX = size[0] / 2 + 1;
+            final int defaultMarginY = size[1] - startHeight;
+            int[] margin = toIntArray(gen.get("genSize"), defaultMarginX, defaultMarginY);
+            if (margin.length < 2) {
+                margin = new int[]{defaultMarginX, defaultMarginY};
+            }
+
+            final List<Biome.TileGenRule> tileRules = new ArrayList<>();
+            for (Map<String, Object> tile : getListOfMaps(gen, "tiles")) {
+                tileRules.add(new Biome.TileGenRule(
+                        getInt(tile, "id", 1),
+                        getDouble(tile, "prob", 0),
+                        getDouble(tile, "maxProb", 1.0),
+                        getDouble(tile, "levelProb", 0),
+                        toDoubleMatrix(tile.get("tileProb")),
+                        toDoubleMatrix(tile.get("sideProb")),
+                        toDoubleMatrix(tile.get("bottomProb")),
+                        toDoubleMatrix(tile.get("rangeProb"))
+                ));
+            }
+
+            final List<Biome.ObjGenRule> objRules = new ArrayList<>();
+            for (Map<String, Object> obj : getListOfMaps(gen, "objects")) {
+                objRules.add(new Biome.ObjGenRule(
+                        getInt(obj, "id", 1),
+                        getDouble(obj, "prob", 0),
+                        getDouble(obj, "maxProb", 1.0),
+                        getDouble(obj, "levelProb", 0),
+                        toDoubleMatrix(obj.get("tileProb")),
+                        toDoubleMatrix(obj.get("rangeProb"))
+                ));
+            }
+
+            final List<Biome.EntityGenRule> entityRules = new ArrayList<>();
+            for (Map<String, Object> entity : getListOfMaps(gen, "entities")) {
+                entityRules.add(new Biome.EntityGenRule(
+                        getInt(entity, "id", 0),
+                        getDouble(entity, "prob", 0),
+                        getDouble(entity, "maxProb", 1.0),
+                        toDoubleMatrix(entity.get("tileProb")),
+                        toDoubleMatrix(entity.get("rangeProb")),
+                        getDouble(entity, "levelProb", 0)
+                ));
+            }
+
+            final List<Biome.StructureGenRule> structureRules = new ArrayList<>();
+            for (Map<String, Object> structure : getListOfMaps(gen, "structures")) {
+                final Object rawGrid = structure.get("grid");
+                final int[][] grid = rawGrid != null ? toIntMatrix(rawGrid) : new int[][]{{0, 0, 0, 0}};
+                structureRules.add(new Biome.StructureGenRule(
+                        getInt(structure, "id", 0),
+                        getDouble(structure, "prob", 0),
+                        getDouble(structure, "maxProb", 1.0),
+                        getDouble(structure, "levelProb", 0),
+                        toIntMatrix(structure.get("pos")),
+                        grid,
+                        toDoubleMatrix(structure.get("tileProb")),
+                        toDoubleMatrix(structure.get("rangeProb")),
+                        toIntArray(structure.get("offsetBR"), 0, 0)
+                ));
+            }
+
+            Biome.biomeGenData.put(biomeId, new Biome.BiomeGenData(
+                    size, start, startMap, baseTile, margin,
+                    tileRules, objRules, entityRules, structureRules
+            ));
         }
-        return new ConfigManager(new HashMap<>());
     }
 
-    private static Map<String, Object> readJsonDirectory(URI directory) throws IOException {
-        Map<String, Object> result = new HashMap<>();
-        File directoryFile = new File(directory);
-        for (File file : directoryFile.listFiles()) {
-            if (file.isDirectory()) {
-                result.putAll(readJsonDirectory(file.toURI()));
-            } else {
-                if (file.toURI().toString().contains(".json")) {
-                    result.putAll(objectMapper.readValue(file, mapType));
-                }
+    public static void formatStructureData() {
+        for (String structureId : Structure.structureGeneration.keySet()) {
+            final Map<String, Object> gen = Structure.structureGeneration.get(structureId);
+
+            int[] core = null;
+            final Object rawCore = gen.get("core");
+            if (rawCore instanceof List<?> list && !list.isEmpty()) {
+                core = toIntArray(rawCore, 0, 0);
+            }
+
+            final int[] size = toIntArray(gen.get("size"), 0, 0);
+            final int[][] tileMap = toIntMatrix(gen.get("tileMap"));
+            final int[][] objMap = toIntMatrix(gen.get("objMap"));
+
+            final List<Structure.EntitySpawn> entitySpawns = new ArrayList<>();
+            for (Map<String, Object> entity : getListOfMaps(gen, "entities")) {
+                final String entityId = Entity.entityStringId.get(getInt(entity, "id", 0));
+                entitySpawns.add(new Structure.EntitySpawn(
+                        entityId,
+                        getDouble(entity, "prob", 1),
+                        getDouble(entity, "maxProb", 1.0),
+                        getDouble(entity, "levelProb", 0),
+                        toDoubleArray(entity.get("pos"), 0, 0)
+                ));
+            }
+
+            final List<Structure.ChestSpawn> chestSpawns = new ArrayList<>();
+            for (Map<String, Object> chest : getListOfMaps(gen, "chests")) {
+                chestSpawns.add(new Structure.ChestSpawn(
+                        getInt(chest, "id", 16),
+                        getDouble(chest, "prob", 1),
+                        getDouble(chest, "maxProb", 1.0),
+                        getDouble(chest, "levelProb", 0),
+                        toIntArray(chest.get("pos"), 0, 0),
+                        getListOfMaps(chest, "lootEntries")
+                ));
+            }
+
+            final List<Structure.StructureJoint> joints = new ArrayList<>();
+            for (Map<String, Object> joint : getListOfMaps(gen, "joints")) {
+                joints.add(new Structure.StructureJoint(
+                        toIntArray(joint.get("pos"), 0, 0),
+                        getListOfMaps(joint, "segments"),
+                        getInt(joint, "rotation", 0)
+                ));
+            }
+
+            Structure.structureData.put(structureId, new Structure.StructureData(
+                    core, size, tileMap, objMap, entitySpawns, chestSpawns, joints
+            ));
+        }
+    }
+
+    private static int getInt(Map<String, Object> map, String key, int def) {
+        final Object v = map.get(key);
+        return v instanceof Number ? ((Number) v).intValue() : def;
+    }
+
+    private static double getDouble(Map<String, Object> map, String key, double def) {
+        final Object v = map.get(key);
+        return v instanceof Number ? ((Number) v).doubleValue() : def;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Map<String, Object>> getListOfMaps(Map<String, Object> map, String key) {
+        final Object val = map.get(key);
+        return val instanceof List<?> ? (List<Map<String, Object>>) val : new ArrayList<>();
+    }
+
+    private static int[] toIntArray(Object raw, int... defaults) {
+        if (!(raw instanceof List<?>)) {
+            return defaults.clone();
+        }
+        final List<?> list = (List<?>) raw;
+        final int[] result = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            final Object elem = list.get(i);
+            result[i] = elem instanceof Number ? ((Number) elem).intValue()
+                    : (defaults.length > i ? defaults[i] : 0);
+        }
+        return result;
+    }
+
+    private static double[] toDoubleArray(Object raw, double... defaults) {
+        if (!(raw instanceof List<?>)) {
+            return defaults.clone();
+        }
+        final List<?> list = (List<?>) raw;
+        final double[] result = new double[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            final Object elem = list.get(i);
+            result[i] = elem instanceof Number ? ((Number) elem).doubleValue()
+                    : (defaults.length > i ? defaults[i] : 0);
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static int[][] toIntMatrix(Object raw) {
+        if (!(raw instanceof List<?> outer) || outer.isEmpty()) {
+            return new int[0][0];
+        }
+        if (!(outer.get(0) instanceof List<?>)) {
+            return new int[0][0];
+        }
+        final List<List<?>> list = (List<List<?>>) raw;
+        final int[][] result = new int[list.size()][];
+        for (int i = 0; i < list.size(); i++) {
+            final List<?> row = list.get(i);
+            result[i] = new int[row.size()];
+            for (int j = 0; j < row.size(); j++) {
+                final Object elem = row.get(j);
+                result[i][j] = elem instanceof Number ? ((Number) elem).intValue() : 0;
+            }
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static double[][] toDoubleMatrix(Object raw) {
+        if (!(raw instanceof List<?> outer) || outer.isEmpty()) {
+            return new double[0][0];
+        }
+        if (!(outer.get(0) instanceof List<?>)) {
+            return new double[0][0];
+        }
+        final List<List<?>> list = (List<List<?>>) raw;
+        final double[][] result = new double[list.size()][];
+        for (int i = 0; i < list.size(); i++) {
+            final List<?> row = list.get(i);
+            result[i] = new double[row.size()];
+            for (int j = 0; j < row.size(); j++) {
+                final Object elem = row.get(j);
+                result[i][j] = elem instanceof Number ? ((Number) elem).doubleValue() : 0;
             }
         }
         return result;

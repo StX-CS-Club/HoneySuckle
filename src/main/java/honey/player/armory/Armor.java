@@ -12,11 +12,6 @@ import honey.mechanics.ConfigManager;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
-/*
- * Armor.java *
- - Class for managing general attributes of player and armor
- - COntains static json data
- */
 public class Armor {
 
     public static ConfigManager config;
@@ -66,11 +61,7 @@ public class Armor {
     }
 
     public void renderUiTile(Graphics2D g, int x, int y, double factor, boolean active) {
-        if (active) {
-            g.drawImage(Rendering.texture("ui/slots/armor", null), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
-        } else {
-            g.drawImage(Rendering.texture("ui/slots/armor", "#666666"), (int) (x - 60 * (factor - 1)), (int) (y - 60 * (factor - 1)), (int) (120 * factor), (int) (120 * factor), null);
-        }
+        Rendering.scale(Rendering.texture("ui/slots/armor", active ? null : "#666666"), g, x, y, 120, 120, factor);
 
         final String itemTexture = texture.get("itemTexture");
         if (itemTexture != null) {
@@ -93,14 +84,14 @@ public class Armor {
 
         g.setFont(new Font("VT323 Regular", Font.PLAIN, 24));
         g.setColor(Color.BLACK);
-        String[] statKeys = stats.keySet().toArray(String[]::new);
+        final String[] statKeys = stats.keySet().toArray(String[]::new);
         for (int i = 0; i < statKeys.length; i++) {
             Rendering.centeredText(g, statKeys[i] + ": " + stats.get(statKeys[i]), scrollCenterX, scrollY + 10 * scale + 4 * scale * i);
         }
     }
 
     private BufferedImage getTexture() {
-        String textureId = texture.get("texture");
+        final String textureId = texture.get("texture");
         if (textureId != null) {
             return Rendering.texture(textureId, null);
         }
@@ -109,6 +100,7 @@ public class Armor {
 
     //Update Armor
     public void update(Player player) {
+        // Unused for now
     }
 
     public Map<String, Object> toJson() {
