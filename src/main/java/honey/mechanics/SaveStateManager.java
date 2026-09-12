@@ -57,7 +57,7 @@ public class SaveStateManager {
 
             final Object seedJson = (Number) saveData.get("seed");
             if (seedJson instanceof Number seedNumber) {
-                GameRandom.seed(seedNumber.longValue());
+                Randomizer.seed(seedNumber.longValue());
             }
 
             World.level = ((Number) saveData.get("level")).intValue();
@@ -85,7 +85,7 @@ public class SaveStateManager {
     private static Map<String, Object> getSaveJson() {
         return Map.of(
                 "version", config.version,
-                "seed", GameRandom.seed(),
+                "seed", Randomizer.seed(),
                 "level", World.level,
                 "player", HoneySuckle.player.toJson(),
                 "world", HoneySuckle.player.world.toJson()

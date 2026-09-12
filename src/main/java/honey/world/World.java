@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 import honey.HoneySuckle;
 import honey.mechanics.ConfigManager;
-import honey.mechanics.GameRandom;
+import honey.mechanics.Randomizer;
 import honey.mechanics.InputHandler;
 import honey.player.Player;
 import honey.rendering.Rendering;
@@ -51,7 +50,7 @@ public final class World {
     
     // World constructor for a new world, generates a random biome
     public World() {
-        genRandom = GameRandom.forLevel(0);
+        genRandom = Randomizer.forLevel(0);
         // Pseudo-Randomized Biome
         biome = new Biome(this);
         biome.generateWorld();
@@ -62,7 +61,7 @@ public final class World {
 
     // World constructor for a specific biome
     public World(String biomeId) {
-        genRandom = GameRandom.forLevel(0);
+        genRandom = Randomizer.forLevel(0);
         biome = new Biome(this, biomeId);
         biome.generateWorld();
         camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
@@ -71,7 +70,7 @@ public final class World {
 
     // Asynchronously generates a new world in the background, to be published later by publishPendingWorld()
     public World(int targetLevel) {
-        genRandom = GameRandom.forLevel(targetLevel);
+        genRandom = Randomizer.forLevel(targetLevel);
         biome = new Biome(this, targetLevel);
         biome.generateWorld();
         camera = new double[]{(start[0] + 0.5) * config.tileSize, (size[1] * config.tileSize) - config.gameHeight / 2.0};
@@ -97,7 +96,7 @@ public final class World {
     // Saved world reconstruction
     @SuppressWarnings("unchecked")
     public World(Map<String, Object> saveData) {
-        genRandom = GameRandom.forLevel(World.level);
+        genRandom = Randomizer.forLevel(World.level);
         final String biomeType = (String) saveData.get("biome");
         biome = new Biome(this, biomeType);
 
@@ -163,43 +162,11 @@ public final class World {
     public int[] start = new int[2];
     public final Biome biome;
 
-    // Processes a loot list: type 7 spawns entities at spawnPos, all others go to inventory
-    public void processLoot(List<Map<String, Number>> loot, double[] spawnPos, Player player) {
-        for (Map<String, Number> entry : loot) {
-            if (entry.getOrDefault("type", 0).intValue() == 7) {
-                final double prob = entry.getOrDefault("prob", 1).doubleValue();
-                if (Math.random() >= prob) {
-                    continue;
-                }
-                int count = entry.getOrDefault("count", 1).intValue();
-                final double countProb = entry.getOrDefault("countProb", 0).doubleValue();
-                while (ThreadLocalRandom.current().nextDouble() <= countProb) {
-                    count++;
-                }
-                final String entityType = Entity.entityStringId.get(entry.getOrDefault("id", 0).intValue());
-                if (entityType != null) {
-                    final double burst = entry.getOrDefault("burst", 0).doubleValue();
-                    for (int i = 0; i < count; i++) {
-                        final double angle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
-                        final double scatter = config.tileSize * 0.3;
-                        final double[] pos = {
-                            spawnPos[0] + Math.cos(angle) * scatter,
-                            spawnPos[1] + Math.sin(angle) * scatter
-                        };
-                        final Entity spawned = new Entity(entityType, pos, this);
-                        if (burst > 0) {
-                            final double burstAngle = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
-                            spawned.vel[0] = Math.cos(burstAngle) * burst * config.tileSize;
-                            spawned.vel[1] = Math.sin(burstAngle) * burst * config.tileSize;
-                        }
-                        spawned.brain.immunity = 3.0;
-                        entities.add(spawned);
-                    }
-                }
-            } else if (player != null) {
-                player.inventory.incrementItem(entry, true);
-            }
-        }
+    // Processes a recursive loot list via LootDistributer, which owns every probability roll and the
+    // string id/type -> int id/type translation ("type": "entity" spawns at spawnPos, everything else
+    // grants to the player's inventory).
+    public void processLoot(List<Map<String, Object>> loot, double[] spawnPos, Player player) {
+        new LootDistributer(this, player != null ? player.inventory : null, spawnPos).process(loot);
     }
 
     // Bounds movement to boundaries of world, mutates pos in place

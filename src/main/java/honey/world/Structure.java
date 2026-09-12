@@ -163,7 +163,7 @@ public class Structure {
                         entryProb = Math.min(entryProb, MapReader.getNumberOrDefault(lootEntry, "maxProb", 1.0).doubleValue());
                         final double lootProb = entryProb + chestProgress;
                         if (lootProb >= chestSeed) {
-                            final List<Map<String, Number>> rawLoot = MapReader.getOrDefault(lootEntry, "loot", new ArrayList<>());
+                            final List<Map<String, Object>> rawLoot = MapReader.getOrDefault(lootEntry, "loot", new ArrayList<>());
                             chest.setLoot(rawLoot);
                             break;
                         }

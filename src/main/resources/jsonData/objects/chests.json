@@ -55,5 +55,17 @@
       "durability": 2.0,
       "collision": 1.0
     }
+  },
+  "recipe_bottle": {
+    "name": "Recipe Bottle",
+    "id": 23,
+    "texture": {
+      "texture": "objects/chests/recipe_bottle",
+      "mapColor": "#8CF6FE"
+    },
+    "tags": ["destructable", "treasure"],
+    "attributes": {
+      "durability": 0.5
+    }
   }
 }

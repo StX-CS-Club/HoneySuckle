@@ -11,9 +11,8 @@
     },
     "texture": {
       "itemTexture": "weapons/stinger_sword/item",
-      "texture": "weapons/stinger_sword/stinger_sword",
+      "sideTexture": "weapons/stinger_sword/stinger_sword",
       "animation": "_swing_",
-      "type": "side",
       "swingColor": "#4E6EFF",
       "rarityColor": "#57a5ff"
     },

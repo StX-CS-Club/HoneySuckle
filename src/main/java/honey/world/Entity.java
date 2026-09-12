@@ -27,7 +27,7 @@ public class Entity {
     //Satic data imported from json files
     public static final Map<String, Map<String, Number>> entityAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> entityTextures = new HashMap<>();
-    public static final Map<String, List<Map<String, Number>>> entityLoot = new HashMap<>();
+    public static final Map<String, List<Map<String, Object>>> entityLoot = new HashMap<>();
     public static final Map<String, List<String>> entityTags = new HashMap<>();
     public static final Map<String, String> entityNames = new HashMap<>();
     public static final Map<Integer, String> entityStringId = new HashMap<>();
@@ -45,7 +45,7 @@ public class Entity {
     //All attributes
     public final Map<String, Number> attributes;
     public final List<String> tags;
-    public final List<Map<String, Number>> loot;
+    public final List<Map<String, Object>> loot;
     private final Map<String, String> texture;
 
     //Number of frames to render as red

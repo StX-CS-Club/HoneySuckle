@@ -9,9 +9,8 @@
     },
     "texture": {
       "itemTexture": "weapons/desert_beam_staff/item",
-      "texture": "weapons/desert_beam_staff/desert_beam_staff",
-      "rarityColor": "#57a5ff",
-      "type": "side"
+      "sideTexture": "weapons/desert_beam_staff/desert_beam_staff",
+      "rarityColor": "#57a5ff"
     },
     "behavior": {
       "shoot": {

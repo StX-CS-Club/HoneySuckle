@@ -3,7 +3,6 @@ package honey.player.inventory;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import honey.rendering.Rendering;
@@ -14,8 +13,6 @@ public class Item {
     public static final Map<String, String> itemNames = new HashMap<>();
     public static final Map<String, Map<String, String>> itemTextures = new HashMap<>();
     public static final Map<String, Map<String, Number>> itemAttributes = new HashMap<>();
-    public static final Map<String, List<String>> itemBlueprintUnlocks = new HashMap<>();
-    public static final Map<String, List<String>> itemRecipeUnlocks = new HashMap<>();
     public static final Map<Integer, String> itemStringId = new HashMap<>();
     public static final Map<String, Integer> itemIntId = new HashMap<>();
 

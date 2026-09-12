@@ -316,12 +316,12 @@
             {
               "loot": [
                 {
-                  "id": 17,
-                  "type": 1
+                  "id": "desert_beam_staff",
+                  "type": "weapon"
                 },
                 {
-                  "id": 1,
-                  "type": 4,
+                  "id": "map",
+                  "type": "keyItem",
                   "prob": 0.5
                 }
               ]
@@ -329,12 +329,12 @@
             {
               "loot": [
                 {
-                  "id": 2,
-                  "type": 4
+                  "id": "swift_potion",
+                  "type": "keyItem"
                 },
                 {
-                  "id": 1,
-                  "type": 4,
+                  "id": "map",
+                  "type": "keyItem",
                   "prob": 0.75
                 }
               ]
@@ -343,8 +343,8 @@
               "prob": 0.1,
               "loot": [
                 {
-                  "id": 5,
-                  "type": 4
+                  "id": "magic_map",
+                  "type": "keyItem"
                 }
               ]
             }

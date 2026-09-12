@@ -1,0 +1,32 @@
+{
+  "sword_and_shield": {
+    "name": "Sword and Shield",
+    "id": 18,
+    "tags": ["constClick"],
+    "stats": {
+      "Type": "Sword+Shield",
+      "Damage": "5",
+      "Size": "0.9",
+      "Speed": "2"
+    },
+    "texture": {
+      "itemTexture": "weapons/sword_and_shield/item",
+      "sideTexture": "weapons/sword/sword",
+      "frontTexture": "weapons/shield/shield",
+      "animation": "_swing_parry_"
+    },
+    "behavior": {
+      "swing": {
+        "damage": 0.05,
+        "cooldown": 20,
+        "frames": 10
+      },
+      "shield": {
+        "frames": 0.0,
+        "cooldown": 25.0,
+        "parry": 0.0,
+        "bounce": 1
+      }
+    }
+  }
+}

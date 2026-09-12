@@ -19,7 +19,7 @@ public class WorldObject {
     //Static json dats
     public static final Map<Integer, List<String>> objTags = new HashMap<>();
     public static final Map<Integer, Map<String, Number>> objAttributes = new HashMap<>();
-    public static final Map<Integer, List<Map<String, Number>>> objLoot = new HashMap<>();
+    public static final Map<Integer, List<Map<String, Object>>> objLoot = new HashMap<>();
     public static final Map<Integer, Map<String, String>> objTextures = new HashMap<>();
     public static final Map<String, Integer> objIntIds = new HashMap<>();
     public static final Map<Integer, String> objStringIds = new HashMap<>();
@@ -34,7 +34,7 @@ public class WorldObject {
     public Map<String, Number> attributes;
     public Map<String, String> texture;
     private final String anim;
-    public List<Map<String, Number>> loot;
+    public List<Map<String, Object>> loot;
 
     private double frameDamage = 0;
 
@@ -99,7 +99,7 @@ public class WorldObject {
         return "";
     }
 
-    public void setLoot(List<Map<String, Number>> newLoot) {
+    public void setLoot(List<Map<String, Object>> newLoot) {
         newLoot.addAll(loot);
         loot = newLoot;
     }

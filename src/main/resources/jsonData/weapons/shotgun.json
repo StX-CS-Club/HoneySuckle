@@ -13,9 +13,8 @@
     },
     "texture": {
       "itemTexture": "weapons/shotgun/item",
-      "texture": "weapons/shotgun/shotgun",
-      "animation": "_shoot_",
-      "type": "side"
+      "sideTexture": "weapons/shotgun/shotgun",
+      "animation": "_shoot_"
     },
     "behavior": {
       "shoot": {

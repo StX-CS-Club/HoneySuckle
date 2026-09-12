@@ -10,9 +10,8 @@
     },
     "texture": {
       "itemTexture": "weapons/shield/item",
-      "texture": "weapons/shield/shield",
-      "animation": "_parry_",
-      "type": "front"
+      "frontTexture": "weapons/shield/shield",
+      "animation": "_parry_"
     },
     "behavior": {
       "shield": {

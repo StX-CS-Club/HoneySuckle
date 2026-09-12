@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import honey.mechanics.ConfigManager;
 import honey.mechanics.InputHandler;
@@ -17,6 +16,7 @@ import honey.player.armory.Ammo;
 import honey.player.armory.Armor;
 import honey.player.armory.Effect;
 import honey.player.armory.Weapon;
+import honey.player.build.Blueprint;
 import honey.rendering.Rendering;
 import honey.rendering.Splash;
 
@@ -34,9 +34,6 @@ public class Inventory {
     private final List<Splash> splashes = new ArrayList<>();
 
     private final Player player;
-
-    public int ideaFrames = 0;
-    public String ideaColor = "#ffff00";
 
     public boolean isOpen = false;
     private int page = 1;
@@ -273,173 +270,176 @@ public class Inventory {
         }
     }
 
-    public void incrementItem(Map<String, Number> itemData, boolean gain) {
-        if (Math.random() < itemData.getOrDefault("prob", 1).doubleValue()) {
-            final int id = itemData.getOrDefault("id", 0).intValue();
-            int count = itemData.getOrDefault("count", 1).intValue();
+    public boolean incrementItem(Map<String, Number> itemData, int count) {
+        if (count == 0) {
+            return false;
+        }
 
-            final double countProb = itemData.getOrDefault("countProb", 0).doubleValue();
-            while (ThreadLocalRandom.current().nextDouble() <= countProb) {
-                count++;
-            }
+        final boolean gain = count > 0;
+        final int id = itemData.getOrDefault("id", 0).intValue();
+        final int type = itemData.getOrDefault("type", 0).intValue();
 
-            if (count == 0) {
-                return;
-            }
+        String stringId = null;
+        boolean showSplash = true;
+        switch (type) {
+            case 0 -> {
+                stringId = Item.itemStringId.get(id);
 
-            final int type = itemData.getOrDefault("type", 0).intValue();
+                Item item = getItem(stringId);
 
-            String stringId = null;
-            boolean showSplash = true;
-            switch (type) {
-                case 0 -> {
-                    stringId = Item.itemStringId.get(id);
-
-                    Item item = getItem(stringId);
-
-                    if (!gain) {
-                        count *= -1;
-                    } else {
-                        unlockRecipes(Item.itemBlueprintUnlocks.get(stringId), Item.itemRecipeUnlocks.get(stringId));
-                    }
-
-                    if (item == null) {
-                        item = new Item(stringId, count);
-                        items.add(item);
-                        iconColors[1] = "#00ffaa";
-                    } else {
-                        item.count += count;
-                    }
+                if (item == null) {
+                    item = new Item(stringId, count);
+                    items.add(item);
+                    iconColors[1] = "#00ffaa";
+                } else {
+                    item.count += count;
                 }
-                case 1 -> {
-                    stringId = Weapon.weaponStringId.get(id);
+            }
+            case 1 -> {
+                stringId = Weapon.weaponStringId.get(id);
 
-                    if (gain) {
-                        if (Weapon.weaponTags.get(stringId).contains("stackable")) {
-                            boolean create = true;
-                            for (Weapon weapon : weapons) {
-                                if (weapon.type.equals(stringId)) {
-                                    weapon.count += count;
-                                    create = false;
-                                    break;
-                                }
-                            }
-                            if (create) {
-                                weapons.add(new Weapon(stringId, count));
-                            }
-                        } else {
-                            for (int i = 0; i < count; i++) {
-                                weapons.add(new Weapon(stringId));
-                                weapons.getLast().setAmmo(ammo);
-                                iconColors[2] = "#00ffaa";
+                if (gain) {
+                    if (Weapon.weaponTags.get(stringId).contains("stackable")) {
+                        boolean create = true;
+                        for (Weapon weapon : weapons) {
+                            if (weapon.type.equals(stringId)) {
+                                weapon.count += count;
+                                create = false;
+                                break;
                             }
                         }
-                        unlockRecipes(Weapon.weaponBlueprintUnlocks.get(stringId), Weapon.weaponRecipeUnlocks.get(stringId));
+                        if (create) {
+                            weapons.add(new Weapon(stringId, count));
+                        }
                     } else {
-                        int removed = 0;
-                        for (int i = weapons.size() - 1; i > -1; i--) {
-                            final Weapon weapon = weapons.get(i);
-                            if (weapon.type.equals(stringId)) {
-                                final int removeCount = Math.min(count - removed, weapon.count);
-                                weapon.count -= removeCount;
-                                if (weapon.count == 0) {
-                                    weapons.remove(weapon);
-                                    for (int e = 0; e < player.armory.weapons.length; e++) {
-                                        if (player.armory.weapons[e] == weapon) {
-                                            player.armory.weapons[e] = null;
-                                        }
+                        for (int i = 0; i < count; i++) {
+                            weapons.add(new Weapon(stringId));
+                            weapons.getLast().setAmmo(ammo);
+                            iconColors[2] = "#00ffaa";
+                        }
+                    }
+                } else {
+                    final int removeTarget = -count;
+                    int removed = 0;
+                    for (int i = weapons.size() - 1; i > -1; i--) {
+                        final Weapon weapon = weapons.get(i);
+                        if (weapon.type.equals(stringId)) {
+                            final int removeCount = Math.min(removeTarget - removed, weapon.count);
+                            weapon.count -= removeCount;
+                            if (weapon.count == 0) {
+                                weapons.remove(weapon);
+                                for (int e = 0; e < player.armory.weapons.length; e++) {
+                                    if (player.armory.weapons[e] == weapon) {
+                                        player.armory.weapons[e] = null;
                                     }
                                 }
-                                removed += removeCount;
-                                if (removed == count) {
-                                    break;
-                                }
+                            }
+                            removed += removeCount;
+                            if (removed == removeTarget) {
+                                break;
                             }
                         }
-                    }
-                }
-                case 2 -> {
-                    stringId = Armor.armorStringId.get(id);
-
-                    if (gain) {
-                        //Armor doesn't stack - skip if the player already owns this type
-                        if (getArmor(stringId) == null) {
-                            for (int i = 0; i < count; i++) {
-                                armors.add(new Armor(stringId));
-                                iconColors[4] = "#00ffaa";
-                            }
-                            unlockRecipes(Armor.armorBlueprintUnlocks.get(stringId), Armor.armorRecipeUnlocks.get(stringId));
-                        } else {
-                            showSplash = false;
-                        }
-                    } else {
-                        int removed = 0;
-                        for (int i = armors.size() - 1; i > -1; i--) {
-                            final Armor armor = armors.get(i);
-                            if (armor.type.equals(stringId)) {
-                                armors.remove(armor);
-                                if (armor == player.armory.armor) {
-                                    player.armory.armor = null;
-                                }
-                                removed++;
-                                if (removed == count) {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                case 3 -> {
-                    stringId = Ammo.ammoStringId.get(id);
-
-                    Ammo invAmmo = getAmmo(stringId);
-
-                    if (!gain) {
-                        count *= -1;
-                    } else {
-                        unlockRecipes(Ammo.ammoBlueprintUnlocks.get(stringId), Ammo.ammoRecipeUnlocks.get(stringId));
-                    }
-
-                    if (invAmmo == null) {
-                        invAmmo = new Ammo(stringId, count);
-                        ammo.add(invAmmo);
-                        iconColors[3] = "#00ffaa";
-                    } else {
-                        invAmmo.count += count;
-                    }
-                }
-                case 4 -> {
-                    stringId = KeyItem.keyStringId.get(id);
-
-                    KeyItem keyItem = getKeyItem(stringId);
-
-                    if (!gain) {
-                        count *= -1;
-                    } else {
-                        unlockRecipes(KeyItem.keyBlueprintUnlocks.get(stringId), KeyItem.keyRecipeUnlocks.get(stringId));
-                    }
-
-                    if (keyItem == null) {
-                        keyItem = new KeyItem(stringId, count);
-                        keyItems.add(keyItem);
-                        iconColors[5] = "#00ffaa";
-                    } else {
-                        keyItem.count += count;
                     }
                 }
             }
+            case 2 -> {
+                stringId = Armor.armorStringId.get(id);
 
-            if (gain && showSplash) {
-                Splash splash = getSplash(type + ":" + stringId);
-                if (splash == null) {
-                    splash = new Splash(itemData, count);
-                    splashes.add(splash);
+                if (gain) {
+                    //Armor doesn't stack - skip if the player already owns this type
+                    if (getArmor(stringId) == null) {
+                        for (int i = 0; i < count; i++) {
+                            armors.add(new Armor(stringId));
+                            iconColors[4] = "#00ffaa";
+                        }
+                    } else {
+                        showSplash = false;
+                    }
                 } else {
-                    splash.count += count;
-                    splash.resetSplash();
+                    final int removeTarget = -count;
+                    int removed = 0;
+                    for (int i = armors.size() - 1; i > -1; i--) {
+                        final Armor armor = armors.get(i);
+                        if (armor.type.equals(stringId)) {
+                            armors.remove(armor);
+                            if (armor == player.armory.armor) {
+                                player.armory.armor = null;
+                            }
+                            removed++;
+                            if (removed == removeTarget) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            case 3 -> {
+                stringId = Ammo.ammoStringId.get(id);
+
+                Ammo invAmmo = getAmmo(stringId);
+
+                if (invAmmo == null) {
+                    invAmmo = new Ammo(stringId, count);
+                    ammo.add(invAmmo);
+                    iconColors[3] = "#00ffaa";
+                } else {
+                    invAmmo.count += count;
+                }
+            }
+            case 4 -> {
+                stringId = KeyItem.keyStringId.get(id);
+
+                KeyItem keyItem = getKeyItem(stringId);
+
+                if (keyItem == null) {
+                    keyItem = new KeyItem(stringId, count);
+                    keyItems.add(keyItem);
+                    iconColors[5] = "#00ffaa";
+                } else {
+                    keyItem.count += count;
+                }
+            }
+            case 5 -> {
+                stringId = Craft.recipeStringId.get(id);
+
+                if (gain) {
+                    if (!player.craft.recipes.contains(stringId)) {
+                        player.craft.recipes.add(stringId);
+                        iconColors[0] = "#00ffaa";
+                    } else {
+                        showSplash = false;
+                    }
+                } else {
+                    player.craft.recipes.remove(stringId);
+                }
+            }
+            case 6 -> {
+                stringId = Blueprint.blueprintStringId.get(id);
+
+                if (gain) {
+                    if (!player.build.hasBlueprint(stringId)) {
+                        player.build.addBlueprint(stringId);
+                    } else {
+                        showSplash = false;
+                    }
+                } else {
+                    player.build.removeBlueprint(stringId);
                 }
             }
         }
+
+        if (gain && showSplash) {
+            Splash splash = getSplash(type + ":" + stringId);
+            if (splash == null) {
+                splash = new Splash(itemData, count);
+                splashes.add(splash);
+            } else {
+                splash.count += count;
+                splash.resetSplash();
+            }
+        }
+
+        return true;
     }
 
     public boolean hasMaterial(Map<String, Number> matData) {
@@ -474,25 +474,6 @@ public class Inventory {
             }
         }
         return false;
-    }
-
-    public void unlockRecipes(List<String> blueprintUnlocks, List<String> recipeUnlocks) {
-        for (String blueprint : blueprintUnlocks) {
-            if (!player.build.hasBlueprint(blueprint)) {
-                player.build.addBlueprint(blueprint);
-                ideaFrames = 80;
-                ideaColor = "#ddff00";
-            }
-        }
-
-        for (String recipe : recipeUnlocks) {
-            if (!player.craft.recipes.contains(recipe)) {
-                player.craft.recipes.add(recipe);
-                ideaFrames = 80;
-                ideaColor = "#ffcc00";
-                iconColors[0] = "#00ffaa";
-            }
-        }
     }
 
     private Item getItem(String itemId) {

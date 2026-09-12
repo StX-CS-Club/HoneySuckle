@@ -12,11 +12,10 @@
     },
     "texture": {
       "itemTexture": "weapons/pine_wood_hatchet/item",
-      "texture": "weapons/pine_wood_hatchet/pine_wood_hatchet",
+      "sideTexture": "weapons/pine_wood_hatchet/pine_wood_hatchet",
       "animation": "_mirroredSwing_",
       "rarityColor": "#00db33",
-      "swingColor": "#A17D40",
-      "type": "side"
+      "swingColor": "#A17D40"
     },
     "behavior": {
       "swing": {

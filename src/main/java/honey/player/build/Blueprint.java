@@ -26,6 +26,9 @@ public class Blueprint {
     public static final Map<String, Map<String, String>> blueprintTextures = new HashMap<>();
     public static final Map<String, Integer> blueprintProducts = new HashMap<>();
     public static final Map<String, List<String>> blueprintTags = new HashMap<>();
+    public static final Map<String, Integer> blueprintIntId = new HashMap<>();
+    public static final Map<Integer, String> blueprintStringId = new HashMap<>();
+    public static final Map<String, String> blueprintNames = new HashMap<>();
 
     public final String type;
 

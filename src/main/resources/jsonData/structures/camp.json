@@ -74,12 +74,12 @@
             {
               "loot": [
                 {
-                  "id": 2,
-                  "type": 3
+                  "id": "sharp_arrow",
+                  "type": "ammo"
                 },
                 {
-                  "id": 2,
-                  "type": 3,
+                  "id": "sharp_arrow",
+                  "type": "ammo",
                   "countProb": 0.75,
                   "count": 0
                 }

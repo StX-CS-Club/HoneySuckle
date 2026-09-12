@@ -12,9 +12,9 @@
         },
         "texture": {
             "itemTexture": String URI of inventory icon texture from images/sprites (autofills .png),
-            "texture": String URI of in-world weapon sprite from images/sprites (autofills .png),
+            "sideTexture": String URI of in-world weapon sprite for side-held weapons (autofills .png),
+            "frontTexture": String URI of in-world weapon sprite for forward-facing weapons (autofills .png),
             "animation": String animation tag — one of "_swing_", "_mirroredSwing_", "_stab_", "_shoot_", "_parry_",
-            "type": String render orientation — "side" for side-held weapons, "front" for forward-facing,
             "swingColor": String HEX color tint applied to slash attack animation,
             "stabColor": String HEX color tint applied to stab attack animation,
             "rarityColor": String HEX color tint applied to rarity display

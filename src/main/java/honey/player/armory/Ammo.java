@@ -19,8 +19,6 @@ public class Ammo {
     public static final Map<String, Map<String, String>> ammoTextures = new HashMap<>();
     public static final Map<String, Map<String, String>> ammoStats = new HashMap<>();
     public static final Map<String, List<String>> ammoTypes = new HashMap<>();
-    public static final Map<String, List<String>> ammoRecipeUnlocks = new HashMap<>();
-    public static final Map<String, List<String>> ammoBlueprintUnlocks = new HashMap<>();
     public static final Map<String, Integer> ammoIntId = new HashMap<>();
     public static final Map<Integer, String> ammoStringId = new HashMap<>();
 

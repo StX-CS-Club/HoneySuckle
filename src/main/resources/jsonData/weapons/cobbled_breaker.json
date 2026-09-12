@@ -12,9 +12,8 @@
     },
     "texture": {
       "itemTexture": "weapons/cobbled_breaker/item",
-      "texture": "weapons/cobbled_breaker/cobbled_breaker",
-      "animation": "_mirroredSwing_",
-      "type": "side"
+      "sideTexture": "weapons/cobbled_breaker/cobbled_breaker",
+      "animation": "_mirroredSwing_"
     },
     "behavior": {
       "swing": {

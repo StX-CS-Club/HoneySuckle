@@ -20,8 +20,6 @@ public class Armor {
     public static final Map<String, Map<String, String>> armorTextures = new HashMap<>();
     public static final Map<String, Map<String, Number>> armorAttributes = new HashMap<>();
     public static final Map<String, Map<String, String>> armorStats = new HashMap<>();
-    public static final Map<String, List<String>> armorRecipeUnlocks = new HashMap<>();
-    public static final Map<String, List<String>> armorBlueprintUnlocks = new HashMap<>();
     public static final Map<String, String> armorNames = new HashMap<>();
     public static final Map<String, Integer> armorIntId = new HashMap<>();
     public static final Map<Integer, String> armorStringId = new HashMap<>();

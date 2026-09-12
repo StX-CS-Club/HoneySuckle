@@ -10,10 +10,9 @@
     },
     "texture": {
       "itemTexture": "weapons/slime_shield/item",
-      "texture": "weapons/slime_shield/slime_shield",
+      "frontTexture": "weapons/slime_shield/slime_shield",
       "rarityColor": "#00db33",
-      "animation": "_parry_",
-      "type": "front"
+      "animation": "_parry_"
     },
     "attributes": {
       "size": 0.9

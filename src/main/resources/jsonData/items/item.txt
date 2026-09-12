@@ -7,8 +7,6 @@
         },
         "attributes": {
             "splashFrames": int number of frames the item pickup splash animation plays (default 0)
-        },
-        "recipeUnlocks": [String recipe ID, ...] List of recipes unlocked when item is picked up,
-        "blueprintUnlocks": [String blueprint ID, ...] List of blueprints unlocked when item is picked up
+        }
     }
 }

@@ -15,13 +15,13 @@
     },
     "loot": [
       {
-        "id": 14,
-        "type": 1,
+        "id": "snowball",
+        "type": "weapon",
         "countProb": 0.75
       },
       {
-        "id": 7,
-        "type": 2,
+        "id": "magic_bowler",
+        "type": "armor",
         "prob": 0.01
       }
     ],

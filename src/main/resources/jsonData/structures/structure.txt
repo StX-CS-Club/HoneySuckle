@@ -34,10 +34,14 @@
                             "prob": Number probability weight for this entry (entries without prob share remaining weight equally),
                             "maxProb": Number maximum weight for this entry (default 1.0),
                             "levelProb": Number added to weight per world level (default 0),
-                            "loot": List of following item data:[
+                            "loot": List of following item drop data, same recursive schema as object/entity "loot" — granted independently (not part of the table's weighted pick, which only selects which "loot" list applies):[
                                 {
-                                    "id": int ID of item,
-                                    "count": int count of item (default 1)
+                                    "id": String ID of the dropped thing (its snake_case key in the matching data file),
+                                    "type": String category of drop — one of "item" (default), "weapon", "armor", "ammo", "keyItem", "recipe", "blueprint", "entity",
+                                    "count": int count of item (default 1),
+                                    "prob": Number probability of this item dropping (default 1),
+                                    "countProb": Number probability of dropping one additional item (default 0),
+                                    "loot": List of child drops of this same schema, rolled recursively only if this entry's own "prob" roll succeeded (optional)
                                 }
                             ]
                         }

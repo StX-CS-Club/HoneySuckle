@@ -15,18 +15,18 @@
     },
     "loot": [
       {
-        "id": 2,
-        "type": 3,
+        "id": "sharp_arrow",
+        "type": "ammo",
         "prob": 0.5
       },
       {
-        "id": 2,
-        "type": 3,
+        "id": "sharp_arrow",
+        "type": "ammo",
         "prob": 0.5
       },
       {
-        "id": 2,
-        "type": 3,
+        "id": "sharp_arrow",
+        "type": "ammo",
         "prob": 0.5
       }
     ],

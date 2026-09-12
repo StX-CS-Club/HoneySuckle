@@ -15,10 +15,13 @@
     },
     "loot": [
       {
-        "id": 1
+        "id": "wood",
+        "loot": [
+          { "id": "wooden_arrow", "type": "recipe", "prob": 0.15 }
+        ]
       },
       {
-        "id": 1,
+        "id": "wood",
         "prob": 0.25
       }
     ]
@@ -38,7 +41,11 @@
     },
     "loot": [
       {
-        "id": 4
+        "id": "pumpkin",
+        "loot": [
+          { "id": "pumpkin_helm", "type": "recipe", "prob": 0.15 },
+          { "id": "jackolantern", "type": "blueprint", "prob": 0.15 }
+        ]
       }
     ]
   },
@@ -59,7 +66,10 @@
     },
     "loot": [
       {
-        "id": 5
+        "id": "cactus",
+        "loot": [
+          { "id": "cactus_sword", "type": "recipe", "prob": 0.15 }
+        ]
       }
     ]
   },
@@ -79,8 +89,11 @@
     },
     "loot": [
       {
-        "id": 3,
-        "count": 2
+        "id": "coal",
+        "count": 2,
+        "loot": [
+          { "id": "torch", "type": "blueprint", "prob": 0.15 }
+        ]
       }
     ]
   },
@@ -109,7 +122,7 @@
     },
     "loot": [
       {
-        "id": 1,
+        "id": "wood",
         "prob": 0.5
       }
     ]
@@ -130,8 +143,11 @@
     },
     "loot": [
       {
-        "id": 7,
-        "count": 1
+        "id": "diamond",
+        "count": 1,
+        "loot": [
+          { "id": "diamond_sword", "type": "recipe", "prob": 0.15 }
+        ]
       }
     ]
   },
@@ -151,11 +167,16 @@
     },
     "loot": [
       {
-        "id": 8,
-        "count": 2
+        "id": "rock",
+        "count": 2,
+        "loot": [
+          { "id": "cobbled_breaker", "type": "recipe", "prob": 0.15 },
+          { "id": "a_rock", "type": "recipe", "prob": 0.15 },
+          { "id": "bridge", "type": "blueprint", "prob": 0.15 }
+        ]
       },
       {
-        "id": 8,
+        "id": "rock",
         "prob": 0.66,
         "count": 1
       }
@@ -177,18 +198,21 @@
     },
     "loot": [
       {
-        "id": 9
+        "id": "scrap",
+        "loot": [
+          { "id": "tunnel", "type": "blueprint", "prob": 0.15 }
+        ]
       },
       {
-        "id": 9,
+        "id": "scrap",
         "prob": 0.5
       },
       {
-        "id": 9,
+        "id": "scrap",
         "prob": 0.5
       },
       {
-        "id": 1,
+        "id": "wood",
         "prob": 0.5
       }
     ]
@@ -209,16 +233,21 @@
     },
     "loot": [
       {
-        "id": 5,
-        "type": 7,
+        "id": "bee",
+        "type": "entity",
         "count": 0,
         "countProb": 0.5,
         "burst": 1.5
       },
       {
-        "id": 11,
+        "id": "honeycomb",
         "count": 0,
-        "countProb": 0.25
+        "countProb": 0.25,
+        "loot": [
+          { "id": "honeycomb_helm", "type": "recipe", "prob": 0.15 },
+          { "id": "stinger_sword", "type": "recipe", "prob": 0.15 },
+          { "id": "stinger_spear", "type": "recipe", "prob": 0.15 }
+        ]
       }
     ]
   },
@@ -238,14 +267,18 @@
     },
     "loot": [
       {
-        "id": 13
+        "id": "pine_wood",
+        "loot": [
+          { "id": "pine_wood_shield", "type": "recipe", "prob": 0.15 },
+          { "id": "pine_wood_hatchet", "type": "recipe", "prob": 0.15 }
+        ]
       },
       {
-        "id": 13,
+        "id": "pine_wood",
         "prob": 0.25
       },
       {
-        "id": 1,
+        "id": "wood",
         "prob": 0.1
       }
     ]

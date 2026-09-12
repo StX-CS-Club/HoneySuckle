@@ -36,29 +36,29 @@
             {
               "loot": [
                 {
-                  "id": 1,
-                  "type": 4
+                  "id": "map",
+                  "type": "keyItem"
                 }
               ]
             },
             {
               "loot": [
                 {
-                  "id": 3,
-                  "type": 3,
+                  "id": "shotgun_shell",
+                  "type": "ammo",
                   "count": 10
                 },
                 {
-                  "id": 8,
-                  "type": 1
+                  "id": "shotgun",
+                  "type": "weapon"
                 }
               ]
             },
             {
               "loot": [
                 {
-                  "id": 9,
-                  "type": 1
+                  "id": "spear",
+                  "type": "weapon"
                 }
               ]
             }

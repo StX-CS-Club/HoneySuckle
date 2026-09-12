@@ -37,10 +37,13 @@
         },
         "loot": List of following item drop data:[
             {
-                "id": int ID of item,
+                "id": String ID of the dropped thing (its snake_case key in the matching data file — an entity's own key when type is "entity"),
+                "type": String category of drop — one of "item" (default), "weapon", "armor", "ammo", "keyItem", "recipe", "blueprint", "entity" (spawns the entity at the drop position instead of granting it),
                 "count": int count of item dropped (default 1),
                 "prob": Number probability of this item dropping (default 1),
-                "countProb": Number probability of dropping one additional item (default 0)
+                "countProb": Number probability of dropping one additional item (default 0),
+                "burst": Number outward velocity applied to a spawned entity (type "entity" only, default 0),
+                "loot": List of child drops of this same schema, rolled recursively only if this entry's own "prob" roll succeeded (optional)
             }
         ]
     }

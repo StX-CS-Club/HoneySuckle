@@ -379,7 +379,8 @@ public class Attack {
             final Map<String, long[]> staticAttackFrames = Map.copyOf(attackFrames);
 
             final World world = player.world;
-            String textureId = weapon.texture.get("texture");
+            String sideTextureId = weapon.texture.get("sideTexture");
+            String frontTextureId = weapon.texture.get("frontTexture");
             String overlayColor = null;
 
             double screenSize = size;
@@ -439,7 +440,8 @@ public class Attack {
                     final int frames = numberFromMap(shootBehavior, "frames", 5).intValue();
                     final long attackFrame = staticAttackFrames.get(attackId)[0];
                     if (attackFrame <= frames && attackFrame >= 0) {
-                        textureId = textureId + "_shoot";
+                        sideTextureId = sideTextureId != null ? sideTextureId + "_shoot" : null;
+                        frontTextureId = frontTextureId != null ? frontTextureId + "_shoot" : null;
                     }
                 }
 
@@ -448,7 +450,8 @@ public class Attack {
                     final int frames = numberFromMap(throwBehavior, "frames", 5).intValue();
                     final long attackFrame = staticAttackFrames.get(attackId)[0];
                     if (attackFrame <= frames && attackFrame >= 0) {
-                        textureId = textureId + "_throw";
+                        sideTextureId = sideTextureId != null ? sideTextureId + "_throw" : null;
+                        frontTextureId = frontTextureId != null ? frontTextureId + "_throw" : null;
                     }
                 }
 
@@ -473,24 +476,24 @@ public class Attack {
                 }
             }
 
-            final BufferedImage textureImage = overlayColor != null
-                    ? Rendering.applyOverlay(textureId, null, overlayColor, 192)
-                    : Rendering.texture(textureId, null);
-            switch (weapon.texture.getOrDefault("type", "front")) {
-                case "side" -> {
-                    screenPos[0] += player.size / 2.0;
-                    screenPos[1] -= screenSize / 2.0 + config.tileSize / 4.0;
+            if (sideTextureId != null) {
+                final BufferedImage sideImage = overlayColor != null
+                        ? Rendering.applyOverlay(sideTextureId, null, overlayColor, 192)
+                        : Rendering.texture(sideTextureId, null);
+                final double sideX = screenPos[0] + player.size / 2.0;
+                final double sideY = screenPos[1] - screenSize / 2.0 - config.tileSize / 4.0;
 
-                    g.drawImage(textureImage,
-                            (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
-                }
-                case "front" -> {
-                    screenPos[0] -= screenSize / 2.0;
-                    screenPos[1] -= screenSize + player.size / 2.0;
+                g.drawImage(sideImage, (int) sideX, (int) sideY, (int) screenSize, (int) screenSize, null);
+            }
 
-                    g.drawImage(textureImage,
-                            (int) screenPos[0], (int) screenPos[1], (int) screenSize, (int) screenSize, null);
-                }
+            if (frontTextureId != null) {
+                final BufferedImage frontImage = overlayColor != null
+                        ? Rendering.applyOverlay(frontTextureId, null, overlayColor, 192)
+                        : Rendering.texture(frontTextureId, null);
+                final double frontX = screenPos[0] - screenSize / 2.0;
+                final double frontY = screenPos[1] - screenSize - player.size / 2.0;
+
+                g.drawImage(frontImage, (int) frontX, (int) frontY, (int) screenSize, (int) screenSize, null);
             }
         }
     }

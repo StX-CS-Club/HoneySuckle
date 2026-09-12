@@ -1,6 +1,7 @@
 {
   "wooden_arrow": {
     "name": "Wooden Arrow",
+    "id": 1,
     "type": "ammo",
     "products": [{ "id": 1, "type": 3}],
     "texture": {
@@ -14,6 +15,7 @@
   },
   "shotgun_shell": {
     "name": "Shotgun Shells",
+    "id": 2,
     "type": "ammo",
     "products": [{ "id": 3, "type": 3, "count": 5}],
     "texture": {

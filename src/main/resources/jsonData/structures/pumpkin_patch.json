@@ -38,22 +38,22 @@
             {
               "loot": [
                 {
-                  "id": 4,
-                  "type": 3,
+                  "id": "pumpkannon_ball",
+                  "type": "ammo",
                   "count": 15,
                   "countProb": 0.8
                 },
                 {
-                  "id": 10,
-                  "type": 1
+                  "id": "pumpgun",
+                  "type": "weapon"
                 }
               ]
             },
-            
+
             {
               "loot": [
                 {
-                  "id": 4,
+                  "id": "pumpkin",
                   "count": 3
                 }
               ]

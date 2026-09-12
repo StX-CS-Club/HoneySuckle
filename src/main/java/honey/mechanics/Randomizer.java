@@ -3,7 +3,7 @@ package honey.mechanics;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public final class GameRandom {
+public final class Randomizer {
 
     private static long masterSeed;
 

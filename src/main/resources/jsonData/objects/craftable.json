@@ -15,7 +15,7 @@
     },
     "loot": [
       {
-        "id": 1
+        "id": "wood"
       }
     ]
   },
@@ -45,7 +45,7 @@
     },
     "loot": [
       {
-        "id": 1
+        "id": "wood"
       }
     ]
   },
@@ -69,7 +69,10 @@
     },
     "loot": [
       {
-        "id": 4
+        "id": "pumpkin",
+        "loot": [
+          { "id": "jackolantern_helm", "type": "recipe", "prob": 0.15 }
+        ]
       }
     ]
   },
@@ -111,7 +114,7 @@
     },
     "loot": [
       {
-        "id": 2,
+        "id": "slime",
         "countProb": 0.25,
         "count": 0
       }

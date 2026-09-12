@@ -32,6 +32,8 @@ public class Craft {
     public static final Map<String, String> recipeTypes = new HashMap<>();
     public static final Map<String, String> recipeNames = new HashMap<>();
     public static final Map<String, Map<String, Number>> recipeAttributes = new HashMap<>();
+    public static final Map<String, Integer> recipeIntId = new HashMap<>();
+    public static final Map<Integer, String> recipeStringId = new HashMap<>();
 
     public final Set<String> recipes = new LinkedHashSet<>();
     private List<String> orderedRecipes = new ArrayList<>();
@@ -48,7 +50,7 @@ public class Craft {
 
     public static void craft(Player player, String recipeKey) {
         for (Map<String, Number> product : recipeProducts.get(recipeKey)) {
-            player.inventory.incrementItem(product, true);
+            player.inventory.incrementItem(product, product.getOrDefault("count", 1).intValue());
         }
 
         //Material data
@@ -56,15 +58,15 @@ public class Craft {
 
         //Removes materials
         for (Map<String, Number> material : recipe) {
-            player.inventory.incrementItem(material, false);
+            player.inventory.incrementItem(material, -material.getOrDefault("count", 1).intValue());
         }
     }
 
     public void update(InputHandler input) {
+        if (orderedRecipes.size() != recipes.size()) {
+            orderedRecipes = buildOrderedRecipes();
+        }
         if (!recipes.isEmpty()) {
-            if(orderedRecipes.size() != recipes.size()){
-                orderedRecipes = buildOrderedRecipes();
-            }
             scroll = Math.clamp(scroll + input.mouseScroll, 0, orderedRecipes.size() - 1);
             hover = -1;
             if (Math.abs(input.mousePos[1] - config.gameHeight / 2) <= 50) {
@@ -115,6 +117,7 @@ public class Craft {
         }
 
         if (!recipes.isEmpty()) {
+            descIndex = Math.clamp(descIndex, 0, recipeArray.length - 1);
             final String recipe = recipeArray[descIndex];
             final String name = recipeNames.get(recipe);
 

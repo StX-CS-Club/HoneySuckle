@@ -15,10 +15,14 @@
     },
     "loot": [
       {
-        "id": 6
+        "id": "scale",
+        "loot": [
+          { "id": "dragon_sword", "type": "recipe", "prob": 0.15 },
+          { "id": "dragon_scaleArmor", "type": "recipe", "prob": 0.15 }
+        ]
       },
       {
-        "id": 6,
+        "id": "scale",
         "prob": 0.25
       }
     ],

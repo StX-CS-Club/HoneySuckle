@@ -22,8 +22,6 @@ public class KeyItem {
     public static final Map<String, String> keyNames = new HashMap<>();
     public static final Map<String, Map<String, String>> keyTextures = new HashMap<>();
     public static final Map<String, Map<String, Number>> keyAttributes = new HashMap<>();
-    public static final Map<String, List<String>> keyBlueprintUnlocks = new HashMap<>();
-    public static final Map<String, List<String>> keyRecipeUnlocks = new HashMap<>();
     public static final Map<String, Map<String, Map<String, Object>>> keyUtilities = new HashMap<>();
     public static final Map<Integer, String> keyStringId = new HashMap<>();
     public static final Map<String, Integer> keyIntId = new HashMap<>();

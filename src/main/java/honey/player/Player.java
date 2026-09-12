@@ -34,8 +34,6 @@ public final class Player {
 
     public static ConfigManager config;
 
-    private static final int IDEA_SIZE = 20;
-
     public static final Map<String, Number> playerDefaultAttributes = new HashMap<>();
 
     //Static list of all players
@@ -158,11 +156,6 @@ public final class Player {
                     "posY", screenPos[1],
                     "radius", attributes.getOrDefault("lightRadius", 6)
             ));
-        }
-
-        if (inventory.ideaFrames >= 0) {
-            g.drawImage(Rendering.texture("ui/hud/idea", inventory.ideaColor), (int) screenPos[0] - IDEA_SIZE / 2, (int) screenPos[1] - IDEA_SIZE / 2 - size, IDEA_SIZE, IDEA_SIZE, null);
-            inventory.ideaFrames--;
         }
     }
 

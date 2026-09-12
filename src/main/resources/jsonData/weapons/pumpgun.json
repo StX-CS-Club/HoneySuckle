@@ -11,9 +11,8 @@
     },
     "texture": {
       "itemTexture": "weapons/pumpgun/item",
-      "texture": "weapons/pumpgun/pumpgun",
-      "animation": "_shoot_",
-      "type": "side"
+      "sideTexture": "weapons/pumpgun/pumpgun",
+      "animation": "_shoot_"
     },
     "behavior": {
       "shoot": {

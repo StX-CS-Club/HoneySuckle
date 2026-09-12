@@ -29,8 +29,8 @@ import honey.mechanics.AssetManager;
 import honey.mechanics.ConfigManager;
 import honey.mechanics.DataManager;
 import honey.mechanics.FileManager;
-import honey.mechanics.GameRandom;
 import honey.mechanics.InputHandler;
+import honey.mechanics.Randomizer;
 import honey.player.Player;
 import honey.rendering.Menu;
 import honey.world.Entity;
@@ -130,7 +130,7 @@ public final class HoneySuckle extends JPanel implements Runnable, KeyListener, 
     }
 
     public static void start() {
-        GameRandom.newSeed();
+        Randomizer.newSeed();
         //Creates world 1
         final World world = new World(config.startingBiome);
         World.worlds.add(world);

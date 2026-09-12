@@ -47,7 +47,6 @@
   "pumpkin_helm": {
     "name": "Pumpkin Helm",
     "id": 3,
-    "recipeUnlocks": ["jackolantern_helm"],
     "texture": {
       "texture": "armor/pumpkin_helm/top",
       "frontTexture": "armor/pumpkin_helm/front",

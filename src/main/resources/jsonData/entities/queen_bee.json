@@ -16,7 +16,7 @@
       "frameSize": 32
     },
     "tags": ["flying", "alwaysRender", "boss"],
-    "loot": [{ "id": 11, "countProb": 0.5 }, { "id": 12 }],
+    "loot": [{ "id": "honeycomb", "countProb": 0.5 }, { "id": "stinger" }],
     "brain": {
       "chase": {
         "range": 30.0,

@@ -1,6 +1,7 @@
 {
   "a_rock": {
     "name": "Special Rock",
+    "id": 3,
     "type": "armor",
     "products": [{ "id": 2, "type": 2 }],
     "texture": {
@@ -14,6 +15,7 @@
   },
   "pumpkin_helm": {
     "name": "Pumpkin Helm",
+    "id": 4,
     "type": "armor",
     "products": [{ "id": 3, "type": 2 }],
     "texture": {
@@ -28,6 +30,7 @@
   },
   "jackolantern_helm": {
     "name": "Jack-o-lantern Helm",
+    "id": 5,
     "type": "armor",
     "products": [{ "id": 4, "type": 2 }],
     "texture": {
@@ -50,6 +53,7 @@
   },
   "dragon_scaleArmor": {
     "name": "Dragon Scale Armor",
+    "id": 6,
     "type": "armor",
     "products": [{ "id": 5, "type": 2 }],
     "texture": {
@@ -64,6 +68,7 @@
   },
   "honeycomb_helm": {
     "name": "Honeycomb Helm",
+    "id": 7,
     "type": "armor",
     "products": [{ "id": 6, "type": 2 }],
     "texture": {

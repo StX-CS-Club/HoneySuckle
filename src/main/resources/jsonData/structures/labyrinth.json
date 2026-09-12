@@ -95,7 +95,7 @@
             {
               "loot": [
                 {
-                  "id": 10,
+                  "id": "gunpowder",
                   "count": 5
                 }
               ]

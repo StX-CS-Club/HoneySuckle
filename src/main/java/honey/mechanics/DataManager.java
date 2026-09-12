@@ -34,7 +34,7 @@ public class DataManager {
             for (String key : objData.keySet()) {
                 final Map<String, Object> obj = (Map<String, Object>) objData.get(key);
                 final int intKey = (Integer) obj.get("id");
-                WorldObject.objLoot.put(intKey, (List<Map<String, Number>>) obj.getOrDefault("loot", new ArrayList<>()));
+                WorldObject.objLoot.put(intKey, getListOfMaps(obj, "loot"));
                 WorldObject.objTextures.put(intKey, (Map<String, String>) obj.getOrDefault("texture", new HashMap<>()));
                 WorldObject.objAttributes.put(intKey, (Map<String, Number>) obj.getOrDefault("attributes", new HashMap<>()));
                 WorldObject.objTags.put(intKey, (List<String>) obj.getOrDefault("tags", new ArrayList<>()));
@@ -63,6 +63,11 @@ public class DataManager {
                 Blueprint.blueprintTextures.put(key, (Map<String, String>) blueprint.getOrDefault("texture", new HashMap<>()));
                 Blueprint.blueprintProducts.put(key, (Integer) blueprint.getOrDefault("product", 0));
                 Blueprint.blueprintTags.put(key, (List<String>) blueprint.getOrDefault("tags", new ArrayList<>()));
+                Blueprint.blueprintNames.put(key, (String) blueprint.getOrDefault("name", key));
+
+                final int id = (int) blueprint.get("id");
+                Blueprint.blueprintIntId.put(key, id);
+                Blueprint.blueprintStringId.put(id, key);
             }
 
             //Maps recipe data
@@ -75,6 +80,10 @@ public class DataManager {
                 Craft.recipeTypes.put(key, (String) recipe.getOrDefault("type", "item"));
                 Craft.recipeNames.put(key, (String) recipe.getOrDefault("name", key));
                 Craft.recipeProducts.put(key, (List<Map<String, Number>>) recipe.getOrDefault("products", new ArrayList<>()));
+
+                final int id = (int) recipe.get("id");
+                Craft.recipeIntId.put(key, id);
+                Craft.recipeStringId.put(id, key);
             }
 
             //Maps item data
@@ -83,8 +92,6 @@ public class DataManager {
                 final Map<String, Object> item = (Map<String, Object>) itemData.get(key);
                 Item.itemNames.put(key, (String) item.getOrDefault("name", key));
                 Item.itemTextures.put(key, (Map<String, String>) item.getOrDefault("texture", new HashMap<>()));
-                Item.itemBlueprintUnlocks.put(key, (List<String>) item.getOrDefault("blueprintUnlocks", new ArrayList<>()));
-                Item.itemRecipeUnlocks.put(key, (List<String>) item.getOrDefault("recipeUnlocks", new ArrayList<>()));
                 Item.itemAttributes.put(key, (Map<String, Number>) item.getOrDefault("attributes", new HashMap<>()));
 
                 final int id = (int) item.get("id");
@@ -99,8 +106,6 @@ public class DataManager {
                 KeyItem.keyNames.put(key, (String) keyItem.getOrDefault("name", key));
                 KeyItem.keyTextures.put(key, (Map<String, String>) keyItem.getOrDefault("texture", new HashMap<>()));
                 KeyItem.keyUtilities.put(key, (Map<String, Map<String, Object>>) keyItem.getOrDefault("utilities", new HashMap<>()));
-                KeyItem.keyBlueprintUnlocks.put(key, (List<String>) keyItem.getOrDefault("blueprintUnlocks", new ArrayList<>()));
-                KeyItem.keyRecipeUnlocks.put(key, (List<String>) keyItem.getOrDefault("recipeUnlocks", new ArrayList<>()));
                 KeyItem.keyAttributes.put(key, (Map<String, Number>) keyItem.getOrDefault("attributes", new HashMap<>()));
 
                 final int id = (int) keyItem.get("id");
@@ -139,7 +144,7 @@ public class DataManager {
                 final Map<String, Object> entity = (Map<String, Object>) entityData.get(key);
                 Entity.entityAttributes.put(key, (Map<String, Number>) entity.getOrDefault("attributes", new HashMap<>()));
                 Entity.entityTextures.put(key, (Map<String, String>) entity.getOrDefault("texture", new HashMap<>()));
-                Entity.entityLoot.put(key, (List<Map<String, Number>>) entity.getOrDefault("loot", new ArrayList<>()));
+                Entity.entityLoot.put(key, getListOfMaps(entity, "loot"));
                 Entity.entityTags.put(key, (List<String>) entity.getOrDefault("tags", new ArrayList<>()));
                 Entity.entityNames.put(key, (String) entity.getOrDefault("name", key));
                 Brain.entityBrain.put(key, (Map<String, Map<String, Object>>) entity.getOrDefault("brain", new HashMap<>()));
@@ -158,8 +163,6 @@ public class DataManager {
                 Weapon.weaponStats.put(key, (Map<String, String>) weapon.getOrDefault("stats", new HashMap<>()));
                 Weapon.weaponBehaviors.put(key, (Map<String, Map<String, Object>>) weapon.getOrDefault("behavior", new HashMap<>()));
                 Weapon.weaponTags.put(key, (List<String>) weapon.getOrDefault("tags", new ArrayList<>()));
-                Weapon.weaponRecipeUnlocks.put(key, (List<String>) weapon.getOrDefault("recipeUnlocks", new ArrayList<>()));
-                Weapon.weaponBlueprintUnlocks.put(key, (List<String>) weapon.getOrDefault("blueprintUnlocks", new ArrayList<>()));
                 Weapon.weaponTextures.put(key, (Map<String, String>) weapon.getOrDefault("texture", new HashMap<>()));
                 Weapon.weaponNames.put(key, (String) weapon.getOrDefault("name", key));
 
@@ -177,8 +180,6 @@ public class DataManager {
                 Ammo.ammoStats.put(key, (Map<String, String>) ammo.getOrDefault("stats", new HashMap<>()));
                 Ammo.ammoTextures.put(key, (Map<String, String>) ammo.getOrDefault("texture", new HashMap<>()));
                 Ammo.ammoTypes.put(key, (List<String>) ammo.getOrDefault("types", new ArrayList<>()));
-                Ammo.ammoRecipeUnlocks.put(key, (List<String>) ammo.getOrDefault("recipeUnlocks", new ArrayList<>()));
-                Ammo.ammoBlueprintUnlocks.put(key, (List<String>) ammo.getOrDefault("blueprintUnlocks", new ArrayList<>()));
 
                 final int id = (int) ammo.get("id");
                 Ammo.ammoIntId.put(key, id);
@@ -191,8 +192,6 @@ public class DataManager {
                 final Map<String, Object> armor = (Map<String, Object>) armorData.get(key);
                 Armor.armorTextures.put(key, (Map<String, String>) armor.getOrDefault("texture", new HashMap<>()));
                 Armor.armorAttributes.put(key, (Map<String, Number>) armor.getOrDefault("attributes", new HashMap<>()));
-                Armor.armorRecipeUnlocks.put(key, (List<String>) armor.getOrDefault("recipeUnlocks", new ArrayList<>()));
-                Armor.armorBlueprintUnlocks.put(key, (List<String>) armor.getOrDefault("blueprintUnlocks", new ArrayList<>()));
                 Armor.armorStats.put(key, (Map<String, String>) armor.getOrDefault("stats", new HashMap<>()));
                 Armor.armorNames.put(key, (String) armor.getOrDefault("name", key));
 

@@ -10,9 +10,8 @@
     },
     "texture": {
       "itemTexture": "weapons/pine_wood_shield/item",
-      "texture": "weapons/pine_wood_shield/pine_wood_shield",
-      "animation": "_parry_",
-      "type": "front"
+      "frontTexture": "weapons/pine_wood_shield/pine_wood_shield",
+      "animation": "_parry_"
     },
     "behavior": {
       "shield": {

@@ -11,9 +11,8 @@
     },
     "texture": {
       "itemTexture": "weapons/bow/item",
-      "texture": "weapons/bow/bow",
-      "animation": "_shoot_",
-      "type": "front"
+      "frontTexture": "weapons/bow/bow",
+      "animation": "_shoot_"
     },
     "behavior": {
       "shoot": {

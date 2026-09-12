@@ -10,9 +10,8 @@
     },
     "texture": {
       "itemTexture": "weapons/stinger_spear/item",
-      "texture": "weapons/stinger_spear/stinger_spear",
+      "sideTexture": "weapons/stinger_spear/stinger_spear",
       "animation": "_stab_",
-      "type": "side",
       "stabColor": "#4E6EFF",
       "rarityColor": "#57a5ff"
     },

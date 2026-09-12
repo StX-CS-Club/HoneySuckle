@@ -13,9 +13,8 @@
     "texture": {
       "bladeColor": "#0099ff",
       "itemTexture": "weapons/diamond_sword/item",
-      "texture": "weapons/diamond_sword/diamond_sword",
+      "sideTexture": "weapons/diamond_sword/diamond_sword",
       "animation": "_swing_",
-      "type": "side",
       "rarityColor": "#bb3311"
     },
     "behavior": {

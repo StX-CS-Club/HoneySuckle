@@ -45,6 +45,11 @@ public class Build {
         blueprints.add(new Blueprint(type));
     }
 
+    public void removeBlueprint(String type) {
+        blueprints.removeIf(blueprint -> blueprint.type.equals(type));
+        blueprintIndex = Math.min(blueprintIndex, Math.max(blueprints.size() - 1, 0));
+    }
+
     public boolean hasBlueprint(String type) {
         for (Blueprint blueprint : blueprints) {
             if (blueprint.type.equals(type)) {
@@ -74,6 +79,10 @@ public class Build {
 
     //Render Build
     public void render(Graphics2D g, World world) {
+        if (blueprints.isEmpty()) {
+            return;
+        }
+
         //Tile position of player, with cursor pos added
         int[] index = new int[]{
             (int) Math.floor(player.pos[0] / config.tileSize + cursor[0]),
@@ -84,7 +93,7 @@ public class Build {
         Color color = Color.red;
 
         //If can place on tile, be cyan
-        if (blueprints.get(blueprintIndex).checkCanPlace(world, player, cursor)) {
+        if (blueprints.get(Math.clamp(blueprintIndex, 0, blueprints.size() - 1)).checkCanPlace(world, player, cursor)) {
             color = Color.cyan;
         }
 
@@ -101,6 +110,10 @@ public class Build {
 
     //Render Build UI
     public void renderUi(Graphics2D g, World world) {
+        if (blueprints.isEmpty()) {
+            return;
+        }
+
         //While the scroll wheel toggle is set to weapons instead of blueprints, the tile isn't scroll-actionable -
         //shrink it and drop the ingredients list so it reads as secondary
         final boolean small = player.weaponScroll;
@@ -110,18 +123,22 @@ public class Build {
         //Bottom edge of the tile stays pinned just above the weapon row regardless of size
         final int y = config.gameHeight - config.hudSize * 13 / 12 - size;
 
+        final Blueprint blueprint = blueprints.get(Math.clamp(blueprintIndex, 0, blueprints.size() - 1));
         if (player.screenPos[0] < config.hudSize * 3 + config.tileSize && player.screenPos[1] > config.gameHeight - config.hudSize * 25 / 12 - config.tileSize) {
             //Bottom-right corner (mirrored): keep the right edge pinned regardless of size
             final int x = (int) (config.gameWidth - config.hudSize / 12 - config.hudSize * 17 / 6 * factor);
-            blueprints.get(blueprintIndex).renderUiTile(g, x, y, player.inventory, true, small);
+            blueprint.renderUiTile(g, x, y, player.inventory, true, small);
         } else {
             //Bottom-left corner: the left edge is already pinned at a fixed margin regardless of size
-            blueprints.get(blueprintIndex).renderUiTile(g, config.hudSize / 12, y, player.inventory, false, small);
+            blueprint.renderUiTile(g, config.hudSize / 12, y, player.inventory, false, small);
         }
     }
 
     //Change selected blueprint based on scroll wheel
     public void scrollBar(double mouseScroll) {
+        if (blueprints.isEmpty()) {
+            return;
+        }
         if (Math.abs(mouseScroll) >= config.criticalMouseScroll) {
             blueprintIndex += Math.signum(mouseScroll);
             if (blueprintIndex < 0) {
@@ -135,8 +152,12 @@ public class Build {
 
     //Build something in the world
     public void build(World world) {
+        if (blueprints.isEmpty()) {
+            return;
+        }
+
         //Current selected blueprint
-        final Blueprint blueprint = blueprints.get(blueprintIndex);
+        final Blueprint blueprint = blueprints.get(Math.clamp(blueprintIndex, 0, blueprints.size() - 1));
 
         //Position to build on
         final int[] index = new int[]{
@@ -150,7 +171,7 @@ public class Build {
             world.objGrid[index[0]][index[1]] = new WorldObject(blueprint.product, index, world);
             //Removes materials
             for (Map<String, Number> material : blueprint.mats) {
-                player.inventory.incrementItem(material, false);
+                player.inventory.incrementItem(material, -material.getOrDefault("count", 1).intValue());
             }
         }
     }

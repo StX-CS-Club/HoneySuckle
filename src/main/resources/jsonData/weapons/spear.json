@@ -11,9 +11,8 @@
     },
     "texture": {
       "itemTexture": "weapons/spear/item",
-      "texture": "weapons/spear/spear",
-      "animation": "_stab_",
-      "type": "side"
+      "sideTexture": "weapons/spear/spear",
+      "animation": "_stab_"
     },
     "behavior": {
       "stab": {

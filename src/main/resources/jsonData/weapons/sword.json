@@ -11,9 +11,8 @@
     },
     "texture": {
       "itemTexture": "weapons/sword/item",
-      "texture": "weapons/sword/sword",
-      "animation": "_swing_",
-      "type": "side"
+      "sideTexture": "weapons/sword/sword",
+      "animation": "_swing_"
     },
     "behavior": {
       "swing": {

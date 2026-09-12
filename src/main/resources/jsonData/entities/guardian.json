@@ -15,13 +15,16 @@
     },
     "loot": [
       {
-        "id": 9,
+        "id": "scrap",
         "prob": 0.5,
         "count": 2
       },
       {
-        "id": 10,
-        "prob": 0.25
+        "id": "gunpowder",
+        "prob": 0.25,
+        "loot": [
+          { "id": "shotgun_shell", "type": "recipe", "prob": 0.15 }
+        ]
       }
     ],
     "brain": {

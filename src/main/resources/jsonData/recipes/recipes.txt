@@ -1,6 +1,7 @@
 {
     [String ID: snake_case String ID to identify recipe]: {
         "name": String to represent recipe's name in text,
+        "id": int ID of the recipe,
         "type": String category of recipe — one of "weapon", "armor", or "ammo",
         "texture": {
             "texture": String URI of UI icon texture from images/sprites (autofills .png)

@@ -17,7 +17,6 @@
         },
         "stats": {
             [String stat label]: String display value shown in inventory
-        },
-        "recipeUnlocks": [String recipe ID, ...] List of recipes unlocked when armor is equipped
+        }
     }
 }
