@@ -1,7 +1,7 @@
 {
     "swamp": {
     "name": "Swamp",
-    "level": 3,
+    "attributes": {"minLevel": 3},
     "tags": ["watery"],
     "textureMap": {
       "landColor": "#58860b",

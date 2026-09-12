@@ -18,6 +18,7 @@ import honey.player.armory.Ammo;
 import honey.player.armory.Armor;
 import honey.player.armory.Weapon;
 import honey.rendering.Rendering;
+import honey.world.LootDistributer;
 
 public class Craft {
 
@@ -27,7 +28,7 @@ public class Craft {
 
     //Static json data
     public static final Map<String, List<Map<String, Number>>> recipeMats = new HashMap<>();
-    public static final Map<String, List<Map<String, Number>>> recipeProducts = new HashMap<>();
+    public static final Map<String, List<Map<String, Object>>> recipeLoot = new HashMap<>();
     public static final Map<String, Map<String, String>> recipeTextures = new HashMap<>();
     public static final Map<String, String> recipeTypes = new HashMap<>();
     public static final Map<String, String> recipeNames = new HashMap<>();
@@ -49,9 +50,7 @@ public class Craft {
     }
 
     public static void craft(Player player, String recipeKey) {
-        for (Map<String, Number> product : recipeProducts.get(recipeKey)) {
-            player.inventory.incrementItem(product, product.getOrDefault("count", 1).intValue());
-        }
+        LootDistributer.process(player.world, player.inventory, player.pos.clone(), recipeLoot.get(recipeKey));
 
         //Material data
         final List<Map<String, Number>> recipe = recipeMats.get(recipeKey);

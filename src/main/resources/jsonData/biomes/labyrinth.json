@@ -1,7 +1,7 @@
 {
   "labyrinth": {
     "name": "Labyrinth",
-    "level": 14,
+    "attributes": {"minLevel": 14},
     "tags": ["dangerousVoid", "structuresFirst"],
     "textureMap": {
       "brickColor": "#847878",

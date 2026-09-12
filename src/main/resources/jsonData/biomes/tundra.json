@@ -1,7 +1,7 @@
 {
   "tundra": {
     "name": "Tundra",
-    "level": 5,
+    "attributes": {"minLevel": 5},
     "tags": ["dangerousVoid"],
     "textureMap": {
       "landColor": "#dffffb",

@@ -1,7 +1,6 @@
 {
     "hive": {
         "name": "Hive",
-        "level": 10,
         "textureMap": {
             "landColor": "#daf52c",
             "voidColor": "#ffd500",
@@ -11,7 +10,8 @@
         },
         "attributes": {
             "overlayOpacity": 0.33,
-            "overlaySpeed": 1.5
+            "overlaySpeed": 1.5,
+            "minLevel": 10
         },
         "generation": {
             "size": [101, 125],

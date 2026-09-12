@@ -23,7 +23,7 @@
         "id": "gunpowder",
         "prob": 0.25,
         "loot": [
-          { "id": "shotgun_shell", "type": "recipe", "prob": 0.15 }
+          { "id": "shotgun_shell", "type": "recipe", "prob": 0.5 }
         ]
       }
     ],

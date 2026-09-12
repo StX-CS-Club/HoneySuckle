@@ -1,7 +1,7 @@
 { 
   "wetlands": {
     "name": "Wetlands",
-    "level": 0,
+    "attributes": {"minLevel": 0, "maxLevel": 10},
     "textureMap": {
       "voidColor": "#0080ff",
       "coalColor": "#666677",

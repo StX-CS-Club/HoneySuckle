@@ -1,8 +1,7 @@
 {
   "desert": {
     "name": "Desert",
-    "level": 5,
-    "attributes": {"fogginess": 0.67},
+    "attributes": {"fogginess": 0.67, "minLevel": 5},
     "textureMap": {
       "landColor": "#ffc436",
       "voidColor": "#6fbbe9",
@@ -45,9 +44,9 @@
         },
         {
           "id": 14,
-          "prob": 0.2,
+          "prob": -0.2,
           "maxProb": 0.5,
-          "levelProb": 0.01,
+          "levelProb": 0.025,
           "offsetBR": [5, 12],
           "rangeProb": [[0, 0, 150, 124, -100], [72, 107, 72, 107, 100]]
         }

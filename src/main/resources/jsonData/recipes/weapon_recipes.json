@@ -3,7 +3,7 @@
     "name": "Dragon Sword",
     "id": 8,
     "type": "weapon",
-    "products": [{ "id": 4, "type": 1 }],
+    "loot": [{ "id": "dragon_sword", "type": "weapon" }],
     "texture": {
       "texture": "weapons/dragon_sword/item"
     },
@@ -17,7 +17,7 @@
     "name": "Bouncy Shield",
     "id": 9,
     "type": "weapon",
-    "products": [{ "id": 5, "type": 1 }],
+    "loot": [{ "id": "slime_shield", "type": "weapon" }],
     "texture": {
       "texture": "weapons/slime_shield/item"
     },
@@ -35,7 +35,7 @@
     "name": "Cactus Sword",
     "id": 10,
     "type": "weapon",
-    "products": [{ "id": 6, "type": 1 }],
+    "loot": [{ "id": "cactus_sword", "type": "weapon" }],
     "texture": {
       "texture": "weapons/cactus_sword/item"
     },
@@ -54,7 +54,7 @@
     "name": "Diamond Sword",
     "id": 11,
     "type": "weapon",
-    "products": [{ "id": 7, "type": 1 }],
+    "loot": [{ "id": "diamond_sword", "type": "weapon" }],
     "texture": {
       "texture": "weapons/diamond_sword/item"
     },
@@ -73,7 +73,7 @@
     "name": "Stinger Sword",
     "id": 12,
     "type": "weapon",
-    "products": [{ "id": 11, "type": 1 }],
+    "loot": [{ "id": "stinger_sword", "type": "weapon" }],
     "texture": {
       "texture": "weapons/stinger_sword/item"
     },
@@ -83,7 +83,7 @@
     "name": "Stinger Spear",
     "id": 13,
     "type": "weapon",
-    "products": [{ "id": 12, "type": 1 }],
+    "loot": [{ "id": "stinger_spear", "type": "weapon" }],
     "texture": {
       "texture": "weapons/stinger_spear/item"
     },
@@ -93,7 +93,7 @@
     "name": "Pine Wood Shield",
     "id": 14,
     "type": "weapon",
-    "products": [{ "id": 13, "type": 1 }],
+    "loot": [{ "id": "pine_wood_shield", "type": "weapon" }],
     "texture": {
       "texture": "weapons/pine_wood_shield/item"
     },
@@ -103,7 +103,7 @@
     "name": "Pine Wood Hatchet",
     "id": 15,
     "type": "weapon",
-    "products": [{ "id": 15, "type": 1 }],
+    "loot": [{ "id": "pine_wood_hatchet", "type": "weapon" }],
     "texture": {
       "texture": "weapons/pine_wood_hatchet/item"
     },
@@ -113,7 +113,7 @@
     "name": "Cobbled Breaker",
     "id": 16,
     "type": "weapon",
-    "products": [{ "id": 16, "type": 1 }],
+    "loot": [{ "id": "cobbled_breaker", "type": "weapon" }],
     "texture": {
       "texture": "weapons/cobbled_breaker/item"
     },
@@ -123,7 +123,7 @@
     "name": "Sword and Shield",
     "id": 17,
     "type": "weapon",
-    "products": [{ "id": 18, "type": 1 }],
+    "loot": [{ "id": "sword_and_shield", "type": "weapon" }],
     "texture": {
       "texture": "weapons/sword_and_shield/item"
     },

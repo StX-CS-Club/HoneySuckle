@@ -46,6 +46,11 @@
                 {
                   "id": "pumpgun",
                   "type": "weapon"
+                },
+                {
+                  "id": "pumpkannon_ball",
+                  "type": "recipe",
+                  "prob": 0.5
                 }
               ]
             },

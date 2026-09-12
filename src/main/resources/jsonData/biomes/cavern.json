@@ -1,9 +1,8 @@
 {
     "cavern": {
     "name": "Cavern",
-    "level": 6,
     "tags": ["dangerousVoid"],
-    "attributes": {"fogginess": 1.0},
+    "attributes": {"fogginess": 1.0, "minLevel": 6},
     "textureMap": {
       "voidColor": "#111111",
       "fogColor": "#000000",

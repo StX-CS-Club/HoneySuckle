@@ -16,7 +16,12 @@
       "frameSize": 32
     },
     "tags": ["flying", "alwaysRender", "boss"],
-    "loot": [{ "id": "honeycomb", "countProb": 0.5 }, { "id": "stinger" }],
+    "loot": [
+      { "id": "honeycomb", "countProb": 0.5 },
+      { "id": "stinger" },
+      { "id": "stinger_sword", "type": "recipe"},
+      { "id": "stinger_spear", "type": "recipe"}
+    ],
     "brain": {
       "chase": {
         "range": 30.0,

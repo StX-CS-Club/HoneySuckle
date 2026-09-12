@@ -79,7 +79,7 @@ public class DataManager {
                 Craft.recipeTextures.put(key, (Map<String, String>) recipe.getOrDefault("texture", new HashMap<>()));
                 Craft.recipeTypes.put(key, (String) recipe.getOrDefault("type", "item"));
                 Craft.recipeNames.put(key, (String) recipe.getOrDefault("name", key));
-                Craft.recipeProducts.put(key, (List<Map<String, Number>>) recipe.getOrDefault("products", new ArrayList<>()));
+                Craft.recipeLoot.put(key, getListOfMaps(recipe, "loot"));
 
                 final int id = (int) recipe.get("id");
                 Craft.recipeIntId.put(key, id);
@@ -121,7 +121,6 @@ public class DataManager {
                 Biome.biomeTags.put(key, (List<String>) biome.getOrDefault("tags", new ArrayList<>()));
                 Biome.biomeAttributes.put(key, (Map<String, Number>) biome.getOrDefault("attributes", new HashMap<>()));
                 Biome.biomeGeneration.put(key, (Map<String, Object>) biome.getOrDefault("generation", new HashMap<>()));
-                Biome.biomeLevel.put(key, (Integer) biome.getOrDefault("level", 1));
             }
 
             //Maps structure data

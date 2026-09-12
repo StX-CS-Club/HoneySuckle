@@ -1,7 +1,7 @@
 {
   "peninsula": {
     "name": "Peninsula",
-    "level": 4,
+    "attributes": {"minLevel": 4, "maxLevel": 25},
     "textureMap": {
       "landColor": "#94ca53",
       "voidColor": "#4382ff",

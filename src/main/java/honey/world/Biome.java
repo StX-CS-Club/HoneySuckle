@@ -53,7 +53,6 @@ public class Biome {
     public static final Map<String, BiomeGenData> biomeGenData = new HashMap<>();
     public static final Map<String, List<String>> biomeTags = new HashMap<>();
     public static final Map<String, Map<String, Number>> biomeAttributes = new HashMap<>();
-    public static final Map<String, Integer> biomeLevel = new HashMap<>();
 
     private final World world;
     public final String type;
@@ -123,8 +122,11 @@ public class Biome {
 
     public static String randomizeBiome(Random random, String lastBiome, int level) {
         final List<String> biomes = new ArrayList<>();
-        for (String biomeId : biomeLevel.keySet()) {
-            if (biomeLevel.get(biomeId) <= level) {
+        for (String biomeId : biomeAttributes.keySet()) {
+            final Map<String, Number> attrs = biomeAttributes.get(biomeId);
+            final int minLevel = attrs.getOrDefault("minLevel", 1).intValue();
+            final int maxLevel = attrs.getOrDefault("maxLevel", Integer.MAX_VALUE).intValue();
+            if (minLevel <= level && level <= maxLevel) {
                 biomes.add(biomeId);
             }
         }

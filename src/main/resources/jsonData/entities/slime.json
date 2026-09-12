@@ -17,7 +17,7 @@
         "id": "slime",
         "prob": 0.5,
         "loot": [
-          { "id": "slime_shield", "type": "recipe", "prob": 0.15 }
+          { "id": "slime_shield", "type": "recipe", "prob": 0.5 }
         ]
       }
     ],

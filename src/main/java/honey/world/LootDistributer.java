@@ -21,27 +21,19 @@ import honey.player.inventory.KeyItem;
 // optional nested "loot" child list. Owns every probability roll for loot (moved out of World/Inventory).
 public class LootDistributer {
 
-    private final World world;
-    private final Inventory inventory;
-    private final double[] spawnPos;
-
-    public LootDistributer(World world, Inventory inventory, double[] spawnPos) {
-        this.world = world;
-        this.inventory = inventory;
-        this.spawnPos = spawnPos;
-    }
-
-    public void process(List<Map<String, Object>> loot) {
+    public static void process(World world, Inventory inventory, double[] spawnPos, List<Map<String, Object>> loot) {
         for (Map<String, Object> entry : loot) {
             final String type = MapReader.getOrDefault(entry, "type", "item");
-            final boolean met = "entity".equals(type) ? processEntity(entry) : processGrant(entry, type);
+            final boolean met = "entity".equals(type)
+                    ? processEntity(world, spawnPos, entry)
+                    : processGrant(inventory, entry, type);
             if (met) {
-                process(MapReader.getOrDefault(entry, "loot", new ArrayList<>()));
+                process(world, inventory, spawnPos, MapReader.getOrDefault(entry, "loot", new ArrayList<>()));
             }
         }
     }
 
-    private boolean processEntity(Map<String, Object> entry) {
+    private static boolean processEntity(World world, double[] spawnPos, Map<String, Object> entry) {
         final double prob = MapReader.getNumberOrDefault(entry, "prob", 1).doubleValue();
         if (Math.random() >= prob) {
             return false;
@@ -77,7 +69,7 @@ public class LootDistributer {
         return true;
     }
 
-    private boolean processGrant(Map<String, Object> entry, String type) {
+    private static boolean processGrant(Inventory inventory, Map<String, Object> entry, String type) {
         final double prob = MapReader.getNumberOrDefault(entry, "prob", 1).doubleValue();
         if (Math.random() >= prob) {
             return false;

@@ -3,7 +3,7 @@
     "name": "Wooden Arrow",
     "id": 1,
     "type": "ammo",
-    "products": [{ "id": 1, "type": 3}],
+    "loot": [{ "id": "wooden_arrow", "type": "ammo" }],
     "texture": {
       "texture": "ammo/wooden_arrow"
     },
@@ -17,7 +17,7 @@
     "name": "Shotgun Shells",
     "id": 2,
     "type": "ammo",
-    "products": [{ "id": 3, "type": 3, "count": 5}],
+    "loot": [{ "id": "shotgun_shell", "type": "ammo", "count": 5 }],
     "texture": {
       "texture": "ammo/shotgun_shell"
     },
@@ -29,6 +29,24 @@
       {
         "id": 9,
         "count": 3
+      }
+    ]
+  },
+  "pumpkannon_ball": {
+    "name": "Pumpkannon Ball",
+    "id": 18,
+    "type": "ammo",
+    "loot": [{ "id": "pumpkannon_ball", "type": "ammo", "count": 3 }],
+    "texture": {
+      "texture": "ammo/pumpkannon_ball"
+    },
+    "mats": [
+      {
+        "id": 4,
+        "count": 3
+      },
+      {
+        "id": 10
       }
     ]
   }

@@ -1,7 +1,7 @@
 {
   "field": {
     "name": "Field",
-    "level": 1,
+    "attributes": {"minLevel": 1, "maxLevel": 20},
     "textureMap": {
       "landColor": "#00a800",
       "voidColor": "#004aff",

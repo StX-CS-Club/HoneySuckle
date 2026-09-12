@@ -1,7 +1,7 @@
 {
   "bridge": {
     "name": "Bridge",
-    "level": 9,
+    "attributes": {"minLevel": 9},
     "tags": ["dangerousVoid", "enemyLock"],
     "textureMap": {
       "landColor": "#cdc5b3",

@@ -1,14 +1,15 @@
 {
     [String ID: snake_case String ID to identify biome]: {
         "name": String to represent biome's name in text,
-        "level": Minimum level the biome can spawn at (default 1),
         "textureMap": {
             "voidColor": String HEX color of the biome's background color,
             "fogColor": String HEX color of the biome's fog (requires fogginess attribute),
             [NatColor String ID]: String HEX color of the biome's given natColor
         },
         "attributes": {
-            "fogginess": Number fog density; visible light radius = lightRadius / fogginess (omit for no fog)
+            "fogginess": Number fog density; visible light radius = lightRadius / fogginess (omit for no fog),
+            "minLevel": Number minimum level the biome can spawn at (default 1),
+            "maxLevel": Number maximum level the biome can spawn at (default unlimited)
         },
         "tags": List of following String tags of biome:[
             "watery", - Include to double generation of water down the center

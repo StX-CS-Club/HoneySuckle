@@ -6,11 +6,14 @@
         "texture": {
             "texture": String URI of UI icon texture from images/sprites (autofills .png)
         },
-        "products": List of items produced by this recipe:[
+        "loot": List of items granted by this recipe when crafted, same recursive schema as object/entity "loot":[
             {
-                "id": int ID of the product,
-                "type": int item category — 1 = weapon, 2 = armor, 3 = ammo (omit for regular item),
-                "count": int quantity produced (default 1)
+                "id": String ID of the produced thing (its snake_case key in the matching data file),
+                "type": String category of drop — one of "item" (default), "weapon", "armor", "ammo", "keyItem", "recipe", "blueprint", "entity",
+                "count": int quantity produced (default 1),
+                "prob": Number probability of this output being granted (default 1),
+                "countProb": Number probability of producing one additional item (default 0),
+                "loot": List of child drops of this same schema, rolled recursively only if this entry's own "prob" roll succeeded (optional)
             }
         ],
         "mats": List of materials required to craft:[

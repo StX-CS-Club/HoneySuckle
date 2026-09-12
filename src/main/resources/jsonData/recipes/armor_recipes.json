@@ -3,7 +3,7 @@
     "name": "Special Rock",
     "id": 3,
     "type": "armor",
-    "products": [{ "id": 2, "type": 2 }],
+    "loot": [{ "id": "a_rock", "type": "armor" }],
     "texture": {
       "texture": "armor/a_rock/item"
     },
@@ -17,7 +17,7 @@
     "name": "Pumpkin Helm",
     "id": 4,
     "type": "armor",
-    "products": [{ "id": 3, "type": 2 }],
+    "loot": [{ "id": "pumpkin_helm", "type": "armor"}, {"type": "recipe", "id": "jackolantern_helm"}],
     "texture": {
       "texture": "armor/pumpkin_helm/item"
     },
@@ -32,7 +32,7 @@
     "name": "Jack-o-lantern Helm",
     "id": 5,
     "type": "armor",
-    "products": [{ "id": 4, "type": 2 }],
+    "loot": [{ "id": "jackolantern_helm", "type": "armor" }],
     "texture": {
       "texture": "armor/jackolantern_helm/item"
     },
@@ -55,7 +55,7 @@
     "name": "Dragon Scale Armor",
     "id": 6,
     "type": "armor",
-    "products": [{ "id": 5, "type": 2 }],
+    "loot": [{ "id": "dragon_scale", "type": "armor" }],
     "texture": {
       "texture": "armor/dragon_scale/item"
     },
@@ -70,7 +70,7 @@
     "name": "Honeycomb Helm",
     "id": 7,
     "type": "armor",
-    "products": [{ "id": 6, "type": 2 }],
+    "loot": [{ "id": "honeycomb_helm", "type": "armor" }],
     "texture": {
       "texture": "armor/honeycomb_helm/item"
     },

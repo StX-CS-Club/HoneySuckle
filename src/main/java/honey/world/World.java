@@ -12,8 +12,8 @@ import java.util.Set;
 
 import honey.HoneySuckle;
 import honey.mechanics.ConfigManager;
-import honey.mechanics.Randomizer;
 import honey.mechanics.InputHandler;
+import honey.mechanics.Randomizer;
 import honey.player.Player;
 import honey.rendering.Rendering;
 
@@ -161,12 +161,9 @@ public final class World {
     public int[] size = new int[2];
     public int[] start = new int[2];
     public final Biome biome;
-
-    // Processes a recursive loot list via LootDistributer, which owns every probability roll and the
-    // string id/type -> int id/type translation ("type": "entity" spawns at spawnPos, everything else
-    // grants to the player's inventory).
+    
     public void processLoot(List<Map<String, Object>> loot, double[] spawnPos, Player player) {
-        new LootDistributer(this, player != null ? player.inventory : null, spawnPos).process(loot);
+        LootDistributer.process(this, player != null ? player.inventory : null, spawnPos, loot);
     }
 
     // Bounds movement to boundaries of world, mutates pos in place

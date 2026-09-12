@@ -191,7 +191,7 @@ public class Brain {
                 }
 
                 if (ticks >= cooldown - frames) {
-                    if (ticks == cooldown - frames) {
+                    if (!checkState("shooting")) {
                         if (ThreadLocalRandom.current().nextDouble() <= prob) {
                             states.put("shooting", true);
                         } else if (resetOnFail) {
